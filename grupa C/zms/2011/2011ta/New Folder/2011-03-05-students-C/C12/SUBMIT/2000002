@@ -1,0 +1,42 @@
+/*
+TASK: songs
+LANG: C++
+*/
+#include<iostream>
+#include<cstdio>
+#include<algorithm>
+using namespace std;
+int songJury[50005],songIvan[50005];
+int main()
+{
+    int n;
+    cin>>n;
+    int a;
+    int br=0;
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&a);
+        songJury[a]=i;
+    }
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&a);
+        songIvan[a]=i;
+    }
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=i+1;j<=n;j++)
+        {
+            if(songIvan[i]>songIvan[j]&&songJury[i]<songJury[j])
+            {
+                br++;
+            }
+            if(songIvan[i]<songIvan[j]&&songJury[i]>songJury[j])
+            {
+                br++;
+            }
+        }
+    }
+    cout<<br<<endl;
+    return 0;
+}

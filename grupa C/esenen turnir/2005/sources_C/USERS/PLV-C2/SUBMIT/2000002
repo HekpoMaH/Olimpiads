@@ -1,0 +1,57 @@
+{
+TASK:NUMBER
+LANG:PASCAL
+}
+var
+s,kr,a1,b1:string;
+a3:array[1..10000]of longint;
+a,b,j,u,kr1,mm, k,i,code,n,d1,d2,d3:integer;
+fl:boolean;
+begin
+ read(n,d1,d2,d3);
+ s:=s+'1';
+ kr:=kr+'9';
+ for i:=1 to n-1 do
+  begin
+   s:=s+'0';
+   kr:=kr+'9';
+  end;
+  val(kr,kr1,code);
+  val(s,a,code);
+  fl:=false;
+  repeat
+
+  for u:=2 to n do
+   if a3[u]=0 then
+    fl:=true;
+  if not fl then
+   mm:=mm+1;
+   for u:=1 to n do
+    a3[u]:=0;
+    fl:=false;
+   a:=a+1;
+   str(a,a1);
+
+   for i:=2 to n do
+     if a1[i-1]<>'0' then
+      begin
+       b1:=b1+a1[i-1] ;
+       b1:=b1+a1[i] ;
+       val(b1,b,code);
+       b1:='';
+       if b mod d1=0 then
+        begin
+         a3[i]:=1;
+        end;
+      if b mod d2=0 then
+        begin
+         a3[i]:=1;
+        end;
+      if b mod d3=0 then
+        begin
+         a3[i]:=1;
+        end;
+     end;
+  until a=kr1;
+ writeln(mm);
+end.

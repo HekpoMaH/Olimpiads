@@ -1,0 +1,73 @@
+#include<iostream>
+using namespace std;
+int n,L,Q[128],P[128],R[128],F[128],u[128];
+int main()
+{
+	int i,s=0;
+	cin>>n>>L;
+	for(i=0;i<n;i++)
+	{
+		cin>>P[i]>>R[i]>>Q[i]>>F[i];
+		s+=F[i];
+	}
+	if(s<L)
+	{
+		cout<<-1<<endl;
+		return 0;
+	}
+	s=0;
+	int l=0;
+	while(L>0)
+	{
+		int mini=-1,minx=128;
+		if(l==0)
+		{
+			for(i=0;i<n;i++)
+			if(minx>R[i]&&R[i]<=F[i]&&u[i]==0)
+			{
+				minx=R[i];
+				mini=i;
+			}
+		}
+		else
+		for(i=0;i<n;i++)
+		if(minx>R[i]&&u[i]==0)
+		{
+			minx=R[i];
+			mini=i;
+		}
+
+		if(minx!=128)
+		{
+			u[mini]=1;
+			if(F[mini]<=L&&L>=R[mini])
+			{
+				s+=(F[mini]*Q[mini]);
+				L-=F[mini];
+			}
+			else
+			if(F[mini]<=L&&L<R[mini])
+			{
+				s+=(F[mini]*P[mini]);
+				L-=F[mini];
+			}
+			else
+			if(F[mini]>L&&L<R[mini])
+			{
+				s+=(L*P[mini]);
+				L-=F[mini];
+			}
+			else
+			if(F[mini]>L&&L>=R[mini])
+			{
+				s+=(L*Q[mini]);
+				L-=F[mini];
+			}
+		}
+		else
+		l=1;
+
+	}
+	cout<<s<<endl;
+	return 0;
+}

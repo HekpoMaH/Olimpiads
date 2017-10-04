@@ -1,0 +1,12 @@
+#include <cstdio>
+using namespace std;
+
+int n, l, p, r, q, f;
+
+int main(){
+	scanf("%d%d", &n, &l);
+	for(int i = 0; i < n; i++){
+		scanf("%d%d%d%d", &p, &r, &q, &f);
+	}
+	printf("-1\n");
+}

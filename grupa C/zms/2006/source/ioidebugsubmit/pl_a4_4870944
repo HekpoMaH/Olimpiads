@@ -1,0 +1,65 @@
+{
+ID: pl_a4
+PROG: CARS
+}
+
+type el = record
+           vr, link : longint;
+          end;
+
+const ogr1 = 500001;
+const ogr2 = 5000001;
+
+var st, op, a, count : array[0..ogr1] of longint;
+    used : array[0..ogr2] of byte;
+    b : array[0..ogr2] of el;
+    m2, s, i, j, k, l, o, p, m, n, be, en, fl : longint;
+
+
+procedure input;
+ begin
+  readln(n);
+  for i := 1 to n do
+    begin
+     read(o);
+     st[i] := o;
+     if o = 0 then s := i;
+     for j := 1 to o do
+       begin
+        if j < o then read(k)
+        else readln(k);
+        inc(m);
+        b[m].vr := i;
+        b[m].link := a[k];
+        a[k] := m;
+       end;
+    end;
+ end;
+
+
+begin
+ input;
+ op[1] := s;
+ count[s] := 1;
+ used[s] := 1;
+ be := 0;
+ en := 1;
+ repeat
+  inc(be);
+  k := op[be];
+  p := a[k];
+  while p <> 0 do
+    begin
+     l := b[p].vr;
+     count[l] := (count[l] + count[k]) mod 987654321;
+     dec(st[l]);
+     if st[l] = 0 then
+       begin
+        inc(en);
+        op[en] := l;
+       end;
+     p := b[p].link;
+    end;
+ until be >= en;
+ writeln(count[op[n]]);
+end.

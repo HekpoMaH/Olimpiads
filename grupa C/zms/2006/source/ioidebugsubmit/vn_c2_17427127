@@ -1,0 +1,36 @@
+/*
+TASK: MORSE
+LANG: C
+*/
+#include <stdio.h>
+#include <ctype.h>
+int main ()
+{
+ unsigned char a;
+ unsigned char let[30][10]={".-","-...","-.-.","-..",".","..-.","--.",
+                            "....","..",".---","-.-",".-..","--","-.",
+                            "---",".--.","--.-",".-.","...","-","..-",
+                            "...-",".--","-..-","-.--","--.."},
+               dig[15][10]={"-----",".----","..---","...--","....-",
+                            ".....","-....","--...","---..","----."};
+ while (!feof (stdin))
+       {
+        if (feof (stdin)) break;
+        scanf ("%c",&a);
+        if (isalpha (a))
+           {
+            if (isupper (a))
+               printf ("%s ",let[a-'A']);
+            else printf ("%s ",let[a-'a']);
+           }
+        else if (isdigit (a))
+             printf ("%s ",dig[a-'0']);
+        else if (a=='.') printf (".-.-.- ");
+        else if (a==',') printf ("--..-- ");
+        else if (a=='?') printf ("..--.. ");
+        else if (a=='-') printf ("-..-. ");
+        else if (a==' ') printf (".-.-. ");
+       }
+ printf ("...-.-\n");
+ return 0;
+}

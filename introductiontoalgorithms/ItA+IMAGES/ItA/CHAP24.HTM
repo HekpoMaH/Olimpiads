@@ -1,0 +1,247 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 24: MINIMUM SPANNING TREES</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap25.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap23.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="08b3_17a4">CHAPTER 24: MINIMUM SPANNING TREES<a name="08b3_17a4"></h1><P>
+<a name="08b3_179e"><a name="08b3_179f">In the design of electronic circuitry, it is often necessary to make the pins of several components electrically equivalent by wiring them together. To interconnect a set of <I>n</I> pins, we can use an arrangement of <I>n -</I> 1 wires, each connecting two pins. Of all such arrangements, the one that uses the least amount of wire is usually the most desirable.<P>
+<a name="08b3_17a0"><a name="08b3_17a1"><a name="08b3_17a2">We can model this wiring problem with a connected, undirected graph <I>G</I> = (<I>V, E</I>), where <I>V</I> is the set of pins, <I>E</I> is the set of possible interconnections between pairs of pins, and for each edge (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>, we have a weight <I>w</I>(<I>u</I>, <I>v</I>) specifying the cost (amount of wire needed) to connect <I>u</I> and <I>v</I>. We then wish to find an acyclic subset <I>T</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>E</I> that connects all of the vertices and whose total weight<P>
+<img src="498_a.gif"><P>
+is minimized. Since <I>T</I> is acyclic and connects all of the vertices, it must form a tree, which we call a <I><B>spanning</I></B><I> <B>tree</I> </B>since it&quot;spans&quot; the graph <I>G</I>. We call the problem of determining the tree <I>T</I> the <I><B>minimum-spanning-tree problem</I></B>.<SUP>1</SUP> Figure 24.1 shows an example of a connected graph and its minimum spanning tree.<P>
+<SUP>1</SUP>The phrase &quot;minimum spanning tree&quot; is a shortened form of the phrase &quot;minimum-weight spanning tree.&quot; We are not, for example, minimizing the number of edges in <I>T</I>, since all spanning trees have exactly |<I>V|</I> - 1 edges by Theorem 5.2.<P>
+In this chapter, we shall examine two algorithms for solving the minimum-spanning-tree problem: Kruskal's algorithm and Prim's algorithm. Each can easily be made to run in time <I>O</I>(<I>E </I>lg <I>V</I>) using ordinary binary heaps. By using Fibonacci heaps, Prim's algorithm can be sped up to run in time<I> O</I>(<I>E</I> + <I>V</I> lg <I>V</I>), which is an improvement if |<I>V|</I> is much smaller than |<I>E| .</I><P>
+<a name="08b3_17a3">The two algorithms also illustrate a heuristic for optimization called the &quot;greedy&quot; strategy. At each step of an algorithm, one of several possible choices must be made. The greedy strategy advocates making the choice that is the best at the moment. Such a strategy is not generally guaranteed to find globally optimal solutions to problems. For the minimum-spanning-tree problem, however, we can prove that certain greedy strategies do yield a spanning tree with minimum weight. Greedy strategies are discussed at length in Chapter 17. Although the present chapter can be read independently of Chapter 17, the greedy methods presented here are a classic application of the theoretical notions introduced there.<P>
+<img src="499_a.gif"><P>
+<h4><a name="08b3_17a5">Figure 24.1 A minimum spanning tree for a connected graph. The weights on edges are shown, and the edges in a minimum spanning tree are shaded. The total weight of the tree shown is 37. The tree is not unique: removing the edge (b, c) and replacing it with the edge (a, h) yields another spanning tree with weight 37.<a name="08b3_17a5"></sub></sup></h4><P>
+Section 24.1 introduces a &quot;generic&quot; minimum-spanning-tree algorithm that grows a spanning tree by adding one edge at a time. Section 24.2 gives two ways to implement the generic algorithm. The first algorithm, due to Kruskal, is similar to the connected-components algorithm from Section 22.1. The second, due to Prim, is similar to Dijkstra's shortest-paths algorithm (Section 25.2).<P>
+
+
+
+
+
+<h1><a name="08b5_17ac">24.1 Growing a minimum spanning tree<a name="08b5_17ac"></h1><P>
+Assume that we have a connected, undirected graph <I>G</I> = (<I>V, E</I>) with a weight function <I>w </I>: <I>E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B> and wish to find a minimum spanning tree for <I>G</I>. The two algorithms we consider in this chapter use a greedy approach to the problem, although they differ in how they apply this approach.<P>
+<a name="08b5_17a4"><a name="08b5_17a5"><a name="08b5_17a6">This greedy strategy is captured by the following &quot;generic&quot; algorithm, which grows the minimum spanning tree one edge at a time. The algorithm manages a set <I>A</I> that is always a subset of some minimum spanning tree. At each step, an edge (<I>u</I>, <I>v</I>) is determined that can be added to <I>A</I> without violating this invariant, in the sense that <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u</I>, <I>v</I>)} is also a subset of a minimum spanning tree. We call such an edge a <I><B>safe edge</I></B> for <I>A</I>, since it can be safely added to <I>A</I> without destroying the invariant.<P>
+<img src="500_a.gif"><P>
+<h4><a name="08b5_17ad">Figure 24.2 Two ways of viewing a cut (S, V - S) of the graph from Figure 24.1. (a) The vertices in the set S are shown in black, and those in V - S are shown in white. The edges crossing the cut are those connecting white vertices with black vertices. The edge (d, c) is the unique light edge crossing the cut. A subset A of the edges is shaded; note that the cut (S, V - S) respects A, since no edge of A crosses the cut. (b) The same graph with the vertices in the set S on the left and the vertices in the set V - S on the right. An edge crosses the cut if it connects a vertex on the left with a vertex on the right.<a name="08b5_17ad"></sub></sup></h4><P>
+<pre><a name="08b5_17a7">GENERIC-MST(<I>G, w</I>)</sub></sup></pre><P>
+<pre>1  <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> <img src="500_b.gif"></sub></sup></pre><P>
+<pre>2  <B>while</B> <I>A</I> does not form a spanning tree</sub></sup></pre><P>
+<pre>3      <B>do</B> find an edge (<I>u, v</I>) that is safe for <I>A</I></sub></sup></pre><P>
+<pre>4         <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u, v</I>)}</sub></sup></pre><P>
+<pre>5  <B>return</B> <I>A</I></sub></sup></pre><P>
+Note that after line 1, the set <I>A</I> trivially satisfies the invariant that it is a subset of a minimum spanning tree. The loop in lines 2-4 maintains the invariant. When the set <I>A</I> is returned in line 5, therefore, it must be a minimum spanning tree. The tricky part is, of course, finding a safe edge in line 3. One must exist, since when line 3 is executed, the invariant dictates that there is a spanning tree <I>T</I> such that <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>T</I>, and if there is an edge (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>T</I> such that (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/notmem.gif"> <I>A</I>, then (<I>u</I>, <I>v</I>) is safe for <I>A</I>. <P>
+In the remainder of this section, we provide a rule (Theorem 24.1 ) for recognizing safe edges. The next section describes two algorithms that use this rule to find safe edges efficiently.<P>
+<a name="08b5_17a8"><a name="08b5_17a9"><a name="08b5_17aa"><a name="08b5_17ab">We first need some definitions. A <I><B>cut</I></B> (<I>S, V - S</I>) of an undirected graph <I>G</I> = (<I>V, E</I>) is a partition of <I>V</I>. Figure 24.2 illustrates this notion. We say that an edge (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E<B> crosses</I></B> the cut (<I>S, V - S</I>) if one of its endpoints is in <I>S</I> and the other is in <I>V - S</I>. We say that a cut <I><B>respects</I></B> the set <I>A</I> of edges if no edge in <I>A</I> crosses the cut. An edge is a <I><B>light edge</I> </B>crossing a cut if its weight is the minimum of any edge crossing the cut. Note that there can be more than one light edge crossing a cut in the case of ties. More generally, we say that an edge is a <I><B>light edge</I></B> satisfying a given property if its weight is the minimum of any edge satisfying the property.<P>
+<img src="501_a.gif"><P>
+<h4><a name="08b5_17ae">Figure 24.3 The proof of Theorem 24.1. The vertices in S are black, and the vertices in V - S are white. The edges in the minimum spanning tree T are shown, but the edges in the graph G are not. The edges in A are shaded, and (u, v) is a light edge crossing the cut (S, V - S). The edge (x, y) is an edge on the unique path p from u to v in T. A minimum spanning tree T' that contains (u, v) is formed by removing the edge (x, y) from T and adding the edge (u, v).<a name="08b5_17ae"></sub></sup></h4><P>
+Our rule for recognizing safe edges is given by the following theorem.<P>
+<a name="08b5_17af">Theorem 24.1<a name="08b5_17af"><P>
+Let <I>G</I> = (<I>V, E</I>) be a connected, undirected graph with a real-valued weight function <I>w</I> defined on <I>E</I>. Let <I>A</I> be a subset of <I>E</I> that is included in some minimum spanning tree for <I>G</I>, let (<I>S, V - S</I>) be any cut of <I>G</I> that respects <I>A</I>, and let (<I>u</I>, <I>v</I>) be a light edge crossing (<I>S, V - S</I>). Then, edge (<I>u</I>, <I>v</I>) is safe for <I>A</I>.<P>
+<I><B>Proof     </I></B>Let <I>T</I> be a minimum spanning tree that includes A, and assume that <I>T</I> does not contain the light edge (<I>u</I>, <I>v</I>), since if it does, we are done. We shall construct another minimum spanning tree <I>T</I><I>'</I> that includes <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u</I>, <I>v</I>)} by using a cut-and-paste technique, thereby showing that (<I>u</I>, <I>v</I>) is a safe edge for <I>A</I>.<P>
+The edge (<I>u</I>, <I>v</I>) forms a cycle with the edges on the path <I>p</I> from <I>u</I> to <I>v</I> in <I>T</I>, as illustrated in Figure 24.3. Since <I>u</I> and <I>v</I> are on opposite sides of the cut (<I>S, V - S</I>), there is at least one edge in <I>T</I> on the path <I>p</I> that also crosses the cut. Let (<I>x</I>, <I>y</I>) be any such edge. The edge (<I>x, y</I>) is not in <I>A</I>, because the cut respects <I>A</I>. Since (<I>x, y</I>) is on the unique path from <I>u</I> to <I>v</I> in <I>T</I>, removing (<I>x, y</I>) breaks <I>T</I> into two components. Adding (<I>u</I>, <I>v</I>) reconnects them to form a new spanning tree <I>T</I>'<I> = </I>T - <I>{(</I>x, y<I>)} <IMG SRC="../IMAGES/wideu.gif"> {(</I>u<I>, </I>v<I>)}.</I><P>
+We next show that <I>T</I>'<I> is a minimum spanning tree. Since (</I>u<I>, </I>v<I>) is a light edge crossing (</I>S, V - S<I>) and (</I>x, y<I>) also crosses this cut, </I>w<I>(</I>u<I>, </I>v<I>) <IMG SRC="../IMAGES/lteq12.gif"> </I>w<I>(</I>x, y<I>). Therefore,</I><P>
+<pre>w(T')  = w  (T) - w(x, y) + w(u, <I>v</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> w  (T) .</sub></sup></pre><P>
+But <I>T</I> is a minimum spanning tree, so that <I>w</I>(<I>T</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>w</I>(<I>T</I>'<I>); thus, </I>T<I>'</I> must be a minimum spanning tree also.<P>
+It remains to show that (<I>u</I>, <I>v</I>) is actually a safe edge for <I>A</I>. We have <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"><I></I> <I>T</I><I>'</I>, since <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>T</I> and (<I>x, y</I>) <IMG SRC="../IMAGES/notmem.gif"> <I>A</I>; thus, <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u</I>, <I>v</I>)} <IMG SRC="../IMAGES/rgtubar.gif"> <I>T</I><I>'</I>. Consequently, since <I>T</I><I>'</I> is a minimum spanning tree, (<I>u</I>, <I>v</I>) is safe for <I>A</I>.      <P>
+Theorem 24.1 gives us a better understanding of the workings of the <FONT FACE="Courier New" SIZE=2>GENERIC</FONT>-MST algorithm on a connected graph <I>G</I> = (<I>V, E</I>). As the algorithm proceeds, the set <I>A</I> is always acyclic; otherwise, a minimum spanning tree including <I>A</I> would contain a cycle, which is a contradiction. At any point in the execution of the algorithm, the graph <I>G<SUB>A</I></SUB> = (<I>V, A</I>) is a forest, and each of the connected components of <I>G<SUB>A</I></SUB> is a tree. (Some of the trees may contain just one vertex, as is the case, for example, when the algorithm begins: <I>A</I> is empty and the forest contains |<I>V| </I>trees, one for each vertex.) Moreover, any safe edge<I> </I>(<I>u</I>, <I>v</I>) for <I>A</I> connects distinct components of <I>G<SUB>A</I></SUB>, since <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u, v</I>)} must be acyclic.<P>
+The loop in lines 2-4 of <FONT FACE="Courier New" SIZE=2>GENERIC</FONT>-MST is executed |<I>V</I>| - 1 times as each of the |<I>V</I>| - 1 edges of a minimum spanning tree is successively determined. Initially, when <img src="502_a.gif">, there are |<I>V</I>| trees in <I>G<SUB>A</I></SUB> and each iteration reduces that number by 1. When the forest contains only a single tree, the algorithm terminates.<P>
+The two algorithms in Section 24.2 use the following corollary to Theorem 24.1.<P>
+<a name="08b5_17b0">Corollary 24.2<a name="08b5_17b0"><P>
+Let <I>G</I> = (<I>V, E</I>) be a connected, undirected graph with a real-valued weight function <I>w</I> defined on <I>E</I>. Let <I>A</I> be a subset of <I>E</I> that is included in some minimum spanning tree for <I>G</I>, and let <I>C</I> be a connected component (tree) in the forest <I>G<SUB>A</I></SUB> = (<I>V, A</I>). If (<I>u, v</I>) is a light edge connecting <I>C</I> to some other component in <I>G<SUB>A</I></SUB>, then (<I>u, v</I>) is safe for <I>A</I>.<P>
+<I><B>Proof     </I></B>The cut (<I>C, V - C</I>) respects <I>A</I>, and (<I>u, v</I>) is therefore a light edge for this cut.      <P>
+
+
+
+
+
+<h2><a name="08b6_0001">Exercises<a name="08b6_0001"></h2><P>
+<a name="08b6_0002">24.1-1<a name="08b6_0002"><P>
+Let (<I>u</I>, <I>v</I>) be a minimum-weight edge in a graph <I>G</I>. Show that (<I>u</I>, <I>v</I>) belongs to some minimum spanning tree of <I>G</I>.<P>
+<a name="08b6_0003">24.1-2<a name="08b6_0003"><P>
+Professor Sabatier conjectures the following converse of Theorem 24.1. Let <I>G</I> = (<I>V</I>, <I>E</I>) be a connected, undirected graph with a real-valued weight function <I>w</I> defined on <I>E</I>. Let <I>A</I> be a subset of <I>E</I> that is included in some minimum spanning tree for <I>G</I>, let (<I>S</I>, <I>V </I>- <I>S</I>) be any cut of <I>G</I> that respects <I>A</I>, and let (<I>u</I>, <I>v</I>) be a safe edge for <I>A</I> crossing (<I>S</I>, <I>V</I> - <I>S</I>). Then, (<I>u</I>, <I>v</I>) is a light edge for the cut. Show that the professor's conjecture is incorrect by giving a counterexample.<P>
+<a name="08b6_0004">24.1-3<a name="08b6_0004"><P>
+Show that if an edge (<I>u</I>, <I>v</I>) is contained in some minimum spanning tree, then it is a light edge crossing some cut of the graph.<P>
+<a name="08b6_0005">24.1-4<a name="08b6_0005"><P>
+Give a simple example of a graph such that the set of all edges that are light edges crossing some cut in the graph does not form a minimum spanning tree.<P>
+<a name="08b6_0006">24.1-5<a name="08b6_0006"><P>
+Let <I>e</I> be a maximum-weight edge on some cycle of <I>G</I> = (<I>V</I>, <I>E</I>). Prove that there is a minimum spanning tree of <I>G</I>' = (<I>V</I>, <I>E</I> - {<I>e</I>}) that is also a minimum spanning tree of <I>G</I>.<P>
+<a name="08b6_0007">24.1-6<a name="08b6_0007"><P>
+Show that a graph has a unique minimum spanning tree if, for every cut of the graph, there is a unique light edge crossing the cut. Show that the converse is not true by giving a counterexample.<P>
+<a name="08b6_0008">24.1-7<a name="08b6_0008"><P>
+Argue that if all of the edge weights of a graph are positive, then any subset of edges that connects all of the vertices and has minimum total weight must be a tree. Give an example to show that the same conclusion does not follow if we allow some weights to be nonpositive.<P>
+<a name="08b6_0009">24.1-8<a name="08b6_0009"><P>
+Let <I>T</I> be a minimum spanning tree of a graph <I>G</I>, and let <I>L</I> be the sorted list of the edge weights of <I>T</I>. Show that for any other minimum spanning tree <I>T</I>' of <I>G</I>, the list <I>L</I> is also the sorted list of edge weights of <I>T</I>'.<P>
+<a name="08b6_000a">24.1-9<a name="08b6_000a"><P>
+Let <I>T</I> be a minimum spanning tree of a graph <I>G</I> = (<I>V</I>, <I>E</I>), and let <I>V</I>' be a subset of <I>V</I>. Let <I>T</I>' be the subgraph of <I>T</I> induced by <I>V</I>', and let <I>G</I>' be the subgraph of <I>G</I> induced by <I>V</I>'. Show that if <I>T</I>' is connected, the <I>T</I>' is a minimum spanning tree of <I>G</I>'<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08b7_0001">24.2 The algorithms of Kruskal and Prim<a name="08b7_0001"></h1><P>
+The two minimum-spanning-tree algorithms described in this section are elaborations of the generic algorithm. They each use a specific rule to determine a safe edge in line 3 of <FONT FACE="Courier New" SIZE=2>GENERIC</FONT>-MST. In Kruskal's algorithm, the set <I>A</I> is a forest. The safe edge added to <I>A</I> is always a least-weight edge in the graph that connects two distinct components. In Prim's algorithm, the set <I>A</I> forms a single tree. The safe edge added to <I>A</I> is always a least-weighted edge connecting the tree to a vertex not in the tree.<P>
+
+
+
+
+
+<h2>Kruskal's Al gorithm</h2><P>
+<a name="08b8_17ac"><a name="08b8_17ad"><a name="08b8_17ae"><a name="08b8_17af">Kruskal's algorithm is based directly on the generic minimum-spanning-tree algorithm given in Section 24.1. It finds a safe edge to add to the growing forest by finding, of all the edges that connect any two trees in the  forest, an edge (<I>u</I>, <I>v</I>) of least weight. Let <I>C</I><SUB>1</SUB> and <I>C</I><SUB>2</SUB> denote the two trees that are connected by (<I>u</I>, <I>v</I>). Since (<I>u</I>,<I>v</I>) must be a light edge connecting <I>C</I><SUB>1</SUB> to some other tree, Corollary 24.2 implies that (<I>u</I>, <I>v</I>) is a safe edge for <I>C</I><SUB>1</SUB>. Kruskal's algorithm is a greedy algorithm, because at each step it adds to the forest an edge of least possible weight.<P>
+Our implementation of Kruskal's algorithm is like the algorithm to compute connected components from Section 22.1. It uses a disjoint-set data structure to maintain several disjoint sets of elements. Each set contains the vertices in a tree of the current forest. The operation <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>u</I>) returns a representative element from the set that contains <I>u</I>. Thus, we can determine whether two vertices <I>u</I> and <I>v</I> belong to the same tree by testing whether <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>u</I>) equals <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>v</I>). The combining of trees is accomplished by the <FONT FACE="Courier New" SIZE=2>UNION</FONT> procedure.<P>
+<pre><a name="08b8_17b0">MST-KRUSKAL(<I>G</I>, <I>w</I>)</sub></sup></pre><P>
+<pre>1  <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> <img src="505_a.gif"></sub></sup></pre><P>
+<pre>2  <B>for</B> each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>3      <B>do</B> MAKE-SET (<I>v</I>)</sub></sup></pre><P>
+<pre>4  sort the edges of <I>E</I> by nondecreasing weight <I>w</I></sub></sup></pre><P>
+<pre>5  <B>for</B> each edge (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>, in order by nondecreasing weight</sub></sup></pre><P>
+<pre>6      <B>do</B> if FIND-SET(<I>u</I>) <IMG SRC="../IMAGES/noteq.gif"> FIND-SET(<I>v</I>)</sub></sup></pre><P>
+<pre>7            <B>then</B> <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {(<I>u</I>, <I>v</I>)}</sub></sup></pre><P>
+<pre>8                 UNION (<I>u</I>, <I>v</I>)</sub></sup></pre><P>
+<pre>9  <B>return</B> <I>A</I></sub></sup></pre><P>
+Kruskal's algorithm works as shown in Figure 24.4. Lines 1-3 initialize the set <I>A</I> to the empty set and create |<I>V</I>| trees, one containing each vertex. The edges in <I>E</I> are sorted into order by nondecreasing weight in line 4. The <B>for</B> loop in lines 5-8 checks, for each edge (<I>u</I>, <I>v</I>), whether the endpoints <I>u </I>and <I>v</I> belong to the same tree. If they do, then the edge (<I>u</I>, <I>v</I>) cannot be added to the forest without creating a cycle, and the edge is discarded. Otherwise, the two vertices belong to different trees, and the edge (<I>u</I>, <I>v</I>) is added to <I>A</I> in line 7, and the vertices in the two trees are merged in line 8.<P>
+The running time of Kruskal's algorithm for a graph <I>G</I> = (<I>V</I>, <I>E</I>) depends on the implementation of the disjoint-set data structure. We shall assume the disjoint-set-forest implementation of Section 22.3 with the union-by-rank and path-compression heuristics, since it is the asymptotically fastest implementation known. Initialization takes time <I>O</I>(<I>V</I>), and the time to sort the edges in line 4 is <I>O</I>(<I>E</I> lg <I>E</I>). There are <I>O</I>(<I>E</I>) operations on the disjoint-set forest, which in total take <I>O</I>(<I>E</I> <IMG SRC="../IMAGES/alpha12.gif"> (<I>E</I>, <I>V</I>)) time, where <IMG SRC="../IMAGES/alpha12.gif"> is the functional inverse of Ackermann's function defined in Section 22.4. Since <IMG SRC="../IMAGES/alpha12.gif">(<I>E</I>, <I>V</I>) = <I>O</I>(lg <I>E</I>), the total running time of Kruskal's algorithm is <I>O</I>(<I>E</I> lg <I>E</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Prim's algorithm</h2><P>
+<a name="08b9_17b1"><a name="08b9_17b2"><a name="08b9_17b3"><a name="08b9_17b4"><a name="08b9_17b5">Like Kruskal's algorithm, Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm is a special case of the generic minimum-spanning-tree algorithm from Section 24.1. Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm operates much like Dijkstra<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm for finding shortest paths in a graph. (See Section 25.2.) Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm has the property that the edges in the set <I>A</I> always form a single tree. As is illustrated in Figure 24.5, the tree starts from an arbitrary root vertex <I>r</I> and grows until the tree spans all the vertices in <I>V</I>. At each step, a light edge connecting a vertex in <I>A</I> to a vertex in <I>V</I> - <I>A</I> is added to the tree. By Corollary 24.2, this rule adds only edges that are safe for <I>A</I>; therefore, when the algorithm terminates, the edges in <I>A</I> form a minimum spanning tree. This strategy is &quot;greedy&quot; since the tree is augmented at each step with an edge that contributes the minimum amount possible to the tree<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s weight.<P>
+<img src="506_a.gif"><P>
+<h4><a name="08b9_17bd">Figure 24.4 The execution of Kruskal's algorithm on the graph from Figure 24.1. Shaded edges belong to the forest A being grown. The edges are considered by the algorithm in sorted order by weight. An arrow points to the edge under consideration at each step of the algorithm. If the edge joins two distinct trees in the forest, it is added to the forest, thereby merging the two trees.<a name="08b9_17bd"></sub></sup></h4><P>
+<img src="507_a.gif"><P>
+<a name="08b9_17b6">The key to implementing Prim's algorithm efficiently is to make it easy to select a new edge to be added to the tree formed by the edges in <I>A</I>. In the pseudocode below, the connected graph <I>G</I> and the root <I>r</I> of the minimum spanning tree to be grown are inputs to the algorithm. During execution of the algorithm, all vertices that are <I>not</I> in the tree reside in a priority queue <I>Q</I> based on a <I>key</I> field. For each vertex <I>v</I>, <I>key</I>[<I>v</I>] is the minimum weight of any edge connecting <I>v</I> to a vertex in the tree; by convention, <I>key</I>[<I>v</I>] = <IMG SRC="../IMAGES/infin.gif"> if there is no such edge. The field <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] names the &quot;parent&quot; of <I>v</I> in the tree. During the algorithm, the set <I>A</I> from <FONT FACE="Courier New" SIZE=2>GENERIC</FONT>-MST is kept implicitly as<P>
+<pre><I>A</I> = {(<I>v</I>, <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>]) : <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> - {<I>r</I>} - <I>Q</I>} .</sub></sup></pre><P>
+When the algorithm terminates, the priority queue <I>Q</I> is empty; the minimum spanning tree <I>A</I> for <I>G</I> is thus<P>
+<pre><I>A</I> = {(<I>v</I>, <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>]) : <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> - {<I>r</I>}} .</sub></sup></pre><P>
+<img src="508_a.gif"><P>
+<h4><a name="08b9_17be">Figure 24.5 The execution of Prim's algorithm on the graph from Figure 24.1. The root vertex is a. Shaded edges are in the tree being grown, and the vertices in the tree are shown in black. At each step of the algorithm, the vertices in the tree determine a cut of the graph, and a light edge crossing the cut is added to the tree. In the second step, for example, the algorithm has a choice of adding either edge (b, c) or edge (a, h) to the tree since both are light edges crossing the cut.<a name="08b9_17be"></sub></sup></h4><P>
+<pre><a name="08b9_17b7">MST-PRIM(<I>G, w, r</I>)</sub></sup></pre><P>
+<pre>1  <I>Q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>2  <B>for</B> each <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Q</I></sub></sup></pre><P>
+<pre>3      <B>do</B> <I>key</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>4  <I>key</I> [<I>r</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5  <IMG SRC="../IMAGES/piuc.gif"><I>[</I>r<I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</I></sub></sup></pre><P>
+<pre>6  <B>while</B> <I>Q </I><IMG SRC="../IMAGES/noteq.gif"> <img src="509_a.gif"></sub></sup></pre><P>
+<pre>7      <B>do</B> <I>u</I> <IMG SRC="../IMAGES/arrlt12.gif"> EXTRACT-MIN(<I>Q</I>)</sub></sup></pre><P>
+<pre>8         <B>for</B> each <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Adj</I>[<I>u</I>]</sub></sup></pre><P>
+<pre>9             <B>do</B> <B>if</B> <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Q</I> and <I>w </I>(<I>u</I>, <I>v</I>) &lt; <I>key</I>[<I>v</I>]</sub></sup></pre><P>
+<pre>10                  <B>then</B> <IMG SRC="../IMAGES/piuc.gif"><I>[</I>v<I>] <IMG SRC="../IMAGES/arrlt12.gif"> </I>u</sub></sup></pre><P>
+<pre>11                       <I>key</I>[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I>(<I>u</I>, <I>v</I>)</sub></sup></pre><P>
+<a name="08b9_17b8">Prim's algorithm works as shown in Figure 24.5. Lines 1-4 initialize the priority queue <I>Q</I> to contain all the vertices and set the key of each vertex to <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, except for the root <I>r</I>, whose key is set to 0. Line 5 initializes <IMG SRC="../IMAGES/piuc.gif">[<I>r</I>] to <FONT FACE="Courier New" SIZE=2>NIL</FONT>, since the root <I>r</I> has no parent. Throughout the algorithm, the set <I>V - Q</I> contains the vertices in the tree being grown. Line 7 identifies a vertex <I>u </I><IMG SRC="../IMAGES/memof12.gif"><I> Q</I> incident on a light edge crossing the cut (<I>V - Q, Q</I>) (with the exception of the first iteration, in which <I>u</I> = <I>r</I> due to line 4). Removing <I>u </I>from the set <I>Q</I> adds it to the set <I>V - Q</I> of vertices in the tree. Lines 8-11 update the <I>key</I> and <IMG SRC="../IMAGES/piuc.gif"> fields of every vertex <I>v</I> adjacent to <I>u</I> but not in the tree. The updating maintains the invariants that <I>key</I>[<I>v</I>] = <I>w</I>(<I>v</I>,<I> </I><IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>v</I>]) and that (<I>v</I>,<I> </I><IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>v</I>]) is a light edge connecting <I>v</I> to some vertex in the tree.<P>
+<a name="08b9_17b9"><a name="08b9_17ba">The performance of Prim's algorithm depends on how we implement the priority queue <I>Q</I>. If <I>Q</I> is implemented as a binary heap (see Chapter 7), we can use the <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure to perform the initialization in lines 1-4 in <I>O</I>(<I>V</I>) time. The loop is executed |<I>V|</I> times, and since each <FONT FACE="Courier New" SIZE=2>EXTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MIN</FONT> operation takes <I>O</I>(lg <I>V</I>) time, the total time for all calls to <FONT FACE="Courier New" SIZE=2>EXTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MIN</FONT> is <I>O</I>(<I>V</I> 1g <I>V</I>). The <B>for</B> loop in lines 8-11 is executed <I>O</I>(<I>E</I>) times altogether, since the sum of the lengths of all adjacency lists is 2 |<I>E</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT>. Within the <B>for</B> loop, the test for membership in <I>Q</I> in line 9 can be implemented in constant time by keeping a bit for each vertex that tells whether or not it is in <I>Q</I>, and updating the bit when the vertex is removed from <I>Q</I>. The assignment in line 11 involves an implicit <FONT FACE="Courier New" SIZE=2>DECREASE-</FONT><FONT FACE="Courier New" SIZE=2>KEY</FONT> operation on the heap, which can be implemented in a binary heap in <I>O</I>(lg <I>V</I>) time. Thus, the total time for Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm is <I>O</I>(<I>V </I>1g <I>V </I>+ <I>E </I>1g <I>V</I>) = <I>O</I>(<I>E </I>lg <I>V</I>), which is asymptotically the same as for our implementation of Kruskal<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm.<P>
+<a name="08b9_17bb"><a name="08b9_17bc">The asymptotic running time of Prim's algorithm can be improved, however, by using Fibonacci heaps. Chapter 21 shows that if |<I>V</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT> elements are organized into a Fibonacci heap, we can perform an <FONT FACE="Courier New" SIZE=2>EXTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MIN </FONT>operation in <I>O</I>(lg <I>V</I>) amortized time and a <FONT FACE="Courier New" SIZE=2>DECREASE-</FONT><FONT FACE="Courier New" SIZE=2>KEY</FONT> operation (to implement line 11) in <I>O</I>(1) amortized time. Therefore, if we use a Fibonacci heap to implement the priority queue <I>Q</I>, the running time of Prim's algorithm improves to <I>O</I>(<I>E + V</I> 1g <I>V</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08ba_17c2">Exercises<a name="08ba_17c2"></h2><P>
+<a name="08ba_17c3">24.2-1<a name="08ba_17c3"><P>
+<a name="08ba_17bd"><a name="08ba_17be">Kruskal's algorithm can return different spanning trees for the same input graph <I>G</I>, depending on how ties are broken when the edges are sorted into order. Show that for each minimum spanning tree <I>T</I> of <I>G</I>, there is a way to sort the edges of <I>G</I> in Kruskal<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm so that the algorithm returns <I>T</I>.<P>
+<a name="08ba_17c4">24.2-2<a name="08ba_17c4"><P>
+<a name="08ba_17bf">Suppose that the graph <I>G</I> = (<I>V, E</I>) is represented as an adjacency matrix. Give a simple implementation of Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm for this case that runs in <I>O</I>(<I>V</I><SUP>2</SUP>) time.<P>
+<a name="08ba_17c5">24.2-3<a name="08ba_17c5"><P>
+Is the Fibonacci-heap implementation of Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm asymptotically faster than the binary-heap implementation for a sparse graph <I>G</I> = (<I>V, E</I>), where |<I>E</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT> = <IMG SRC="../IMAGES/bound.gif">(<I>V</I>)? What about for a dense graph, where <FONT FACE="CG Times (W1)" SIZE=2>|<I>E| = </I><IMG SRC="../IMAGES/bound.gif"></FONT>(<I>V</I><SUP>2</SUP>)? How must |<I>E</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT> and <FONT FACE="CG Times (W1)" SIZE=2>|<I>V</I>|</FONT> be related for the Fibonacci-heap implementation to be asymptotically faster than the binary-heap implementation?<P>
+<a name="08ba_17c6">24.2-4<a name="08ba_17c6"><P>
+<a name="08ba_17c0">Suppose that all edge weights in a graph are integers in the range from 1 to |<I>V</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT>. How fast can you make Kruskal<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm run? What if the edge weights are integers in the range from 1 to <I>W</I> for some constant <I>W</I>?<P>
+<a name="08ba_17c7">24.2-5<a name="08ba_17c7"><P>
+<a name="08ba_17c1">Suppose that all edge weights in a graph are integers in the range from 1 to |<I>V</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT>. How fast can you make Prim's algorithm run? What if the edge weights are integers in the range from 1 to <I>W</I> for some constant <I>W</I>?<P>
+<a name="08ba_17c8">24.2-6<a name="08ba_17c8"><P>
+Describe an efficient algorithm that, given an undirected graph <I>G</I>, determines a spanning tree of <I>G</I> whose largest edge weight is minimum over all spanning trees of <I>G</I>.<P>
+<a name="08ba_17c9">24.2-7<a name="08ba_17c9"><P>
+Suppose that the edge weights in a graph are uniformly distributed over the half-open interval [0, 1). Which algorithm, Kruskal<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s or Prim<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s, can you make run faster?<P>
+<a name="08ba_17ca">24.2-8<a name="08ba_17ca"><P>
+Suppose that a graph<I> G</I> has a minimum spanning tree already computed. How quickly can the minimum spanning tree be updated if a new vertex and incident edges are added to <I>G</I>?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08bb_17c6">Problems<a name="08bb_17c6"></h1><P>
+<a name="08bb_17c7">24-1 Second-best minimum spanning tree<a name="08bb_17c7"><P>
+<a name="08bb_17c2"><a name="08bb_17c3">Let <I>G = </I>(<I>V, E</I>) be an undirected, connected graph with weight function <I>w </I>: <I>E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B>, and suppose that |<I>E| </I><IMG SRC="../IMAGES/gteq.gif"> |<I>V| .</I><P>
+<I><B>a.</I></B>     Let <I>T</I> be a minimum spanning tree of <I>G</I>. Prove that there exist edges (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"> T<I> and (</I>x, y<I>)</I> <I><IMG SRC="../IMAGES/notmem.gif"></I> T <I>such that</I> T -<I>{(</I>u, v<I>)}<IMG SRC="../IMAGES/wideu.gif">{(</I>x, y<I>)} is a second-best minimum spanning tree of </I>G<I>.</I><P>
+<I><B>b.</I></B>     Let <I>T</I> be a spanning tree of <I>G</I> and, for any two vertices <I>u, v </I><IMG SRC="../IMAGES/memof12.gif"> V<I>, let </I>max<I>[</I>u, v<I>] be an edge of maximum weight on the unique path between </I>u <I>and </I>v<I> in </I>T<I>. Describe an </I>O<I>(</I>V<I><SUP><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUP>)-time algorithm that, given </I>T<I>, computes </I>max<I>[</I>u, v<I>] for all </I>u, v <I><IMG SRC="../IMAGES/memof12.gif"></I> V<I>.</I><P>
+<I><B>c.</I></B>     Give an efficient algorithm to compute the second-best minimum spanning tree of <I>G</I>.<P>
+<a name="08bb_17c8">24-2 Minimum spanning tree in sparse graphs<a name="08bb_17c8"><P>
+<a name="08bb_17c4">For a very sparse connected graph<I> G</I> = (<I>V, E</I>), we can improve upon the <I>O</I>(<I>E </I>+ <I>V </I>lg <I>V</I>) running time of Prim's algorithm with Fibonacci heaps by "preprocessing" <I>G</I> to decrease the number of vertices before running Prim's algorithm. The following procedure takes as input a weighted graph <I>G</I> and returns a &quot;contracted&quot; version of <I>G</I>, having added some edges to the minimum spanning tree <I>T</I> under construction. Initially, for each edge (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"><I> E</I>, we assume that <I>orig</I>[<I>u, v</I>] = (<I>u, v</I>) and that <I>w</I>[<I>u, v</I>] is the weight of the edge.<P>
+<pre><a name="08bb_17c5">MST-REDUCE(<I>G, T</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> each <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>2      <B>do</B> <I>mark</I>[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> FALSE</sub></sup></pre><P>
+<pre>3         MAKE-SET(<I>v</I>)</sub></sup></pre><P>
+<pre>4  <B>for</B> each <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>5      <B>do if</B> <I>mark</I>[<I>u</I>] = FALSE</sub></sup></pre><P>
+<pre>6            <B>then</B> choose <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Adj</I>[<I>u</I>] such that <I>w</I>[<I>u, v</I>] is minimized</sub></sup></pre><P>
+<pre>7                 UNION(<I>u,v</I>)</sub></sup></pre><P>
+<pre>8                 <I>T</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>T</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>orig</I>[<I>u, v</I>]}</sub></sup></pre><P>
+<pre>9                 <I>mark</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>mark</I>[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> TRUE</sub></sup></pre><P>
+<pre>10  <I>V</I>[<I>G</I>'<I>] <IMG SRC="../IMAGES/arrlt12.gif"> {FIND-SET(</I>v<I>) : </I>v<I> <IMG SRC="../IMAGES/memof12.gif"> </I>V<I>[</I>G<I>]}</I></sub></sup></pre><P>
+<pre>11  <I>E</I>[<I>G</I>'<I>] <IMG SRC="../IMAGES/arrlt12.gif"> <img src="512_a.gif"></I></sub></sup></pre><P>
+<pre>12  <B>for</B> each (<I>x, y</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>13      <B>do</B> <I>u</I> <IMG SRC="../IMAGES/arrlt12.gif"> FIND-SET(<I>x</I>)</sub></sup></pre><P>
+<pre>14         <I>v</I> <IMG SRC="../IMAGES/arrlt12.gif"> FIND-SET(<I>y</I>)</sub></sup></pre><P>
+<pre>15         <B>if</B> (<I>u, v</I>) <IMG SRC="../IMAGES/notmem.gif"> <I>E</I>[<I>G</I>']</sub></sup></pre><P>
+<pre>16            <B>then</B> <I>E</I>[<I>G</I>'] <IMG SRC="../IMAGES/arrlt12.gif"> <I>E</I>[<I>G</I>'] <IMG SRC="../IMAGES/wideu.gif"> {(<I>u, v</I>)}</sub></sup></pre><P>
+<pre>17                 <I>orig</I>[<I>u, v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>orig</I>[<I>x, y</I>]</sub></sup></pre><P>
+<pre>18                 <I>w</I>[<I>u, v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I>[<I>x, y</I>]</sub></sup></pre><P>
+<pre>19            <B>else if</B> <I>w</I>[<I>x, y</I>] &lt; <I>w</I>[<I>u, v</I>]</sub></sup></pre><P>
+<pre>20                    <B>then</B> <I>orig</I>[<I>u, v</I>]<IMG SRC="../IMAGES/arrlt12.gif"> <I>orig</I>[<I>x, y</I>]</sub></sup></pre><P>
+<pre>21                         <I>w</I>[<I>u, v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I>[<I>x, y</I>]</sub></sup></pre><P>
+<pre>22  construct adjacency lists <I>Adj</I> for <I>G</I>'</sub></sup></pre><P>
+<pre>23  <B>return</B> <I>G</I>' and <I>T</I></sub></sup></pre><P>
+<I><B>a.     </I></B>Let <I>T</I> be the set of edges returned by MST-<FONT FACE="Courier New" SIZE=2>REDUCE</FONT>, and let <I>T</I>' be a minimum spanning tree of the graph <I>G</I>' returned by the procedure. Prove that <I>T </I><IMG SRC="../IMAGES/wideu.gif"> <I>{</I>orig<I>[</I>x, y<I>] </I>: <I>(</I>x, y<I>)</I> <I><IMG SRC="../IMAGES/memof12.gif"> T</I>'} is a minimum spanning tree of <I>G</I>.<P>
+<I><B>b.</I></B>     Argue that |<I>V</I>[<I>G</I>']|<IMG SRC="../IMAGES/lteq12.gif"> |<I>V| </I>/2.<P>
+<I><B>c.</I></B>     Show how to implement MST<B>-</B><FONT FACE="Courier New" SIZE=2>REDUCE</FONT> so that it runs in <I>O</I>(<I>E</I>) time. (<I>Hint</I>: Use simple data structures.)<P>
+<I><B>d.</I></B>     Suppose that we run <I>k</I> phases of MST-R<FONT FACE="Courier New" SIZE=2>EDUCE<I>, </I></FONT>using the graph produced by one phase as input to the next and accumulating edges in<I> T</I>. Argue that the overall running time of the <I>k</I> phases is <I>O</I>(<I>kE</I>).<P>
+<I><B>e.</I></B>     Suppose that after running <I>k</I> phases of MST-<FONT FACE="Courier New" SIZE=2>REDUCE</FONT>, we run Prim's algorithm on the graph returned by the last phase. Show how to pick <I>k </I>so that the overall running time is <I>O</I>(<I>E </I>lg lg <I>V</I>). Argue that your choice of <I>k</I> minimizes the overall asymptotic running time.<P>
+<I><B>f.</I></B><I>     </I>For what values of |<I>E| (in terms of |</I>V|) does Prim's algorithm with preprocessing asymptotically beat Prim's algorithm without preprocessing?<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Tarjan [188] surveys the minimum-spanning-tree problem and provides excellent advanced material. A history of the minimum-spanning-tree problem has been written by Graham and Hell [92].<P>
+Tarjan attributes the first minimum-spanning-tree algorithm to a 1926 paper by O. Boruvka. Kruskal's algorithm was reported by Kruskal [131] in 1956. The algorithm commonly known as Prim's algorithm was indeed invented by Prim [163], but it was also invented earlier by V. Jarn&iacute;k in 1930.<P>
+The reason why greedy algorithms are effective at finding minimum spanning trees is that the set of forests of a graph forms a graphic matroid. (See Section 17.4.) <P>
+The fastest minimum-spanning-tree algorithm to date for the case in which |E| = <IMG SRC="../IMAGES/omega12.gif">(<I>V </I>lg <I>V</I>) is Prim's algorithm implemented with Fibonacci heaps. For sparser graphs, Fredman and Tarjan [75] give an algorithm that runs in <I>O</I>(<I>E</I> <IMG SRC="../IMAGES/beta14.gif"><I></I>(|<I>E|, |</I>V|)) time, where <IMG SRC="../IMAGES/beta14.gif"><I></I>(|<I>E|, |</I>V|) = min{<I>i</I>: lg<SUP>(<I>i</I>)</SUP> |<I>V|</I><IMG SRC="../IMAGES/lteq12.gif"> |<I>E|</I> / |<I>V|</I>}. The fact that |<I>E| <IMG SRC="../IMAGES/gteq.gif"> |</I>V| implies that their algorithm runs in time <I>O</I>(<I>E </I>lg<FONT FACE="Courier New" SIZE=2>*</FONT> <I>V</I>).<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap25.htm">Chapter 25</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

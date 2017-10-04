@@ -1,0 +1,119 @@
+/*
+TASK:cross
+LANG:C++
+*/
+#include<iostream>
+using namespace std;
+int n,m;
+int a[256][256];
+int p[256],b[256];
+int x[4096][256],y[4096][256],bx,by;
+int pe,g,s,in;
+void dfs(int v,int w[256],int z)
+{
+ //cout<<v<<endl;    
+ int i,j;   
+ p[v]=1;
+ w[z]=v;
+// for(i=1;i<=n;i++)
+ // cout<<w[i];
+ //cout<<endl; 
+
+ if(v==s)
+ {
+  bx++;       
+  for(i=1;i<=z;i++)
+   x[bx][i]=w[i];
+  x[bx][0]=z;           
+ }
+ else
+ for(i=1;i<=b[v];i++)
+  if(p[a[v][i]]==0)
+   dfs(a[v][i],w,z+1);
+ p[v]=0;
+ return;   
+}
+
+void dfs2(int v,int w[256],int z)
+{
+ //cout<<v<<endl;    
+ int i,j;   
+ p[v]=1;
+ w[z]=v;
+// for(i=1;i<=n;i++)
+ // cout<<w[i];
+ //cout<<endl; 
+ if(v==in)
+ {
+  by++;       
+  for(i=1;i<=z;i++)
+   y[by][i]=w[i];
+  y[by][0]=z;           
+ }
+ else
+ for(i=1;i<=b[v];i++)
+  if(p[a[v][i]]==0)
+   dfs2(a[v][i],w,z+1);
+ p[v]=0;
+ return;   
+}
+
+int main()
+{
+int w[256];    
+int i,j,k;
+cin>>n>>m;
+for(i=1;i<=m;i++)
+{
+ scanf("%d%d",&j,&k);
+ j++;
+ k++;
+ a[j][b[j]+1]=k;
+ b[j]++;
+ a[k][b[k]+1]=j;
+ b[k]++;                
+}
+cin>>pe>>s>>g>>in;
+pe++;
+s++;
+g++;
+in++;
+for(i=1;i<=n;i++)
+ w[i]=0;
+bx=0;
+dfs(pe,w,1);
+for(i=1;i<=n;i++)
+{ w[i]=0; p[i]=0; }
+by=0;
+dfs2(g,w,1);
+/*
+cout<<bx<<endl;
+for(i=1;i<=bx;i++)
+ {for(j=1;j<=x[i][0];j++)
+  cout<<x[i][j]<<' ';
+ cout<<endl;} 
+cout<<by<<endl;
+for(i=1;i<=by;i++)
+ {for(j=1;j<=y[i][0];j++)
+  cout<<y[i][j]<<' ';
+ cout<<endl;}
+*/ 
+int br=0,t; 
+for(k=1;k<=n;k++)
+ for(i=1;i<=n;i++)
+ {
+  t=0;
+  for(j=1;j<=bx;j++)
+   if(x[j][i]==k)
+   { t++; break; }
+  for(j=1;j<=by;j++)
+   if(y[j][i]==k)
+   { t++; break; }
+  if(t==2)
+  { br++; break; }                    
+ }                
+ cout<<br<<endl;
+//system("pause");
+return 0;
+}
+

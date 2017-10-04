@@ -1,0 +1,26 @@
+graph G {
+  ordering=out
+  label="Премахване на листото 10: DOG"
+
+  comment="leaves"
+  node [shape=box];
+  2 [label="2: MAN"];
+  5 [label="5: PENGUIN"];
+  7 [label="7: FROG"];
+  9 [label="9: FLY"];
+
+  comment="internal vertices"
+  node [shape=ellipse];
+ 
+  { rank=min
+    4
+    6 }
+
+  4 -- 2;
+  4 -- 5;
+  4 -- 6;
+  6 -- 7;
+  6 -- 8;
+  8 -- 9;
+}
+

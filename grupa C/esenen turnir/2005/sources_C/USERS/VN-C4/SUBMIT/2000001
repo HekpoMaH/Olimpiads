@@ -1,0 +1,46 @@
+/*
+TASK:SCHOOL
+LANG:C
+*/
+
+
+#include<stdio.h>
+#define MAX 500
+
+ int s[MAX+1][MAX+1]={0},used[MAX+1]={0},br[MAX+1]={0},rez=0,n,m;
+
+ void DFS(int v)
+   {
+     int i;
+     used[v]=1;
+    for(i=0;i<br[v];i++)
+     {
+      if(s[v][i] && !used[s[v][i]]) { DFS(s[v][i]); }
+     }
+   }
+
+
+
+int main()
+{
+ int tmp1,tmp2,i;
+
+ scanf("%d%d",&n,&m);
+ for(i=1;i<=m;i++)
+  {
+   scanf("%d%d",&tmp1,&tmp2);
+   s[tmp1][br[tmp1]]=tmp2; s[tmp2][br[tmp2]]=tmp1;
+   br[tmp1]++; br[tmp2]++;
+  }
+
+ for(i=1;i<=n;i++)
+  {
+   if(!used[i]) { DFS(i); rez++; }
+  }
+
+  printf("%d\n",rez);
+
+
+return 0;
+}
+

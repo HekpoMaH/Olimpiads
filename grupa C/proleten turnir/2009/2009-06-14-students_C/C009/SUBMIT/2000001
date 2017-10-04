@@ -1,0 +1,71 @@
+#include <iostream>
+using namespace std;
+int main()
+{
+  int a,N,L,rec;
+  int sb=0;
+  int tkzk=0;
+  int tc=0;
+  cin >> N >> L;
+  int P[N];
+  int R[N];
+  int Q[N];
+  int F[N];
+  for (int i=0;i<N;i++) cin >> P[i] >> R[i] >> Q[i] >> F[i];
+  for (int i=0;i<N;i++) sb=sb+F[i];
+  if (sb<L) {cout << "-1" << "\n";return 0;}
+  else
+  {
+    rec=Q[0];
+    int rec2=0;
+    int b=0;
+    while (tkzk<L)
+    {// Tarsene za nai-evtin magazin
+      if (b==0) for (a=0;a<N;a++) if (rec>Q[a]) rec2=a;
+      // -----
+      if ((L-tkzk)<=F[rec2] && (L-tkzk)>=R[rec2])
+      {
+        tc=tc+((L-tkzk)*Q[a]);
+        cout << tc << "\n";
+        return 0;
+      }
+      else if ((L-tkzk)<=F[rec2] && (L-tkzk)<R[rec2])
+      {
+        rec=P[a];
+        for (a=0;a<N;a++) if (rec>P[a] && (L-tkzk)<=F[a]) rec2=a;
+        if ((L-tkzk)<=F[rec2]) {tc=tc+((L-tkzk)*P[rec2]);cout << tc << "\n";return 0;}
+        else {tkzk=tkzk+((L-tkzk)-((L-tkzk)-F[rec2]));tc=tc+(((L-tkzk)-((L-tkzk)-F[rec2]))*P[rec2]);}
+      }
+      else if ((L-tkzk)>F[rec2]) {tkzk=tkzk+((L-tkzk)-((L-tkzk)-F[rec2]));tc=tc+(((L-tkzk)-((L-tkzk)-F[rec2]))*Q[rec2]);}
+      if (b==0) b++;
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

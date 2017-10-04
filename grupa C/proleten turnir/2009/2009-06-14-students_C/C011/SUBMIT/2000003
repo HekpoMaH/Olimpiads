@@ -1,0 +1,18 @@
+#include<iostream>
+using namespace std;
+long long n,l,p,r,q,f,i,sumkabel;
+int main()
+{
+ scanf("%d%d",&n,&l);
+ for(i=1;i<=n;i++)
+ { 
+  scanf("%d%d%d%d",&p,&r,&q,&f); 
+  sumkabel+=f;
+ }
+ if(sumkabel<l) printf("-1\n");       
+// system("pause");
+ return 0;
+}
+
+ 
+ 

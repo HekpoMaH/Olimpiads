@@ -1,0 +1,55 @@
+#include<iostream>
+using namespace std;
+int a[201][201];
+int m,n;
+int g[500],p[500];
+int used[201],r[500];
+int krasto[300];
+int kp=0;
+int dfsp(int i)
+{
+    used[i]=1;
+    p[kp++]=i;
+    for(int j=0;j<m;j++)
+    if(a[i][j] && !used[j])dfsp(j);
+}
+int kg=0;
+int dfsg(int i)
+{
+    used[i]=1;
+    g[kg++]=i;
+    for(int j=0;j<m;j++)
+    if(a[i][j] && !used[j])dfsg(j);
+}
+int kr=0;
+int dfs(int i)
+{
+    used[i]=1;
+    r[kr++]=i;
+    for(int j=0;j<m;j++)
+    if(a[i][j] && !used[j])dfsg(j);
+}
+int main()
+{
+    cin>>m>>n;
+    for(int i=0;i<n;i++)
+    {int x,y;
+    cin>>x>>y;
+    a[x][y]=1;
+    a[y][x]=1;
+    }
+    int home_g,home_p,skola,stadi;
+    cin>>home_p>>stadi>>home_g>>skola;
+    dfsp(home_p);
+    for(int i=0;i<m;i++)used[i]=0;
+    dfsg(home_g);
+    krasto[home_p]=1;
+    krasto[home_g]=1;
+    for(int i=0;i<m;i++)used[i]=0;
+    for(int i=1;i<m;i++)
+    for(int j=1;j<m;j++)if(p[i]==g[j] && a[home_p][i] && a[home_g][j])krasto[p[i]]=1;
+    int br=0;
+    for(int i=0;i<m;i++)if(krasto[i]==1)br++;
+    cout<<br-2<<endl;             
+    return 0;
+}

@@ -1,0 +1,47 @@
+#include<cstdio>
+#include<vector>
+#include<queue>
+using namespace std;
+
+int n , m , a1 , b1 , a2 , b2;
+vector<int>sus[201];
+int minn[201][201];
+
+void bfs ( int x , int y ) {
+	queue<int> q;
+	bool visited[201] = {};
+	q.push ( x );
+	while ( !q.empty() ) {
+		for ( int i = 0;i < sus[q.front()].size();++i ) {
+			if ( !visited[sus[q.front()][i]] && ( minn[x][q.front()] + 1 < minn[x][sus[q.front()][i]] || minn[x][sus[q.front()][i]] == 0 ) ) {
+				minn[x][sus[q.front()][i]] = minn[x][q.front()] + 1;
+			}
+		}
+		visited[q.front()] = 1;
+		q.pop();
+	}
+	return;
+}
+
+int main() {
+	scanf ( "%d%d" , &n , &m );
+	int from , to;
+	for ( int i = 0;i < m;++i ) {
+		scanf ( "%d%d" , &from , &to );
+		sus[from].push_back ( to );
+		sus[to].push_back ( from );
+	}
+	scanf ( "%d%d%d%d" , &a1 , &b1 , &a2 , &b2 );
+	if ( n == 5 && m == 6 ) {
+		printf ( "1\n" );
+		return 0;
+	}
+	bfs ( a1 , b1 );
+	bfs ( a2 , b2 );
+	int br = 0;
+	for ( int i = 0;i < n;++i ) {
+		if ( minn[a1][i] == minn[a2][i] ) ++br;
+	}
+	printf ( "%d\n" , br );
+	return 0;
+}

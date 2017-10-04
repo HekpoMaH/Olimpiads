@@ -1,0 +1,49 @@
+#include<iostream>
+#include<string>
+using namespace std;
+int N,k,A[20];
+void sort(int l,int r)
+{
+     int i,fl,pom;
+     do
+     {
+         fl=0;
+         for(i=l;i<=r;i++)
+             if(A[i]>A[i+1])
+             {
+                  pom=A[i];
+                  A[i]=A[i+1];
+                  A[i+1]=pom;
+                  fl=1;
+             }
+     }
+     while(fl!=0);
+}
+int nextperm()
+{
+     int i=N,j,min=99,mini=99;
+     while(A[i]<A[i-1])
+          i--;
+     for(j=i+1;j<=N;j++)
+         if((A[i]<A[j]) && (min>A[j]))
+         {
+             min=A[j];
+             mini=j;
+         }
+     min=A[i];
+     A[i]=A[mini];
+     A[mini]=min;
+     sort(i,N);
+}
+int main()
+{
+    int i;
+    cin>>N>>k;
+    for(i=1;i<=N;i++)
+        A[i]=i;
+    for(i=1;i<=k-1;i++)
+        nextperm();
+    for(i=1;i<=N;i++)
+        cout<<A[i];
+    cout<<endl;
+}

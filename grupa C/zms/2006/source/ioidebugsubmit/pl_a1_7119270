@@ -1,0 +1,273 @@
+{
+TASK:EXPRES
+LANG:PASCAL
+}
+type
+    TArr = array[1..5,1..3] of byte;
+const
+   a : array[0..11] of TArr =
+   (
+   ((1,1,1),
+    (1,0,1),
+    (1,0,1),
+    (1,0,1),
+    (1,1,1)),
+
+   ((0,0,1),
+    (0,0,1),
+    (0,0,1),
+    (0,0,1),
+    (0,0,1)),
+
+   ((1,1,1),
+    (0,0,1),
+    (1,1,1),
+    (1,0,0),
+    (1,1,1)),
+
+   ((1,1,1),
+    (0,0,1),
+    (1,1,1),
+    (0,0,1),
+    (1,1,1)),
+
+   ((1,0,1),
+    (1,0,1),
+    (1,1,1),
+    (0,0,1),
+    (0,0,1)),
+
+   ((1,1,1),
+    (1,0,0),
+    (1,1,1),
+    (0,0,1),
+    (1,1,1)),
+
+   ((1,1,1),
+    (1,0,0),
+    (1,1,1),
+    (1,0,1),
+    (1,1,1)),
+
+   ((1,1,1),
+    (0,0,1),
+    (0,0,1),
+    (0,0,1),
+    (0,0,1)),
+
+   ((1,1,1),
+    (1,0,1),
+    (1,1,1),
+    (1,0,1),
+    (1,1,1)),
+
+   ((1,1,1),
+    (1,0,1),
+    (1,1,1),
+    (0,0,1),
+    (1,1,1)),
+
+
+   ((0,0,0),
+    (0,0,0),
+    (1,1,1),
+    (0,0,0),
+    (0,0,0)),
+
+   ((0,0,0),
+    (0,1,0),
+    (1,1,1),
+    (0,1,0),
+    (0,0,0)));
+var
+   h : array[-9..9,-9..9,0..1] of byte;
+
+procedure HOw(q,p : byte;var Br10,br01 : byte);
+var
+   i,j : byte;
+begin
+   br10:=0;
+   br01:=0;
+   for i:=1 to 5 do
+      for j:=1 to 3 do
+         begin
+            if (a[q,i,j]=1) and (a[p,i,j]=0) then
+               inc(Br10);
+            if (a[q,i,j]=0) and (a[p,i,j]=1) then
+               inc(Br01);
+         end;
+end;
+
+procedure HOw(q,p : TArr;var Br10,br01 : byte);
+var
+   i,j : byte;
+begin
+   br10:=0;
+   br01:=0;
+   for i:=1 to 5 do
+      for j:=1 to 3 do
+         begin
+            if (q[i,j]=1) and (p[i,j]=0) then
+               inc(Br10);
+            if (q[i,j]=0) and (p[i,j]=1) then
+               inc(Br01);
+         end;
+end;
+procedure FIllH;
+var
+   i,j : longint;
+
+begin
+   for i:=-9 to 9 do
+      for j:=-9 to 9 do
+        begin
+           How(abs(i),abs(j),h[i,j,1],h[i,j,0]);
+           if (i<0) and (j>0) then
+              begin
+                 inc(h[i,j,0],2);
+              end;
+           if (i>0) and (j<0) then
+              begin
+                 inc(h[i,j,1],2);
+              end;
+        end;
+end;
+var
+   s: array[1..5] of string;
+   n,k : longint;
+function Trans(x : longint) : longint;
+var
+   k : Tarr;
+   i,j,p: longint;
+   b1,b2 : byte;
+   r : longint;
+begin
+   inc(x,3);
+   for p:=0 to 9 do
+      begin
+         for i:=1 to 5 do
+            for j:=0 to 2 do
+               begin
+                  k[i,j+1]:=byte(s[i,x+j])-byte('0');
+               end;
+         HOw(k,a[p],b1,b2);
+         if b1+b2=0 then
+            begin
+               r:=p;
+               break;
+            end;
+      end;
+   dec(x,3);
+   for i:=1 to 5 do
+      for j:=0 to 2 do
+         begin
+            k[i,j+1]:=byte(s[i,x+j])-byte('0');
+         end;
+   HOw(k,a[10],b1,b2);
+   if b1+b2=0 then
+         r:=-r;
+   Trans:=r;
+
+end;
+var
+   IzRaz : array[1..40] of longint;
+   r : longint;
+   BestR : longint;
+   BestIzRaz : array[1..40] of longint;
+procedure rec(x,br10,br01 : longint);
+var
+   i,tmp : longint;
+begin
+   if x=n+1 then
+      begin
+         if (br10=br01) and (br10<=k shr 1) then
+            begin
+               r:=0;
+               for i:=1 to n do
+                  r:=r+izraz[i];
+               if r>bestr then
+                  begin
+                     bestR:=r;
+                     for i:=1 to n do
+                        bestIzraz[i]:=izraz[i];
+                  end;
+            end;
+         exit;
+      end;
+   if x>1 then
+
+      for i:=9 downto -9 do
+        begin
+           tmp:=izraz[x];
+           izraz[x]:=i;
+           rec(x+1,br10+h[tmp,i,1],br01+h[tmp,i,0]);
+           izraz[x]:=tmp;
+        end
+   else
+      for i:=9 downto 0 do
+        begin
+           tmp:=izraz[x];
+           izraz[x]:=i;
+           rec(x+1,br10+h[tmp,i,1],br01+h[tmp,i,0]);
+           izraz[x]:=tmp;
+        end
+
+
+end;
+
+procedure readfile;
+var
+   f : text;
+   i : longint;
+begin
+   assign(f,'');
+   reset(f);
+   readln(f,n,k);
+   for i:=1 to 5 do readln(f,s[i]);
+   s[1]:='000'+s[1];
+   s[2]:='010'+s[2];
+   s[3]:='111'+s[3];
+   s[4]:='010'+s[4];
+   s[5]:='000'+s[5];
+   close(f);
+   for i:=0 to n-1 do
+      izraz[i+1]:=trans(1+i*6);
+end;
+procedure writefile;
+var
+   iz : array[1..80] of byte;
+   i,j,k : longint;
+begin
+    writeln(bestR);
+    iz[1]:=BestIzraz[1];
+    for i:=2 to n*2-1 do
+       begin
+          if i mod 2 = 0 then
+             begin
+                if BestIzraz[(i shr 1) + 1]<0 then
+                   iz[i]:=10
+                else
+
+                   iz[i]:=11;
+             end
+          else
+             iz[i]:=abs(BestIzraz[(i shr 1) + 1]);
+       end;
+    for j:=1 to 5 do
+       begin
+          for i:=1 to 2*n-1 do
+             for k:=1 to 3 do
+                write(a[iz[i],j,k]);
+          writeln;
+      end;
+
+end;
+var
+   i : longint;
+begin
+   bestR:=-10000;
+   FillH;
+   readfile;
+   rec(1,0,0);
+   writefile;
+end.

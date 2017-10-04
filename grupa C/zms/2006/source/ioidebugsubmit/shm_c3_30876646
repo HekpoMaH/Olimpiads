@@ -1,0 +1,38 @@
+/*
+TASK: PHONE
+LANG: C++
+*/
+#include<iostream.h>
+#include<string.h>
+//using namespace std;
+int v[1001];
+void main()
+{int n,k,t=0,j,i=0,a[101][101],l,buttons[101][10],phnumb[102][10];
+float m1[101];
+char c[10];
+int nn[101];
+int c1;
+float m;
+cin>>n;
+for(i=0;i<=n;i++)
+{
+cin>>c;
+c1=strlen(c);
+for(j=0;j<c1;j++)
+phnumb[i][j]=(c[j]-'0');
+nn[i]=c1;
+cin>>m>>l;
+m1[i]=m;
+for(k=0;k<l;k++)
+{cin>>t;
+buttons[i][k]=t;}
+}
+cin>>c;
+c1=strlen(c);
+for(i=0;i<c1;i++)
+phnumb[n+2][i]=c[i]-'0';
+nn[n+2]=c1;
+//matrica na sasedstvo
+cout<<m1[0]+m1[1]<<'0'<<endl;
+//return 0;
+}

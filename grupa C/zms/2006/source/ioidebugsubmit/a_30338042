@@ -1,0 +1,145 @@
+/*
+TASK: festb
+LANG: C
+*/
+#include<stdio.h>
+#include<stdlib.h>
+#define mx 524288
+#define in stdin;//fopen("/home/swetko/festb/tests/festb.03.in","r")
+#define type long long
+#define manx (1<<27)
+#define maxx manx
+#define maxxx ((1LL)<<62)
+FILE*fn;
+
+typedef struct { type w,p;} house;
+
+house ss[mx];
+
+int q1,q2,q3,c1,c2,c3,c4,c,m,middle;
+
+type s1,s2,s3,t1,t2,t3;
+type sol[mx];
+type mone;
+type inf;
+type lsum[mx];
+type rsum[mx];
+
+
+int bs1(type a,int l,int r)
+  {int m;
+  type c1,c2,c3;
+
+  while(l!=r)
+    {m=(l+r)/2;
+    if(sol[m]>a)
+      l=m+1;
+    else r=m;}
+  
+  return l;}
+
+int bs2(type a,int l,int r)
+  {int m;
+  type c1,c2,c3;
+
+  while(l!=r)
+    {m=(l+r+1)/2;
+    if(a>=sol[m])
+      l=m;
+    else r=m-1;}
+  
+  return l;}
+
+type dif(type a,type b)
+  {type c1=a-b;
+  if(c1<0)c1=-c1;
+  return c1;}
+
+type ans;
+int res;
+
+int inter(type a,type b,type ans1,type ans2,type sum1,type sum2,type C)
+  {type x,c1,c2,c3;
+
+  x=(C-ans1+a*sum1-a*sum2)/(sum1-sum2);
+  if(x<a||x>b)return 0;
+  
+  c1=ans1+(x-a)*(sum1-sum2);
+  c2=ans1+(x+1-a)*(sum1-sum2);
+  c3=ans1+(x-1-a)*(sum1-sum2);
+
+  if(ans>dif(C,c1))
+    {ans=dif(C,c1);
+    res=x;}
+
+  if(x+1>=a&&x+1<=b)if(ans>dif(C,c2))
+    {ans=dif(C,c2);
+    res=x+1;}
+
+  if(x-1>=a&&x-1<=b)if(ans>dif(C,c3))
+    {ans=dif(C,c3);
+    res=x-1;}
+
+  return 0;}
+
+
+int cmp(const void*a,const void*b)
+  {return ((int)((house*)a)->w)-((int)((house*)b)->w);}
+int main()
+  {fn=in;
+  fscanf(fn,"%d %d",&c,&m);
+  for(q1=0;q1<c;q1++)
+    {fscanf(fn,"%d %d",&c1,&c2);
+    ss[q1].w=c1;
+    ss[q1].p=c2;}
+  qsort(ss,c,sizeof(ss[0]),cmp);
+  for(q1=c1=1;q1<c;q1++){if(ss[q1].w!=ss[c1-1].w)ss[c1++]=ss[q1];else ss[c1-1].p+=ss[q1].p;}
+  c=c1;
+  for(q1=c;q1<mx;q1++)ss[q1].w=ss[q1].p=0;
+
+  s1=0;
+  for(q1=0;q1<c;q1++)s1+=(ss[q1].w-ss[0].w)*ss[q1].p;
+  for(q1=0;q1<c;q1++)s2+=ss[q1].p;
+  sol[0]=s1;
+  rsum[0]=lsum[c-1]=s2;
+  lsum[0]=ss[0].p;
+  for(q1=1;q1<c;q1++)
+    {
+    rsum[q1]=rsum[q1-1]-ss[q1-1].p;
+    lsum[q1]=lsum[q1-1]+ss[q1].p;
+    
+    s2-=2*ss[q1-1].p;
+    if(s2>0)middle=q1;
+    s1-=s2*(ss[q1].w-ss[q1-1].w);
+    sol[q1]=s1;
+    }
+
+  for(q1=0;q1<c;q1++)mone+=(type)(ss[q1].w+maxx)*ss[q1].p;
+  for(q1=0;q1<c;q1++)inf+=(type)(maxx-ss[q1].w)*ss[q1].p;
+
+  for(q1=0;q1<m;q1++)
+    {
+//    if(q1==16)ans=maxxx;
+    fscanf(fn,"%lld",&s1);
+//    s1=58;
+    ans=maxxx;
+    res=0;
+
+    c1=bs1(s1,0,middle);
+    c2=bs2(s1,middle,c-1);
+
+    if(c1==0)inter(-maxx,ss[c1].w,mone,sol[c1],0,rsum[c1],s1);
+    else     inter(ss[c1-1].w,ss[c1].w,sol[c1-1],sol[c1],lsum[c1-1],rsum[c1],s1);
+
+    if(c2==c-1)inter(ss[c2].w,maxx,sol[c2],inf,lsum[c2],0,s1);
+    else       inter(ss[c2].w,ss[c2+1].w,sol[c2],sol[c2+1],lsum[c2],rsum[c2+1],s1);
+
+
+    if(ans>dif(sol[middle],s1))
+      {ans=dif(sol[middle],s1);
+      res=ss[middle].w;}
+    
+    printf("%d %lld\n",res,ans);}
+
+  fclose(fn);
+  return 0;}

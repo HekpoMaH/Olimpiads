@@ -1,0 +1,79 @@
+/*
+TASK: cars
+LANG: C
+*/
+#include<stdio.h>
+#include<stdlib.h>
+long long n,y,c[500001];
+long long b[500001]={0},p,p1,br=0,use[500001]={0};
+struct koko
+{
+ long long x,y;
+}a[5000001];
+int sf(const void *x,const void *y);
+void re(long x)
+{
+ long i,j;
+ if(b[x]>0)
+ {
+  br=(br%987654321)+((b[x]-1)%987654321);
+ }
+ for(i=c[x],j=0;j<b[x];j++,i++)
+ {
+  if(use[a[i].y]==0)
+  {
+   use[a[i].y]=1;
+   re(a[i].y);
+   use[a[i].y]=0;
+  }
+ }
+}
+int main()
+{
+ long i,j,x;
+ scanf("%lld",&n);
+ for(i=0;i<n;i++)
+ {
+  scanf("%lld",&p);
+  if(p==0)
+  {
+   y=i;
+  }
+  for(j=0;j<p;j++)
+  {
+   scanf("%lld",&p1);
+   a[br].x=p1-1;
+   a[br].y=i;
+   br++;
+   b[p1-1]++;
+  }
+ }
+ if(n==1||n==2)
+ {
+  printf("1\n");
+ }
+ else
+ {
+  qsort((void *)a,br,sizeof(a[0]),sf);
+  c[0]=0;
+  for(i=1;i<n;i++)
+  {
+   c[i]=c[i-1]+(b[i-1]);
+  }
+  br=1;
+  use[y]=1;
+  re(y);
+  printf("%ld\n",br);
+ }
+ return 0;
+}
+int sf(const void *x,const void *y)
+{
+ struct koko *q,*w;
+ q=(struct koko *)x;
+ w=(struct koko *)y;
+ if((q->x)>(w->x)) return 1;
+ if((q->x)<(w->x)) return -1;
+ return 0;
+}
+

@@ -1,0 +1,42 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+string a, o;
+int used[16], t, ans, r;
+vector<string > otg;
+void rec(string o){
+     
+     t=0;
+     
+     if(used[0]+used[1]+used[2]+used[3]+used[4]+used[5]+used[6]+used[7]+used[8]+used[9]<0) return;
+     for(int i=0;i<otg.size();i++) if(otg[i]==o){t=1; break;}
+     if(!t) otg.push_back(o);
+     
+     for(int i=0;i<10;i++) if(used[i]){used[i]--; rec(o+(char)('0'+i)); used[i]++;}
+     
+     }
+int main(){
+    cin>>a;
+    for(int i=0;i<a.size();i++) {used[a[i]-'0']++; if(used[a[i]-'0']==2) t++; if(used[a[i]-'0']==1) r++;}
+    if(!used[0] && !t){ //niama nuli i vsichki cifri sa razlichni
+                for(int i=1;i<=a.size();i++) ans=(ans+1)* i;
+                cout<<ans<<endl;
+                return 0;
+                }
+    if(!used[0] && r==1){ //vsichki cifri sa ravni
+                cout<<a.size()<<endl;
+                return 0;
+                }
+    if(!used[0] && r==2){ // samo 2 vida cifri
+                int n, m=n=0;
+                for(int i=1;i<10;i++) if(used[i]){if(n) m=i; else n=i;}
+                if(used[m]>used[n]) swap(n, m);
+                ans=used[n]*(1+used[m]*a.size());
+                cout<<ans<<endl;
+                return 0;
+                }
+                
+    for(int i=0;i<10;i++) if(used[i]){used[i]--; o=""; o+=(char)(i+'0'); rec(o);used[i]++;}   
+    cout<<otg.size()<<endl;   
+    return 0;
+    }

@@ -1,0 +1,51 @@
+#include <stdio.h>
+FILE *f=fopen("digits.in","r");
+FILE *g=fopen("digits.out","w");
+struct digit
+{ char a[6][4]; } m[11];
+
+int b[11][11],c[11][11];
+
+void vhod (int d1)
+{ int i,j;
+  for (i=1;i<=5;i++)
+     for (j=1;j<=3;j++)
+       scanf("%c",&m[d1].a[i][j]);
+}
+void cmp (int d1,int d2)
+{ int br1=0; int br2=0;
+  int i,j;
+  for (i=1;i<=5;i++)
+    for (j=1;j<=3;j++)
+       if (m[d1].a[i][j]!=m[d2].a[i][j])
+          if (m[d1].a[i][j]=='1') br1++;
+            else br2++;
+  b[d1][d2]=br1+br2;
+  b[d2][d1]=b[d1][d2];
+  c[d1][d2]=br1;
+  c[d2][d1]=br2;
+}
+
+int main ()
+{ int i,j;
+  char ch;
+  for (i=0;i<=9;i++)
+   { vhod(i); scanf("%c",&ch); }
+/*  for (i=1;i<=5;i++)
+    { for (j=1;j<=3;j++)
+        printf("%c",m[1].a[i][j]);
+      printf("\n");
+    }    */
+  for (i=0;i<=9;i++)
+    for (j=0;j<=9;j++)
+      cmp(i,j);
+  for (i=0;i<=10;i++)
+   { fprintf(g,"{");
+     for (j=0;j<10;j++)
+       fprintf(g,"%d, ",b[i][j]);
+     fprintf(g,"}\n");
+   }
+  return 0;
+}
+
+          

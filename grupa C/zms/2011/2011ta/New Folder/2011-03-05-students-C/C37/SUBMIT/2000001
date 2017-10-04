@@ -1,0 +1,49 @@
+#include<iostream>
+#include<vector>
+#include<cmath>
+#include<algorithm>
+using namespace std;
+long n,i,j,a[1001][1001],k,i1,l,br;
+vector <int> v[10001];
+int main ()
+{
+    cin>>n;
+    for(i=1;i<=n;i++)
+     for(j=1;j<=n;j++)
+     {
+        cin>>a[i][j];
+     }
+    cin>>k;
+    for(int j1=1;j1<=k;j1++)
+    {
+    cin>>l;
+    v[j1].push_back(l);
+     for(i=1;i<=n;i++)
+      for(j=1;j<=n;j++)
+       {
+        if(a[i][j]==v[j1][0])
+         {
+            v[j1].push_back(i-1+n-j);
+         }
+         else br++;
+       }
+       if(br==n*n) v[j1].push_back(-1);
+       br=0;
+     }
+   for(i=1;i<=k;i++)
+    {
+    sort(v[i].begin()+1,v[i].end());
+    if(v[i][1]==-1) cout<<"No Solution"<<endl;
+    else cout<<v[i][1]<<endl;
+   }
+return 0;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

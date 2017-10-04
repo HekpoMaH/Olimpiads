@@ -1,0 +1,91 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+long long c[5][3]={{1,0},{0,1},{-1,0},{0,-1}};
+long long n,m,i,j,ij,x,y,xx,yy,x1,x2,y1,y2,z1,z2,ans,b[51][51];
+queue <long long> q;
+char a[51][51];
+void wave (long long s1, long long s2, long long f1, long long f2)
+{
+   b[s1][s2]=1;
+   q.push(s1);
+   q.push(s2);
+   while(!q.empty())
+   {
+      x=q.front();
+      q.pop();
+      y=q.front();
+      q.pop(); 
+	  if (x==f1 && y==f2) {ans=ans+b[f1][f2]-1;break;}
+	  for(ij=0;ij<=3;ij++)
+      {
+	     xx=x+c[ij][0];
+	     yy=y+c[ij][1];
+	     if (xx==n+1) {xx=1;}
+	     if (yy==m+1) {yy=1;}
+	     if (xx==0) {xx=n;}
+	     if (yy==0) {yy=m;}
+		 if (b[xx][yy]==0 && a[xx][yy]!='#')
+		 {
+		    b[xx][yy]=b[x][y]+1;
+		    q.push(xx);
+		    q.push(yy);
+		 }
+	  }
+   }
+}
+int main()
+{
+	cin>>n>>m;
+	for(i=1;i<=n;i++)
+	{
+	   for(j=1;j<=m;j++)
+	   {
+	      cin>>a[i][j];
+	      if (a[i][j]=='E') {x1=i;x2=j;}
+	      if (a[i][j]=='P') {y1=i;y2=j;}
+	      if (a[i][j]=='X') {z1=i;z2=j;}
+	   }
+	}
+	wave(x1,x2,y1,y2);
+	for(i=1;i<=n;i++)
+	{
+	   for(j=1;j<=m;j++)
+	   {
+		  //cout<<b[i][j]<<" ";
+	      b[i][j]=0;
+	   }
+	   //cout<<endl;
+	}
+	while(!q.empty())
+    {
+	   q.pop();
+	}
+	wave(y1,y2,z1,z2);
+	/*for(i=1;i<=n;i++)
+	{
+	   for(j=1;j<=m;j++)
+	   {
+		  cout<<b[i][j]<<" ";
+	   }
+	   cout<<endl;
+	}
+	cout<<endl;*/
+	cout<<ans<<endl;
+	//system("pause");
+	return 0;
+}
+
+/*
+3 4
+E.#.
+X##.
+#..P
+
+5 11
+#....#.....
+...E....X..
+.######.##.
+.########..
+.P.#.......
+*/

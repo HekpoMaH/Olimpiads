@@ -1,0 +1,93 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+int nh2,nh0;
+int heap0[1000002],heap2[1000002];
+int n,first,second,sum;
+void insert0(int index)
+{
+    nh0++;
+    heap0[nh0]=index;
+    int i=nh0;
+    while(i>=1&&heap0[i/2]>heap0[i])
+    {
+       swap(heap0[i],heap0[i/2]);
+       i/=2;
+    }
+}
+void insert2(int index)
+{
+    nh2++;
+    heap2[nh2]=index;
+    int i=nh2;
+    while(i>=1&&heap2[i/2]>heap2[i])
+    {
+       swap(heap2[i],heap2[i/2]);
+       i/=2;
+    }
+}
+void heapexmax0()
+{
+    heap0[1]=heap0[nh0];
+    nh0--;
+    int i=1,largest;
+    while(i*2<=nh0)
+    {
+        if(heap0[i*2]<heap0[i*2+1])largest=i*2;
+        else if(heap0[i*2]>heap0[i*2+1])largest=i*2+1;
+        else largest=i;
+        if(largest!=i)
+        {
+            swap(heap0[i],heap0[largest]);
+            i=largest;
+        }
+        else break;
+    }
+}
+void heapexmax2()
+{
+    heap2[1]=heap2[nh2];
+    nh2--;
+    int i=1,largest;
+    while(i*2<=nh2)
+    {
+        if(heap2[i*2]<heap2[i*2+1])largest=i*2;
+        else if(heap2[i*2]>heap2[i*2+1])largest=i*2+1;
+        else largest=i;
+        if(largest!=i)
+        {
+            swap(heap2[i],heap2[largest]);
+            i=largest;
+        }
+        else break;
+    }
+}
+int main()
+{
+    scanf("%d",&n);
+    int x;
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&x);
+        if(x==0)insert0(i);
+        if(x==2)insert2(i);
+    }
+    //for(int i=1;i<=nh0;i++)cout<<heap0[i]<<endl;
+    //cout<<"---------"<<endl;
+    //for(int i=1;i<=nh2;i++)cout<<heap2[i]<<endl;
+    //cout<<heap2[1]<<" ";heapexmax2();cout<<heap2[1]<<endl;
+    //cout<<nh0<<endl;
+    int nh=nh0;
+    if(nh2!=nh0){cout<<-1<<endl;return 0;}
+    for(int i=1;i<=nh;i++)
+    {
+        first=heap0[1];
+        second=heap2[1];//cout<<first<<" "<<second<<endl;
+        heapexmax0();
+        heapexmax2();
+        if(first<second){cout<<-1<<endl;return 0;}
+        if(first>second){sum+=first-second;}
+    }
+    cout<<sum<<endl;
+    return 0;
+}

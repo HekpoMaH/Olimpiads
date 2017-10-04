@@ -1,0 +1,19 @@
+#include <cstdio>
+#define MOD 1000000007
+
+int main(void)
+{
+	FILE *in = stdin; FILE *out = stdout;
+//	in = fopen("partition.in", "rt"); out = fopen("partition.out", "wt");
+	
+	int n;
+	fscanf(in, "%d", &n);	
+	int a = 0, b = 1, c = 1;
+	for (int i = 5; i <= n; i++)
+	{
+		int d = (a + c) % MOD;
+		a = b; b = c; c = d;
+	}
+	fprintf(out, "%d\n", c);	
+	return 0;
+}

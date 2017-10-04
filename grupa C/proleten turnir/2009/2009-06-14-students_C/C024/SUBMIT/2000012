@@ -1,0 +1,34 @@
+#include<iostream>
+#define mv 10000000
+using namespace std;
+int a[106],p[106],r[106],q[106],f[106],h[10006],ma;
+int main()
+{
+    int n,l,i,j,k,o=0,sbr=0,cena=0;
+    scanf("%d%d",&n,&l);
+    for(i=1;i<=l;i++)a[i]=mv;
+    for(i=1;i<=n;i++)
+    {
+        scanf("%d%d%d%d",&p[i],&r[i],&q[i],&f[i]);
+        o+=f[i]; sbr+=r[i]; cena+=r[i]*q[i];
+        for(j=l;j>=1;j--)
+        {
+            for(k=j-1;k>=0 && k>j-r[i];k--)
+                if(a[j]>a[k]+p[i]*(j-k))a[j]=a[k]+p[i]*(j-k);
+            for(k=j-r[i];k>=0 && k>=j-f[i];k--)
+                if(a[j]>a[k]+q[i]*(j-k))a[j]=a[k]+q[i]*(j-k);
+        }
+    }
+    if(o<l)printf("-1\n");
+    else 
+    {
+        sbr-=l;
+        for(i=1;i<=n;i++)
+            for(j=sbr;j>=1;j--)
+                if(j>=r[i] && h[j]<h[j-r[i]]+r[i]*q[i])h[j]=h[j-r[i]]+r[i]*q[i];
+        for(j=1;j<=sbr;j++)
+            if(h[j]>ma)ma=h[j];
+        if(a[l]>cena-ma)printf("%d\n",cena-ma);
+        else printf("%d\n",a[l]);
+    }
+}

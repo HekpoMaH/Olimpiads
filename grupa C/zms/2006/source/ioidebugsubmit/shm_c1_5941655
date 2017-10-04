@@ -1,0 +1,71 @@
+/*
+TASK: phone
+LANG: C++
+*/
+#include<iostream.h>
+#include<string.h>
+int n;int brcif[101];int bfr[101];int gfr[101];char tels[101][10];float taxes[101];int numbut[10];char buts[101][10];float sum=0;
+void vhod()
+{int i;
+ cin>>n;
+ cin>>tels[0];
+ brcif[0]=strlen(tels[0]);
+ cin>>taxes[0];
+ cin>>numbut[0];
+ for(i=0;i<numbut[0];i++)
+ cin>>buts[0][i];
+ for(i=1;i<=n;i++)
+ { cin>>tels[i];
+   brcif[i]=strlen(tels[i]);
+   cin>>taxes[i];
+   cin>>numbut[i];
+   for(int j=0;j<numbut[i];j++)
+   cin>>buts[i][j];
+ }
+ cin>>tels[101];
+ brcif[101]=strlen(tels[101]);
+}
+void checkfr()
+{ for(int i=1;i<=n;i++)
+   for(int j=0;j<brcif[i];j++)
+   {int l=0;
+   for(int k=0;k<brcif[0];k++)
+      if(buts[i][j]==buts[0][k])
+       {l=1;break;}
+    if(l==0){bfr[i]=1;
+    break;}
+   }
+}
+void suma()
+{int col=0;
+for(int i=0;i<brcif[101];i++)
+  {int l=0;
+   for(int k=0;k<brcif[0];k++)
+    if(buts[101][i]==buts[0][k])
+    {l=1;break;}
+   if(l==0){col=0;break;}
+  }
+if(col!=0)cout<<taxes[0]<<endl;
+else sum=taxes[0];
+for( i=1;i<=n;i++)
+ { int c=0;
+  for(int j=0;j<brcif[i];j++)
+   {int l=0;if(bfr[i]==1)break;
+    for(int k=0;k<brcif[101];k++)
+     if(buts[i][j]==buts[101][k])
+     {l=1;c++;break;}
+      if(l==0)break;
+    }
+    if(c==brcif[i])gfr[i]=1;
+ }
+int mintx=taxes[1];
+for(i=1;i<=n;i++)
+if(gfr[i]==1)if(taxes[i]<mintx)mintx=taxes[i];
+sum+=mintx;
+}
+void main()
+{vhod();
+checkfr();
+suma();
+cout<<sum<<endl;
+}

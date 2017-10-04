@@ -1,0 +1,29 @@
+#include <iostream>
+using namespace std;
+int main ()
+{
+int n, k, i, j, l;
+cin >> n;
+int a[n+1][n+1];
+for (i=1; i<=n; i++)
+    for (j=1; j<=n; j++)
+        cin >> a[i][j];
+cin >> k;
+int z[k], x[k], br[k];
+for (i=1; i<=k; i++)
+    {
+        cin >> z[i];
+        br[i]=0;
+    }
+for (i=1; i<=n; i++)
+    for (j=1; j<=n; j++)
+        for (l=1; l<=k; l++)
+            {
+                if (a[i][j] == z[l] && br[l] == 0) { x[l] = (i-1) + (n-j); br[l]++; }
+            }
+for (i=1; i<=k; i++)
+{
+    if (br[i] != 0) cout << x[i] << endl;
+    else cout << "No Solution" << endl;
+}
+}

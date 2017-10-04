@@ -1,0 +1,192 @@
+/*
+TASK: EXPRES
+LANG: C
+*/
+#include<stdio.h>
+#include<string.h>
+
+#define MAXDIG	1024
+
+int N,K,len,brones,maxres=-1000000,mkl=-1;
+char str[5][MAXDIG],out[5][MAXDIG];
+int eval[MAXDIG],mev[MAXDIG],mesign[MAXDIG];
+int sign[MAXDIG];
+
+char tmp[5][3];
+char nums[10][5][3]={
+{{1,1,1},{1,0,1},{1,0,1},{1,0,1},{1,1,1}},	//0
+{{0,0,1},{0,0,1},{0,0,1},{0,0,1},{0,0,1}},	//1
+{{1,1,1},{0,0,1},{1,1,1},{1,0,0},{1,1,1}},	//2
+{{1,1,1},{0,0,1},{1,1,1},{0,0,1},{1,1,1}},	//3
+{{1,0,1},{1,0,1},{1,1,1},{0,0,1},{0,0,1}},	//4
+{{1,1,1},{1,0,0},{1,1,1},{0,0,1},{1,1,1}},	//5
+{{1,1,1},{1,0,0},{1,1,1},{1,0,1},{1,1,1}},	//6
+{{1,1,1},{0,0,1},{0,0,1},{0,0,1},{0,0,1}},	//7
+{{1,1,1},{1,0,1},{1,1,1},{1,0,1},{1,1,1}},	//8
+{{1,1,1},{1,0,1},{1,1,1},{0,0,1},{1,1,1}},	//9
+};
+
+int gok[10][10][2];
+
+void precalc()
+{
+	int i,j,k,l,bro,brk;
+	for(i=0;i<10;i++)
+		for(j=0;j<10;j++)
+		{
+			if(i==j)continue;
+			bro=0;brk=0;
+			for(k=0;k<5;k++)
+				for(l=0;l<3;l++)
+				{
+					if(nums[i][k][l]==nums[j][k][l])continue;
+					brk++;
+					if(nums[i][k][l]==1)
+						bro--;
+					else
+						bro++;
+				}
+			gok[i][j][0]=brk;
+			gok[i][j][1]=bro;
+		}
+}
+
+int calc(int* eval,int* sign)
+{
+	int i,res=eval[0];
+	for(i=0;i<N-1;i++)
+	{
+		if(sign[i]==0)
+			res-=eval[i+1];
+		else
+			res+=eval[i+1];
+	}
+	return res;
+}
+
+void DFS(int dep,int kleft,int ones)
+{
+	int i,l,r,res,x;
+	if(!kleft || dep>=2*N-1)
+	{
+		if(ones!=brones)return;
+		res=calc(eval,sign);
+		if(res>maxres)
+		{
+			maxres=res;
+			mkl=K-kleft;
+			for(i=0;i<N;i++)
+			{
+				mev[i]=eval[i];
+				mesign[i]=sign[i];
+			}
+		}
+		return;
+	}
+	DFS(dep+1,kleft,ones);
+	if(dep%2==1)
+	{
+		if(sign[(dep-1)/2]==1)
+		{
+			sign[(dep-1)/2]=0;
+			DFS(dep+1,kleft-2,ones-2);
+			sign[(dep-1)/2]=1;
+		}
+		if(sign[(dep-1)/2]==0 && kleft>1)
+		{
+			sign[(dep-1)/2]=1;
+			DFS(dep+1,kleft-2,ones+2);
+			sign[(dep-1)/2]=0;
+		}
+	}
+	else
+	{
+		dep/=2;
+		x=eval[dep];
+		if(!dep || sign[dep-1]==1){l=x+1;r=10;}
+		else{l=0;r=x;}
+		for(i=l;i<r;i++)
+		{
+			if(gok[x][i][0]<=kleft)
+			{
+				eval[dep]=i;
+				DFS(dep*2+1,kleft-gok[x][i][0],ones+gok[x][i][1]);
+				eval[dep]=x;
+			}
+		}
+	}
+}
+
+void solve()
+{
+	int i,j,k,pos;
+	DFS(0,K,brones);
+	printf("%d %d\n",maxres,mkl);
+//	for(i=0;i<N-1;i++)
+//		printf("%d _%d_",mev[i],mesign[i]);
+//	printf("%d\n",mev[i]);
+	for(i=0;i<N;i++)
+	{
+		pos=i*6;
+		for(j=0;j<5;j++)
+			for(k=0;k<3;k++)
+				out[j][pos+k]=nums[mev[i]][j][k]+'0';
+		pos+=3;
+		if(i<N-1)
+		{
+			for(j=0;j<5;j++)
+				for(k=0;k<3;k++)
+					out[j][pos+k]='0';
+			out[2][pos+0]='1';
+			out[2][pos+1]='1';
+			out[2][pos+2]='1';
+			if(mesign[i])
+			{
+				out[1][pos+1]='1';
+				out[3][pos+1]='1';
+			}
+		}
+	}
+	for(i=0;i<5;i++)
+		printf("%s\n",out[i]);
+}
+
+int main()
+{
+	int i,j,k,ts=0,cdi,pos,bt;
+	precalc();
+	scanf("%d%d",&N,&K);
+	scanf("%s%s%s%s%s",&str[0],&str[1],&str[2],&str[3],&str[4]);
+	len = (2*N-1)*3;
+	for(i=0;i<5;i++)for(j=0;j<len;j++)if(str[i][j]=='1')brones++;
+	for(i=0;i<N;i++)
+	{
+		pos=i*6;ts=0;
+		for(j=0;j<5;j++)
+		{
+			tmp[j][0]=str[j][pos+0]-'0';
+			tmp[j][1]=str[j][pos+1]-'0';
+			tmp[j][2]=str[j][pos+2]-'0';
+			if(i>=N-1)continue;
+			if(str[1][pos+4]=='1')
+				ts=1;
+		}
+		for(j=0,cdi=-1;j<10 && cdi==-1;j++)
+		{
+			bt=1;
+			for(k=0;k<5 && bt;k++)
+				if(tmp[k][0]!=nums[j][k][0]|| tmp[k][1]!=nums[j][k][1] || tmp[k][2]!=nums[j][k][2])
+					bt=0;
+			if(bt)
+				cdi=j;
+		}
+		eval[i]=cdi;
+		if(i+1<N)
+			sign[i]=ts;
+	}
+//	for(i=0;i<N-1;i++)
+//		printf("%d _%d_\t",eval[i],sign[i]);
+//	printf("%d\n",eval[i]);
+	solve();
+	return 0;
+}

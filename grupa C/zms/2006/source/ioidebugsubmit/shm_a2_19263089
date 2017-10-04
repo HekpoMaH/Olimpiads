@@ -1,0 +1,115 @@
+/*
+TASK: festa
+LANG: C++
+*/
+#include <stdio.h>
+#include <math.h>
+#include <map>
+#define MAXN 200002
+using namespace std;
+
+ long long bin[2][MAXN];
+ map<long long,long long> g;
+ map<long long,long long>::iterator ite;
+ long long list[MAXN][2];
+ int com[MAXN];
+ int n,z;
+ pair<int,long long> res;
+ long long cnt,val;
+
+ long long it (int t,int z,long long o)
+  {
+   int l,r,med;
+   long long ret=0;
+   l=0;
+   r=n;
+   while (1)
+    {
+     med=(l+r)/2;
+     if (med==z) break;
+     if (med<z)
+      {
+       l=med+1;
+       ret+=bin[t][med];
+      }
+       else
+        {
+         r=med-1;
+         bin[t][med]+=o;
+        }
+    }
+   bin[t][med]+=o;    
+   ret+=bin[t][med];
+   return ret;
+  }
+
+ long long get(long long z)
+  {
+   long long v,u;
+   ite=g.lower_bound(z);
+   ite--;
+   v=it(0,ite->second,0);
+   u=it(1,ite->second,0);
+   return v*z-u+val-u-(cnt-v)*z;
+  }
+
+ void solve (int l,int r,long long s)
+  {
+   int med;
+   long long pom;
+   while (l<=r)
+    {
+     med=(l+r)/2;
+     pom=(get(med)-s);
+     if (res.second>pom)
+      {
+       res.second=pom;
+       res.first=med;
+      }
+     if (pom>(get(med+1)-s))
+      l=med+1;
+       else
+        r=med-1;
+    }
+  }
+
+ int main ()
+  {
+   int i,w,pom;
+   while (scanf("%d",&com[++z])==1)
+    {
+     if (com[z]==1) scanf("%lld%lld",&list[z][0],&list[z][1]);
+     if (com[z]==2) scanf("%lld",&list[z][0]);
+    }
+   z--;
+   for (i=1;i<=z;i++)
+    if (com[i]==1)
+     if (g.count(list[i][0])==0)
+      g.insert(make_pair(list[i][0],0));
+   for (i=1,ite=g.begin();ite!=g.end();i++,ite++)
+    ite->second=i;
+   n=g.size();
+   g[(int)-1e9]=0;
+   cnt=0;
+   val=0;
+   for (w=1;w<=z;w++)
+    {
+     if (com[w]==1)
+      {
+       pom=g[list[w][0]];
+       it(0,pom,list[w][1]);
+       it(1,pom,list[w][0]*list[w][1]);
+       cnt+=list[w][1];
+       val+=list[w][1]*list[w][0];
+      }
+     if (com[w]==2)
+      {
+       res.second=(long long)1e16;
+       solve((int)-1e8,val/cnt,list[w][0]);
+       solve((val+cnt-1)/cnt,(int)1e8,list[w][1]);
+       printf("%d %lld\n",res.first,res.second);
+      }
+    }    
+   return 0;
+  }
+  

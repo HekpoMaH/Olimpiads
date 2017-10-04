@@ -1,0 +1,33 @@
+#include<iostream>
+#include<cstdio>
+#include<stack>
+using namespace std;
+stack<int> nuli;
+stack<int> edinici;
+int n,first,second,sum;
+int main()
+{
+    scanf("%d",&n);
+    int x;
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d",&x);
+        if(x==0)nuli.push(i);
+        if(x==2)edinici.push(i);
+    }
+    if(nuli.size()>edinici.size()){cout<<-1<<endl;return 0;}
+    while(!nuli.empty())
+    {
+        first=nuli.top();
+        second=edinici.top();
+        nuli.pop();edinici.pop();
+        while(first<second&&!edinici.empty())
+        {
+            second=edinici.top();edinici.pop();
+
+        }if(edinici.empty()&&!nuli.empty()){cout<<-1<<endl;return 0;}
+        sum+=first-second;
+    }
+    cout<<sum<<endl;
+    return 0;
+}

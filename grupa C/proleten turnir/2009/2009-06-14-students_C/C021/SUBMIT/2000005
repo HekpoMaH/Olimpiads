@@ -1,0 +1,66 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+int m, n, ph, gh, ps, gs;
+vector <int> v[256];
+int pm[256][256], gm[256][256], used[1024], r[256];
+void scan(){
+     int x, y;
+     cin >> n >> m;
+     for ( int i = 0; i < m; ++i ){
+         cin >> x >> y;
+         v[x].push_back(y);
+         v[y].push_back(x);
+     }
+     cin >> ph >> ps >> gh >> gs;
+}
+void check1(int L){
+     for ( int i = 0; i <= L; ++i ){
+         pm[r[i]][i] = 1;
+    // cout << r[i] << " " << i << ",";
+     }//cout << endl;
+}
+void check2(int L){
+     for ( int i = 0; i <= L; ++i ){
+         gm[r[i]][i] = 1;
+   //  cout << r[i] << " " << i << ",";
+     }//cout << endl;
+}
+void dfs1(int i, int l){ 
+     used[i] = 1;
+     r[l] = i;
+     if ( i == ps ) {check1(l);used[i] = 0; return;
+     }
+     for( int j = 0; j < v[i].size(); ++j )
+          if ( !used[v[i][j]] )
+             dfs1(v[i][j], l + 1);
+     used[i] = 0;
+}
+void dfs2(int i, int l){
+     used[i] = 1;
+     r[l] = i;
+     if ( i == gs ) {check2(l);used[i] = 0; return;
+     }
+     for( int j = 0; j < v[i].size(); ++j )
+          if ( !used[v[i][j]] )
+             dfs2(v[i][j], l + 1);
+     used[i] = 0;
+}
+void solve(){
+     int ans = 0;
+     dfs1(ph, 0);memset(used, 0, sizeof(used));
+     dfs2(gh, 0);
+     if ( gh == ph )
+        ++ans;
+     for ( int i = 0; i < n; ++i )
+         for ( int j = 0; j < n; ++j )
+             if ( gm[i][j] != 0 )
+                if ( gm[i][j] == pm[i][j] ){// cout << i << " " << j << endl; 
+                   ++ans;break;
+                }
+     cout << ans << endl;     
+}
+int main(){
+    scan();
+    solve();
+}

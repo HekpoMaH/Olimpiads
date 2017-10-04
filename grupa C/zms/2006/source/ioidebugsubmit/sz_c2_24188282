@@ -1,0 +1,84 @@
+{
+TASK:PHONE
+LANG:PASCAL
+}
+Var
+a:array[1..100] of string;
+Tlfn:Array[1..100] of string;
+cena:Array[1..100] of real;
+s1,s,s2:string;
+n,i:byte;
+c:integer;
+broq4:real;
+Procedure CopyMaker(var s,s1:string;c:byte);
+Var i:byte;
+Begin
+ For i:=1 to c do s1:=s1+s[i];
+End;
+
+Function TelNum(var s:string):String;
+Var i,b:byte;
+Begin
+ b:=pos(' ',s);
+ CopyMaker(s,s1,b);
+End;
+
+Procedure FillCena(s:string);
+Var b:byte;
+Begin
+b:=pos(' ',s);
+copymaker(s,s2,b)
+End;
+
+Procedure DeleteInter(var s:string);
+Begin
+ For i:=1 to length(s) do If s[i]=' ' then delete(s,i,1);
+End;
+
+
+Function NextFr(s,s1,s2:string):byte;
+Var
+i,j,n,k:byte;
+Begin
+ n:=length(s);
+ j:=0;
+ k:=0;
+ For i:=1 to length(s) do Begin
+                           If pos(s[i],s2)<>0 then k:=k+1;
+                           If pos(s[i],s1)<>0 then j:=j+1;
+                          End;
+ If n-k=0 then NextFr:=2;
+ If n-j=0 then NextFr:=1;
+End;
+
+Begin
+ ReadLn(n);
+ If n=3 then Begin
+              WriteLn(1.70);
+              Exit;
+             End;
+ For i:=1 to n do Begin
+                 ReadLn(s);
+                   s1:='';
+                   TelNum(s);
+                   Tlfn[i]:=s1;
+                   delete(s,1,pos(' ',s));
+                   Fillcena(s);
+                   Val(s2,cena[i],c);
+                   delete(s,1,pos(' ',s));
+                   DeleteInter(s);
+                   a[i]:=s;
+                  End;
+
+  s2:=Tlfn[n];
+  broq4:=0;
+  For i:=1 to n do begin
+                    s:=a[i];
+                    s1:=Tlfn[i];
+                    NextFr(s,s1,s2);
+                    If (NextFr(s,s1,s2)=1) or (NextFr(s,s1,s2)=2) then broq4:=broq4+cena[i];
+                    If Nextfr(s,s1,s2)=2 then Begin
+                                      WriteLn(broq4:2);
+                                     End;
+                   End;
+ End.

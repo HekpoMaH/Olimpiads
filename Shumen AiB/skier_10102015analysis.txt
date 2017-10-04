@@ -1,0 +1,11 @@
+types: 1->desen,2-> start/finish, 3->lqv
+cmp F(){
+   vec AB,AC;
+   if(AB.cross(AC))//AB x AC > 0 => AC po obratna 4as ot AB => pol(C,A)>pol(B,A)
+   if(AB.cross(AC)==0){
+      case1:B.type<C.type
+      case2:B.type==C.type==1&&AB.len<AC.len
+      case3:B.type==C.type==3&&AB.len>AC.len
+   }
+
+}

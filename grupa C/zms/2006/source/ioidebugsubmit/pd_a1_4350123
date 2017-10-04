@@ -1,0 +1,151 @@
+/*
+TASK: FEST
+LANG: C
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+#define MAXN 262144
+#define MAXC 10000000
+
+typedef struct query
+{
+	int t;
+	long long a,b;
+} query;
+
+int c[MAXN],br,n;
+long long t1[MAXN<<1],t2[MAXN<<1];
+query q[MAXN];
+
+int cmp(const void *e1,const void *e2)
+{
+	return (*(int*)e1)-(*(int*)e2);
+}
+
+void add(int i,int st)
+{
+	int j;
+	for(j=i+MAXN;j>0;j>>=1)
+	{
+		t1[j]+=((long long)st)*c[i];
+		t2[j]+=st;
+	}
+}
+
+void get(int i,long long *s1,long long *c1)
+{
+	int j;
+	(*s1)=(*c1)=0;
+	for(j=i+MAXN;j>1;j>>=1)
+	{
+		if(j%2)
+		{
+			(*s1)+=t1[j-1];
+			(*c1)+=t2[j-1];
+		}
+	}
+}
+
+int binary(int x)
+{
+	int l,r,m,res=0;
+	l=0; r=br-1;
+	while(l<=r)
+	{
+		m=(l+r)/2;
+		if(c[m]>=x) { res=m; r=m-1; }
+		else l=m+1;
+	}
+	return res;
+}
+
+int main()
+{
+	int i,j,min,l,r,m,p,res;
+	long long s1,s2,c1,c2,tmp;
+	c[br++]=0;
+	c[br++]=MAXC;
+	while(scanf("%d",&q[n].t)==1)
+	{
+		if(q[n].t==1)
+		{
+			scanf("%lld%lld",&q[n].a,&q[n].b);
+			c[br++]=q[n].a;
+		}
+		else scanf("%lld",&q[n].a);
+		n++;
+	}
+	qsort(c,br,sizeof(c[0]),cmp);
+	for(i=j=1;i<br;i++) if(c[i]!=c[i-1]) c[j++]=c[i];
+	br=j;
+	for(i=0;i<n;i++)
+	{
+		if(q[i].t==1) add(binary(q[i].a),q[i].b);
+		else
+		{
+			l=0; r=br-1; min=0; res=MAXC; p=0;
+			while(l<=r)
+			{
+				m=(l+r)/2;
+				get(m,&s1,&c1);
+				c1+=t2[m+MAXN];
+				c2=t2[1]-c1;
+				if(c2<=c1) { min=m; r=m-1; }
+				else l=m+1;
+			}
+			l=c[min]; r=MAXC;
+			while(l<=r)
+			{
+				m=(l+r)/2;
+				j=binary(m);
+				get(j,&s1,&c1);
+				s2=t1[1]-s1;
+				c2=t2[1]-c1;
+				if(c[j]==m)
+				{
+					s2-=t1[j+MAXN];
+					c2-=t2[j+MAXN];
+				}
+				tmp=c1*m-s1+s2-c2*m;
+				if(tmp>=q[i].a)
+				{
+					if(tmp-q[i].a<res) { p=m; res=tmp-q[i].a; }
+				}
+				else
+				{
+					if(q[i].a-tmp<res) { p=m; res=q[i].a-tmp; }
+				}
+				if(tmp>=q[i].a) r=m-1;
+				else l=m+1;
+			}
+			l=-20; r=min;
+			while(l<=r)
+			{
+				m=((l+r)/2);
+				j=binary(m);
+				get(j,&s1,&c1);
+				s2=t1[1]-s1;
+				c2=t2[1]-c1;
+				if(c[j]==m)
+				{
+					s2-=t1[j];
+					c2-=t2[j];
+				}
+				tmp=c1*m-s1+s2-c2*m;
+				if(tmp>=q[i].a)
+				{
+					if(tmp-q[i].a<res) { p=m; res=tmp-q[i].a; }
+				}
+				else
+				{
+					if(q[i].a-tmp<res) { p=m; res=q[i].a-tmp; }
+				}
+				if(tmp>=q[i].a) l=m+1;
+				else r=m-1;
+			}
+			printf("%d %d\n",p,res);
+		}
+	}
+	return 0;
+}

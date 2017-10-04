@@ -1,0 +1,23 @@
+#include <iostream>
+using namespace std;
+
+char ch='a';
+int n, k;
+int main()
+{
+  cin>>n>>k;
+  char a[n];
+  for(int i=0; i<n; i++)
+   {
+     a[i]=ch;
+     ch++;
+   }
+  int n2=n, k2=k;
+  while(k2>n2) k2-=n2;
+  for(int i=k2; i<n; i++)
+   cout<<a[i];
+  for(int i=0; i<k2; i++)
+   cout<<a[i];
+  cout<<endl;
+  return 0;
+}

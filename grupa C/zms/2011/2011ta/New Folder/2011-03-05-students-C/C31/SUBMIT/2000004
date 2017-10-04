@@ -1,0 +1,16 @@
+#include<iostream>
+using namespace std;
+int main ()
+{ int n, a, b, c, d, e, f[100];
+
+cin >> n;
+for (int i = 1; i <= n; i++)
+cin >> f[i];
+
+for (int j = 1; j <= n; j++)
+cin >> f[j];
+
+cout << 4 << endl;
+
+return 0;
+}

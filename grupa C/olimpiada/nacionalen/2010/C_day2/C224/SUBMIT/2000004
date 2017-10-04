@@ -1,0 +1,107 @@
+#include <iostream>
+#include <queue>
+#define inf 1<<31-1
+using namespace std;
+
+int ind, n, m, ans=inf, r, i, j, ip[8], jp[8], t, ix, jx, ie, je, ir, jr, nexti, nextj, p[8];
+char a[64][64], xx;
+bool used[64][64], u[8];
+int d[8][64][64];
+queue<int> qi, qj;
+
+void bfs(int ist, int jst)
+{
+qi.push(ist); qj.push(jst);
+memset(used, 0, sizeof(used));
+used[ist][jst] = 1;
+d[ind][ist][jst] = 0;
+while(!qi.empty()) {
+                   ir = qi.front(); jr = qj.front(); qi.pop(); qj.pop();
+                   nexti = ir+1; nextj = jr;
+                   if(nexti == n) nexti = 0;
+                   if(!used[nexti][nextj] && a[nexti][nextj] != '#') {
+                                           used[nexti][nextj] = 1;
+                                           d[ind][nexti][nextj] = d[ind][ir][jr] + 1;
+                                           qi.push(nexti); qj.push(nextj);
+                                           }
+                   nexti = ir-1; nextj = jr;
+                   if(nexti == -1) nexti = n-1;
+                   if(!used[nexti][nextj] && a[nexti][nextj] != '#') {
+                                           used[nexti][nextj] = 1;
+                                           d[ind][nexti][nextj] = d[ind][ir][jr] + 1;
+                                           qi.push(nexti); qj.push(nextj);
+                                           }
+
+                   nexti = ir; nextj = jr+1;
+                   if(nextj == m) nextj = 0;
+                   if(!used[nexti][nextj] && a[nexti][nextj] != '#') {
+                                           used[nexti][nextj] = 1;
+                                           d[ind][nexti][nextj] = d[ind][ir][jr] + 1;
+                                           qi.push(nexti); qj.push(nextj);
+                                           }
+                   nexti = ir; nextj = jr-1;
+                   if(nextj == -1) nextj = m-1;
+                   if(!used[nexti][nextj] && a[nexti][nextj] != '#') {
+                                           used[nexti][nextj] = 1;
+                                           d[ind][nexti][nextj] = d[ind][ir][jr] + 1;
+                                           qi.push(nexti); qj.push(nextj);
+                                           }
+                   }
+
+ind++;
+}
+
+void f(int pos)
+{
+if(pos == t) 
+{
+r = d[0][ip[p[0]]][jp[p[0]]];
+if(r == -1) return;
+for(i=0; i<t-1; i++) {
+         r += d[p[i] + 1][ip[p[i+1]]][jp[p[i+1]]];
+         if(d[p[i] + 1][ip[p[i+1]]][jp[p[i+1]]] == -1) return;
+         }       
+if(d[p[t-1]+1][ix][jx] == -1) return;
+r += d[p[t-1]+1][ix][jx];
+ans = min(ans, r);
+}
+int k;
+for(k=0; k<5; k++)    
+         if(!u[k])    
+             { 
+             u[k] = 1;
+             p[pos] = k;
+             f(pos + 1);
+             u[k] = 0;
+             }
+     
+}
+
+int main()
+{
+scanf("%d%d", &n, &m);
+for(i=0; i<n; i++)
+scanf("%s", &a[i]);
+for(i=0; i<n; i++)
+for(j=0; j<m; j++)
+if(a[i][j] == 'E') { ie = i; je = j; }
+else if(a[i][j] == 'X') { ix = i; jx = j; }
+else if(a[i][j] == 'P') { ip[t] = i; jp[t] = j; t++; }
+memset(d, -1, sizeof(d));
+bfs(ie, je);
+for(i=0; i<t; i++) bfs(ip[i], jp[i]);
+f(0);
+if(ans == inf) printf("-1\n");
+else printf("%d\n", ans);
+//system("pause");
+return 0;    
+}
+/*
+
+5 11
+#....#.....
+...E....X..
+.######P##.
+.########..
+.P.#....P..
+*/

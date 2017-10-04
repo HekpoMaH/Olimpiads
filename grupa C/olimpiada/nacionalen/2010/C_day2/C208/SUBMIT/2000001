@@ -1,0 +1,51 @@
+/*
+TASK: secret
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <string.h>
+#include <math.h>
+
+using namespace std;
+
+char s[1000010];
+char m[1024][1024];
+int n,k;
+
+void init()
+{
+    int sdig=0;
+    scanf("%s",&s);
+    n=(int)sqrt( (double)strlen(s) );
+    
+    for(int i=0;i<n*n;i++) if(s[i]>='0' && s[i]<='9') sdig+=(s[i]-'0');
+    k=sdig%n;
+    
+    for(int i=0;i<n*n;i+=n)
+     for(int j=0;j<n;j++)
+      m[i/n][j]=s[i+j];
+}
+
+void solve()
+{
+    int x,y;
+    x=k; y=0;
+    for( ; ; )
+    {
+        if(m[x][y]<'A' || m[x][y]>'Z') break;
+        printf("%c",m[x][y]);
+        if(x==n-1) { x=0; continue; }
+        if(y==n-1) { x++; y=0; continue; }
+        x++; y++;
+    }
+    printf("\n");
+}
+
+int main()
+{
+    init();
+    solve();
+
+    return 0;
+}

@@ -1,0 +1,41 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+long long a[105][105],m[10005],n,k,x,br;
+int main()
+{
+  long long i,j,y;
+  cin>>n;
+  for(i=1;i<=n;i++)
+    m[i]=-1;
+  for(i=1;i<=n;i++)
+    for(j=1;j<=n;j++)
+      cin>>a[i][j];
+  cin>>k;
+  for(i=1;i<=k;i++)
+  {
+    cin>>x;
+    for(j=1;j<=n;j++)
+      for(y=1;y<=n;y++)
+        if(a[j][y]==x)
+          if(abs(j-1)+abs(n-y)<m[i] || m[i]==-1)
+        {
+          m[i]=abs(j-1)+abs(n-y);
+//          cout<<x<<" "<<j<<" "<<y<<" "<<m[i]<<endl;
+        }
+  }
+  for(i=1;i<=k;i++)
+    if(m[i]==-1)
+      cout<<"No Solution"<<endl;
+    else
+      cout<<m[i]<<endl;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

@@ -1,0 +1,18 @@
+<hashtable>
+  <entry>
+    <string>secret</string>
+    <string>2000001</string>
+  </entry>
+  <entry>
+    <string>secret_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>secret_submit_time</string>
+    <string>2010.04.25 09:46:48</string>
+  </entry>
+  <entry>
+    <string>secret_filename</string>
+    <string>secret.cpp</string>
+  </entry>
+</hashtable>

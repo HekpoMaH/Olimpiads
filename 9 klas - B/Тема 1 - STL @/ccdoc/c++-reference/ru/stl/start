@@ -1,0 +1,183 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru"
+ lang="ru" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ru:stl:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-08-11T22:47:35-0700" />
+<meta name="keywords" content="ru,stl,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/ru/stl/start?do=index" title="Все страницы" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=ru:stl" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/ru/stl/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/ru/stl/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='ru:stl';var JSINFO = {"id":"ru:stl:start","namespace":"ru:stl"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+<!-- TOC START -->
+<div class="toc">
+<div class="tocheader toctoggle" id="toc__header">Содержание</div>
+<div id="toc__inside">
+
+<ul class="toc">
+<li class="clear">
+
+<ul class="toc">
+<li class="level2"><div class="li"><span class="li"><a href="start#стандартная_библиотека_шаблонов_c_stl" class="toc">Стандартная библиотека шаблонов C++ (STL)</a></span></div>
+<ul class="toc">
+<li class="level3"><div class="li"><span class="li"><a href="start#структуры_данных" class="toc">Структуры данных</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#алгоритмы" class="toc">Алгоритмы</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#итераторы" class="toc">Итераторы</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#функциональные_объекты" class="toc">Функциональные объекты</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#память" class="toc">Память</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#полезности" class="toc">Полезности</a></span></div></li></ul>
+</li></ul>
+</li></ul>
+</div>
+</div>
+<!-- TOC END -->
+
+
+
+<h2><a name="стандартная_библиотека_шаблонов_c_stl" id="стандартная_библиотека_шаблонов_c_stl">Стандартная библиотека шаблонов C++ (STL)</a></h2>
+<div class="level2">
+
+<p>
+
+STL (стандартная библиотека шаблонов) - это общий набор шаблонов классов и алгоритмов,
+позволяющий программистам легко реализовывать стандартные структуры данных, такие как
+очереди, списки и стеки.
+</p>
+
+</div>
+<!-- SECTION "Стандартная библиотека шаблонов C++ (STL)" [1-444] -->
+<h3><a name="структуры_данных" id="структуры_данных">Структуры данных</a></h3>
+<div class="level3">
+
+<p>
+
+STL предоставляет следующие конструкции, разделенные на три группы:
+
+</p>
+<ul>
+<li class="level1"><div class="li"> Последовательности</div>
+<ul>
+<li class="level2"><div class="li"> <a href="vector/start" class="wikilink1" title="ru:stl:vector:start">Векторы (C++ Vectors)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="list/start" class="wikilink1" title="ru:stl:list:start">Списки (C++ Lists)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="deque/start" class="wikilink1" title="ru:stl:deque:start">Двусторонние очереди (C++ Double-Ended Queues)</a></div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> Адаптеры последовательностей</div>
+<ul>
+<li class="level2"><div class="li"> <a href="stack/start" class="wikilink1" title="ru:stl:stack:start">Стеки (C++ Stacks)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="queue/start" class="wikilink1" title="ru:stl:queue:start">Очереди (C++ Queues)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="priority_queue/start" class="wikilink1" title="ru:stl:priority_queue:start">Очереди с приоритетами (C++ Priority Queues)</a></div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> Ассоциативные контейнеры</div>
+<ul>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/ru/stl/bitset/start" class="wikilink2" title="ru:stl:bitset:start" rel="nofollow">Битовые множества (C++ Bitsets)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="map/start" class="wikilink1" title="ru:stl:map:start">Ассоциативные массивы (C++ Maps)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/ru/stl/multimap/start" class="wikilink2" title="ru:stl:multimap:start" rel="nofollow">Контейнеры multimap (C++ Multimaps)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="set/start" class="wikilink1" title="ru:stl:set:start">Множества (C++ Sets)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="multiset/start" class="wikilink1" title="ru:stl:multiset:start">Контейнеры multiset (C++ Multisets)</a></div>
+</li>
+</ul>
+</li>
+</ul>
+
+<p>
+
+Идея STL состоит в том, что тяжелая часть работы при манипуляциях сложными структурами данных
+уже была сделана. Если программист захочет использовать стек целых чисел, то все, что ему нужно будет сделать,
+это написать такой код:
+</p>
+<pre class="c code c++" style="font-family:monospace;">  stack<span class="sy0">&lt;</span>int<span class="sy0">&gt;</span> myStack<span class="sy0">;</span></pre>
+<p>
+С минимальными усилиями со своей стороны мы теперь можем выполнять функции
+<a href="stack/push" class="wikilink1" title="ru:stl:stack:push">push</a> и <a href="stack/pop" class="wikilink1" title="ru:stl:stack:pop">pop</a> над стеком. Магия шаблонов C++
+позволяет определить любой тип данных, не только целочисленный. Класс стека STL
+предоставляет общую функциональность стека вне зависимости от данных в стеке.
+</p>
+
+</div>
+<!-- SECTION "Структуры данных" [445-2480] -->
+<h3><a name="алгоритмы" id="алгоритмы">Алгоритмы</a></h3>
+<div class="level3">
+
+<p>
+
+Кроме того, STL предоставляет набор полезных
+<a href="algorithm/start" class="wikilink1" title="ru:stl:algorithm:start">алгоритмов</a>: например, <a href="http://www.cppreference.com/wiki/ru/stl/algorithm/%D0%B1%D0%B8%D0%BD%D0%B0%D1%80%D0%BD%D1%8B%D0%B9_%D0%BF%D0%BE%D0%B8%D1%81%D0%BA" class="wikilink2" title="ru:stl:algorithm:бинарный_поиск" rel="nofollow">бинарный поиск</a>,
+<a href="http://www.cppreference.com/wiki/ru/stl/algorithm/%D1%81%D0%BE%D1%80%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D1%83" class="wikilink2" title="ru:stl:algorithm:сортировку" rel="nofollow">сортировку</a> и <a href="http://www.cppreference.com/wiki/ru/stl/algorithm/for_each" class="wikilink2" title="ru:stl:algorithm:for_each" rel="nofollow">for_each</a> – они могут использоваться во множестве
+контейнеров или структур данных.
+</p>
+
+</div>
+<!-- SECTION "Алгоритмы" [2481-2911] -->
+<h3><a name="итераторы" id="итераторы">Итераторы</a></h3>
+<div class="level3">
+
+<p>
+
+<a href="iterators" class="wikilink1" title="ru:stl:iterators">Итераторы</a> реализуют общий метод доступа и навигации по элементам структур данных STL.
+</p>
+
+</div>
+<!-- SECTION "Итераторы" [2912-3118] -->
+<h3><a name="функциональные_объекты" id="функциональные_объекты">Функциональные объекты</a></h3>
+<div class="level3">
+
+<p>
+
+<a href="http://www.cppreference.com/wiki/ru/stl/functional/start" class="wikilink2" title="ru:stl:functional:start" rel="nofollow">Заголовочный файл &lt;functional&gt;</a> определяет методы, связанные с созданием функциональных объектов.
+</p>
+
+</div>
+<!-- SECTION "Функциональные объекты" [3119-3365] -->
+<h3><a name="память" id="память">Память</a></h3>
+<div class="level3">
+
+<p>
+
+<a href="http://www.cppreference.com/wiki/ru/stl/memory/start" class="wikilink2" title="ru:stl:memory:start" rel="nofollow">Заголовочный файл &lt;memory&gt;</a> предоставляет простые структуры управления памятью, например, <a href="http://www.cppreference.com/wiki/ru/stl/memory/auto_ptr" class="wikilink2" title="ru:stl:memory:auto_ptr" rel="nofollow">auto_ptr</a>.
+</p>
+
+</div>
+<!-- SECTION "Память" [3366-3594] -->
+<h3><a name="полезности" id="полезности">Полезности</a></h3>
+<div class="level3">
+
+<p>
+
+Также есть несколько общих полезных методов, таких как <a href="http://www.cppreference.com/wiki/ru/stl/utility/make_pair" class="wikilink2" title="ru:stl:utility:make_pair" rel="nofollow">make_pair</a> в <a href="http://www.cppreference.com/wiki/ru/stl/utility/start" class="wikilink2" title="ru:stl:utility:start" rel="nofollow"> заголовочном файле &lt;utility&gt;</a>.
+
+</p>
+
+</div>
+<!-- SECTION "Полезности" [3595-] --></div>
+</body>
+</html>

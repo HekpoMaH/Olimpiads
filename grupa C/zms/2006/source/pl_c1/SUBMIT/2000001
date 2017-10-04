@@ -1,0 +1,128 @@
+{
+TASK PHONE
+LANG PASCAL
+}
+type
+   fr=record
+      PhoneNum:array[1..10]of char;
+      NumOfDig:integer;
+      Price:real;
+      NumOfKeys:integer;
+      Keys:array[1..10]of integer;
+   end;
+var
+   ch:char;
+   pos,i,NumOfFrs,bDig,j,k,l:integer;
+   frs:array[1..101]of fr;
+   a:array[1..102,1..102]of real;
+   d:array[1..102,1..102]of boolean;
+   bPhoneNum:array[1..10]of char;
+   used:array[1..102]of boolean;
+   b,c:boolean;
+   minSum,curSum:real;
+procedure allDFS(St,En:integer);
+var
+   i:integer;
+begin
+   if(st=en)then
+   begin
+      minSum:=curSum;
+      exit;
+   end;
+   for i:=1 to NumOfFrs+2 do
+      if(d[st,i])and(used[i]=false)then
+         if curSum+a[st,i]<minSum then
+         begin
+            used[i]:=true;
+            curSum:=curSum+a[st,i];
+            allDFS(i,en);
+            curSum:=curSum-a[st,i];
+            used[i]:=false;
+         end;
+end;
+procedure ReadFr(var a:fr);
+var
+   i:integer;
+begin
+   read(ch);
+   pos:=1;
+   while(ch<>' ')do
+   begin
+      a.PhoneNum[pos]:=ch;
+      inc(pos);
+      read(ch);
+   end;
+   a.NumOfDig:=pos-1;
+   read(a.Price,a.NumOfKeys);
+   for i:=1 to a.NumOfKeys-1 do
+      read(a.Keys[i]);
+   readln(a.keys[i+1]);
+end;
+begin
+   readln(NumOfFrs);
+   for i:=1 to NumOfFrs+1 do
+      ReadFr(frs[i]);
+   pos:=1;
+   repeat
+      read(ch);
+      bPhoneNum[pos]:=ch;
+      inc(pos);
+   until eoln;
+   bDig:=pos-1;
+   for i:=1 to NumOfFrs+1 do
+   begin
+      for j:=1 to NumOfFrs+1 do
+         if(i<>j)then
+         begin
+            for k:=1 to frs[j].NumOfDig do
+            begin
+               for l:=1 to frs[i].NumOfKeys do
+                  if frs[i].Keys[l]=ord(frs[j].PhoneNum[k])-ord('0') then
+                  begin
+                     b:=true;
+                     break;
+                  end
+                  else
+                     b:=false;
+               if b=false then
+               begin
+                  c:=false;
+                  break;
+               end
+               else
+                  c:=true;
+            end;
+            if c then
+            begin
+               a[i,j]:=frs[i].Price;
+               d[i,j]:=true;
+            end;
+         end;
+      for k:=1 to bDig do
+      begin
+         for l:=1 to frs[i].NumOfKeys do
+            if frs[i].Keys[l]=ord(bPhoneNum[k])-ord('0') then
+            begin
+               b:=true;
+               break;
+            end
+            else
+               b:=false;
+         if b=false then
+         begin
+            c:=false;
+            break;
+         end
+         else
+            c:=true;
+      end;
+      if c then
+      begin
+         a[i,NumOfFrs+2]:=frs[i].Price;
+         d[i,NumOfFrs+2]:=true;
+      end;
+   end;
+   minSum:=50000;
+   allDFS(1,NumOfFrs+2);
+   writeln(minSum:0:2);
+end.

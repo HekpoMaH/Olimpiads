@@ -1,0 +1,32 @@
+/*
+TASK:songs
+LANG: C++
+*/
+#include<iostream>
+#include<string>
+#include<iomanip>
+#include<cmath>
+#include<queue>
+#include<stack>
+using namespace std;
+long long int a[10000],b[10000];
+int main()
+{
+    int br=0;
+    int n;cin>>n;
+    for(int i=1;i<=n;i++)
+    {cin>>a[i];}
+    for(int j=1;j<=n;j++)
+    {cin>>b[j];}
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=n;j++)
+        { if(a[i]==b[j]&&a[i+1]){if(i>j||i<j){br++;}
+        }
+        }
+    }
+    cout<<br<<endl;
+
+
+return 0;
+}

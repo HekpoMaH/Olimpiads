@@ -1,0 +1,15 @@
+#include<iostream>
+using namespace std;
+long a,b,s1,s2,f1,f2,n,m,i;
+int main()
+{
+    cin>>n>>m;
+    for(i=1; i<=m; i++)
+    {
+             cin>>a>>b;
+    }
+    cin>>s1>>f1>>s2>>f2;
+    cout<<m-n<<endl;
+    //system ("pause");
+    return 0;
+}

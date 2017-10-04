@@ -1,0 +1,61 @@
+/*
+TASK: PHONE
+LANG: C++
+*/
+#include <string.h>
+#include <stdio.h>
+#include <iostream>
+using namespace std;
+
+typedef struct{
+char nomer[10];
+float cena;
+int br;
+int keys[10];
+} A;
+
+A masivec[103];
+float dae[103][103],d[103];
+int used[103],n,i,j,strj,ss,v,flag,k;
+
+void func(){
+        for(i=1;i<=n+2;i++) d[i]=dae[1][i];
+        d[1]=0;
+        v=1;
+        for(i=1;i<=n+2;i++){
+                used[v]=1;
+                for(j=1;j<=n+2;j++)
+                        if(d[v]>d[j]+dae[j][v]) d[v]=d[j]+dae[j][v];
+                d[0]=20000;
+                for(j=1;j<=n+2;j++)
+                        if(!used[j]&&d[0]>d[j]){
+                                v=j;
+                                d[0]=d[j];
+                        }
+        }
+}
+int main(){
+        scanf("%d",&n);
+        for(i=1;i<=n+1;i++){
+                scanf("%s %f %d",masivec[i].nomer,&masivec[i].cena,&masivec[i].br);
+                for(j=0;j<masivec[i].br;j++){
+                        scanf("%d",&ss);
+                        masivec[i].keys[j]=1;
+                }
+        }
+        scanf("%s",masivec[n+2].nomer);
+        for(i=1;i<=n+2;i++)
+                for(j=1;j<=n+2;j++) dae[i][j]=20000;
+        for(i=1;i<=n+1;i++)
+                for(j=1;j<=n+2;j++){
+                        strj=strlen(masivec[j].nomer);
+                        flag=1;
+                        for(k=0;k<strj;k++)
+                                if(!masivec[i].keys[masivec[j].nomer[k]-48]) flag=0;
+                        if(flag&&i!=j) dae[i][j]=masivec[i].cena;
+                }
+        func();
+        if(d[n+2]!=(int) d[n+2])printf("%.2f",d[n+2]);
+        else printf("%.0f",d[n+2]);
+        return 0;
+}

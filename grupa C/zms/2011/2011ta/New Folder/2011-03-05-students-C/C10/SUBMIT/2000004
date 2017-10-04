@@ -1,0 +1,92 @@
+#include<iostream>
+#include<cmath>
+#include<vector>
+#include<queue>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstdio>
+using namespace std;
+int i,j,z,n,k,a[1111][1111],b[1111][1111],bb[1111][1111],x,y,d,ok,ok1,zz;
+queue<int> q;
+void pyhni (int x1,int y1)
+{
+    ok=0;
+    if (x1>0 && x1<=n && y1>0 && y1<=n)
+    {
+        if (b[x1][y1]>b[x][y]+1 || b[x1][y1]==0 || bb[x1][y1]+1!=i)
+        {
+            q.push(x1);
+            q.push(y1);
+            b[x1][y1]=b[x][y]+1;
+            bb[x1][y1]=i-1;
+            if (a[x1][y1]==d) {ok=1;zz=b[x][y];}
+        }
+    }
+}
+int main()
+{
+    scanf ("%d",&n);
+    for (i=1;i<=n;i++)
+    {
+        for (j=1;j<=n;j++)
+        {
+            scanf ("%d",&a[i][j]);
+        }
+    }
+    scanf ("%d",&k);
+    for (i=1;i<=k;i++)
+    {
+        scanf("%d",&d);
+        if (a[1][n]==d) cout<<0<<endl;
+        else
+        {
+            b[1][n]=1;
+            q.push(1);
+            q.push(n);
+            bb[1][n]=i-1;
+            b[1][n]=1;
+            ok1=0;
+            while (!q.empty())
+            {
+                ok=0;
+                x=q.front();
+                q.pop();
+                y=q.front();
+                q.pop();
+                if (a[x][y]>d)
+                {
+                    pyhni(x-1,y);
+                    pyhni(x,y-1);
+                }
+                else
+                if (a[x][y]<d)
+                {
+                    pyhni(x,y+1);
+                    pyhni(x+1,y);
+                }
+                if (ok==1) {cout<<zz<<endl;ok1=1;break;}
+            }
+            while (!q.empty())
+            {
+                q.pop();
+            }
+            if (ok1==0) cout<<"No Solution"<<endl;
+        }
+    }
+    return 0;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/
+//1
+//0
+//No Solution
+//5
+//2

@@ -1,0 +1,19 @@
+#include <cstdio>
+int cnt;
+int l;
+int price[100];
+int l_otst[100];
+int new_price[100];
+int l_cable[100];
+int main() {
+    scanf("%d %d", &cnt, &l);
+    for (int i = 0;i < cnt; ++i) {
+        scanf("%d %d %d %d", &price, &l_otst, &new_price, &l_cable);
+    }
+    int sum = 0;
+    for (int i = 0;i < cnt; ++i) {
+        sum += l_cable[i];
+    }
+    if (sum < l) puts("-1"); 
+    return 0;
+}

@@ -1,0 +1,50 @@
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+#include <map>
+#define MAX 1024*1024
+using namespace std;
+
+int n, ans[10001], nom[1024][1024];
+int k, i, j, q;
+map<int, int> m;
+
+int main()
+{
+for(i=1; i<=10001; i++)
+ans[i] = MAX;
+
+scanf("%d", &n);
+for(i=0; i<n; i++)
+for(j=0; j<n; j++)
+scanf("%d", &nom[i][j]);
+
+scanf("%d", &k);
+for(i=1; i<=k; i++)
+{
+scanf("%d", &j);
+m[j] = i;
+}
+
+for(i=0; i<n; i++)
+for(j=0; j<n; j++)
+{
+q = m[nom[i][j]];
+if(q >= 1) ans[q] = min(ans[q], i + n - 1 - j);
+}
+
+for(i=1; i<=k; i++)
+if(ans[i] == MAX) printf("No Solution\n");
+else printf("%d\n", ans[i]);
+
+return 0;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

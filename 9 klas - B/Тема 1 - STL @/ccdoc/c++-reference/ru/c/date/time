@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru"
+ lang="ru" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ru:c:date:time</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-12-12T05:01:19-0800" />
+<meta name="keywords" content="ru,c,date,time" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/ru/c/date/time?do=index" title="Все страницы" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=ru:c:date" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/ru/c/date/time" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/ru/c/date/time" />
+<link rel="canonical" href="time" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='ru:c:date';var JSINFO = {"id":"ru:c:date:time","namespace":"ru:c:date"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="time" id="time">time</a></h2>
+<div class="level2">
+
+<p>
+Синтаксис:
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;ctime&gt;</span>
+    time_t time<span class="br0">&#40;</span> time_t <span class="sy0">*</span>time_save <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+
+Функция time() возвращает текущее время в секундах (отсчет секунд берется от 00:00:00 UTC, 1 Января 1970 года), а при возникновении ошибки функция возвращает -1.  Если передать аргумент &#039;time_save&#039;, то текущее время будет сохранено в &#039;time_save&#039;.
+</p>
+
+<p>
+Смотрите также: <a href="http://www.cppreference.com/wiki/ru/c/date/asctime" class="wikilink2" title="ru:c:date:asctime" rel="nofollow">asctime</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/clock" class="wikilink2" title="ru:c:date:clock" rel="nofollow">clock</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/ctime" class="wikilink2" title="ru:c:date:ctime" rel="nofollow">ctime</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/difftime" class="wikilink2" title="ru:c:date:difftime" rel="nofollow">difftime</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/gmtime" class="wikilink2" title="ru:c:date:gmtime" rel="nofollow">gmtime</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/localtime" class="wikilink2" title="ru:c:date:localtime" rel="nofollow">localtime</a>, <a href="http://www.cppreference.com/wiki/ru/c/date/mktime" class="wikilink2" title="ru:c:date:mktime" rel="nofollow">mktime</a>, <a href="../../../c/other/srand" class="wikilink1" title="c:other:srand">(Функции C: Прочее) srand</a>, <a href="strftime" class="wikilink1" title="ru:c:date:strftime">strftime</a>
+
+</p>
+
+</div>
+<!-- SECTION "time" [3-] --></div>
+</body>
+</html>

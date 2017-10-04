@@ -1,0 +1,16 @@
+/*
+TASK: phone
+LAHG: C++
+*/
+#include<iostream.h>
+long n,tel,j,i,m,burborka,cif,a[101][101],b[101],butoni,cifri[101],sladkodymcho,butonitemy,cifritemy;
+double smetka,negovasmetka,krainasmetka,bul;
+int main()
+{
+cin>>n;
+cin>>sladkodymcho>>negovasmetka>>butonitemy>>cifritemy;
+for(i=0;i<n-1;i++) cin>>b[i]>>smetka>>butoni;
+for(j=0;j<butoni;j++) cin>>cif;
+cin>>burborka;
+return 0;
+}

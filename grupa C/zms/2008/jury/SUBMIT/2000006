@@ -1,0 +1,42 @@
+/*
+TASK:context
+LANG:C++
+*/
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+int main()
+{
+     char f[60],t[65010];
+     int i,j,k,N,lf,lt,s,e,flag;
+     
+     scanf("%d",&N);scanf("%c",f);
+     do scanf("%c",f); while(f[0]==' ');
+     i=1; do scanf("%c",f+i); while(f[i++]!='\n');
+     i--;f[i--]='\0';while(f[i]==' '){f[i]='\0';i--;}
+     do scanf("%c",t); while(t[0]==' ');
+     i=1; do scanf("%c",t+i); while(t[i++]!='\n');
+     i--;t[i--]='\0';while(t[i]==' '){t[i]='\0';i--;}
+     lf=strlen(f);lt=strlen(t);
+//    printf("%d %s\n",lf,f);
+//     printf("%d %s\n",lt,t);
+     for(i=0;i<=lt-lf;i++)
+     {
+        flag=1;                  
+        for(j=0;j<lf;j++)
+          if(tolower(t[i+j])!=tolower(f[j])){flag=0;break;}
+        if(flag)              
+        { 
+           if(lf+2*N>lt) printf("%s\n",t);
+           else                   
+           {   
+               s=i-N;e=i+lf-1+N;
+               if(s<0) {e=e-s;s=0;}
+               else if(e>lt-1) {e=lt-1;s=lt-lf-2*N;}
+               for(k=s;k<=e;k++) printf("%c",t[k]);
+               printf("\n");
+            }                        
+        }                                            
+     }       
+}

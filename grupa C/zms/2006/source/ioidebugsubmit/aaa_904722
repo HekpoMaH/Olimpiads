@@ -1,0 +1,40 @@
+{
+TASK: morse
+LANG: PASCAL
+}
+const  NumCodes=41;   { Number of symbols to be coded }
+       Symb:array [1..Numcodes] of char=
+       ('A','B','C','D','E','F','G','H','I','J','K','L','M','N',
+       'O','P','Q','R','S','T','U','V','W','X','Y','Z',
+       '1','2','3','4','5','6','7','8','9','0','.',',','-','?',' ');
+       Codes:array [1..Numcodes] of string[10]=
+       ('.-','-...','-.-.','-..','.','..-.','--.','....','..','.---',
+       '-.-','.-..','--','-.','---','.--.','--.-','.-.','...','-','..-',
+       '...-','.--','-..-','-.--','--..','.----','..---','...--','....-',
+       '.....','-....','--...','---..','----.','-----','.-.-.-','--..--',
+       '-..-.','..--..','.-.-.');
+
+var  s:string;
+     change:boolean;
+     i:byte;
+
+procedure Convert(c:char);
+{ Converts symbol into morse code }
+var i:byte;
+begin
+  i:=0;
+  repeat
+    inc(i)
+  until (c=Symb[i]) or (i>NumCodes);
+  if i<=NumCodes then { If found... }
+    write(Codes[i]+' ');
+end;
+
+begin
+  readln(s);
+  while pos('  ',s)>0 do          { Removes extra empty spaces }
+    delete(s,pos('  ',s),1);
+  for i:=1 to length(s) do        { Converts input string into morse codes }
+    Convert(UpCase(s[i]));
+  writeln ('...-.-');             { Message end string }
+end.

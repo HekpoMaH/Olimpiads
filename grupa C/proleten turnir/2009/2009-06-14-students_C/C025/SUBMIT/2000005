@@ -1,0 +1,72 @@
+#include <iostream>
+#include <cstdio>
+#include <vector>
+using namespace std;
+bool used[256];
+int a[256][256];
+vector<int> times1[256];
+vector<int> times2[256];
+int n;
+int dfsg(int i, int time, int end)
+{
+    //cout << i << '-' << time << ' ';
+                 int kl=0;
+                 if(i==end){times1[i].push_back(time+1); return 1; }
+                 for(int j=0; j<n; j++)
+                 if(a[i][j]==1)
+                                if(!used[j]){
+                                used[i]=1; if(dfsg(j,time+1,end)){kl=1; times1[i].push_back(time+1);}
+                                           }
+    //cout << endl;
+    used[i]=0;
+    if(kl==1) return 1;
+    return 0;
+}
+
+int dfsp(int i, int time, int end)
+{
+                 int kl=0;
+                 if(i==end){times2[i].push_back(time+1); return 1; }
+                 for(int j=0; j<n; j++)
+                 if(a[i][j]==1)
+                                if(!used[j]){
+                                used[i]=1; if(dfsp(j,time+1,end)){kl=1; times2[i].push_back(time+1);}
+                                           }
+    used[i]=0;
+    if(kl==1) return 1;
+    return 0;
+}
+                                  
+int main()
+{
+    int m;
+    int x,y;
+    cin >> n >> m;
+    int b1,b2,e1,e2;
+    for(int i=0; i<m; i++)
+    {
+            cin >> x >> y;
+            a[x][y]=1; a[y][x]=1;
+    }
+    cin >> b1 >> e1 >> b2 >> e2;
+    dfsp(b1,0,e1);
+    dfsg(b2,0,e2);        
+    int ans=0;
+    /*for(int i=0; i<n; i++)
+    {
+            cout << i << '-';
+            for(int j=0; j<times1[i].size(); j++) cout << times1[i][j] << ' ';
+            cout << endl;
+    }*/
+    for(int i=0; i<n; i++)
+    {
+            for(int j=0; j<times1[i].size(); j++)
+            for(int g=0; g<times2[i].size(); g++)
+            if(times1[i][j]==times2[i][g]){ans++; j=times1[i].size()-1; break;}
+    }
+    cout << ans << endl;
+    return 0;
+} 
+            
+            
+    

@@ -1,0 +1,86 @@
+//////////////////////////
+
+#include <iostream>
+#include <string>
+#include <cmath>
+using namespace std;
+
+int j,p,i,k;
+double sz;
+char a[1024][1024];
+string s;
+
+//////////////////////////
+
+int main()
+{
+    cin>>s;
+    sz=s.size();
+
+    int n=(sqrt(double(sz)));
+
+
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++)
+        {
+            a[i][j]=s[p];
+            p++;
+            if(s[p]> '1' && s[p] < '9')
+                k+=s[p]-'0';
+        }
+
+
+    i=k%n;
+    j=0;
+
+//////////////////////////
+
+    while( 1 )
+    {
+        if(i==n && j<n)
+        {
+            i=0;
+            j--;
+            continue;
+        }
+
+        else
+        if(j==n && i==n)
+        {
+            i=0;
+            j=0;
+            continue;
+        }
+
+        else
+        if(i<n && j==n)
+        {
+            j=0;
+
+            continue;
+        }
+
+
+
+
+
+        if(a[i][j]!='!' )
+        {
+            if(i<=n && j<=n)
+            cout<<a[i][j];
+        }
+        else break;
+
+
+            i++;
+            j++;
+
+    }
+
+//////////////////////////
+
+    cout<<endl;
+    return 0;
+}
+
+//////////////////////////

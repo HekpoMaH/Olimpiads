@@ -1,0 +1,45 @@
+#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+char deistv[200010];
+int num[200010];
+int n = 0;
+
+int main()
+{
+    char d;
+    int nm;
+    while (d != '='){
+        cin >> d;
+        cin >> nm;
+        deistv[n] = d;
+        num[n] = nm;
+        n ++;
+    }
+    for (int i = n - 1; i >= 0; i --){
+        if (deistv[i] == '-'){
+            nm += num[i];
+        }
+        if (deistv[i] == '+'){
+            nm -= num[i];
+        }
+        if (deistv[i] == '*'){
+            nm /= num[i];
+        }
+    }
+    cout << nm << endl;
+    return 0;
+}
+/*
++
+21
+-
+3
+*
+4
+=
+124
+*/

@@ -1,0 +1,46 @@
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+char mess[1000000];
+int main()
+{
+  int n, sum=0, k, cy=0, cx, current=0, h;
+  cin>>mess;
+  n=strlen(mess);
+  n=sqrt(n);
+  char message[n][n];
+  for(int a=0; a<n; a++)
+  {
+    for(int b=0; b<n; b++)
+    {
+      message[a][b]=mess[current];
+      current++;
+    }
+  }
+  for(int a=0; a<n*n; a++)
+  {
+    h=mess[a]-48;
+    if((h>=0)&&(h<=9)) sum=sum+h;
+  }
+  k=sum%n;
+  cx=k;
+  while((cx!=n-1)||(cy!=n-1))
+  {
+    if((message[cx][cy]>='A')&&(message[cx][cy]<='Z')) cout<<message[cx][cy];
+    cx++;
+    cy++;
+    if((cy<n)&&(cx>=n))
+    {
+      cx=0;
+      cy--;
+    }
+    if((cx<n)&&(cy>=n))
+    {
+      cy=0;
+    }
+  }
+  if((message[cx][cy]>='A')&&(message[cx][cy]<='Z')) cout<<message[cx][cy]<<endl;
+  else cout<<endl;
+  return 0;
+}

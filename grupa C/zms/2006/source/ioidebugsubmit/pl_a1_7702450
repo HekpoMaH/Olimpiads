@@ -1,0 +1,95 @@
+{
+TASK:FESTA
+LANG:PASCAL
+}
+{$I-,Q-,R-,S-}
+var
+   ans : array[1..10000] of record
+      x,ans : longint;
+   end;
+   BAns : longint;
+   a : array[1..10000] of record
+       x,b : longint;
+   end;
+   n : longint;
+procedure Add(x,b : longint);
+var
+   i : longint;
+begin
+   for i:=1 to n do
+      if a[n].x=x then
+         begin
+            inc(a[n].b,b);
+            exit;
+         end;
+   inc(n);
+   a[n].x:=x;
+   a[n].b:=b;
+end;
+function Check(var x,r : longint) : longint;
+var
+   MinX,MaxX,k : longint;
+   Ba,i,j : longint;
+begin
+   minX:=-MAXLONGINT;
+   MAxX:= MAXLONGINT;
+   Ba:=MaxLongint;
+   for i:=1 to n do
+      begin
+         k:=(r div a[i].b)+1;
+         if MinX<a[i].x-k then
+            MinX:=a[i].x-k;
+         if MaxX>a[i].x+k then
+            MaxX:=a[i].x+k;
+      end;
+   for j:=MinX to MaxX do
+      begin
+         k:=0;
+         for i:=1 to n do
+            inc(k,a[i].b*abs(a[i].x-j));
+         if Ba>abs(k-r) then
+            begin
+               Ba:=abs(k-r);
+               x:=j;
+            end;
+      end;
+   check:=Ba;
+end;
+
+procedure solve;
+var
+   f : text;
+   k,q,p,x : longint;
+begin
+   assign(f,'');
+   reset(f);
+   while not eof(f) do
+      begin
+         read(f,k);
+         if k=1 then
+            begin
+               readln(f,q,p);
+               Add(q,p);
+            end
+         else
+            begin
+               readln(f,q);
+               inc(BAns);
+               ans[bans].ans:=check(ans[bans].x,q);
+            end;
+      end;
+   close(f);
+
+end;
+procedure writefile;
+var
+   i : longint;
+begin
+   for i:=1 to bAns do
+      writeln(ans[i].x,' ',ans[i].ans);
+end;
+begin
+   solve;
+   writefile;
+   halt(0);
+end.

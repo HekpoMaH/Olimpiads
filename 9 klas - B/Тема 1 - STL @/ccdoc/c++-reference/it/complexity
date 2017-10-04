@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it"
+ lang="it" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>it:complexity</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2010-01-22T10:10:30-0800" />
+<meta name="keywords" content="it,complexity" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/it/complexity?do=index" title="Indice" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=it" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/it/complexity" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/it/complexity" />
+<link rel="canonical" href="complexity" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='it';var JSINFO = {"id":"it:complexity","namespace":"it"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="time_complexity" id="time_complexity">Time Complexity</a></h2>
+<div class="level2">
+
+<p>
+
+Ci sono differenti misure della velocità di un algoritmo. Se la dimensione dell&#039;input
+di un algoritmo è N la velocità di elaborazione viene descritta nei seguenti modi:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">None</th><th class="col1">Velocità</th><th class="col2">Descrizione</th><th class="col3">Formula</th><th class="col4">Esempio</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">tempo fattoriale</td><td class="col1">molto lento</td><td class="col2">impiega un tempo proporzionale a N elevato alla N-esima potenza</td><td class="col3 centeralign">  N!  </td><td class="col4"> Soluzione a “forza bruta” del problema del “commesso viaggiatore”</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">tempo esponenziale</td><td class="col1">lento</td><td class="col2">impiega un tempo proporzionale ad una costante elevata all&#039;N-esima potenza</td><td class="col3 centeralign">  K<sup>N</sup>  </td><td class="col4"> Soluzione a forza bruta del Cubo di Rubik</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">tempo polinomiale</td><td class="col1">veloce</td><td class="col2"> impiega un tempo proporzionale ad N elevato a qualche potenza costante</td><td class="col3 centeralign">  N<sup>K</sup>  </td><td class="col4"> Ordinamento per confronto (bubble sort, insertion, selection sort)</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">tempo “linearitmico”</td><td class="col1">molto veloce</td><td class="col2">impiega un tempo nella regione tra lineare e polinomiale</td><td class="col3 centeralign">  N*log(N)  </td><td class="col4"> Ordinamenti logaritmici lineari (quicksort, heapsort, mergesort)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">tempo lineare</td><td class="col1">superveloce</td><td class="col2">impiega un tempo proporzionale ad N</td><td class="col3 centeralign">  K*N  </td><td class="col4">Iterazione attraverso un array</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">tempo logaritmico</td><td class="col1">velocissimo</td><td class="col2">impiega un tempo proporzionale al logaritmo di N</td><td class="col3 centeralign">  K*log(N)  </td><td class="col4">Ricerca binaria</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">tempo costante</td><td class="col1">ideale</td><td class="col2">impiega un tempo costante indipendentemente dall&#039;input</td><td class="col3 centeralign">  K  </td><td class="col4"> lookup tramite indice di un elemento in un array</td>
+	</tr>
+</table>
+
+</div>
+<!-- SECTION "Time Complexity" [1-1284] -->
+<h3><a name="analisi_della_complessita" id="analisi_della_complessita">Analisi della complessità</a></h3>
+<div class="level3">
+
+<p>
+
+Un&#039;operazione data può avere diverse complessità a seconda dell&#039;ordine e del tipo di input. I diversi metodi di determinazione nell&#039;analisi della complessità temporale sono i seguenti:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Name</th><th class="col1">Description</th><th class="col2">Example</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">best-case</td><td class="col1">Un caso dove l&#039;operazione esegue il più velocemente possibile</td><td class="col2"> Il “bubblesort” ha una complessita di best-case dell&#039;ordine di N</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">average-case</td><td class="col1">Un caso dove l&#039;operazione esegue in tempo confrontabile con quello della maggiranza dei casi possibili</td><td class="col2"> Il Quicksort ha una complessità di average-case di N * log(N)</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">worst-case</td><td class="col1">Un caso dove l&#039;operazione esegue nel modo più lento</td><td class="col2">Il Quicksort ha una complessitù di worst-case di N<sup>2</sup></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">amortized worst-case</td><td class="col1">La stima della media del worst-case presa su un infinito numero di input</td><td class="col2"> vector::push_back() ha un amortized worst-case di K (constant time)</td>
+	</tr>
+</table>
+
+<p>
+
+Scegliere l&#039;algoritmo giusto dipende da quali casi vi aspettate di incontrare nella vostra applicazione. Per esempio un applicazione che deve proteggersi da input “malicious” dovrà evitare implementazioni “semplici” del quicksort, che ha una complessità di worst-time di N<sup>2</sup>, nonostante abbia una delle più veloci esecizioni in average-case rispetto agli altri sort.
+
+</p>
+
+</div>
+<!-- SECTION "Analisi della complessità" [1285-] --></div>
+</body>
+</html>

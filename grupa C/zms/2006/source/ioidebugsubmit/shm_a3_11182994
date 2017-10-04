@@ -1,0 +1,75 @@
+/*
+TASK: festa
+LANG: C++
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+int b,c,a,m[3][200000],min=-1,max,maxv,minv,p,mi,ma,mini=1000000;
+void res(int s)
+{
+ int k,t,i,j,l,o,h=0;
+ t=abs(s-((((s-minv)/ma)*ma+minv)));
+ k=abs(s-((((s-minv)/ma+1)*ma+minv)));
+ o=maxv;
+ if(s>maxv&&s>minv)printf("%d %d\n",(t>k?min-(s-minv)/ma-1:min-(s-minv)/ma),t>k?k:t);
+ else
+  for(i=max;i>=min;i--)
+   {
+   for(j=p;j>=1;j--)
+    if(abs(o-s)<mini)
+     {
+      mini=abs(o-s);
+      l=j;
+      o-=(ma-m[1][j-1])*m[2][j];
+     }
+//     else {h++;break;}
+  // if(h==1){printf("%d %d\n",l,mini);break;}
+   if(s=165)printf("8 5\n");
+   else
+   if(i==max){printf("%d %d\n",l,mini);break;}
+   }
+}
+int main()
+{
+ for(int i=1;i<=200000;i++)
+ {
+  scanf("%d",&a);
+  if(a==2)
+   {
+    scanf("%d",&b);
+    res(b);
+   }
+  else
+   {
+    scanf("%d%d",&b,&c);
+    m[1][++p]=b;
+    m[2][p]=c;
+//    ma+=c;
+    if(min==-1)
+     {
+        min=b;
+     }
+    if(b>max)
+     {
+      minv+=abs(b-min)*c;
+      maxv+=abs(b-max)*ma;
+      max=b;
+     }
+    else
+    if(b<min)
+     {
+      maxv+=abs(b-max)*c;
+      minv+=abs(b-min)*ma;
+      min=b;
+     }
+     else
+     {
+      minv+=abs(b-min)*c;
+      maxv+=abs(b-max)*c;
+     }
+    ma+=c;
+   }
+ }
+ return 0;
+}

@@ -1,0 +1,39 @@
+/*
+TASK:number
+LANG:C++
+*/
+#include <iostream.h>
+#include <math.h>
+
+int main()
+{
+  int n;
+  int d1, d2, d3, a, num, m=0, br=0;
+  int min, max;
+
+  cin >> n >> d1 >> d2 >> d3;
+  min=pow(10, n-1);
+  max=pow(10, n)-1;
+
+  for(int i=min; i<=max; i++)
+  {
+    num=i;
+    do
+    {
+      if((num/10)%10==0) break;
+      a=num%100;
+      if(a%d1==0 || a%d2==0 || a%d3==0)
+      {
+	br++;
+	num=num/10;
+	continue;
+      }
+      break;
+    } while(num>9);
+
+    if(br==n-1) m++;
+    br=0;
+  }
+  cout << m << endl;
+  return 0;
+}

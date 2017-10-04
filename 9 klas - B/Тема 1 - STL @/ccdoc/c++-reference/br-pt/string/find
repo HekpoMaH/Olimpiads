@@ -1,0 +1,80 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="br-pt"
+ lang="br-pt" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>br-pt:string:find</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-12-17T10:17:27-0800" />
+<meta name="keywords" content="br-pt,string,find" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/br-pt/string/find?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=br-pt:string" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/br-pt/string/find" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/br-pt/string/find" />
+<link rel="canonical" href="find" />
+<link rel="stylesheet" media="all" type="text/css" href="../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='br-pt:string';var JSINFO = {"id":"br-pt:string:find","namespace":"br-pt:string"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+<p>
+Syntaxe:
+
+</p>
+<pre class="code">  #include &lt;string&gt;
+  size_type find( const string&amp; str, size_type index = 0 ) const;
+  size_type find( const Char* str, size_type index = 0 ) const;
+  size_type find( const Char* str, size_type index, size_type length ) const;
+  size_type find( Char ch, size_type index = 0 ) const;</pre>
+
+<p>
+
+É a função responsável por <strong>procurar</strong> substrings localizadas em string, por exemplo:
+
+</p>
+<pre class="code">  &quot;A mente que se abre a uma nova idéia jamais voltará ao seu tamanho original.&quot;, Albert Einstein</pre>
+
+<p>
+
+Se usarmos find nesta frase com o argumento “A mente que se abre”, encontraremos somente isto:
+</p>
+<pre class="code"> 
+ &quot;A mente que se abre&quot;</pre>
+
+<p>
+
+Assim, nos podemos usar find para encontrar substrings dentro de uma string inteira, são usadas para identificar palavras de baixo calão e etc.
+
+</p>
+<pre class="code">#include &lt;string&gt;
+using namespace std;
+int main()
+{
+   string phrase = &quot;Fulano de tal é idiota!&quot;;
+   if (phrase.find(&quot;idiota&quot;) != string::npos)//string não será imprimida aqui pois há ocorrência da palavra &quot;idiota&quot; nela
+}</pre>
+
+<p>
+
+<strong>Informações tecnicas:</strong>
+
+</p>
+<pre class="code">Argumentos:
+   str   -&gt; substring a ser encontrada
+   index -&gt; posição inicial da procura</pre>
+<pre class="code">Retorno:
+   Caso a substring str seja encontrada um valor diferente de string::npos será encontrada, caso contrário (substring não sendo encontrada) o valor string::npos será retornado.</pre>
+</div>
+</body>
+</html>

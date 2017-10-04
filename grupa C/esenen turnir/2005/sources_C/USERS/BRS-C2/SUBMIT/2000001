@@ -1,0 +1,37 @@
+/*
+TASK:school
+LANG:C++
+*/
+#include <iostream.h>
+#define MAXN 501
+
+int d=0,used[MAXN],count=0,matrix[MAXN][MAXN],m,n,a,b,k,used0[MAXN];
+
+void func(int i){
+	int j;
+	used[i]=1;
+	used0[i]=1;
+	for(j=1;j<=n;j++){
+		if(matrix[i][j]==1&&!used[j]){
+			func(j);
+			used[j]=0;
+		}
+	}
+}
+
+int main(){
+	cin>>n>>m;
+	for(k=1;k<=m;k++){
+		cin>>a>>b;
+		matrix[a][b]=1;
+		matrix[b][a]=1;
+	}
+	for(k=1;k<=n;k++){
+		if(!used0[k]){
+		func(k);
+		count++;
+		}
+	}
+	cout<<count<<endl;
+	return 0;
+}

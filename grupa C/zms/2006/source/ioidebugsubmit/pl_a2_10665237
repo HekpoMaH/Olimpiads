@@ -1,0 +1,96 @@
+{
+TASK: cars
+LANG: PASCAL
+}
+
+const
+  maxq = 5000000;
+  maxv = 500001;
+  maxe = 5000001;
+
+  infile  = 'cars.in';
+  outfile = '';
+
+type
+  te = record
+    v : longint;
+    p : longint;
+  end;
+
+var
+  f : text;
+
+  ne, n, i, j, k, v, st, en, res : longint;
+
+  u  : array[0..maxv] of boolean;
+  av : array[0..maxv] of longint;
+  ae : array[0..maxe] of te;
+
+procedure input;
+begin
+  assign(f, infile);
+  reset(f);
+  readln(f, n);
+  st:=1;
+  for i:=1 to n do
+  begin
+    read(f, j);
+    if j = 0 then en:=i;
+    for k:=1 to j do
+    begin
+      read(f, v);
+      u[v]:=true;
+      inc(ne);
+      ae[ne].v:=v;
+      ae[ne].p:=av[i];
+      av[i]:=ne;
+    end;
+    while u[st] do inc(st);
+    readln(f);
+  end;
+  close(f);
+end;
+
+var
+  qe, qs : longint;
+  que : array[0..maxq] of longint;
+
+procedure bfs;
+var p : longint;
+begin
+  qs:=0;
+  qe:=1;
+  que[1]:=st;
+  while qs <> qe do
+  begin
+    inc(qs);
+    if qs > maxq then qs:=1;
+    p:=av[que[qs]];
+    while p <> 0 do
+    begin
+      inc(qe);
+      if qe > maxq then qe:=1;
+      que[qe]:=ae[p].v;
+      p:=ae[p].p;
+    end;
+    if que[qs] = en then
+    begin
+      inc(res);
+      if res = 987654321 then res:=0;
+    end;
+  end;
+end;
+
+procedure output;
+begin
+  assign(f, outfile);
+  rewrite(f);
+  writeln(f, res);
+  close(f);
+end;
+
+begin
+  input;
+  bfs;
+  output;
+end.

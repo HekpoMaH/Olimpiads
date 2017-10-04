@@ -1,0 +1,284 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 7: HEAPSORT</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+<a href="chap08.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="partii.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="0764_130d">CHAPTER 7: HEAPSORT<a name="0764_130d"></h1><P>
+<a name="0764_1308"><a name="0764_1309">In this chapter, we introduce another sorting algorithm. Like merge sort, but unlike insertion sort, heapsort's running time is <I>O</I>(<I>n </I>lg <I>n</I>). Like insertion sort, but unlike merge sort, heapsort sorts in place: only a constant number of array elements are stored outside the input array at any time. Thus, heapsort combines the better attributes of the two sorting algorithms we have already discussed.<P>
+Heapsort also introduces another algorithm design technique: the use of a data structure, in this case one we call a "heap," to manage information during the execution of the algorithm. Not only is the heap data structure useful for heapsort, it also makes an efficient priority queue. The heap data structure will reappear in algorithms in later chapters.<P>
+<a name="0764_130a"><a name="0764_130b"><a name="0764_130c">We note that the term "heap" was originally coined in the context of heapsort, but it has since come to refer to "garbage-collected storage," such as the programming language Lisp provides. Our heap data structure is <I>not</I> garbage-collected storage, and whenever we refer to heaps in this book, we shall mean the structure defined in this chapter.<P>
+
+
+
+
+
+<h1><a name="0766_1318">7.1 Heaps<a name="0766_1318"></h1><P>
+<a name="0766_130d"><a name="0766_130e"><a name="0766_130f">The <B>(</B><I><B>binary</I>) </B><I><B>heap</I></B> data structure is an array object that can be viewed as a complete binary tree (see Section 5.5.3), as shown in Figure 7.1. Each node of the tree corresponds to an element of the array that stores the value in the node. The tree is completely filled on all levels except possibly the lowest, which is filled from the left up to a point. An array <I>A</I> that represents a heap is an object with two attributes: <I>length</I>[<I>A</I>], which is the number of elements in the array, and <I>heap-size</I>[<I>A</I>], the number of elements in the heap stored within array <I>A</I>. That is, although <I>A</I>[1 . . <I>length</I>[<I>A</I>]] may contain valid numbers, no element past <I>A</I>[<I>heap-size</I>[<I>A</I>]], where <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/lteq12.gif"> [<I>length</I>[<I>A</I>], is an element of the heap. The root of the tree is <I>A</I>[1], and given the index <I>i</I> of a node, the indices of its parent <FONT FACE="Courier New" SIZE=2>PARENT</FONT>(<I>i</I>), left child <FONT FACE="Courier New" SIZE=2>LEFT</FONT>(<I>i</I>), and right child <FONT FACE="Courier New" SIZE=2>RIGHT</FONT>(<I>i</I>) can be computed simply:<P>
+<img src="141_a.gif"><P>
+<h4><a name="0766_1319">Figure 7.1 A heap viewed as (a) a binary tree and (b) an array. The number within the circle at each node in the tree is the value stored at that node. The number next to a node is the corresponding index in the array.<a name="0766_1319"></sub></sup></h4><P>
+<pre>PARENT(<I>i</I>)</sub></sup></pre><P>
+<pre><B>return</B> <IMG SRC="../IMAGES/hfbrdl12.gif"><I>i</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>LEFT(<I>i</I>)</sub></sup></pre><P>
+<pre><B>return</B> 2<I>i</I></sub></sup></pre><P>
+<pre>RIGHT(<I>i</I>)</sub></sup></pre><P>
+<pre><B>return</B> 2<I>i</I> + 1</sub></sup></pre><P>
+<a name="0766_1310"><a name="0766_1311"><a name="0766_1312">On most computers, the <FONT FACE="Courier New" SIZE=2><FONT FACE="Courier New" SIZE=1>LEFT</FONT></FONT> procedure can compute 2<I>i</I> in one instruction by simply shifting the binary representation of <I>i</I> left one bit position. Similarly, the <FONT FACE="Courier New" SIZE=2>RIGHT</FONT> procedure can quickly compute 2<I>i</I> + 1 by shifting the binary representation of <I>i</I> left one bit position and shifting in a 1 as the low-order bit. The <FONT FACE="Courier New" SIZE=2>PARENT</FONT> procedure can compute <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>i</I></FONT>/2 <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"> </FONT>by shifting <I>i</I> right one bit position. In a good implementation of heapsort, these three procedures are often implemented as "macros" or "in-line" procedures.<P>
+<a name="0766_1313">Heaps also satisfy the <I><B>heap property</I></B>: for every node <I>i</I> other than the root,<P>
+<pre><I>A</I>[PARENT(<I>i</I>)] <IMG SRC="../IMAGES/gteq.gif"> <I>A</I>[<I>i</I>],</sub></sup></pre><P>
+<h4><a name="0766_131a">(7.1)<a name="0766_131a"></sub></sup></h4><P>
+that is, the value of a node is at most the value of its parent. Thus, the largest element in a heap is stored at the root, and the subtrees rooted at a node contain smaller values than does the node itself.<P>
+<a name="0766_1314"><a name="0766_1315"><a name="0766_1316"><a name="0766_1317">We define the <I><B>height</I></B> of a node in a tree to be the number of edges on the longest simple downward path from the node to a leaf, and we define the height of the tree to be the height of its root. Since a heap of <I>n</I> elements is based on a complete binary tree, its height is <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) (see Exercise 7.1-2). We shall see that the basic operations on heaps run in time at most proportional to the height of the tree and thus take <I>O</I>(lg <I>n</I>) time. The remainder of this chapter presents five basic procedures and shows how they are used in a sorting algorithm and a priority-queue data structure.<P>
+<IMG SRC="../IMAGES/dot12.gif">     The <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> procedure, which runs in <I>O</I>(lg <I>n</I>) time, is the key to maintaining the heap property (7.1).<P>
+<IMG SRC="../IMAGES/dot12.gif">     The <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure, which runs in linear time, produces a heap from an unordered input array.<P>
+<IMG SRC="../IMAGES/dot12.gif">     The <FONT FACE="Courier New" SIZE=2>HEAPSORT</FONT> procedure, which runs in <I>O</I>(<I>n </I>lg <I>n</I>) time, sorts an array in place.<P>
+<IMG SRC="../IMAGES/dot12.gif">     The E<FONT FACE="Courier New" SIZE=2>XTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MAX</FONT> and <FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedures, which run in <I>O</I>(1g <I>n</I>) time, allow the heap data structure to be used as a priority queue.<P>
+
+
+
+
+
+<h2><a name="0767_1319">Exercises<a name="0767_1319"></h2><P>
+<a name="0767_131a">7.1-1<a name="0767_131a"><P>
+<a name="0767_1318">What are the minimum and maximum numbers of elements in a heap of height <I>h</I>?<P>
+<a name="0767_131b">7.1-2<a name="0767_131b"><P>
+Show that an <I>n-</I>element heap has height <IMG SRC="../IMAGES/hfbrdl12.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif">.<P>
+<a name="0767_131c">7.1-3<a name="0767_131c"><P>
+Show that the largest element in a subtree of a heap is at the root of the subtree.<P>
+<a name="0767_131d">7.1-4<a name="0767_131d"><P>
+Where in a heap might the smallest element reside?<P>
+<a name="0767_131e">7.1-5<a name="0767_131e"><P>
+Is an array that is in reverse sorted order a heap?<P>
+<a name="0767_131f">7.1-6<a name="0767_131f"><P>
+Is the sequence <IMG SRC="../IMAGES/lftwdchv.gif">23, 17, 14, 6, 13, 10, 1, 5, 7, 12<IMG SRC="../IMAGES/wdrtchv.gif"> a heap?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0768_131b">7.2 Maintaining the heap property<a name="0768_131b"></h1><P>
+<a name="0768_1319"><a name="0768_131a"><FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is an important subroutine for manipulating heaps. Its inputs are an array <I>A</I> and an index <I>i</I> into the array. When <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is called, it is assumed that the binary trees rooted at <FONT FACE="Courier New" SIZE=2>LEFT</FONT>(<I>i</I>) and <FONT FACE="Courier New" SIZE=2>RIGHT</FONT>(<I>i</I>) are heaps, but that <I>A</I>[<I>i</I>] may be smaller than its children, thus violating the heap property (7.1). The function of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is to let the value at <I>A</I>[<I>i</I>] &quot;float down&quot; in the heap so that the subtree rooted at index <I>i</I> becomes a heap.<P>
+<img src="143_a.gif"><P>
+<h4><a name="0768_131c">Figure 7.2 The action of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>(A, 2), where heap-size[A] = 10. (a) The initial configuration of the heap, with A[2] at node i = 2 violating the heap property since it is not larger than both children. The heap property is restored for node 2 in (b) by exchanging A[2] with A[4], which destroys the heap property for node 4. The recursive call <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>(A, 4) now sets i = 4. After swapping A[4] with A[9], as shown in (c), node 4 is fixed up, and the recursive call <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>(A, 9) yields no further change to the data structure.<a name="0768_131c"></sub></sup></h4><P>
+<pre>HEAPIFY(<I>A</I>, <I>i</I>)</sub></sup></pre><P>
+<pre>1 <I>l</I> <IMG SRC="../IMAGES/arrlt12.gif"> LEFT(<I>i</I>)</sub></sup></pre><P>
+<pre>2 <I>r</I> <IMG SRC="../IMAGES/arrlt12.gif"> RIGHT(<I>i</I>)</sub></sup></pre><P>
+<pre>3 <B>if</B> <I>l</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>heap-size</I>[<I>A</I>] and <I>A</I>[<I>l</I>] &gt; <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>4     <B>then</B> largest <IMG SRC="../IMAGES/arrlt12.gif"> l</sub></sup></pre><P>
+<pre>5     <B>else</B> <I>largest</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I></sub></sup></pre><P>
+<pre>6 <B>if</B> <I>r</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>heap-size</I>[<I>A</I>] and <I>A</I>[<I>r</I>] &gt; <I>A</I>[<I>largest</I>]</sub></sup></pre><P>
+<pre>7     <B>then</B> <I>largest</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>r</I></sub></sup></pre><P>
+<pre>8 <B>if</B> <I>largest</I> <IMG SRC="../IMAGES/noteq.gif"> <I>i</I></sub></sup></pre><P>
+<pre>9     <B>then</B> exchange <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <I>A</I>[<I>largest</I>]</sub></sup></pre><P>
+<pre>10          HEAPIFY(<I>A,largest</I>)</sub></sup></pre><P>
+Figure 7.2 illustrates the action of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>. At each step, the largest of the elements <I>A</I>[<I>i</I>], <I>A</I>[<FONT FACE="Courier New" SIZE=2>LEFT</FONT>(<I>i</I>)], and <I>A</I>[<FONT FACE="Courier New" SIZE=2>RIGHT</FONT>(<I>i</I>)] is determined, and its index is stored in <I>largest</I>. If <I>A</I>[<I>i</I>] is largest, then the subtree rooted at node <I>i</I> is a heap and the procedure terminates. Otherwise, one of the two children has the largest element, and <I>A</I>[<I>i</I>] is swapped with <I>A</I>[<I>largest</I>], which causes node <I>i</I> and its children to satisfy the heap property. The node <I>largest</I>, however, now has the original value <I>A</I>[<I>i</I>], and thus the subtree rooted at <I>largest</I> may violate the heap property. Consequently, <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> must be called recursively on that subtree.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> on a subtree of size<I> n</I> rooted at given node <I>i</I> is the <IMG SRC="../IMAGES/bound.gif"> (1) time to fix up the relationships among the elements <I>A</I>[<I>i</I>], <I>A</I>[<FONT FACE="Courier New" SIZE=2>LEFT<FONT FACE="Courier New" SIZE=1> </FONT>(<I>i</I>)], and <I>A</I>[<FONT FACE="Courier New" SIZE=2>RIGHT<FONT FACE="Courier New" SIZE=1> </FONT>(<I>i</I>)], plus the time to run <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> on a subtree rooted at one of the children of node <I>i</I>. The children's subtrees each have size at most 2<I>n</I>/3--the worst case occurs when the last row of the tree is exactly half full--and the running time of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> can therefore be described by the recurrence</FONT></FONT><P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>T</I>(2<I>n</I>/3) + <IMG SRC="../IMAGES/bound.gif">(1).</sub></sup></pre><P>
+The solution to this recurrence, by case 2 of the master theorem (Theorem 4.1), is<I> T</I>(<I>n</I>)<I> = O(</I>lg <I>n</I>). Alternatively, we can characterize the running time of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> on a node of height <I>h</I> as <I>O</I>(<I>h</I>).<P>
+
+
+
+
+
+<h2><a name="0769_131c">Exercises<a name="0769_131c"></h2><P>
+<a name="0769_131d">7.2-1<a name="0769_131d"><P>
+<a name="0769_131b">Using Figure 7.2 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>HEAPIFY </FONT>(<I>A,</I> 3) on the array <I>A </I>= <IMG SRC="../IMAGES/lftwdchv.gif">27, 17, 3, 16, 13, 10, 1, 5, 7, 12, 4, 8, 9, 0<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0769_131e">7.2-2<a name="0769_131e"><P>
+What is the effect of calling <FONT FACE="Courier New" SIZE=2>HEAPIFY<I>(A, i</I></FONT>) when the element A[<I>i</I>] is larger than its children?<P>
+<a name="0769_131f">7.2-3<a name="0769_131f"><P>
+What is the effect of calling <FONT FACE="Courier New" SIZE=2>HEAPIFY </FONT>(<I>A</I>, <I>i</I>) for <I>i</I> &gt; <I>heap-size </I>[<I>A</I>]/2?<P>
+<a name="0769_1320">7.2-4<a name="0769_1320"><P>
+The code for <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is quite efficient in terms of constant factors, except possibly for the recursive call in line 10, which might cause some compilers to produce inefficient code. Write an efficient <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> that uses an iterative control construct (a loop) instead of recursion.<P>
+<a name="0769_1321">7.2-5<a name="0769_1321"><P>
+Show that the worst-case running time of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> on a heap of size <I>n </I>is <IMG SRC="../IMAGES/omega12.gif">(lg <I>n</I>). (<I>Hint</I>: For a heap with <I>n</I> nodes, give node values that cause <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> to be called recursively at every node on a path from the root down to a leaf.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="076a_131e">7.3 Building a heap<a name="076a_131e"></h1><P>
+<a name="076a_131c">We can use the procedure <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> in a bottom-up manner to convert an array <I>A</I>[1 . . <I>n</I>], where <I>n</I> = <I>length</I>[<I>A</I>], into a heap. Since the elements in the subarray <I>A</I>[(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + l) . . <I>n</I>] are all leaves of the tree, each is a 1-element heap to begin with. The procedure <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> goes through the remaining nodes of the tree and runs <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> on each one. The order in which the nodes are processed guarantees that the subtrees rooted at children of a node <I>i</I> are heaps before <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is run at that node.<P>
+<pre>BUILD-HEAP(<I>A</I>)</sub></sup></pre><P>
+<pre>1  <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/arrlt12.gif"><I> length</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>2  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/hfbrdl12.gif"><I>length</I>[<I>A</I>]/2<IMG SRC="../IMAGES/hfbrdr12.gif"><B>downto</B> 1</sub></sup></pre><P>
+<pre>3        <B>do</B> HEAPIFY(<I>A, i</I>)</sub></sup></pre><P>
+<a name="076a_131d">Figure 7.3 shows an example of the action of <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT>.<P>
+We can compute a simple upper bound on the running time of <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> as follows. Each call to <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> costs <I>O</I>(lg <I>n</I>) time, and there are <I>O</I>(<I>n</I>) such calls. Thus, the running time is at most <I>O(n</I> lg <I>n</I>). This upper bound, though correct, is not asymptotically tight.<P>
+We can derive a tighter bound by observing that the time for <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> to run at a node varies with the height of the node in the tree, and the heights of most nodes are small. Our tighter analysis relies on the property that in an <I>n</I>-element heap there are at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<I><SUP>h</I>+1</SUP><IMG SRC="../IMAGES/hfbrur14.gif"> nodes of height <I>h </I>(see Exercise 7.3-3).<P>
+The time required by <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> when called on a node of height <I>h</I> is <I>O(h</I>), so we can express the total cost of <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> as<P>
+<img src="145_a.gif"><P>
+<h4><a name="076a_131f">(7.2)<a name="076a_131f"></sub></sup></h4><P>
+The last summation can be evaluated by substituting <I>x</I> = 1/2 in the formula (3.6), which yields<P>
+<img src="145_b.gif"><P>
+Thus, the running time of <FONT FACE="Courier New" SIZE=2>BUILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> can be bounded as<P>
+<img src="145_c.gif"><P>
+Hence, we can build a heap from an unordered array in linear time.<P>
+<img src="146_a.gif"><P>
+<h4><a name="076a_1320">Figure 7.3 The operation of <FONT FACE="Courier New" SIZE=2>BUILD<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT></FONT></FONT>, showing the data structure before the call to <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> in line 3 of <FONT FACE="Courier New" SIZE=2>BUILD<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT></FONT></FONT>. (a) A 10-element input array A and the binary tree it represents. The figure shows that the loop index i points to node 5 before the call <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>(A, i). (b) The data structure that results. The loop index i for the next iteration points to node 4. (c)-(e) Subsequent iterations of the for loop in <FONT FACE="Courier New" SIZE=2>BUILD<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT></FONT></FONT>. Observe that whenever <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> is called on a node, the two subtrees of that node are both heaps. (f) The heap after <FONT FACE="Courier New" SIZE=2>BUILD<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT></FONT></FONT> finishes.<a name="076a_1320"></sub></sup></h4><P>
+
+
+
+
+
+<h2><a name="076b_131f">Exercises<a name="076b_131f"></h2><P>
+<a name="076b_1320">7.3-1<a name="076b_1320"><P>
+Using Figure 7.3 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> on the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">5, 3, 17, 10, 84, 19, 6, 22, 9<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="076b_1321">7.3-2<a name="076b_1321"><P>
+Why do we want the loop index<I> i</I> in line 2 of <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> to decrease from <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>length</I></FONT>[<I>A</I>]/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"><FONT FACE="Courier New" SIZE=2> </FONT></FONT>to<FONT FACE="Courier New" SIZE=2> </FONT>1 rather than increase from 1 to <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>length</I></FONT>[<I>A</I>]/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif">?</FONT><P>
+<a name="076b_1322">7.3-3<a name="076b_1322"><P>
+<a name="076b_131e">Show that there are at most <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<I><SUP>h</I>+1</SUP><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> nodes of height <I>h</I> in any <I>n</I>-element heap.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="076c_1320">7.4 The heapsort algorithm<a name="076c_1320"></h1><P>
+<a name="076c_131f">The heapsort algorithm starts by using <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> to build a heap on the input array <I>A</I>[1 . . <I>n</I>], where <I>n</I> = <I>length</I>[<I>A</I>]. Since the maximum element of the array is stored at the root <I>A</I>[1], it can be put into its correct final position by exchanging it with <I>A</I>[<I>n</I>]. If we now "discard" node <I>n</I> from the heap (by decrementing <I>heap-size</I>[<I>A</I>]), we observe that <I>A</I>[1 <I>. . </I>(<I>n - </I>1)]<I> </I>can easily be made into a heap. The children of the root remain heaps, but the new root element may violate the heap property (7.1). All that is needed to restore the heap property, however, is one call to <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>(<I>A</I>, 1), which leaves a heap in <I>A</I>[1 <I>. . </I>(<I>n -</I> 1)]. The heapsort algorithm then repeats this process for the heap of size <I>n</I> - 1 down to a heap of size 2.<P>
+<pre>HEAPSORT(<I>A</I>)</sub></sup></pre><P>
+<pre>1  BUILD-HEAP(<I>A</I>)</sub></sup></pre><P>
+<pre>2  <B>for </B><I>i </I><IMG SRC="../IMAGES/arrlt12.gif"><I> length</I>[<I>A</I>] <B>downto</B> 2</sub></sup></pre><P>
+<pre>3        <B>do</B> exchange <I>A</I>[1] <IMG SRC="../IMAGES/dblarr12.gif"> <I>A</I>[i]</sub></sup></pre><P>
+<pre>4           <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>heap-size</I>[<I>A</I>] -1</sub></sup></pre><P>
+<pre>5           HEAPIFY(<I>A</I>, 1)</sub></sup></pre><P>
+Figure 7.4 shows an example of the operation of heapsort after the heap is initially built. Each heap is shown at the beginning of an iteration of the <B>for</B> loop in line 2.<P>
+The <FONT FACE="Courier New" SIZE=2>HEAPSORT</FONT> procedure takes time <I>O</I>(<I>n</I> lg <I>n</I>), since the call to <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> takes time <I>O(n</I>) and each of the <I>n</I> - 1 calls to <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> takes time <I>O</I>(lg <I>n</I>).<P>
+<img src="148_a.gif"><P>
+<h4><a name="076c_1321">Figure 7.4 The operation of <FONT FACE="Courier New" SIZE=2>HEAPSORT</FONT>. (a) The heap data structure just after it has been built by <FONT FACE="Courier New" SIZE=2>BUILD<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT></FONT></FONT>. (b)-(j) The heap just after each call of <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT> in line 5. The value of i at that time is shown. Only lightly shaded nodes remain in the heap. (k) The resulting sorted array A.<a name="076c_1321"></sub></sup></h4><P>
+
+
+
+
+
+<h2><a name="076d_0001">Exercises<a name="076d_0001"></h2><P>
+<a name="076d_0002">7.4-1<a name="076d_0002"><P>
+Using Figure 7.4 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>HEAPSORT</FONT> on the array A = <IMG SRC="../IMAGES/lftwdchv.gif">5, 13, 2, 25, 7, 17, 20, 8, 4<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="076d_0003">7.4-2<a name="076d_0003"><P>
+What is the running time of heapsort on an array <I>A</I> of length <I>n</I> that is already sorted in increasing order? What about decreasing order?<P>
+<a name="076d_0004">7.4-3<a name="076d_0004"><P>
+Show that the running time of heapsort is <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="076e_1330">7.5 Priority queues<a name="076e_1330"></h1><P>
+<a name="076e_1320"><a name="076e_1321"><a name="076e_1322"><a name="076e_1323">Heapsort is an excellent algorithm, but a good implementation of quicksort, presented in Chapter 8, usually beats it in practice. Nevertheless, the heap data structure itself has enormous utility. In this section, we present one of the most popular applications of a heap: its use as an efficient priority queue.<P>
+<a name="076e_1324">A <I><B>priority queue</I></B> is a data structure for maintaining a set <I>S</I> of elements, each with an associated value called a <I><B>key</I></B>. A priority queue supports the following operations.<P>
+<a name="076e_1325"><FONT FACE="Courier New" SIZE=2>INSERT</FONT>(<I>S</I>, <I>x</I>) inserts the element <I>x </I>into the set <I>S</I>. This operation could be written as <I>S </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>S </I><IMG SRC="../IMAGES/wideu.gif"><I> {</I>x<I>}.</I><P>
+<a name="076e_1326"><FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT>(<I>S</I>) returns the element of<I> S </I>with the largest key.<P>
+<a name="076e_1327"><FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT>(<I>S</I>) removes and returns the element of <I>S</I> with the largest key.<P>
+One application of priority queues is to schedule jobs on a shared computer. The priority queue keeps track of the jobs to be performed and their relative priorities. When a job is finished or interrupted, the highest-priority job is selected from those pending using <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT>. A new job can be added to the queue at any time using <FONT FACE="Courier New" SIZE=2>INSERT</FONT>.<P>
+A priority queue can also be used in an event-driven simulator. The items in the queue are events to be simulated, each with an associated time of occurrence that serves as its key. The events must be simulated in order of their time of occurrence, because the simulation of an event can cause other events to be simulated in the future. For this application, it is natural to reverse the linear order of the priority queue and support the operations <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> and <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> instead of <FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT> and <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT>. The simulation program uses <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> at each step to choose the next event to simulate. As new events are produced, they are inserted into the priority queue using <FONT FACE="Courier New" SIZE=2>INSERT</FONT>.<P>
+<a name="076e_1328"><a name="076e_1329"><a name="076e_132a"><a name="076e_132b"><a name="076e_132c">Not surprisingly, we can use a heap to implement a priority queue. The operation <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT> returns the maximum heap element in <IMG SRC="../IMAGES/bound.gif">(1) time by simply returning the value <I>A</I>[1] in the heap. The <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT> procedure is similar to the <B>for</B> loop body (lines 3-5) of the <FONT FACE="Courier New" SIZE=2>HEAPSORT</FONT> procedure:<P>
+<pre>HEAP-EXTRACT-MAX(<I>A</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>heap-size</I>[<I>A</I>] &lt; 1</sub></sup></pre><P>
+<pre>2     <B>then error</B> "heap underflow"</sub></sup></pre><P>
+<pre>3  <I>max</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[1]</sub></sup></pre><P>
+<pre>4  <I>A</I>[1] <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>heap-size</I>[<I>A</I>]]</sub></sup></pre><P>
+<pre>5  <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>heap-size</I>[<I>A</I>] - 1</sub></sup></pre><P>
+<pre>6  HEAPIFY(<I>A</I>, 1)</sub></sup></pre><P>
+<pre>7  <B>return</B> <I>max</I></sub></sup></pre><P>
+The running time of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT> is <I>O</I>(lg <I>n</I>), since it performs only a constant amount of work on top of the<I> O</I>(lg <I>n</I>) time for <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>.<P>
+<a name="076e_132d"><a name="076e_132e"><a name="076e_132f">The <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure inserts a node into heap <I>A</I>. To do so, it first expands the heap by adding a new leaf to the tree. Then, in a manner reminiscent of the insertion loop (lines 5-7) of <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> from Section 1.1, it traverses a path from this leaf toward the root to find a proper place for the new element.<P>
+<pre>HEAP-INSERT(<I>A</I>,<I>key</I>)</sub></sup></pre><P>
+<pre>1  <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>heap-size</I>[<I>A</I>] + 1</sub></sup></pre><P>
+<pre>2  i <IMG SRC="../IMAGES/arrlt12.gif"> <I>heap-size</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>3  <B>while</B><I> i</I> &gt; 1 and <I>A</I>[PARENT(<I>i</I>)] &lt; <I>key</I></sub></sup></pre><P>
+<pre>4      <B>do</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[PARENT(<I>i</I>)]</sub></sup></pre><P>
+<pre>5         <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> PARENT(<I>i</I>)</sub></sup></pre><P>
+<pre>6  <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>key</I></sub></sup></pre><P>
+Figure 7.5 shows an example of a <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation. The running time of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> on an <I>n</I>-element heap is <I>O</I>(lg <I>n</I>), since the path traced from the new leaf to the root has length<I> O</I>(lg <I>n</I>).<P>
+In summary, a heap can support any priority-queue operation on a set of size <I>n</I> in<I> O</I>(lg <I>n</I>) time.<P>
+
+
+
+
+
+<h2><a name="076f_1335">Exercises<a name="076f_1335"></h2><P>
+<a name="076f_1336">7.5-1<a name="076f_1336"><P>
+Using Figure 7.5 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT>(<I>A</I>, 3) on the heap <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">15,13, 9, 5, 12, 8, 7, 4, 0, 6, 2, 1<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="076f_1337">7.5-2<a name="076f_1337"><P>
+Illustrate the operation of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT> on the heap <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">15, 13, 9, 5, 12, 8, 7, 4, 0, 6, 2, 1<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<img src="151_a.gif"><P>
+<h4><a name="076f_1338">Figure 7.5 The operation of <FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT<FONT FACE="Times New Roman" SIZE=2>. (a) The heap of Figure 7.4(a) before we insert a node with key 15. (b) A new leaf is added to the tree. (c) Values on the path from the new leaf to the root are copied down until a place for the key 15 is found. (d) The key 15 is inserted.<a name="076f_1338"></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<a name="076f_1339">7.5-3<a name="076f_1339"><P>
+Show how to implement a first-in, first-out queue with a priority queue. Show how to implement a stack with a priority queue. (FIFO's and stacks are defined in Section 11.1.)<P>
+<a name="076f_133a">7.5-4<a name="076f_133a"><P>
+<a name="076f_1330"><a name="076f_1331"><a name="076f_1332">Give an <I>O</I>(lg <I>n</I>)-time implementation of the procedure <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INCREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>(<I>A, i, k</I>), which sets <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> max(<I>A</I>[<I>i</I>],<I>k</I>) and updates the heap structure appropriately.<P>
+<a name="076f_133b">7.5-5<a name="076f_133b"><P>
+<a name="076f_1333">The operation <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>(<I>A, i</I>) deletes the item in node<I> i</I> from heap <I>A</I>. Give an implementation of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> that runs in <I>O</I>(lg <I>n</I>) time for an <I>n</I>-element heap.<P>
+<a name="076f_133c">7.5-6<a name="076f_133c"><P>
+<a name="076f_1334">Give an <I>O(n </I>lg <I>k</I>)-time algorithm to merge<I> k </I>sorted lists into one sorted list, where<I> n</I> is the total number of elements in all the input lists. (<I>Hint</I>: Use a heap for <I>k</I>-way merging.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0770_133d">Problems<a name="0770_133d"></h1><P>
+<a name="0770_133e">7-1     Building a heap using insertion<a name="0770_133e"><P>
+<a name="0770_1335"><a name="0770_1336"><a name="0770_1337">The procedure <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> in Section 7.3 can be implemented by repeatedly using <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> to insert the elements into the heap. Consider the following implementation:<P>
+<pre>BUILD-HEAP'(<I>A </I>)</sub></sup></pre><P>
+<pre>1  <I>heap-size</I>[<I>A</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>2  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>length</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>3        <B>do</B> HEAP-INSERT(<I>A, A</I>[<I>i</I>])</sub></sup></pre><P>
+<I><B>a</I>.</B>     Do the procedures <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> and <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP'</FONT> always create the same heap when run on the same input array? Prove that they do, or provide a counterexample.<P>
+<I><B>b</I>.     </B>Show that in the worst case, <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>' requires <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) time to build an <I>n</I>-element heap.<P>
+<a name="0770_133f">7-2     Analysis of d-ary heaps<a name="0770_133f"><P>
+<a name="0770_1338"><a name="0770_1339">A <I><B>d-ary</I></B> <I><B>heap</I></B> is like a binary heap, but instead of 2 children, nodes have <I>d</I> children.<P>
+<I><B>a</I></B><I>.     </I>How would you represent a <I>d</I>-ary heap in an array?<P>
+<a name="0770_133a"><I><B>b</I></B><I>.     </I>What is the height of a <I>d</I>-ary heap of <I>n</I> elements in terms of <I>n</I> and <I>d</I>?<P>
+<a name="0770_133b"><I><B>c</I></B><I>.     </I>Give an efficient implementation of <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT>. Analyze its running time in terms of <I>d</I> and <I>n</I>.<P>
+<a name="0770_133c"><I><B>d</I></B><I>.     </I>Give an efficient implementation of <FONT FACE="Courier New" SIZE=2>INSERT</FONT>. Analyze its running time in terms of <I>d</I> and <I>n</I>.<P>
+<I><B>e.     </I></B>Give an efficient implementation of <FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INCREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>(<I>A, i, k</I>), which sets <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> max(<I>A</I>[<I>i</I>], <I>k</I>) and updates the heap structure appropriately. Analyze its running time in terms of <I>d</I> and<I> n</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The heapsort algorithm was invented by Williams [202], who also described how to implement a priority queue with a heap. The <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure was suggested by Floyd [69].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap08.htm">Chapter 8</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

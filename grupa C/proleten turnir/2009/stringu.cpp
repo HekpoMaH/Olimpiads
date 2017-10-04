@@ -1,0 +1,42 @@
+#include<iostream>
+#include<cstdio>
+#include<string>
+using namespace std;
+
+string s="abcdefghijklmnopqrstuvwxyz";
+string ans;
+unsigned long long k;
+unsigned long long fact[32];
+unsigned long long used[22],a[22],br;
+int n,i,j,p;
+
+int main()
+{
+    cin>>n>>k;
+    fact[0]=1;
+    for(i=1;i<n;i++)
+     fact[i]=fact[i-1]*i;
+    k--;
+    for(i=n-1;i>=0;i--)
+    {
+        a[p++]=k/fact[i];cout<<a[p-1]<<" "<<k<<" "<<fact[i]*a[p-1]<<endl;
+        k-=fact[i]*a[p-1];
+    }
+    //for(i=0;i<p;i++)cout<<a[p]<<endl;
+    for(i=0;i<p;i++)
+    {
+        br=0;
+        for(j=0;j<n;j++)
+        {
+            if(used[j]==0)br++;
+            if(br==a[i]+1&&used[j]==0)
+            {
+                used[j]=1;
+                ans+=s[j];
+                break;
+            }
+        }
+    }
+    cout<<ans<<"\n";
+    return 0;
+}

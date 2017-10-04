@@ -1,0 +1,19 @@
+#include<iostream>
+using namespace std;
+int main() {
+	long long a;
+	char b = '0';
+	long long tek_x = 1 , bon = 0 , res;
+	while ( b != '=' ) {
+		cin >> b >> a;
+		if ( b == '+' ) bon += a;
+		if ( b == '-' ) bon -= a;
+		if ( b == '*' ) {
+			tek_x *= a;
+			bon *= a;
+		}
+		if ( b == '=' ) res = a;
+	}
+	cout << ( res - bon ) / tek_x << endl;
+	return 0;
+}

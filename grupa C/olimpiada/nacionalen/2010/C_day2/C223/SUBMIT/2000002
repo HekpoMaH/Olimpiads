@@ -1,0 +1,17 @@
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+int main()
+{
+  int n, m;
+  cin>>n>>m;
+  char castle[n][m];
+  for(int a=0; a<n; a++)
+  {
+    cin>>castle[a];
+  }
+  if(n>m) cout<<n<<endl;
+  else cout<<m<<endl;
+  return 0;
+}

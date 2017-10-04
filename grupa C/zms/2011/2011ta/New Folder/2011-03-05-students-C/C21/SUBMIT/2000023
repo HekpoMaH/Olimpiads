@@ -1,0 +1,61 @@
+#include<iostream>
+#include<cmath>
+#include<iomanip>
+#include<cstring>
+using namespace std;
+string s;
+int b[17];
+int main()
+{
+    int k=1;
+    char a = 'a';
+    while(a!='=')
+    {
+        cin>>a;
+        s+=a;
+    }
+    long long int n;
+    long int yu=0;
+    long long int chis=0;
+    cin>>n;
+    for(int i=s.size()-2;i>0;i-=2)
+    {
+        b[0]=s[i]-'0';
+        k =1;
+        while(s[i-1]<'9'&&s[i-1]>'0')
+        {
+
+            b[k]=s[i-1]-'0';
+            --i;
+            ++k;
+        }
+        for(int j=k-1;j>=0;j--)
+        {
+            chis = chis *10+b[j];
+        }
+        if(s[i-1]=='+')
+        {
+            n-=chis;
+        }
+        if(s[i-1]=='*')
+        {
+            n/=chis;
+
+        }
+        if(s[i-1]=='/')
+        {
+                        n*=chis;
+
+        }
+        if(s[i-1]=='-')
+        {
+                        n+=chis;
+
+        }
+        chis=0;
+
+    }
+    yu = n;
+    cout<<yu<<endl;
+    return 0;
+}

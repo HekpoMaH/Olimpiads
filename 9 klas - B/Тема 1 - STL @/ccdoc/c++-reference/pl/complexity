@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="pl"
+ lang="pl" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>pl:complexity</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2010-01-04T05:18:44-0800" />
+<meta name="keywords" content="pl,complexity" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/pl/complexity?do=index" title="Indeks" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=pl" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/pl/complexity" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/pl/complexity" />
+<link rel="canonical" href="complexity" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='pl';var JSINFO = {"id":"pl:complexity","namespace":"pl"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="zlozonosc_czasowa" id="zlozonosc_czasowa">Złożoność czasowa</a></h2>
+<div class="level2">
+
+<p>
+
+There are different measurements of the speed of any given algorithm.
+Dla podanej wielkości wejścia N, mogą być opisane następująco:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Nazwa</th><th class="col1">Szybkość</th><th class="col2">Opis</th><th class="col3">Formuła</th><th class="col4">Przykład</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">factorial time</td><td class="col1">najwolniejszy</td><td class="col2">takes an amount of time proportional to N raised to the Nth power</td><td class="col3 centeralign">  N!  </td><td class="col4">Brute force solution to Traveling Salesman Problem</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">czas wykładniczy</td><td class="col1">wolny</td><td class="col2">takes an amount of time proportional to a constant raised to the Nth power</td><td class="col3 centeralign">  K<sup>N</sup>  </td><td class="col4">Brute force solution to Rubik&#039;s Cube</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">czas wielomianowy</td><td class="col1">szybki</td><td class="col2">takes an amount of time proportional to N raised to some constant power</td><td class="col3 centeralign">  N<sup>K</sup>  </td><td class="col4">Comparison sorts (bubble, insertion, selection sort)</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">czas liniowo-logarytmiczny</td><td class="col1">szybszy</td><td class="col2">takes an amount of time between linear and polynomial</td><td class="col3 centeralign">  N * log(N)  </td><td class="col4">Liniowo-logarytmiczne sortowanie (quicksort, heapsort, mergesort)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">czas liniowy</td><td class="col1">jeszcze szybszy</td><td class="col2">takes an amount of time directly proportional to N</td><td class="col3 centeralign">  K * N  </td><td class="col4">Iterowanie po tablicy</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">czas logarytmiczny</td><td class="col1">dużo szybszy</td><td class="col2">takes an amount of time proportional to the logarithm of N</td><td class="col3 centeralign">  K * log(N)  </td><td class="col4">Binary Search</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">czas stały</td><td class="col1">najszybszy</td><td class="col2">takes a fixed amount of time, no matter how large the input is</td><td class="col3 centeralign">  K  </td><td class="col4">Array index lookup</td>
+	</tr>
+</table>
+
+</div>
+<!-- SECTION "Złożoność czasowa" [1-1221] -->
+<h3><a name="analiza_zlozonosci" id="analiza_zlozonosci">Analiza złożoności</a></h3>
+<div class="level3">
+
+<p>
+
+Operacje mogą mieć różną złożoność czasową zależną od rozmiaru/zbioru danych wejściowych. Wyróżniamy następujące rodzaje analizy złożoności czasowej:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Nazwa</th><th class="col1">Opis</th><th class="col2">Przykład</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">optymistyczna</td><td class="col1">Przypadek gdy operacja wykonuje się możliwie najszybciej</td><td class="col2"> Bubblesort (sortowanie bombelkowe) ma optymistyczną złożoność czasową rzędu N</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">oczekiwana</td><td class="col1">Przypadek gdy operacja wykonuje się w czasie charakteryzującym większość przypadków</td><td class="col2"> Quicksort ma oczekiwaną złożoność czasową rzędu N * log(N)</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">pesymistyczna</td><td class="col1">Przypadek gdy operacja wykonuje się możliwie najwolniej</td><td class="col2"> Quicksort ma pesymistyczną złożoność czasową rzędu N<sup>2</sup></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">pesymistyczna zamortyzowana</td><td class="col1">Średnia z pesymistycznych czasów wykonania nieskończonej liczby operacji</td><td class="col2"> vector::push_back() ma zamortyzowaną pesymistyczną złożoność czasową rzędu K (stałą)</td>
+	</tr>
+</table>
+
+<p>
+
+Choosing the right algorithm depends upon which cases you expect your application to encounter.  For example, an application that must protect itself from malicious input will avoid naive implementations of quicksort, which has a worst-case time complexity of N<sup>2</sup> despite having one of the fastest average-case time complexities compared to all other sorts.
+
+</p>
+
+</div>
+<!-- SECTION "Analiza złożoności" [1222-] --></div>
+</body>
+</html>

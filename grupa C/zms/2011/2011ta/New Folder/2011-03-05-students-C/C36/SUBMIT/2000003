@@ -1,0 +1,55 @@
+#include<cstdio>
+using namespace std;
+int n,a[50001],b[50001],pos,s,br,bin[50001];
+void read()
+{
+    int i;
+    scanf("%d",&n);
+    for(i=1;i<=n;i++)
+    scanf("%d",&a[i]);
+    for(i=1;i<=n;i++)
+    scanf("%d",&b[i]);
+    return;
+}
+int binary(int x)
+{
+    int l,r,mid;
+    l=1;
+    r=pos;
+    while(l<=r)
+    {
+        mid=(l+r)/2;
+        if(x==bin[mid])return 1;
+        if(x<bin[mid])l=mid+1;
+        if(x>bin[mid])r=mid-1;
+    }
+    return 0;
+}
+void solve()
+{
+    int i,j;
+    for(i=1;i<=n;i++)
+    if(a[i]!=b[i])
+    {
+        for(j=i+1;j<=n;j++)
+        if(b[j]==a[i])
+        {
+            if(!binary(i*2+j))
+            {
+                br+=1+(j-i-1)*2;
+                bin[++pos]=i*2+j;
+                s=b[j];
+                b[j]=b[i];
+                b[i]=s;
+            }
+
+        }
+    }
+    printf("%d\n",br);
+    return;
+}
+int main()
+{
+    read();
+    solve();
+}

@@ -1,0 +1,28 @@
+#include<cstdio>
+#include<iostream>
+#include<cstring>
+using namespace std;
+int main()
+{
+    char c[220000],l;
+    long long a[220000],o;
+    int p=0,i;
+    while(1)
+    {
+        cin.get(c[p]);
+        cin>>a[p];
+        cin.get(l);
+        if(c[p]=='=')break;
+        p++;
+    }
+    o=a[p];
+    p-=1;
+    for(i=p;i>=0;i--)
+    {
+        if(c[i]=='*')o/=a[i];
+        else if(c[i]=='/')o*=a[i];
+        else if(c[i]=='-')o+=a[i];
+        else if(c[i]=='+')o-=a[i];
+    }
+    printf("%lld\n",o);
+}

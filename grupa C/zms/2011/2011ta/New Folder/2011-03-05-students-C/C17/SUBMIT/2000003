@@ -1,0 +1,39 @@
+#include<iostream>
+using namespace std;
+int ivan[50000];
+int juri[50000];
+bool done[50000][2];
+int main ()
+{
+    int n;
+    cin >> n;
+    int tek = 0;
+    long long br = 0;
+    for(int i = 0; i < n; i ++) cin >> juri[i];
+    for(int i = 0; i < n; i ++) cin >> ivan[i];
+    for(int i = n - 1; i >= 0; i --)
+    {
+        if (done[juri[i]][0] || done[ivan[i]][0]) continue;
+        if ( juri [i] == ivan [i]) { done [juri[i]][0] = true; done [juri[i]][1] = true; continue; }
+        tek = 1;
+        done [juri[i]][0] = true;
+        done [ivan[i]][1] = true;
+        done [ivan[i]][0] = true;
+        done [juri[i]][1] = true;
+        for(int j = i; j >= 0; j --)
+        {
+            if(ivan [j] == juri [i]) break;
+            if(!done [ivan [j]][0]) {tek ++; done[ivan[j]][0] = true; }
+        }
+        br += tek;
+        tek = 0;
+        for(int j = i-1; j >=0; j --)
+        {
+            if(juri[i] == ivan[j]) break;
+            if(!done [juri[j]]) {tek ++; done[juri[j]][1] = true; }
+        }
+        br += tek;
+    }
+    cout << br <<endl;
+    return 0;
+}

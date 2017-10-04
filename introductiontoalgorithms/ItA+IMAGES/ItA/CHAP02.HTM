@@ -1,0 +1,491 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 2: GROWTH OF FUNCTIONS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap03.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="parti.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="06e8_0001">CHAPTER 2: GROWTH OF FUNCTIONS<a name="06e8_0001"></h1><P>
+The order of growth of the running time of an algorithm, defined in Chapter 1, gives a simple characterization of the algorithm's efficiency and also allows us to compare the relative performance of alternative algorithms. Once the input size <I>n</I> becomes large enough, merge sort, with its <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) worst-case running time, beats insertion sort, whose worst-case running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Although we can sometimes determine the exact running time of an algorithm, as we did for insertion sort in Chapter 1, the extra precision is not usually worth the effort of computing it. For large enough inputs, the multiplicative constants and lower-order terms of an exact running time are dominated by the effects of the input size itself.<P>
+When we look at input sizes large enough to make only the order of growth of the running time relevant, we are studying the <I><B>asymptotic</I></B> efficiency of algorithms. That is, we are concerned with how the running time of an algorithm increases with the size of the input <I>in the limit</I>, as the size of the input increases without bound. Usually, an algorithm that is asymptotically more efficient will be the best choice for all but very small inputs.<P>
+This chapter gives several standard methods for simplifying the asymptotic analysis of algorithms. The next section begins by defining several types of &quot;asymptotic notation,&quot; of which we have already seen an example in <IMG SRC="../IMAGES/bound.gif">-notation. Several notational conventions used throughout this book are then presented, and finally we review the behavior of functions that commonly arise in the analysis of algorithms.<P>
+
+
+
+
+
+<h1><a name="06ea_1177">2.1 Asymptotic notation<a name="06ea_1177"></h1><P>
+<a name="06ea_1176">The notations we use to describe the asymptotic running time of an algorithm are defined in terms of functions whose domains are the set of natural numbers <B>N</B> = {0, 1, 2, . . .}. Such notations are convenient for describing the worst-case running-time function <I>T</I>(<I>n</I>), which is usually defined only on integer input sizes. It is sometimes convenient, however, to <I>abuse</I> asymptotic notation in a variety of ways. For example, the notation is easily extended to the domain of real numbers or, alternatively, restricted to a subset of the natural numbers. It is important, however, to understand the precise meaning of the notation so that when it is abused, it is not <I>misused</I>. This section defines the basic asymptotic notations and also introduces some common abuses.<P>
+
+
+
+
+
+<h2><IMG SRC="../IMAGES/bound.gif">-notation</h2><P>
+<a name="06eb_1177">In Chapter 1, we found that the worst-case running time of insertion sort is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Let us define what this notation means. For a given function <I>g</I>(<I>n</I>), we denote by <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) the <I>set of functions</I><P>
+<IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) = {&acirc;(<I>n</I>) : there exist positive constants <I>c</I><SUB>1</SUB>, <I>c</I><SUB>2</SUB>, and <I>n</I><SUB>0 </SUB>such that<P>
+0 <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>1</SUB><I>g</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> &acirc;(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>2</SUB><I>g</I>(<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>}.<P>
+A function &acirc;(<I>n</I>) belongs to the set <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) if there exist positive constants <I>c</I><SUB>1</SUB> and <I>c</I><SUB>2</SUB> such that it can be &quot;sandwiched&quot; between <I>c</I><SUB>1</SUB><I>g</I>(<I>n</I>) and +<I>c</I><SUB>2</SUB><I>g</I>(<I>n</I>), for sufficiently large <I>n</I>. Although <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) is a set, we write &quot;&acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>))&quot; to indicate that &acirc;(<I>n</I>) is a member of <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)), or &quot;&acirc;(<I>n</I>) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)).&quot; This abuse of equality to denote set membership may at first appear confusing, but we shall see later in this section that it has advantages.<P>
+<a name="06eb_1178"><a name="06eb_1179">Figure 2.1 (a) gives an intuitive picture of functions &acirc;(<I>n</I>) and <I>g</I>(<I>n</I>), where &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)). For all values of <I>n</I> to the right of <I>n</I><SUB>0</SUB>, the value of &acirc;(<I>n</I>) lies at or above <I>c</I><SUB>1</SUB><I>g</I>(<I>n</I>) and at or below <I>c</I><SUB>2</SUB><I>g</I>(<I>n</I>). In other words, for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>, the function &acirc;(<I>n</I>) is equal to <I>g</I>(<I>n</I>) to within a constant factor. We say that <I>g</I>(<I>n</I>) is an <I><B>asymptotically tight bound</I></B> for &acirc;(<I>n</I>).<P>
+<a name="06eb_117a">The definition of <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) requires that every member of <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) be <I><B>asymptotically nonnegative</I></B>, that is, that &acirc;(<I>n</I>) be nonnegative whenever <I>n</I> is sufficiently large. Consequently, the function <I>g</I>(<I>n</I>) itself must be asymptotically nonnegative, or else the set <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) is empty. We shall therefore assume that every function used within <IMG SRC="../IMAGES/bound.gif">-notation is asymptotically non-negative. This assumption holds for the other asymptotic notations defined in this chapter as well.<P>
+In Chapter 1, we introduced an informal notion of <IMG SRC="../IMAGES/bound.gif">-notation that amounted to throwing away lower-order terms and ignoring the leading coefficient of the highest-order term. Let us briefly justify this intuition by using the formal definition to show that 1/2<I>n</I><SUP>2</SUP> - 3<I>n</I> = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). To do so, we must determine positive constants <I>c</I><SUB>1</SUB>, <I>c</I><SUB>2</SUB>, and <I>n</I><SUB>0</SUB> such that<P>
+<img src="24_a.gif"><P>
+for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>. Dividing by <I>n</I><SUP>2</SUP> yields<P>
+<img src="24_b.gif"><P>
+<img src="25_a.gif"><P>
+<h4><a name="06eb_117b">Figure 2.1 Graphic examples of the <IMG SRC="../IMAGES/bound.gif">, O, and <IMG SRC="../IMAGES/omega12.gif"> notations. In each part, the value of n<SUB>0</SUB> shown is the minimum possible value; any greater value would also work. (a) <IMG SRC="../IMAGES/bound.gif">-notation bounds a function to within constant factors. We write <IMG SRC="../IMAGES/scrptf12.gif">(n) = <IMG SRC="../IMAGES/bound.gif">(g(n)) if there exist positive constants n<SUB>0</SUB>, c<SUB>1</SUB>, and c<SUB>2</SUB> such that to the right of n<SUB>0</SUB>, the value of &acirc;(n) always lies between c<SUB>1</SUB>g(n) and c<SUB>2</SUB>g(n) inclusive. (b) O-notation gives an upper bound for a function to within a constant factor. We write &acirc;(n) = O(g(n)) if there are positive constants n<SUB>0</SUB> and c such that to the right of n<SUB>0</SUB>, the value of &acirc;(n) always lies on or below cg(n). (c) <IMG SRC="../IMAGES/omega12.gif">-notation gives a lower bound for a function to within a constant factor. We write &acirc;(n) = <IMG SRC="../IMAGES/omega12.gif">(g(n)) if there are positive constants n<SUB>0</SUB> and c such that to the right of n<SUB>0</SUB>, the value of &acirc;(n) always lies on or above cg(n).<a name="06eb_117b"></sub></sup></h4><P>
+The right-hand inequality can be made to hold for any value of <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 1 by choosing <I>c</I><SUB>2</SUB> <IMG SRC="../IMAGES/gteq.gif"> 1/2. Likewise, the left-hand inequality can be made to hold for any value of <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 7 by choosing <I>c</I><SUB>1</SUB> <IMG SRC="../IMAGES/lteq12.gif"> 1/14. Thus, by choosing <I>c</I><SUB>1</SUB> = 1/14, <I>c</I><SUB>2</SUB> = 1/2, and <I>n</I><SUB>0</SUB> = 7, we can verify that <img src="25_b.gif">. Certainly, other choices for the constants exist, but the important thing is that some choice exists. Note that these constants depend on the function <img src="25_c.gif"> a different function belonging to <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) would usually require different constants.<P>
+We can also use the formal definition to verify that 6<I>n</I><SUP>3</SUP> <IMG SRC="../IMAGES/noteq.gif"> <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Suppose for the purpose of contradiction that <I>c</I><SUB>2</SUB> and <I>n</I><SUB>0</SUB> exist such that 6<I>n</I><SUP>3</SUP> <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>2</SUB><I>n</I><SUP>2</SUP> for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>. But then <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>2</SUB>/6, which cannot possibly hold for arbitrarily large <I>n</I>, since <I>c</I><SUB>2</SUB> is constant.<P>
+Intuitively, the lower-order terms of an asymptotically positive function can be ignored in determining asymptotically tight bounds because they are insignificant for large <I>n</I>. A tiny fraction of the highest-order term is enough to dominate the lower-order terms. Thus, setting <I>c</I><SUB>1</SUB> to a value that is slightly smaller than the coefficient of the highest-order term and setting <I>c</I><SUB>2</SUB> to a value that is slightly larger permits the inequalities in the definition of <IMG SRC="../IMAGES/bound.gif">-notation to be satisfied. The coefficient of the highest-order term can likewise be ignored, since it only changes <I>c</I><SUB>1</SUB> and <I>c</I><SUB>2</SUB> by a constant factor equal to the coefficient.<P>
+As an example, consider any quadratic function &acirc;(<I>n</I>) = <I>an</I><SUP>2</SUP> + <I>bn</I> + <I>c</I>, where <I>a</I>, <I>b</I>, and <I>c</I> are constants and <I>a</I> &gt; 0. Throwing away the lower-order terms and ignoring the constant yields &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Formally, to show the same thing, we take the constants <I>c</I><SUB>1</SUB> = <I>a</I>/4, <I>c</I><SUB>2</SUB> = 7<I>a</I>/4, and <I>n</I><SUB>0</SUB> = 2 <SUP>.</SUP> max <img src="26_a.gif">. The reader may verify that 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>1</SUB><I>n</I><SUP>2</SUP> <IMG SRC="../IMAGES/lteq12.gif"> <I>an</I><SUP>2</SUP> + <I>bn</I> + <I>c</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><SUB>2</SUB><I>n</I><SUP>2 </SUP>for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>. In general, for any polynomial <I>p</I>(<I>n</I>) = <img src="26_b.gif"> where the <I>a<SUB>i</I></SUB> are constants and <I>a<SUB>d</I></SUB> &gt; 0, we have <I>p</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>d</I></SUP>) (see Problem 2-1).<P>
+Since any constant is a degree-0 polynomial, we can express any constant function as <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>0</SUP>), or <IMG SRC="../IMAGES/bound.gif">(1). This latter notation is a minor abuse, however, because it is not clear what variable is tending to infinity.<SUP>1 </SUP>We shall often use the notation <IMG SRC="../IMAGES/bound.gif">(1) to mean either a constant or a constant function with respect to some variable.<P>
+<SUP><FONT FACE="Times" SIZE=1>1</SUP><FONT FACE="Times" SIZE=2>The real problem is that our ordinary notation for functions does not distinguish functions from values. In <IMG SRC="../IMAGES/lambdauc.gif">-calculus, the parameters to a function are clearly specified: the function <I>n</I><SUP><FONT FACE="Times" SIZE=1>2</SUP><FONT FACE="Times" SIZE=2> could be written as <IMG SRC="../IMAGES/lambdauc.gif"><I>n.n</I><SUP><FONT FACE="Times" SIZE=1>2, </SUP><FONT FACE="Times" SIZE=2>or even <IMG SRC="../IMAGES/lambdauc.gif"><I>r.r</I><SUP><FONT FACE="Times" SIZE=1>2</SUP><FONT FACE="Times" SIZE=2>. Adopting a more rigorous notation, however, would complicate algebraic manipulations, and so we choose to tolerate the abuse.</FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT><P>
+<P>
+
+
+
+
+
+
+
+<h2>O-notation</h2><P>
+<a name="06ec_117b"><a name="06ec_117c"><a name="06ec_117d">The <IMG SRC="../IMAGES/bound.gif">-notation asymptotically bounds a function from above and below. When we have only an <I><B>asymptotic upper bound</I></B>, we use <I>O</I>-notation. For a given function <I>g</I>(<I>n</I>), we denote by <I>O</I>(<I>g</I>(<I>n</I>)) the set of functions<P>
+<I>O</I>(<I>g</I>(<I>n</I>)) = {&acirc;(<I>n</I>) : there exist positive constants <I>c</I> and <I>n</I><SUB>0</SUB> such that<P>
+0 <IMG SRC="../IMAGES/lteq12.gif"> &acirc;(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>}.<P>
+We use <I>O</I>-notation to give an upper bound on a function, to within a constant factor. Figure 2.1 (b) shows the intuition behind <I>O</I>-notation. For all values <I>n</I> to the right of <I>n</I><SUB>0</SUB>, the value of the function &acirc;(<I>n</I>) is on or below <I>g</I>(<I>n</I>).<P>
+To indicate that a function &acirc;(<I>n</I>) is a member of <I>O</I>(<I>g</I>(<I>n</I>)), we write&acirc;(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)). Note that &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) implies &acirc;(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)), since <IMG SRC="../IMAGES/bound.gif">-notation is a stronger notion than <I>O</I>-notation. Written set-theoretically, we have <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) <IMG SRC="../IMAGES/rgtubar.gif"> <I>O</I>(<I>g</I>(<I>n</I>)). Thus, our proof that any quadratic function <I>an</I><SUP>2 </SUP>+ <I>bn </I>+ <I>c</I>, where <I>a</I> &gt; 0, is in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) also shows that any quadratic function is in <I>O</I>(<I>n</I><SUP>2</SUP>). What may be more surprising is that any <I>linear</I> function <I>an </I>+ <I>b </I>is in <I>O</I>(<I>n</I><SUP>2</SUP>), which is easily verified by taking <I>c</I> = <I>a </I>+ |<I>b| and </I>n<I><SUB>0</SUB> = 1.</I><P>
+Some readers who have seen <I>O</I>-notation before may find it strange that we should write, for example, <I>n</I> = <I>O</I>(<I>n</I><SUP>2</SUP>). In the literature, <I>O</I>-notation is sometimes used informally to describe asymptotically tight bounds, that is, what we have defined using <IMG SRC="../IMAGES/bound.gif">-notation. In this book, however, when we write &acirc;(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)), we are merely claiming that some constant multiple of <I>g</I>(<I>n</I>) is an asymptotic upper bound on &acirc;(<I>n</I>), with no claim about how tight an upper bound it is. Distinguishing asymptotic upper bounds from asymptotically tight bounds has now become standard in the algorithms literature.<P>
+Using <I>O</I>-notation, we can often describe the running time of an algorithm merely by inspecting the algorithm's overall structure. For example, the doubly nested loop structure of the insertion sort algorithm from Chapter 1 immediately yields an <I>O</I>(<I>n</I><SUP>2</SUP>) upper bound on the worst-case running time: the cost of the inner loop is bounded from above by <I>O</I>(1) (constant), the indices <I>i</I> and <I>j</I> are both at most <I>n</I>, and the inner loop is executed at most once for each of the <I>n</I><SUP>2</SUP> pairs of values for <I>i</I> and <I>j.</I><P>
+Since <I>O</I>-notation describes an upper bound, when we use it to bound the worst-case running time of an algorithm, by implication we also bound the running time of the algorithm on arbitrary inputs as well. Thus, the <I>O</I>(<I>n</I><SUP>2</SUP>) bound on worst-case running time of insertion sort also applies to its running time on every input. The <IMG SRC="../IMAGES/bound.gif"><I>(</I>n<I><SUP>2</SUP>) bound on the worst-case running time of insertion sort, however, does not imply a <IMG SRC="../IMAGES/bound.gif"></I>(<I>n</I><SUP>2</SUP>) bound on the running time of insertion sort on <I>every</I> input. For example, we saw in Chapter 1 that when the input is already sorted, insertion sort runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time.<P>
+Technically, it is an abuse to say that the running time of insertion sort is <I>O</I>(<I>n</I><SUP>2</SUP>), since for a given <I>n</I>, the actual running time depends on the particular input of size <I>n.</I> That is, the running time is not really a function of <I>n.</I> What we mean when we say &quot;the running time is <I>O</I>(<I>n</I><SUP>2</SUP>)&quot; is that the worst-case running time (which is a function of <I>n</I>) is <I>O</I>(<I>n</I><SUP>2</SUP>), or equivalently, no matter what particular input of size <I>n</I> is chosen for each value of <I>n</I>, the running time on that set of inputs is <I>O</I>(<I>n</I><SUP>2</SUP>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><IMG SRC="../IMAGES/omega12.gif">-notation</h2><P>
+<a name="06ed_117e"><a name="06ed_117f"><a name="06ed_1180">Just as <I>O</I>-notation provides an asymptotic <I>upper</I> bound on a function, <IMG SRC="../IMAGES/omega12.gif">-notation provides an <I><B>asymptotic lower bound</I>.</B> For a given function <I>g</I>(<I>n</I>), we denote by <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) the set of functions<P>
+<IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) = {<I>f</I>(<I>n</I>): there exist positive constants <I>c</I> and <I>n</I><SUB>0</SUB> such that<P>
+0 <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I> (<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>} .<P>
+The intuition behind <IMG SRC="../IMAGES/omega12.gif">-notation is shown in Figure 2.1(c). For all values <I>n</I> to the right of <I>n</I><SUB>0,</SUB><I> </I>the value of<I> f</I>(<I>n</I>) is on or above <I>g</I>(<I>n</I>).<P>
+From the definitions of the asymptotic notations we have seen thus far, it is easy to prove the following important theorem (see Exercise 2.1-5).<P>
+<a name="06ed_1185">Theorem 2.1<a name="06ed_1185"><P>
+For any two functions <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>)<I>, f</I>(<I>n</I>)<I> = </I><IMG SRC="../IMAGES/bound.gif"><I>(</I>g<I>(</I>n<I>)) if and only if </I>f<I>(</I>n<I>) = </I>O<I>(</I>g<I>(</I>n<I>)) and </I>f<I>(</I>n<I>)</I> = <I><IMG SRC="../IMAGES/omega12.gif"></I>(<I>g</I>(<I>n</I>)).      <P>
+As an example of the application of this theorem, our proof that <I>an</I><SUP>2</SUP> + <I>bn + c = </I><IMG SRC="../IMAGES/bound.gif"><I></I>(<I>n</I><SUP>2</SUP>) for any constants <I>a, b</I>, and <I>c</I>, where <I>a &gt; </I>0, immediately implies that <I>an</I><SUP>2</SUP><I> + bn<SUP> </SUP>+ c = </I><IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) and <I>an</I><SUP>2</SUP><I> + bn + c = O</I>(<I>n<SUP>2</I></SUP>). In practice, rather than using Theorem 2.1 to obtain asymptotic upper and lower bounds from asymptotically tight bounds, as we did for this example, we usually use it to prove asymptotically tight bounds from asymptotic upper and lower bounds.<P>
+<a name="06ed_1181"><a name="06ed_1182">Since <IMG SRC="../IMAGES/omega12.gif">-notation describes a lower bound, when we use it to bound the best-case running time of an algorithm, by implication we also bound the running time of the algorithm on arbitrary inputs as well. For example, the best-case running time of insertion sort is <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>), which implies that the running time of insertion sort is <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>).<P>
+<a name="06ed_1183"><a name="06ed_1184">The running time of insertion sort therefore falls between <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>) and <I>O</I>(<I>n</I><SUP>2</SUP><I>),</I> since it falls anywhere between a linear function of <I>n</I> and a quadratic function of <I>n.</I> Moreover, these bounds are asymptotically as tight as possible: for instance, the running time of insertion sort is not<I> </I><IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>), since insertion sort runs in <IMG SRC="../IMAGES/bound.gif"><I></I>(<I>n</I>) time when the input is already sorted. It is not contradictory, however, to say that the <I>worst-case</I> running time of insertion sort is <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>), since there exists an input that causes the algorithm to take <IMG SRC="../IMAGES/omega12.gif">(n<SUP>2</SUP>) time. When we say that the <I>running time</I> (no modifier) of an algorithm is <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)), we mean that <I>no matter what particular input of size n is chosen for each value of n</I>, the running time on that set of inputs is at least a constant times <I>g</I>(<I>n</I>), for sufficiently large <I>n.</I><P>
+<P>
+
+
+
+
+
+
+
+<h2>Asymptotic notation in equations</h2><P>
+We have already seen how asymptotic notation can be used within mathematical formulas. For example, in introducing <I>O</I>-notation, we wrote &quot;<I>n = O</I>(<I>n</I><SUP>2</SUP>)<I>.</I>&quot;<I> </I>We might also write 2<I>n</I><SUP>2</SUP><I> + </I>3<I>n + </I>1<I> = </I>2<I>n</I><SUP>2<I> </SUP>+ </I><IMG SRC="../IMAGES/bound.gif"><I>(n</I>). How do we interpret such formulas?<P>
+When the asymptotic notation stands alone on the right-hand side of an equation, as in <I>n = O</I>(<I>n</I><SUP>2</SUP>), we have already defined the equal sign to mean set membership: <I>n </I><IMG SRC="../IMAGES/memof12.gif"><I> O</I>(<I>n</I><SUP>2</SUP>)<I>. </I>In general, however, when asymptotic notation appears in a formula, we interpret it as standing for some anonymous function that we do not care to name. For example, the formula 2<I>n</I><SUP>2<I> </SUP>+ </I>3<I>n + </I>1<I><SUP> </SUP>= </I>2<I>n</I><SUP>2</SUP><I> + </I><IMG SRC="../IMAGES/bound.gif"><I></I>(<I>n</I>) means that 2<I>n</I><SUP>2</SUP><I> + </I>3<I>n + </I>1<I> = </I>2<I>n</I><SUP>2</SUP><I> + f</I>(<I>n</I>)<I>,</I> where <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>) is some function in the set <IMG SRC="../IMAGES/bound.gif"></I>(<I>n</I>). In this case, <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>)</I> = <I>3</I>n + <I>1</I>, <I>which</I> <I>indeed is in</I> <I><IMG SRC="../IMAGES/bound.gif"></I>(<I>n</I>)<I>.</I><P>
+Using asymptotic notation in this manner can help eliminate inessential detail and clutter in an equation. For example, in Chapter I we expressed the worst-case running time of merge sort as the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).</sub></sup></pre><P>
+If we are interested only in the asymptotic behavior of <I>T</I>(<I>n</I>), there is no point in specifying all the lower-order terms exactly; they are all understood to be included in the anonymous function denoted by the term <IMG SRC="../IMAGES/bound.gif"><I>(</I>n<I>).</I><P>
+The number of anonymous functions in an expression is understood to be equal to the number of times the asymptotic notation appears. For example, in the expression<P>
+<img src="29_a.gif"><P>
+there is only a single anonymous function (a function of <I>i</I>). This expression is thus <I>not</I> the same as <I>O</I>(1) + <I>O</I>(2) + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>O</I>(<I>n</I>), which doesn't really have a clean interpretation.<P>
+In some cases, asymptotic notation appears on the left-hand side of an equation, as in<P>
+<pre>2<I>n</I><SUP>2</SUP> + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).</sub></sup></pre><P>
+We interpret such equations using the following rule: <I>No matter how the anonymous functions are chosen on the left of the equal sign, there is a way to choose the anonymous functions on the right of the equal sign to make the equation valid</I>. Thus, the meaning of our example is that for any function <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), there is some function g(n) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) such that 2<I>n</I><SUP>2</SUP> + <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>g</I>(<I>n</I>) for all <I>n</I>. In other words, the right-hand side of an equation provides coarser level of detail than the left-hand side.<P>
+A number of such relationships can be chained together, as in<P>
+<pre>2<I>n</I><SUP>2</SUP> + 3<I>n</I> + 1 = 2<I>n</I><SUP>2</SUP> + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).</sub></sup></pre><P>
+We can interpret each equation separately by the rule above. The first equation says that there is <I>some</I> function <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/bound.gif"></I>(<I>n</I>) such that 2<I>n</I><SUP>2</SUP> + 3<I>n</I> + 1 = 2<I>n</I><SUP>2</SUP> + <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>) for all </I>n.<I> The second equation says that for </I>any<I> function </I>g<I>(</I>n<I>)</I> <I><IMG SRC="../IMAGES/memof12.gif"> </I><IMG SRC="../IMAGES/bound.gif"><I>(</I>n<I>) (such as the <IMG SRC="../IMAGES/scrptf12.gif"></I>(<I>n</I>) just mentioned), there is <I>some</I> function <I>h</I>(<I>n</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"> <I><IMG SRC="../IMAGES/bound.gif"></I>(<I>n</I><SUP>2</SUP>) such that 2<I>n</I><SUP>2</SUP><I> + g</I>(<I>n</I>)<I> = h</I>(<I>n</I>) for all <I>n.</I> Note that this interpretation implies that 2<I>n</I><SUP>2</SUP> + 3<I>n</I> + 1 = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>), which is what the chaining of equations intuitively gives us.<P>
+<P>
+
+
+
+
+
+
+
+<h2>o-notation</h2><P>
+<a name="06ef_1185">The asymptotic upper bound provided by <I>O</I>-notation may or may not be asymptotically tight. The bound 2<I>n</I><SUP>2</SUP><I> = O</I>(<I>n</I><SUP>2</SUP>) is asymptotically tight, but the bound 2<I>n = O</I>(<I>n</I><SUP>2</SUP>) is not. We use <I>o</I>-notation to denote an upper bound that is not asymptotically tight. We formally define <I>o</I>(<I>g</I>(<I>n</I>)) ("little-oh of <I>g</I> of <I>n</I>") as the set<P>
+<I>o</I>(<I>g</I>(<I>n</I>)) = {<IMG SRC="../IMAGES/scrptf12.gif"><I></I>(<I>n</I>): for any positive constant <I>c &gt; </I>0<I>, </I>there exists a constant<P>
+<I>n</I><SUB>0</SUB> &gt; 0 such that 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>(<I>n</I>) &lt; <I>cg</I>(<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>}.<P>
+For example, 2n = o(n<SUP>2</SUP>), but 2n<SUP>2</SUP> <IMG SRC="../IMAGES/noteq.gif"> o(n<SUP>2</SUP>).<P>
+The definitions of <I>O</I>-notation and <I>o</I>-notation are similar. The main difference is that in <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>)</I> = O<I>(</I>g<I>(</I>n<I>)), the bound 0 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/scrptf12.gif"></I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n</I>) holds for <I>some</I> constant <I>c</I> &gt; 0, but in <IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>)</I> = o<I>(</I>g<I>(</I>n<I>)), the bound 0 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/scrptf12.gif"></I>(<I>n</I>)<I> &lt; cg</I>(<I>n</I>) holds for all constants <I>c</I> &gt; 0. Intuitively, in the <I>o</I>-notation, the function <I>f</I>(<I>n</I>) becomes insignificant relative to <I>g</I>(<I>n</I>) as <I>n</I> approaches infinity; that is,<P>
+<img src="30_a.gif"><P>
+<h4><a name="06ef_1186">(2.1)<a name="06ef_1186"></sub></sup></h4><P>
+Some authors use this limit as a definition of the <I>o</I>-notation; the definition in this book also restricts the anonymous functions to be asymptotically nonnegative.<P>
+<P>
+
+
+
+
+
+
+
+<h2><IMG SRC="../IMAGES/omega12.gif">-notation</h2><P>
+<a name="06f0_1186">By analogy, <IMG SRC="../IMAGES/omega12.gif">-notation is to <IMG SRC="../IMAGES/omega12.gif">-notation as <I>o</I>-notation is to <I>O</I>-notation. We use <IMG SRC="../IMAGES/omega12.gif">-notation to denote a lower bound that is not asymptotically tight. One way to define it is by<P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) if and only if <I>g</I>(<I>n</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>o</I>(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)).</sub></sup></pre><P>
+Formally, however, we define <IMG SRC="../IMAGES/omega12.gif"> (<I>g</I>(<I>n</I>)) (&quot;little-omega of <I>g</I> of <I>n</I>&quot;) as the set<P>
+<IMG SRC="../IMAGES/omega12.gif"><I>(</I>g<I>(</I>n<I>)) = {<IMG SRC="../IMAGES/scrptf12.gif"></I>(<I>n</I>): for any positive constant <I>c</I> &gt; 0, there exists a constant<P>
+<I>n</I><SUB>0</SUB> &gt; 0 such that 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n</I>) &lt; <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>}.<P>
+For example, <I>n<SUP>2</I></SUP>/2 = <IMG SRC="../IMAGES/omega12.gif"><I>(</I>n<I>), but </I>n<I><SUP>2</SUP></I>/2 <I><IMG SRC="../IMAGES/noteq.gif"></I> <I><IMG SRC="../IMAGES/omega12.gif">(</I>n<SUP>2<I></SUP>). The relation <IMG SRC="../IMAGES/scrptf12.gif">(</I>n<I>) = <IMG SRC="../IMAGES/omega12.gif">(</I>g<I>(</I>n<I>)) implies that</I><P>
+<img src="30_b.gif"><P>
+if the limit exists. That is, <IMG SRC="../IMAGES/scrptf12.gif"><I></I>(<I>n</I>) becomes arbitrarily large relative to <I>g</I>(<I>n</I>) as <I>n</I> approaches infinity.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Comparison of functions</h2><P>
+<a name="06f1_1187"><a name="06f1_1188"><a name="06f1_1189"><a name="06f1_118a">Many of the relational properties of real numbers apply to asymptotic comparisons as well. For the following, assume that <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) and <I>g</I>(<I>n</I>) are asymptotically positive.<P>
+Transitivity:<P>
+<pre><I>&acirc;</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) and <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>h</I>(<I>n</I>)) imply &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>h</I>(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)) and <I>g</I>(<I>n</I>) = <I>O</I>(<I>h</I>(<I>n</I>)) imply &acirc;(<I>n</I>) = <I>O</I>(<I>h</I>(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) and <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>h</I>(<I>n</I>)) imply &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>h</I>(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <I>o</I>(<I>g</I>(<I>n</I>)) and <I>g</I>(<I>n</I>) = <I>o</I>(<I>h</I>(<I>n</I>)) imply &acirc;(<I>n</I>) = <I>o</I>(<I>h</I>(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) and <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>h</I>(<I>n</I>)) imply &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>h</I>(<I>n</I>)).</sub></sup></pre><P>
+Reflexivity:<P>
+<pre><I>&acirc;</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <I>O</I>(&acirc;(<I>n</I>)),</sub></sup></pre><P>
+<pre><I>&acirc;</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(&acirc;(<I>n</I>)),</sub></sup></pre><P>
+Symmetry:<P>
+<pre>&acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) if and only if <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)).</sub></sup></pre><P>
+Transpose symmetry:<P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) =<I> O</I>(<I>g</I>(<I>n</I>)) if and only if <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>f</I>(<I>n</I>)),</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>o</I>(<I>g</I>(<I>n</I>)) if and only if <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<IMG SRC="../IMAGES/scrptf12.gif"><I>(</I>n<I>)).</I></sub></sup></pre><P>
+Because these properties hold for asymptotic notations, one can draw an analogy between the asymptotic comparison of two functions <I>f</I> and <I>g</I> and the comparison of two real numbers <I>a</I> and <I>b</I>:<P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>))  <IMG SRC="../IMAGES/approx18.gif">  <I>a</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>b</I>,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>))  <IMG SRC="../IMAGES/approx18.gif">  <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> <I>b</I>,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>))  <IMG SRC="../IMAGES/approx18.gif">  <I>a</I> = <I>b</I>,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>o</I>(<I>g</I>(<I>n</I>))  <IMG SRC="../IMAGES/approx18.gif">  <I>a</I> &lt; <I>b</I>,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>))  <IMG SRC="../IMAGES/approx18.gif">  <I>a</I> &gt; <I>b</I>.</sub></sup></pre><P>
+<a name="06f1_118b">One property of real numbers, however, does not carry over to asymptotic notation:<P>
+<B>Trichotomy:     </B>For any two real numbers <I>a</I> and <I>b</I>, exactly one of the following must hold: <I>a</I> &lt; <I>b</I>, <I>a</I> = <I>b</I>, or <I>a</I> &gt; <I>b</I>.<P>
+Although any two real numbers can be compared, not all functions are asymptotically comparable. That is, for two functions <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) and <I>g</I>(<I>n</I>), it may be the case that neither <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)) nor <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) holds. For example, the functions <I>n</I> and <I>n</I> <SUP>1+sin <I>n</I></SUP> cannot be compared using asymptotic notation, since the value of the exponent in <I>n</I><SUP>1 +sin <I>n</I></SUP> oscillates between 0 and 2, taking on all values in between.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="06f2_0001">Exercises<a name="06f2_0001"></h2><P>
+<a name="06f2_0002">2.1-1<a name="06f2_0002"><P>
+Let <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) be asymptotically nonnegative functions. Using the basic definition of <IMG SRC="../IMAGES/bound.gif">-notation, prove that max(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>),<I>g</I>(<I>n</I>)) = <IMG SRC="../IMAGES/bound.gif">(<I>f</I>(<I>n</I>) + <I>g</I>(<I>n</I>)).<P>
+<a name="06f2_0003">2.1-2<a name="06f2_0003"><P>
+Show that for any real constants <I>a</I> and <I>b</I>, where <I>b</I> &gt; 0,<P>
+<pre>(<I>n</I> + <I>a</I>)<I><SUP>b</I></SUP> = <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>b</I></SUP>) .</sub></sup></pre><P>
+<h4><a name="06f2_0004">(2.2)<a name="06f2_0004"></sub></sup></h4><P>
+<a name="06f2_0005">2.1-3<a name="06f2_0005"><P>
+Explain why the statement, &quot;The running time of algorithm <I>A</I> is at least <I>O</I>(<I>n</I><SUP>2</SUP>),&quot; is content-free.<P>
+<a name="06f2_0006">2.1-4<a name="06f2_0006"><P>
+Is 2<I><SUP>n</I>+1</SUP> = <I>O</I>(2<I><SUP>n</I></SUP>)? Is 2<SUP>2<I>n</I></SUP> = <I>O</I>(2<I><SUP>n</I></SUP>)?<P>
+<a name="06f2_0007">2.1-5<a name="06f2_0007"><P>
+Prove Theorem 2.1.<P>
+<a name="06f2_0008">2.1-6<a name="06f2_0008"><P>
+Prove that the running time of an algorithm is <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)) if and only if its worst-case running time is <I>O</I>(<I>g</I>(<I>n</I>)) and its best-case running time is <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)).<P>
+<a name="06f2_0009">2.1-7<a name="06f2_0009"><P>
+Prove that <I>o</I>(<I>g</I>(<I>n</I>)) <IMG SRC="../IMAGES/dome.gif"> <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>)) is the empty set.<P>
+<a name="06f2_000a">2.1-8<a name="06f2_000a"><P>
+We can extend our notation to the case of two parameters <I>n</I> and <I>m</I> that can go to infinity independently at different rates. For a given function <I>g</I>(<I>n</I>,<I> m</I>), we denote by <I>O</I>(<I>g</I>(<I>n, m</I>)) the set of functions<P>
+<I>O</I>(<I>g</I>(<I>n</I>, <I>m</I>)) = {<IMG SRC="../IMAGES/scrptf12.gif">(<I>n,m</I>): there exist positive constants <I>c</I>, <I>n</I><SUB>0</SUB>, and <I>m</I><SUB>0<P>
+such that 0 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n, m</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n, m</I>)<P>
+for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"><I>n</I><SUB>0</SUB> and <I>m</I> <IMG SRC="../IMAGES/gteq.gif"> <I>m</I><SUB>0</SUB>}.<P>
+Give corresponding definitions for <IMG SRC="../IMAGES/omega12.gif">(<I>g</I>(<I>n</I>, <I>m</I>)) and <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>, <I>m</I>)).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06f3_0001">2.2 Standard notations and common functions<a name="06f3_0001"></h1><P>
+This section reviews some standard mathematical functions and notations and explores the relationships among them. It also illustrates the use of the asymptotic notations.<P>
+
+
+
+
+
+<h2>Monotonicity</h2><P>
+<a name="06f4_118c"><a name="06f4_118d"><a name="06f4_118e"><a name="06f4_118f">A function <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>) is <I><B>monotonically increasing</I></B> if <I>m</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> implies <IMG SRC="../IMAGES/scrptf12.gif"> (<I>m</I>) <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>). Similarly, it is <I><B>monotonically decreasing</I></B> if <I>m</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> implies <IMG SRC="../IMAGES/scrptf12.gif"> (<I>m</I>) <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>). A function <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) is <B>strictly increasing</B> if <I>m</I> &lt; <I>n</I> implies <IMG SRC="../IMAGES/scrptf12.gif">(<I>m</I>) &lt; <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) and <I><B>strictly decreasing</I></B> if <I>m</I> &lt; <I>n</I> implies <IMG SRC="../IMAGES/scrptf12.gif"> (<I>m</I>) &gt; <IMG SRC="../IMAGES/scrptf12.gif"> (<I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Floors and ceilings</h2><P>
+<a name="06f5_1190"><a name="06f5_1191"><a name="06f5_1192"><a name="06f5_1193">For any real number <I>x</I>, we denote the greatest integer less than or equal to <I>x</I> by <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>x</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> (read &quot;the floor of <I>x</I>&quot;) and the least integer greater than or equal to x by <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>x</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> (read &quot;the ceiling of <I>x</I>&quot;). For all real <I>x</I>,<P>
+<pre><I>x</I> - 1 &lt; <IMG SRC="../IMAGES/hfbrdl12.gif"><I>x</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/hfbrul14.gif"><I>x</I><IMG SRC="../IMAGES/hfbrur14.gif"> &lt; <I>x</I> +1.</sub></sup></pre><P>
+For any integer <I>n</I>,<P>
+<pre><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrur14.gif"> + <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdl12.gif">= <I>n,</I></sub></sup></pre><P>
+and for any integer <I>n</I> and integers <I>a</I> <IMG SRC="../IMAGES/noteq.gif"> 0 and <I>b</I> <IMG SRC="../IMAGES/noteq.gif"> 0,<P>
+<pre><IMG SRC="../IMAGES/hfbrul14.gif"><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/<I>a</I><IMG SRC="../IMAGES/hfbrur14.gif">/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif"> = <IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/<I>ab</I><IMG SRC="../IMAGES/hfbrur14.gif"></sub></sup></pre><P>
+<h4><a name="06f5_1194">(2.3)<a name="06f5_1194"></sub></sup></h4><P>
+and<P>
+<pre><IMG SRC="../IMAGES/hfbrdl12.gif"><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/<I>a</I><IMG SRC="../IMAGES/hfbrdr12.gif">/<I>b</I><IMG SRC="../IMAGES/hfbrdr12.gif"> = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/<I>ab</I><IMG SRC="../IMAGES/hfbrdr12.gif"> .</sub></sup></pre><P>
+<h4><a name="06f5_1195">(2.4)<a name="06f5_1195"></sub></sup></h4><P>
+The floor and ceiling functions are monotonically increasing.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Polynomials</h2><P>
+<a name="06f6_1194"><a name="06f6_1195"><a name="06f6_1196"><a name="06f6_1197"><a name="06f6_1198">Given a positive integer <I>d</I>, a <I><B>polynomial in n of degree</I></B> <I>d</I> is a function <I>p</I>(<I>n</I>) of the form<P>
+<img src="33_a.gif"><P>
+where the constants <I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . ., <I>a<SUB>d</I></SUB> are the <I><B>coefficients </I></B>of the polynomial and <I>a<SUB>d</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> 0. A polynomial is <I><B>asymptotically positive</I></B> if and only if <I>a<SUB>d</SUB> </I>&gt; 0. For an asymptotically positive polynomial <I>p</I>(<I>n</I>) of degree <I>d</I>, we have <I>p</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>d</I></SUP>). For any real constant <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 0, the function <I>n<SUP>a</I></SUP> is monotonically increasing, and for any real constant <I>a</I> <IMG SRC="../IMAGES/lteq12.gif"> 0, the function <I>n<SUP>a</I></SUP> is monotonically decreasing. We say that a function <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) is <I><B>polynomially bounded</I></B> if <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>n<SUP>0</I>(1)</SUP>, which is equivalent to saying that <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>O</I>(<I>n<SUP>k</I></SUP>) for some constant <I>k</I> (see Exercise 2.2-2).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Exponentials</h2><P>
+<a name="06f7_1199">For all real <I>a</I> <IMG SRC="../IMAGES/noteq.gif"> 0, <I>m</I>, and <I>n</I>, we have the following identities:<P>
+<pre><I>a</I><SUP>0</SUP>  =  1,</sub></sup></pre><P>
+<pre><I>a</I><SUP>1</SUP>  =  <I>a</I>,</sub></sup></pre><P>
+<pre><I>a<SUP></I></SUP>-<SUP>1</SUP>  =   1/<I>a</I>,</sub></sup></pre><P>
+<pre>(<I>a<SUP>m</I></SUP>)<I><SUP>n</I></SUP>  =   <I>a<SUP>mn</I></SUP>,</sub></sup></pre><P>
+<pre>(<I>a<SUP>m</I></SUP>)<I><SUP>n</I></SUP>  =   (<I>a<SUP>n</I></SUP>)<I><SUP>m</I></SUP>,</sub></sup></pre><P>
+<pre>a<I><SUP>m</I></SUP>a<I><SUP>n</I></SUP>   =   a<I><SUP>m</I>+<I>n</I></SUP>.</sub></sup></pre><P>
+For all <I>n</I> and <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1, the function <I>a<SUP>n</I></SUP> is monotonically increasing in <I>n</I>. When convenient, we shall assume 0<SUP>0</SUP> = 1.<P>
+The rates of growth of polynomials and exponentials can be related by the following fact. For all real constants <I>a</I> and <I>b</I> such that <I>a</I> &gt; 1,<P>
+<img src="33_b.gif"><P>
+<h4><a name="06f7_119a">(2.5)<a name="06f7_119a"></sub></sup></h4><P>
+from which we can conclude that<P>
+<pre><I>n<SUP>b</I></SUP> = <I>0</I>(<I>a<SUP>n</I></SUP>).</sub></sup></pre><P>
+Thus, any positive exponential function grows faster than any polynomial.<P>
+Using <I>e </I>to denote 2.71828 . . ., the base of the natural logarithm function, we have for all real <I>x</I>,<P>
+<img src="34_a.gif"><P>
+<h4><a name="06f7_119b">(2.6)<a name="06f7_119b"></sub></sup></h4><P>
+where &quot;!&quot; denotes the factorial function defined later in this section. For all real <I>x</I>, we have the inequality<P>
+<pre><I>e<SUP>x </I></SUP><IMG SRC="../IMAGES/gteq.gif"> 1 + <I>x</I>,</sub></sup></pre><P>
+<h4><a name="06f7_119c">(2.7)<a name="06f7_119c"></sub></sup></h4><P>
+where equality holds only when x = 0. When <FONT FACE="Times New Roman" SIZE=2>|<I>x</I>|</FONT> <IMG SRC="../IMAGES/lteq12.gif"> 1, we have the approximation<P>
+<pre>1 + <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>e<SUP>x</I></SUP> <IMG SRC="../IMAGES/lteq12.gif"> l + <I>x</I> +<I>x</I><SUP>2 .</sub></sup></pre><P>
+<h4><a name="06f7_119d">(2.8)<a name="06f7_119d"></sub></sup></h4><P>
+When <I>x</I> <IMG SRC="../IMAGES/arrow12.gif"> 0, the approximation of <I>e<SUP>x</I></SUP> by 1 + <I>x</I> is quite good:<P>
+<pre><I>e<SUP>x</I></SUP> = 1 + <I>x</I> + <IMG SRC="../IMAGES/bound.gif">(<I>x</I><SUP>2</SUP>).</sub></sup></pre><P>
+(In this equation, the asymptotic notation is used to describe the limiting behavior as <I>x</I> <IMG SRC="../IMAGES/arrow12.gif"> 0 rather than as <I>x</I> <IMG SRC="../IMAGES/arrow12.gif"> <IMG SRC="../IMAGES/infin.gif">.) We have for all <I>x,</I><P>
+<img src="34_b.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2>Logarithms</h2><P>
+<a name="06f8_119a"><a name="06f8_119b"><a name="06f8_119c"><a name="06f8_119d"><a name="06f8_119e">We shall use the following notations:<P>
+<pre>lg <I>n</I>   =   log<SUB>2</SUB> <I>n</I>     (binary logarithm),</sub></sup></pre><P>
+<pre>l<I>n</I> <I>n</I>   =   log<I><SUB>e</I></SUB> <I>n</I>     (natural logarithm),</sub></sup></pre><P>
+<pre>lg<I><SUP>k</I></SUP> <I>n</I>   =   (lg <I>n</I>)<I><SUP>k</I></SUP>    (exponentiation),</sub></sup></pre><P>
+<pre>lg lg <I>n</I>  =  lg(lg <I>n</I>)    (composition).</sub></sup></pre><P>
+An important notational convention we shall adopt is that <I>logarithm functions will apply only to the next term in the formula</I>, so that lg<I> n</I> + <I>k</I> will mean (lg <I>n</I>) + <I>k</I> and not lg(<I>n</I> + <I>k</I>). For <I>n</I> &gt; 0 and <I>b</I> &gt; 1, the function log<I><SUB>b</I></SUB> <I>n</I> is strictly increasing.<P>
+For all real <I>a</I> &gt; 0, <I>b</I> &gt; 0, <I>c</I> &gt; 0, and <I>n</I>,<P>
+<img src="34_c.gif"><P>
+<h4><a name="06f8_11a1">(2.9)<a name="06f8_11a1"></sub></sup></h4><P>
+Since changing the base of a logarithm from one constant to another only changes the value of the logarithm by a constant factor, we shall often use the notation &quot;lg <I>n</I>&quot; when we don't care about constant factors, such as in <I>O</I>-notation. Computer scientists find 2 to be the most natural base for logarithms because so many algorithms and data structures involve splitting a problem into two parts.<P>
+There is a simple series expansion for ln(1 + <I>x</I>) when <IMG SRC="../IMAGES/sglvrt.gif"><I>x</I><IMG SRC="../IMAGES/sglvrt.gif"> &lt; 1:<P>
+<img src="35_a.gif"><P>
+We also have the following inequalities for <I>x</I> &gt; -1:<P>
+<img src="35_b.gif"><P>
+<h4><a name="06f8_11a2">(2.10)<a name="06f8_11a2"></sub></sup></h4><P>
+where equality holds only for <I>x</I> = 0.<P>
+<a name="06f8_119f"><a name="06f8_11a0">We say that a function <I>f</I>(<I>n</I>) is <I><B>polylogarithmically bounded</I> </B>if <I>f</I>(<I>n</I>) = lg<I>O</I><SUP>(1)</SUP> <I>n</I>. We can relate the growth of polynomials and polylogarithms by substituting lg <I>n</I> for <I>n</I> and 2<I><SUP>a</I></SUP> for <I>a</I> in equation (2.5), yielding <P>
+<img src="35_c.gif"><P>
+From this limit, we can conclude that<P>
+<pre>lg<I><SUP>b</I></SUP> <I>n</I> = <I>o</I>(<I>n<SUP>a</I></SUP>)</sub></sup></pre><P>
+for any constant <I>a</I> &gt; 0. Thus, any positive polynomial function grows faster than any polylogarithmic function.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Factorials</h2><P>
+<a name="06f9_11a1"><a name="06f9_11a2">The notation <I>n</I>! (read "<I>n</I> factorial") is defined for integers <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 0 as<P>
+<img src="35_d.gif"><P>
+Thus, <I>n</I>! = 1.2.3...<I>n</I>.<P>
+<a name="06f9_11a3">A weak upper bound on the factorial function is <I>n</I>! <IMG SRC="../IMAGES/lteq12.gif"> <I>n<SUP>n</I></SUP>, since each of the <I>n</I> terms in the factorial product is at most <I>n</I>. <I><B>Stirling's approximation</I></B><I>,</I><P>
+<img src="35_e.gif"><P>
+<h4><a name="06f9_11a4">(2.11)<a name="06f9_11a4"></sub></sup></h4><P>
+where <I>e</I> is the base of the natural logarithm, gives us a tighter upper bound, and a lower bound as well. Using Stirling's approximation, one can prove <P>
+<pre><I>n</I>!  =  <I>o</I>(<I>n<SUP>n</I></SUP>),</sub></sup></pre><P>
+<pre><I>n</I>!  =  <IMG SRC="../IMAGES/omega12.gif">(2<I><SUP>n</I></SUP>),</sub></sup></pre><P>
+<pre>lg(<I>n</I>!)  =  <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>).</sub></sup></pre><P>
+The following bounds also hold for all <I>n</I>:<P>
+<img src="35_f.gif"><P>
+<h4><a name="06f9_11a5">(2.12)<a name="06f9_11a5"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>The iterated logarithm function</h2><P>
+<a name="06fa_11a4"><a name="06fa_11a5"><a name="06fa_11a6">We use the notation lg* <I>n</I> (read &quot;log star of <I>n</I>&quot;) to denote the iterated logarithm, which is defined as follows. Let the function lg<SUP>(<I>i</I>)</SUP> <I>n</I> be defined recursively for nonnegative integers <I>i</I> as<P>
+<img src="36_a.gif"><P>
+Be sure to distinguish lg<SUP>(<I>i</I>)</SUP> <I>n</I> (the logarithm function applied <I>i</I> times in succession, starting with argument <I>n</I>) from lg<I><SUP>i</I></SUP> <I>n</I> (the logarithm of <I>n</I> raised to the <I>i</I>th power). The iterated logarithm function is defined as<P>
+<img src="36_b.gif"><P>
+The iterated logarithm is a <I>very</I> slowly growing function:<P>
+<pre>lg* 2  =  1,</sub></sup></pre><P>
+<pre>lg* 4  =  2,</sub></sup></pre><P>
+<pre>lg* 16   =  3,</sub></sup></pre><P>
+<pre>lg* 65536     =  4,</sub></sup></pre><P>
+<pre>lg*(2<SUP>65536</SUP>)     =  5.</sub></sup></pre><P>
+Since the number of atoms in the observable universe is estimated to be about 10<SUP>80</SUP>, which is much less than 2<SUP>65536</SUP>, we rarely encounter a value of <I>n</I> such that lg* <I>n</I> &gt; 5.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Fibonacci numbers</h2><P>
+<a name="06fb_11a7">The <I><B>Fibonacci numbers</I></B> are defined by the following recurrence:<P>
+<pre><I>F</I><SUB>0</SUB>  =  0,</sub></sup></pre><P>
+<pre><I>F</I><SUB>1</SUB>  =  1,</sub></sup></pre><P>
+<pre><I>F<SUB>i</I></SUB>  =  <I>F<SUB>i</I>-1</SUB>+<I>F<SUB>i</I>-2</SUB>  for <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 2.</sub></sup></pre><P>
+<h4><a name="06fb_11a9">(2.13)<a name="06fb_11a9"></sub></sup></h4><P>
+Thus, each Fibonacci number is the sum of the two previous ones, yielding the sequence<P>
+<pre>0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, ... .</sub></sup></pre><P>
+<a name="06fb_11a8">Fibonacci numbers are related to the <I><B>golden ratio</I></B> <IMG SRC="../IMAGES/phicap12.gif"><I></I> and to its conjugate <img src="36_c.gif">, which are given by the following formulas:<P>
+<img src="36_d.gif"><P>
+<h4><a name="06fb_11aa">(2.14)<a name="06fb_11aa"></sub></sup></h4><P>
+Specifically, we have<P>
+<img src="37_a.gif"><P>
+<h4><a name="06fb_11ab">(2.15)<a name="06fb_11ab"></sub></sup></h4><P>
+which can be proved by induction (Exercise 2.2-7). Since <img src="37_b.gif"> &lt; 1, we have <img src="37_c.gif">, so that the <I>i</I>th Fibonacci number <I>F<SUB>i</I></SUB> is equal to <img src="37_d.gif"> rounded to the nearest integer. Thus, Fibonacci numbers grow exponentially.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="06fc_0001">Exercises<a name="06fc_0001"></h2><P>
+<a name="06fc_0002">2.2-1<a name="06fc_0002"><P>
+Show that if <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) are monotonically increasing functions, then so are the functions <I>f</I>(<I>n</I>) + <I>g</I>(<I>n</I>) and <I>f</I>(<I>g</I>(<I>n</I>)), and if <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) are in addition nonnegative, then <I>f</I>(<I>n</I>) . <I>g</I>(<I>n</I>)is monotonically increasing.<P>
+<a name="06fc_0003">2.2-2<a name="06fc_0003"><P>
+Use the definition of <I>O</I>-notation to show that <I>T</I>(<I>n</I>) = <I>n<SUP>o</I>(1)</SUP> if and only if there exists a constant <I>k</I> &gt; 0 such that <I>T</I>(<I>n</I>) = <I>O</I>(<I>n<SUP>k</I></SUP>).<P>
+<a name="06fc_0004">2.2-3<a name="06fc_0004"><P>
+Prove equation (2.9).<P>
+<a name="06fc_0005">2.2-4<a name="06fc_0005"><P>
+Prove that lg(<I>n</I>!) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) and that <I>n</I>! = <I>o</I>(<I>n<SUP>n</I></SUP>).<P>
+<a name="06fc_0006">2.2-5<a name="06fc_0006"><P>
+Is the function [lg <I>n</I>]! polynomially bounded? Is the function [lg lg <I>n</I>]! polynomially bounded?<P>
+2.2-6     *<P>
+Which is asymptotically larger: lg(lg* <I>n</I>) or lg*(lg <I>n</I>)?<P>
+<a name="06fc_0007">2.2-7<a name="06fc_0007"><P>
+Prove by induction that the <I>i</I>th Fibonacci number satisfies the equality <img src="37_e.gif"> where <IMG SRC="../IMAGES/phicap12.gif"><I> </I>is the golden ratio and <img src="37_f.gif"> is its conjugate.<P>
+<a name="06fc_0008">2.2-8<a name="06fc_0008"><P>
+Prove that for <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0, the (<I>i</I> + 2)nd Fibonacci number satisfies <I>F<SUB>i</I>+2</SUB> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>i<I></SUP>.</I><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06fd_11b0">Problems<a name="06fd_11b0"></h1><P>
+<a name="06fd_11b1">2-1 Asymptotic behavior of polynomials<a name="06fd_11b1"><P>
+<a name="06fd_11a9">Let<P>
+<img src="38_a.gif"><P>
+where <I>a<SUB>d</I></SUB> &gt; 0, be a degree-<I>d</I> polynomial in <I>n</I>, and let <I>k</I> be a constant. Use the definitions of the asymptotic notations to prove the following properties.<P>
+<I><B>a</I>.</B>     If <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> <I>d</I>, then <I>p</I>(<I>n</I>) = <I><B>O</I></B>(<I>n<SUP>k</I></SUP>).<P>
+<I><B>b</I>.</B>     If <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>, then <I>p</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n<SUP>k</I></SUP>).<P>
+<I><B>c</I>.</B>     If <I>k</I> = <I>d</I>, then <I>p</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>k</I></SUP>).<P>
+<I><B>d</I>.</B>     If <I>k</I> &gt; <I>d</I>, then <I>p</I>(<I>n</I>) = <I>o</I>(<I>n<SUP>k</I></SUP>).<P>
+<I><B>e</I>.</B>     If <I>k</I> &lt; <I>d</I>, then <I>p</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif"><I>(</I>n<SUP>k<I></SUP>).</I><P>
+<a name="06fd_11b2">2-2     Relative asymptotic growths<a name="06fd_11b2"><P>
+Indicate, for each pair of expressions (<I>A, B</I>) in the table below, whether <I>A</I> is <I>O</I>, <I>o</I>, <IMG SRC="../IMAGES/omega12.gif">, <IMG SRC="../IMAGES/omega12.gif"><B>,</B> or <IMG SRC="../IMAGES/bound.gif"><B> </B>of <I>B</I>. Assume that <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1, <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, and <I>c</I> &gt; 1 are constants. Your answer should be in the form of the table with "yes" or "no" written in each box.<P>
+<img src="38_b.gif"><P>
+<a name="06fd_11b3">2-3     Ordering by asymptotic growth rates<a name="06fd_11b3"><P>
+<I><B>a.</I></B>     Rank the following functions by order of growth; that is, find an arrangement <I>g</I><SUB>1</SUB>, <I>g</I><SUB>2</SUB>, . . . ,<I>g</I><SUB>30</SUB> of the functions satisfying <I>g</I><SUB>1</SUB> = <IMG SRC="../IMAGES/omega12.gif">(g2)<SUB>, <I>g</I>2</SUB> = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I><SUB>3</SUB>), ..., <I>g</I><SUB>29</SUB> = <IMG SRC="../IMAGES/omega12.gif">(<I>g</I><SUB>30</SUB>). Partition your list into equivalence classes such that <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) are in the same class if and only if <I>f</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>g</I>(<I>n</I>)).<P>
+<img src="39_a.gif"><P>
+<I><B>b.</I></B>     Give an example of a single nonnegative function <I>f</I>(<I>n</I>) such that for all functions <I>g<SUB>i</I></SUB>(<I>n</I>) in part (a), <I>f</I>(<I>n</I>)is neither <I>O</I>(<I>g<SUB>i</I></SUB>(<I>n</I>)) nor <IMG SRC="../IMAGES/omega12.gif">(<I>g<SUB>i</I></SUB>(<I>n</I>)).<P>
+<a name="06fd_11b4">2-4     Asymptotic notation properties<a name="06fd_11b4"><P>
+Let <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) be asymptotically positive functions. Prove or disprove each of the following conjectures.<P>
+<I><B>a.</I></B><I>     f</I>(<I>n</I>)<I> = O</I>(<I>g</I>(<I>n</I>)) implies <I>g</I>(<I>n</I>)<I> = O</I>(<I>f</I>(<I>n</I>)).<P>
+<I><B>b.</I></B>     <I>f</I>(<I>n</I>)<I> + g</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(min(&acirc;(<I>n</I>), <I>g</I>(<I>n</I>))).<P>
+<I><B>c.</I></B><I>     f</I>(<I>n</I>)<I> = O</I>(<I>g</I>(<I>n</I>)) implies l<I>g</I>(<I>f</I>(<I>n</I>))<I> = O</I>(<I>lg(g</I>(<I>n</I>))), where <I>lg(g</I>(<I>n</I>)) &gt; 0 and <I>f</I>(<I>n</I>) <IMG SRC="../IMAGES/gteq.gif"> 1 for all sufficiently large <I>n</I>.<P>
+<I><B>d.</I></B>     <I>f</I>(<I>n</I>)<I> = O(g(n)) </I>implies 2<I><SUP>f(n)</SUP> = O(2<SUP>g(n)</SUP>).</I><P>
+<I><B>e.</I></B>     <I>f</I>(<I>n</I>)<I> = O </I>((<I>f</I>(<I>n</I>))<I><SUP>2</I></SUP>)<I>.</I><P>
+<I><B>f.</I></B>     <I>f</I>(<I>n</I>)<I> = O</I>(<I>g</I>(<I>n</I>)) implies <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>f</I>(<I>n</I>)).<P>
+<I><B>g.</I></B>     <I>f</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>f</I>(<I>n/2</I>)).<P>
+<I><B>h.</I></B>     <I>f</I>(<I>n</I>)<I> + o</I>(<I>f</I>(<I>n</I>)) = <IMG SRC="../IMAGES/bound.gif">(<I>f </I>(<I>n</I>)).<P>
+<a name="06fd_11b5">2-5     Variations on O and <IMG SRC="../IMAGES/omega12.gif"><a name="06fd_11b5"><P>
+<a name="06fd_11aa"><a name="06fd_11ab"><a name="06fd_11ac"><a name="06fd_11ad">Some authors define <IMG SRC="../IMAGES/omega12.gif"> in a slightly different way than we do; let's use <img src="39_b.gif"> (read &quot;omega infinity&quot;) for this alternative definition. We say that <img src="39_c.gif"> if there exists a positive constant <I>c</I> such that <I>f</I>(<I>n</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>cg</I>(<I>n</I>) <IMG SRC="../IMAGES/gteq.gif"> 0 for infinitely many integers <I>n</I>.<P>
+<I><B>a.</I></B>     Show that for any two functions <I>f</I>(<I>n</I>) and <I>g</I>(<I>n</I>) that are asymptotically nonnegative, either <I>f</I>(<I>n</I>) = <I>O</I>(<I>g</I>(<I>n</I>)) or <I>f</I>(<I>n</I>) = <img src="39_d.gif"> (<I>g</I>(<I>n</I>)) or both, whereas this is not true if we use <IMG SRC="../IMAGES/omega12.gif"> in place of <img src="39_e.gif"><P>
+<I><B>b.</I></B>     Describe the potential advantages and disadvantages of using <img src="39_f.gif"> instead of <IMG SRC="../IMAGES/omega12.gif"> to characterize the running times of programs.<P>
+<a name="06fd_11ae">Some authors also define <I>O</I> in a slightly different manner; let's use <I>O</I>'<I> for the alternative definition. We say that </I>f<I>(</I>n<I>) = </I>O<I>'</I>(<I>g</I>(<I>n</I>)) if and only if<I> </I><IMG SRC="../IMAGES/sglvrt.gif">f<I>(</I>n<I>)<IMG SRC="../IMAGES/sglvrt.gif"> = O</I>'<I>(</I>g(n<I>))</I>.<P>
+<I><B>c.</I>     </B>What happens to each direction of the &quot;if and only if&quot; in Theorem 2.1 under this new definition?<P>
+Some authors define <IMG SRC="../IMAGES/sftoh.gif"> (read &quot;soft-oh&quot;) to mean <I>O</I> with logarithmic factors ignored:<P>
+<IMG SRC="../IMAGES/sftoh.gif">(<I>g</I>(<I>n</I>)) = {<I>f</I>(<I>n</I>): there exist positive constants <I>c, k,</I> and <I>n</I><SUB>0</SUB> such that<P>
+0<IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cg</I>(<I>n</I>)1<I>g<SUP>k</I></SUP>(<I>n</I>) for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>}.<P>
+<I><B>d.</I></B>     Define <img src="40_a.gif"> in a similar manner. Prove the corresponding analog to Theorem 2.1.<P>
+<a name="06fd_11b6">2-6     Iterated functions<a name="06fd_11b6"><P>
+<a name="06fd_11af">The iteration operator &quot;*&quot; used in the 1g* function can be applied to monotonically increasing functions over the reals. For a function &acirc; satisfying <I>f</I>(<I>n</I>)<I> &lt; n</I>, we define the function <I>f</I><SUP>(i)</SUP> recursively for nonnegative integers <I>i</I> by<P>
+<img src="40_b.gif"><P>
+For a given constant <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B>, we define the iterated function <img src="40_c.gif"> by<P>
+<img src="40_d.gif"><P>
+which need not be well-defined in all cases. In other words, the quantity <img src="40_e.gif">(<I>n</I>) is the number of iterated applications of the function &acirc; required to reduce its argument down to <I>c</I> or less.<P>
+For each of the following functions <I>f </I>(<I>n</I>) and constants <I>c</I>, give as tight a bound as possible on <img src="40_f.gif">(<I>n</I>).<P>
+<img src="40_g.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Knuth [121] traces the origin of the <I>O</I>-notation to a number-theory text by P. Bachmann in 1892. The <I>o</I>-notation was invented by E. Landau in 1909 for his discussion of the distribution of prime numbers. The <IMG SRC="../IMAGES/omega12.gif"><B> </B>and <IMG SRC="../IMAGES/bound.gif"> notations were advocated by Knuth [124] to correct the popular, but technically sloppy, practice in the literature of using <I>O</I>-notation for both upper and lower bounds. Many people continue to use the <I>O</I>-notation where the <IMG SRC="../IMAGES/bound.gif">-notation is more technically precise. Further discussion of the history and development of asymptotic notations can be found in Knuth[121, 124] and Brassard and Bratley [33]. <P>
+Not all authors define the asymptotic notations in the same way, although the various definitions agree in most common situations. Some of the alternative definitions encompass functions that are not asymptotically nonnegative, as long as their absolute values are appropriately bounded.<P>
+Other properties of elementary mathematical functions can be found in any good mathematical reference, such as Abramowitz and Stegun [1] or Beyer [27], or in a calculus book, such as Apostol [12] or Thomas and Finney [192]. Knuth [121] contains a wealth of material on discrete mathematics as used in computer science.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap03.htm">Chapter 3</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

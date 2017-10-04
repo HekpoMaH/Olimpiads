@@ -1,0 +1,55 @@
+#include<iostream>
+#include<string.h>
+#include<cmath>
+using namespace std;
+
+const int MAXSIZE = 1000;
+
+char coded[MAXSIZE*MAXSIZE+1];
+char *Table[MAXSIZE];
+int n;	//table size
+string outstr;
+
+void fillTable();	//initializes the table
+int findK();		// finds the start row
+void encoding();	//encoding of the message
+
+
+void fillTable(){
+	n = (int) sqrt((double)strlen(coded));
+	for (int i=0; i<n; i++)
+		Table[i] = coded + i*n;
+}
+
+int findK(){
+	int sum = 0;
+	for (int i =0; coded[i]; i++)
+		if (isdigit(coded[i]))
+			sum+= coded[i] - '0';
+	return sum % n;
+}
+
+void encoding(){
+	int i,j;
+
+	for (int k = findK(); k<n; k++){
+		for (i=k, j = 0; i < n; i++, j++)
+			outstr += Table[i][j];
+		for (i=0, j--; j < n; i++, j++)
+			outstr += Table[i][j];
+	}
+
+}
+
+int main(){
+	cin.getline(coded, MAXSIZE*MAXSIZE);
+	fillTable();
+	encoding();
+	for(int i=0;i<outstr.size();i++)
+    {
+	 if(!(('A'<=outstr[i])&&(outstr[i]<='Z'))) break;
+	 cout << outstr[i];
+    }
+ 	cout << endl;
+}
+

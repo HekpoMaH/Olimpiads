@@ -1,0 +1,1 @@
+java -cp visual.jar;libs/lib/* -Xmx1G DeerVisualisation %1

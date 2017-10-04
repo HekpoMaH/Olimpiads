@@ -1,0 +1,88 @@
+{
+TASK:MORSE
+LANG:PASCAL
+}
+Var
+i:byte;
+s:string;
+Function Guess(c:char):string;
+Begin
+ case c of
+  'A':Guess:='.-';
+  'a':Guess:='.-';
+  'B':Guess:='-...';
+  'b':Guess:='-...';
+  'C':Guess:='-.-.';
+  'c':Guess:='-.-.';
+  'D':Guess:='-..';
+  'd':Guess:='-..';
+  'E':Guess:='.';
+  'e':Guess:='.';
+  'F':Guess:='..-.';
+  'f':Guess:='..-.';
+  'G':Guess:='--.';
+  'g':Guess:='--.';
+  'H':Guess:='....';
+  'h':Guess:='....';
+  'I':Guess:='..';
+  'i':Guess:='..';
+  'J':Guess:='.---';
+  'j':Guess:='.---';
+  'K':Guess:='-.-';
+  'k':Guess:='-.-';
+  'L':Guess:='.-..';
+  'l':Guess:='.-..';
+  'M':Guess:='--';
+  'm':Guess:='--';
+  'N':Guess:='-.';
+  'n':Guess:='-.';
+  'O':Guess:='---';
+  'o':Guess:='---';
+  'P':Guess:='.--.';
+  'p':Guess:='.--.';
+  'Q':Guess:='--.-';
+  'q':Guess:='--.-';
+  'R':Guess:='.-.';
+  'r':Guess:='.-.';
+  'S':Guess:='...';
+  's':Guess:='...';
+  'T':Guess:='-';
+  't':Guess:='-';
+  'U':Guess:='..-';
+  'u':Guess:='..-';
+  'V':Guess:='...-';
+  'v':Guess:='...-';
+  'W':Guess:='.--';
+  'w':Guess:='.--';
+  'X':Guess:='-..-';
+  'x':Guess:='-..-';
+  'Y':Guess:='-.--';
+  'y':Guess:='-.--';
+  'Z':Guess:='--..';
+  'z':Guess:='--..';
+  '1':Guess:='.----';
+  '2':Guess:='..---';
+  '3':Guess:='...--';
+  '4':Guess:='....-';
+  '5':Guess:='.....';
+  '6':Guess:='-....';
+  '7':Guess:='--...';
+  '8':Guess:='---..';
+  '9':Guess:='----.';
+  '0':Guess:='-----';
+  '.':Guess:='.-.-.-';
+  ',':Guess:='--..--';
+  '-':Guess:='-..-.';
+
+  '?':Guess:='..--..';
+
+  ' ':Guess:='.-.-.';
+ End;
+End;
+Begin
+ ReadLn(s);
+ For i:=1 to length(s) do Write(Guess(s[i]),' ');
+ WriteLn('...-.-');
+ WriteLn;
+End.
+

@@ -1,0 +1,104 @@
+#include<cstdio>
+#include<queue>
+using namespace std;
+queue<int>q;
+int a[120][120],used[120][120],s,k,p=0;
+void bfs()
+{
+  s=0;
+  int i,j;
+  while(!q.empty())
+  {
+    i=q.front();
+    q.pop();
+    j=q.front();
+    if(used[i][j]==k || a[i][j]==-1)break;
+    q.pop();
+    if(a[i+1][j]!=-1)
+    {
+      used[i+1][j]=used[i][j]+1;
+      if(used[i+1][j]==k)
+      {
+        p++;
+        s+=a[i+1][j];
+        a[i+1][j]=-1;
+      }
+      else
+      {
+        q.push(i+1);
+        q.push(j);
+      }
+    }
+    if(a[i-1][j]!=-1)
+    {
+      used[i-1][j]=used[i][j]+1;
+      if(used[i-1][j]==k)
+      {
+        s+=a[i-1][j];
+        a[i-1][j]=-1;
+      }
+      else
+      {
+        p++;
+        q.push(i-1);
+        q.push(j);
+      }
+    }
+    if(a[i][j+1]!=-1)
+    {
+      used[i][j+1]=used[i][j]+1;
+      if(used[i][j+1]==k)
+      {
+        s+=a[i][j+1];
+        a[i][j+1]=-1;
+      }
+      else
+      {
+        p++;
+        q.push(i);
+        q.push(j+1);
+      }
+    }
+    if(a[i][j-1]!=-1)
+    {
+      used[i][j-1]=used[i][j]+1;
+      if(used[i][j-1]==k)
+      {
+        s+=a[i][j-1];
+        a[i][j-1]=-1;
+      }
+      else
+      {
+        p++;
+        q.push(i);
+        q.push(j-1);
+      }
+    }
+  }
+}
+int main()
+{
+  int i,j,m,n,r;
+  s=1;
+  scanf("%d%d%d%d",&m,&n,&r,&k);
+  for(i=0;i<m+2;i++)
+  used[i][0]=used[i][n+1]=a[i][0]=a[i][n+1]=-1;
+  for(i=0;i<n+2;i++)
+  used[0][i]=used[m+1][i]=a[0][i]=a[m+1][i]=-1;
+  for(i=1;i<=m;i++)
+  {
+    for(j=1;j<=n;j++)
+    {
+      a[i][j]=s;
+      s++;
+      if(a[i][j]==r)
+      {
+        q.push(i);
+        q.push(j);
+        used[i][j]=0;
+      }
+    }
+  }
+  bfs();
+  printf("%d",s);
+}

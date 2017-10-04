@@ -1,0 +1,865 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 6: COUNTING AND PROBABILITY</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="partii.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap05.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="073a_129d">CHAPTER 6: COUNTING AND PROBABILITY<a name="073a_129d"></h1><P>
+This chapter reviews elementary combinatorics and probability theory. If you have a good background in these areas, you may want to skim the beginning of the chapter lightly and concentrate on the later sections. Most of the chapters do not require probability, but for some chapters it is essential.<P>
+<a name="073a_129c">Section 6.1 reviews elementary results in counting theory, including standard formulas for counting permutations and combinations. The axioms of probability and basic facts concerning probability distributions are presented in Section 6.2. Random variables are introduced in Section 6.3, along with the properties of expectation and variance. Section 6.4 investigates the geometric and binomial distributions that arise from studying Bernoulli trials. The study of the binomial distribution is continued in Section 6.5, an advanced discussion of the &quot;tails&quot; of the distribution. Finally, Section 6.6 illustrates probabilistic analysis via three examples: the birthday paradox, tossing balls randomly into bins, and winning streaks.<P>
+
+
+
+
+
+<h1><a name="073c_0001">6.1 Counting<a name="073c_0001"></h1><P>
+Counting theory tries to answer the question &quot;How many?&quot; without actually enumerating how many. For example, we might ask, &quot;How many different <I>n</I>-bit numbers are there?&quot; or &quot;How many orderings of <I>n</I> distinct elements are there?&quot; In this section, we review the elements of counting theory. Since some of the material assumes a basic understanding of sets, the reader is advised to start by reviewing the material in Section 5.1. <P>
+
+
+
+
+
+<h2>Rules of sum and product</h2><P>
+A set of items that we wish to count can sometimes be expressed as a union of disjoint sets or as a Cartesian product of sets.<P>
+<a name="073d_129d"><a name="073d_129e">The <I><B>rule of sum</I></B> says that the number of ways to choose an element from one of two <I>disjoint</I> sets is the sum of the cardinalities of the sets.That is, if <I>A</I> and <I>B</I> are two finite sets with no members in common, then |<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I>| = |<I>A| + |B|, </I>which follows from equation (5.3). For example, each position on a car's license plate is a letter or a digit. The number of possibilities for each position is therefore 26 + 10 = 36, since there are 26 choices if it is a letter and 10 choices if it is a digit.<P>
+<a name="073d_129f"><a name="073d_12a0">The<I><B> rule of product</I></B> says that the number of ways to choose an ordered pair is the number of ways to choose the first element times the number of ways to choose the second element. That is, if <I>A</I> and <I>B</I> are two finite sets, then |<I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>B| </I>= |<I>A| </I><IMG SRC="../IMAGES/dot10.gif"> |<I>B|</I>, which is simply equation (5.4). For example, if an ice-cream parlor offers 28 flavors of ice cream and 4 toppings, the number of possible sundaes with one scoop of ice cream and one topping is 28 <IMG SRC="../IMAGES/dot10.gif"> 4 = 112.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Strings</h2><P>
+<a name="073e_12a1"><a name="073e_12a2">A <I><B>string</I></B> over a finite set <I>S</I> is a sequence of elements of <I>S</I>. For example, there are 8 binary strings of length 3:<P>
+<pre>000, 001, 010, 011, 100, 101, 110, 111 .</sub></sup></pre><P>
+<a name="073e_12a3"><a name="073e_12a4"><a name="073e_12a5">We sometimes call a string of length <I>k</I> a <I><B>k-string</I>.</B> A <I><B>substring</I></B> <I>s</I>' of a string <I>s</I> is an ordered sequence of consecutive elements of <I>s</I>. A <I><B>k-substring</I></B><I> </I>of a string is a substring of length <I>k</I>. For example, 010 is a 3-substring of 01101001 (the 3-substring that begins in position 4), but 111 is not a substring of 01101001.<P>
+A <I>k</I>-string over a set <I>S</I> can be viewed as an element of the Cartesian product <I>S<SUP>k</I></SUP> of <I>k</I>-tuples; thus, there are |<I>S|</I><SUP><I>k</I></SUP> strings of length <I>k</I>. For example, the number of binary <I>k</I>-strings is 2<I><SUP>k</I></SUP>. Intuitively, to construct a <I>k</I>-string over an <I>n</I>-set, we have <I>n</I> ways to pick the first element; for each of these choices, we have <I>n</I> ways to pick the second element; and so forth <I>k</I> times. This construction leads to the <I>k</I>-fold product <I>n </I><IMG SRC="../IMAGES/dot10.gif"> n <I><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> n</I> = <I>n<SUP>k</I></SUP> as the number of <I>k</I>-strings.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Permutations</h2><P>
+<a name="073f_12a6">A <I><B>permutation</I></B> of a finite set <I>S</I> is an ordered sequence of all the elements of <I>S</I>, with each element appearing exactly once. For example, if <I>S</I> = {<I>a, b, c</I>}, there are 6 permutations of <I>S</I>:<P>
+<pre><I>abc, acb, bac, bca, cab, cba .</I></sub></sup></pre><P>
+There are <I>n</I>! permutations of a set of <I>n</I> elements, since the first element of the sequence can be chosen in <I>n</I> ways, the second in <I>n</I> - 1 ways, the third in <I>n</I> - 2 ways, and so on.<P>
+<a name="073f_12a7">A <I><B>k-permutation</I></B> of <I>S</I> is an ordered sequence of <I>k</I> elements of <I>S</I>, with no element appearing more than once in the sequence. (Thus, an ordinary permutation is just an <I>n</I>-permutation of an <I>n</I>-set.) The twelve 2-permutations of the set {<I>a, b, c, d</I>} are<P>
+<pre><I>ab, ac, ad, ba, bc, bd, ca, cb, cd, da, db, dc.</I></sub></sup></pre><P>
+The number of <I>k</I>-permutations of an <I>n</I>-set is<P>
+<img src="101_a.gif"><P>
+<h4><a name="073f_12a8">(6.1)<a name="073f_12a8"></sub></sup></h4><P>
+since there are <I>n</I> ways of choosing the first element, <I>n</I> - 1 ways of choosing the second element, and so on until <I>k</I> elements are selected, the last being a selection from <I>n</I> - <I>k</I> + 1 elements.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Combinations</h2><P>
+<a name="0740_12a8"><a name="0740_12a9">A <I><B>k-combination</I></B> of an <I>n</I>-set <I>S</I> is simply a <I>k</I>-subset of <I>S</I>. There are six 2-combinations of the 4-set {<I>a, b, c, d</I>}:<P>
+<pre><I>ab, ac, ad, bc, bd, cd .</I></sub></sup></pre><P>
+(Here we use the shorthand of denoting the 2-set {<I>a,b</I>} by <I>ab</I>, and so on.) We can construct a <I>k</I>-combination of an <I>n-</I>set by choosing <I>k</I> distinct (different) elements from the <I>n-</I>set.<P>
+The number of <I>k</I>-combinations of an <I>n-</I>set can be expressed in terms of the number of <I>k</I>-permutations of an <I>n</I>-set. For every <I>k-</I>combination, there are exactly <I>k</I>! permutations of its elements, each of which is a distinct <I>k</I>-permutation of the <I>n</I>-set. Thus, the number of <I>k</I>-combinations of an <I>n</I>-set is the number of <I>k</I>-permutations divided by <I>k</I>!; from equation (6.1), this quantity is<P>
+<img src="101_b.gif"><P>
+<h4><a name="0740_12aa">(6.2)<a name="0740_12aa"></sub></sup></h4><P>
+For <I>k</I> = 0, this formula tells us that the number of ways to choose 0 elements from an <I>n</I>-set is 1 (not 0), since 0! = 1.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Binomial coefficients</h2><P>
+<a name="0741_12aa"><a name="0741_12ab"><a name="0741_12ac">We use the notation <img src="101_c.gif"> (read &quot;<I>n</I> choose <I>k</I>&quot;) to denote the number of <I>k</I>-combinations of an <I>n</I>-set. From equation (6.2), we have<P>
+<img src="101_d.gif"><P>
+<h4><a name="0741_12ae">(6.3)<a name="0741_12ae"></sub></sup></h4><P>
+This formula is symmetric in <I>k</I> and <I>n</I> - <I>k</I>:<P>
+<img src="101_e.gif"><P>
+<h4><a name="0741_12af">(6.4)<a name="0741_12af"></sub></sup></h4><P>
+<a name="0741_12ad">These numbers are also known as <I><B>binomial coefficients</I></B>, due to their appearance in the <I><B>binomial expansion</I></B><I>:</I><P>
+<img src="101_f.gif"><P>
+<h4><a name="0741_12b0">(6.5)<a name="0741_12b0"></sub></sup></h4><P>
+A special case of the binomial expansion occurs when <I>x</I> = <I>y</I> = 1:<P>
+<img src="102_a.gif"><P>
+<h4><a name="0741_12b1">(6.6)<a name="0741_12b1"></sub></sup></h4><P>
+This formula corresponds to counting the 2<I><SUP>n</I></SUP> binary <I>n</I>-strings by the number of 1's they contain: there are <img src="102_b.gif"> binary <I>n</I>-strings containing exactly <I>k </I>1's, since there are <img src="102_c.gif"> ways to choose <I>k</I> out of the <I>n</I> positions in which to place the 1's.<P>
+There are many identities involving binomial coefficients. The exercises at the end of this section give you the opportunity to prove a few.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Binomial bounds</h2><P>
+<a name="0742_12ae">We sometimes need to bound the size of a binomial coefficient. For 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, we have the lower bound<P>
+<img src="102_d.gif"><P>
+<h4><a name="0742_12b1">(6.7)<a name="0742_12b1"></sub></sup></h4><P>
+Taking advantage of the inequality <I>k</I>! <IMG SRC="../IMAGES/gteq.gif"> (<I>k</I>/<I>e</I>)<I><SUP>k </I></SUP>derived from Stirling's formula (2.12), we obtain the upper bounds<P>
+<img src="102_e.gif"><P>
+<h4><a name="0742_12b2">(6.8)<a name="0742_12b2"></sub></sup></h4><P>
+<h4><a name="0742_12b3">(6.9)<a name="0742_12b3"></sub></sup></h4><P>
+For all 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, we can use induction (see Exercise 6.1-12) to prove the bound<P>
+<img src="102_f.gif"><P>
+<h4><a name="0742_12b4">(6.10)<a name="0742_12b4"></sub></sup></h4><P>
+where for convenience we assume that 0<SUP>0</SUP> = 1. For <I>k</I> = <IMG SRC="../IMAGES/lambdauc.gif"><I>n</I>, where 0 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/lambdauc.gif"> <IMG SRC="../IMAGES/lteq12.gif"> 1, this bound can be rewritten as<P>
+<img src="102_g.gif"><P>
+<h4><a name="0742_12b5">(6.11)<a name="0742_12b5"></sub></sup></h4><P>
+<h4><a name="0742_12b6">(6.12)<a name="0742_12b6"></sub></sup></h4><P>
+where<P>
+<pre><I>H</I>(<IMG SRC="../IMAGES/lambdauc.gif">) = -<IMG SRC="../IMAGES/lambdauc.gif">lg<IMG SRC="../IMAGES/lambdauc.gif"> - (1 - <IMG SRC="../IMAGES/lambdauc.gif">) lg (1 - <IMG SRC="../IMAGES/lambdauc.gif">)</sub></sup></pre><P>
+<h4><a name="0742_12b7">(6.13)<a name="0742_12b7"></sub></sup></h4><P>
+<a name="0742_12af"><a name="0742_12b0">is the <B>(</B><I><B>binary) entropy function</I></B> and where, for convenience, we assume that 0 lg 0 = 0, so that <I>H </I>(0) = <I>H </I>(1) = 0.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0743_12b4">Exercises<a name="0743_12b4"></h2><P>
+<a name="0743_12b5">6.1-1<a name="0743_12b5"><P>
+How many <I>k</I>-substrings does an <I>n</I>-string have? (Consider identical <I>k</I>-substrings at different positions as different.) How many substrings does an <I>n</I>-string have in total?<P>
+<a name="0743_12b6">6.1-2<a name="0743_12b6"><P>
+<a name="0743_12b1">An <I>n</I>-input, <I>m</I>-output <I><B>boolean</I> </B><I><B>function</I> </B>is a function from {<FONT FACE="Courier New" SIZE=2>TRUE, FALSE</FONT>}<I><SUP>n</I> </SUP>to {<FONT FACE="Courier New" SIZE=2>TRUE, FALSE</FONT>}<I><SUP>m</I></SUP>. How many <I>n</I>-input, 1-output boolean functions are there? How many <I>n</I>-input, <I>m</I>-output boolean functions are there?<P>
+<a name="0743_12b7">6.1-3<a name="0743_12b7"><P>
+In how many ways can <I>n</I> professors sit around a circular conference table? Consider two seatings to be the same if one can be rotated to form the other.<P>
+<a name="0743_12b8">6.1-4<a name="0743_12b8"><P>
+In how many ways can three distinct numbers be chosen from the set {1, 2, . . . , 100} so that their sum is even?<P>
+<a name="0743_12b9">6.1-5<a name="0743_12b9"><P>
+Prove the identity<P>
+<img src="103_a.gif"><P>
+<h4><a name="0743_12ba">(6.14)<a name="0743_12ba"></sub></sup></h4><P>
+for 0 &lt; <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>.<P>
+<a name="0743_12bb">6.1-6<a name="0743_12bb"><P>
+Prove the identity<P>
+<img src="103_b.gif"><P>
+for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>n</I>.<P>
+<a name="0743_12bc">6.1-7<a name="0743_12bc"><P>
+To choose <I>k</I> objects from <I>n</I>, you can make one of the objects distinguished and consider whether the distinguished object is chosen. Use this approach to prove that<P>
+<img src="103_c.gif"><P>
+<a name="0743_12bd">6.1-8<a name="0743_12bd"><P>
+<a name="0743_12b2"><a name="0743_12b3">Using the result of Exercise 6.1-7, make a table for <I>n</I> = 0, 1, . . . , 6 and 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> of the binomial coefficients <img src="104_a.gif"> with <img src="104_b.gif"> at the top, <img src="104_c.gif"> and <img src="104_d.gif"> on the next line, and so forth. Such a table of binomial coefficients is called <I><B>Pascal's triangle.</I></B><P>
+<a name="0743_12be">6.1-9<a name="0743_12be"><P>
+Prove that<P>
+<img src="104_e.gif"><P>
+<a name="0743_12bf">6.1-10<a name="0743_12bf"><P>
+Show that for any <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 0 and 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, the maximum value of <img src="104_f.gif"> is achieved when <I>k</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> or <I>k</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+<a name="0743_12c0">6.1-11<a name="0743_12c0"><P>
+Argue that for any <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 0, <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 0, <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0, and <I>j</I> + <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>,<P>
+**image 104_g.gif not available**<P>
+<h4><a name="0743_12c1">(6.15)<a name="0743_12c1"></sub></sup></h4><P>
+Provide both an algebraic proof and an argument based on a method for choosing <I>j</I> + <I>k</I> items out of <I>n</I>. Give an example in which equality does not hold.<P>
+<a name="0743_12c2">6.1-12<a name="0743_12c2"><P>
+Use induction on <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>/2 to prove inequality (6.10), and use equation (6.4) to extend it to all <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>.<P>
+<a name="0743_12c3">6.1-13<a name="0743_12c3"><P>
+Use Stirling's approximation to prove that<P>
+**image 104_h.gif not available**<P>
+<h4><a name="0743_12c4">(6.16)<a name="0743_12c4"></sub></sup></h4><P>
+<a name="0743_12c5">6.1-14<a name="0743_12c5"><P>
+By differentiating the entropy function <I>H </I>(<IMG SRC="../IMAGES/lambdauc.gif">), show that it achieves its maximum value at <IMG SRC="../IMAGES/lambdauc.gif">= 1/2. What is <I>H </I>(1/2)?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0744_12b9">6.2 Probability<a name="0744_12b9"></h1><P>
+<a name="0744_12b4">Probability is an essential tool for the design and analysis of probabilistic and randomized algorithms. This section reviews basic probability theory.<P>
+<a name="0744_12b5"><a name="0744_12b6">We define probability in terms of a <I><B>sample space</I></B> <I><B>S,</I></B> which is a set whose elements are called <I><B>elementary events</I>.</B> Each elementary event can be viewed as a possible outcome of an experiment. For the experiment of flipping two distinguishable coins, we can view the sample space as consisting of the set of all possible 2-strings over {<FONT FACE="Courier New" SIZE=2>H, T</FONT>}:<P>
+<pre><I>S</I> = {HH, HT, TH, TT} .</sub></sup></pre><P>
+<a name="0744_12b7"><a name="0744_12b8">An<I> <B>event</I></B> is a subset<SUP>1</SUP> of the sample space <I>S</I>. For example, in the experiment of flipping two coins, the event of obtaining one head and one tail is {<FONT FACE="Courier New" SIZE=2>HT, TH</FONT>}. The event <I>S</I> is called the <I><B>certain event</I></B><I>, </I>and the event <img src="105_a.gif"> is called the <I><B>null event</I></B><I>.</I> We say that two events <I>A</I> and <I>B</I> are <I><B>mutually exclusive</I></B><I> </I>if <img src="105_b.gif">. We sometimes treat an elementary event <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> as the event {<I>s</I>}. By definition, all elementary events are mutually exclusive.<P>
+<SUP>1</SUP> For a general probability distribution, there may be some subsets of the sample space <I>S</I> that are not considered to be events. This situation usually arises when the sample space is uncountably infinite. The main requirement is that the set of events of a sample space be closed under the operations of taking the complement of an event, forming the union of a finite or countable number of events, and taking the intersection of a finite or countable number of events. Most of the probability distributions we shall see are over finite or countable sample spaces, and we shall generally consider all subsets of a sample space to be events. A notable exception is the continuous uniform probability distribution, which will be presented shortly.<P>
+
+
+
+
+
+<h2>Axioms of probability</h2><P>
+<a name="0745_12b9"><a name="0745_12ba"><a name="0745_12bb">A <I><B>probability distribution</I></B> Pr{} on a sample space <I>S</I> is a mapping from events of <I>S</I> to real numbers such that the following <I><B>probability axioms </I></B>are satisfied:<P>
+1.     Pr {<I>A</I>} <IMG SRC="../IMAGES/gteq.gif"> 0 for any event <I>A</I>.<P>
+2.     Pr {<I>S</I>} = 1.<P>
+3.     Pr {<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I>} = Pr {<I>A</I>} + Pr {<I>B</I>} for any two mutually exclusive events <I>A</I> and <I>B</I>. More generally, for any (finite or countably infinite) sequence of events <I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, . . . that are pairwise mutually exclusive,<P>
+<img src="105_c.gif"><P>
+We call Pr {<I>A</I>} the <I><B>probability</I></B> of the event <I>A</I>. We note here that axiom 2 is a normalization requirement: there is really nothing fundamental about choosing 1 as the probability of the certain event, except that it is natural and convenient.<P>
+<a name="0745_12bc">Several results follow immediately from these axioms and basic set theory (see Section 5.1). The null event <img src="105_d.gif"> has probability <img src="105_e.gif">. If <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I>, then Pr{<I>A</I>} <IMG SRC="../IMAGES/lteq12.gif"> Pr{<I>B</I>}. Using <img src="105_f.gif"> to denote the event <I>S</I> - <I>A</I> (the<I> <B>complement</I></B> of <I>A</I>), we have <img src="105_g.gif">. For any two events <I>A</I> and <I>B</I>,<P>
+<pre>PR{<I>A</I> <IMG SRC="../IMAGES/wideu.gif"><I>B</I>} = Pr{<I>A</I>} + Pr{<I>B</I>} - Pr{<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I>}</sub></sup></pre><P>
+<h4><a name="0745_12bd">(6.17)<a name="0745_12bd"></sub></sup></h4><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> Pr{<I>A</I>} + Pr{<I>B</I>} .</sub></sup></pre><P>
+<h4><a name="0745_12be">(6.18)<a name="0745_12be"></sub></sup></h4><P>
+In our coin-flipping example, suppose that each of the four elementary events has probability 1/4. Then the probability of getting at least one head is<P>
+<pre>Pr{HH, HT, TH} = Pr{HH} + Pr{HT} + Pr{TH}</sub></sup></pre><P>
+<pre>= 3/4.</sub></sup></pre><P>
+Alternatively, since the probability of getting strictly less than one head is Pr{<FONT FACE="Courier New" SIZE=2>TT</FONT>} = 1/4, the probability of getting at least one head is 1 - 1/4 = 3/4.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Discrete probability distributions</h2><P>
+<a name="0746_12bd">A probability distribution is <I><B>discrete</I></B> if it is defined over a finite or  countably infinite sample space. Let <I>S</I> be the sample space. Then for any event <I>A</I>,<P>
+<img src="106_a.gif"><P>
+since elementary events, specifically those in <I>A</I>, are mutually exclusive. If <I>S</I> is finite and every elementary event <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> has probability<P>
+<pre>Pr{<I>s</I>} = 1/<IMG SRC="../IMAGES/sglvrt.gif"><I>S</I><IMG SRC="../IMAGES/sglvrt.gif"> ,</sub></sup></pre><P>
+<a name="0746_12be">then we have the <I><B>uniform probability distribution</I> </B>on <I>S</I>. In such a case the experiment is often described as &quot;picking an element of <I>S</I> at random.&quot;<P>
+<a name="0746_12bf">As an example, consider the process of flipping a<B> </B><I><B>fair coin</I>, </B>one for which the probability of obtaining a head is the same as the probability of  obtaining a tail, that is, 1/2. If we flip the coin n times,we have the uniform probability distribution defined on the sample space <I>S</I> = {<FONT FACE="Courier New" SIZE=2>H, T</FONT>}<I><SUP>n</I></SUP>, a set of size 2<I><SUP>n</I></SUP>. Each elementary event in <I>S</I> can be represented as a string of length <I>n</I> over {<FONT FACE="Courier New" SIZE=2>H, T</FONT>}, and each occurs with probability 1/2<I><SUP>n</I></SUP>. The event<P>
+<pre><I>A</I> = {exactly <I>k</I> heads and exactly <I>n</I> - <I>k</I> tails occur}</sub></sup></pre><P>
+is a subset of <I>S</I> of size <img src="106_b.gif">, since there are <img src="106_c.gif"> strings of length <I>n</I> over {<FONT FACE="Courier New" SIZE=2>H, T</FONT>} that contain exactly <I>k</I> <FONT FACE="Courier New" SIZE=2>H'S</FONT>. The probability of event <I>A</I> is thus <img src="106_d.gif">.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Continuous uniform probability distribution</h2><P>
+The continuous uniform probability distribution is an example of a probability distribution in which all subsets of the sample space are not considered to be events. The continuous uniform probability distribution is defined over a closed interval [<I>a, b</I>] of the reals, where <I>a</I> &lt; <I>b</I>. Intuitively, we want each point in the interval [<I>a, b</I>] to be &quot;equally likely.&quot; There is an uncountable number of points, however, so if we give all points the same finite, positive probability, we cannot simultaneously satisfy axioms 2 and 3. For this reason, we would like to associate a probability only with <I>some</I> of the subsets of <I>S</I> in such a way that the axioms are satisfied for these events.<P>
+<a name="0747_12c0">For any closed interval [<I>c,d</I>], where <I>a </I><IMG SRC="../IMAGES/lteq12.gif"> c <I><IMG SRC="../IMAGES/lteq12.gif"> d </I><IMG SRC="../IMAGES/lteq12.gif"> b<I>, the</I> <B>continuous uniform probability distribution<I></B> defines the probability of the event [</I>c, d<I>] to be</I><P>
+<img src="107_a.gif"><P>
+Note that for any point <I>x</I> = [<I>x, x</I>], the probability of <I>x</I> is 0. If we remove the endpoints of an interval [<I>c, d</I>], we obtain the open interval (<I>c, d</I>). Since [<I>c, d</I>] = [<I>c, c</I>] <IMG SRC="../IMAGES/wideu.gif"> (<I>c, d</I>) <IMG SRC="../IMAGES/wideu.gif"> [<I>d, d</I>], axiom 3 gives us Pr{[<I>c, d</I>]} = Pr{(<I>c, d</I>)}. Generally, the set of events for the continuous uniform probability distribution is any subset of [<I>a, b</I>] that can be obtained by a finite or countable union of open and closed intervals.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Conditional probability and independence</h2><P>
+<a name="0748_12c1"><a name="0748_12c2">Sometimes we have some prior partial knowledge about the outcome of an experiment. For example, suppose that a friend has flipped two fair coins and has told you that at least one of the coins showed a head. What is the probability that both coins are heads? The information given eliminates the possibility of two tails. The three remaining elementary events are equally likely, so we infer that each occurs with probability 1/3. Since only one of these elementary events shows two heads, the answer to our question is 1/3.<P>
+Conditional probability formalizes the notion of having prior partial knowledge of the outcome of an experiment. The<I> <B>conditional probability</I></B> of an event <I>A</I> given that another event <I>B</I> occurs is defined to be<P>
+<img src="107_b.gif"><P>
+<h4><a name="0748_12c5">(6.19)<a name="0748_12c5"></sub></sup></h4><P>
+whenever Pr{<I>B</I>} <IMG SRC="../IMAGES/noteq.gif"> 0. (We read &quot;Pr{<I>A</I> <IMG SRC="../IMAGES/sglvrt.gif"> <I>B</I>}&quot; as &quot;the probability of <I>A</I> given <I>B</I>.&quot;) Intuitively, since we are given that event <I>B</I> occurs, the event that <I>A</I> also occurs is <I>A </I><IMG SRC="../IMAGES/dome.gif"><I></I> <I>B</I>. That is, <I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I> is the set of outcomes in which both <I>A</I> and <I>B</I> occur. Since the outcome is one of the elementary events in <I>B</I>, we normalize the probabilities of all the elementary events in <I>B</I> by dividing them by Pr{<I>B</I>}, so that they sum to 1. The conditional probability of <I>A</I> given <I>B</I> is, therefore, the ratio of the probability of event <I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I> to the probability of event <I>B</I>. In the example above, <I>A</I> is the event that both coins are heads, and <I>B</I> is the event that at least one coin is a head. Thus, Pr{<I>A</I> <IMG SRC="../IMAGES/sglvrt.gif"> <I>B</I>} = (1/4)/(3/4) = 1/3.<P>
+Two events are <I><B>independent</I></B> if<P>
+<pre>Pr{<I>A </I><IMG SRC="../IMAGES/dome.gif"> <I>B</I>} = Pr{<I>A</I>}Pr{<I>B</I>},</sub></sup></pre><P>
+which is equivalent, if Pr{<I>B</I>} <IMG SRC="../IMAGES/noteq.gif"> 0, to the condition<P>
+<pre>Pr{<I>A</I><IMG SRC="../IMAGES/sglvrt.gif"><I>B</I>} = Pr{<I>A</I>}.</sub></sup></pre><P>
+For example, suppose that two fair coins are flipped and that the outcomes are independent. Then the probability of two heads is (1/2)(1/2) = 1/4. Now suppose that one event is that the first coin comes up heads and the other event is that the coins come up differently. Each of these events occurs with probability 1/2, and the probability that both events occur is 1/4; thus, according to the definition of independence, the events are independent--even though one might think that both events depend on the first coin. Finally, suppose that the coins are welded together so that they both fall heads or both fall tails and that the two possibilities are equally likely. Then the probability that each coin comes up heads is 1/2, but the probability that they both come up heads is 1/2 <IMG SRC="../IMAGES/noteq.gif"> (1/2)(1/2). Consequently, the event that one comes up heads and the event that the other comes up heads are not independent.<P>
+<a name="0748_12c3">A collection <I>A</I><SUB>1,</SUB><I> A</I><SUB>2</SUB>,<I> </I>. . . ,<I> A<SUB>n</I></SUB> of events is said to be <I><B>pairwise independent</I></B> if<P>
+<pre>Pr{<I>A<SUB>i</I></SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>j</I></SUB>} = Pr{<I>A<SUB>i</I></SUB>} Pr{<I>A<SUB>j</I></SUB>}</sub></sup></pre><P>
+<a name="0748_12c4">for all 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> &lt; <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>. We say that they are <I><B>(mutually) independent</I></B><I> </I>if every <I>k</I>-subset <I>A<SUB>i</I>1</SUB>,<I>A<SUB>i</I>2</SUB>,...,<I>A<SUB>ik</I></SUB> of the collection, where 2 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> and 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I><SUB>1</SUB> &lt; <I>i</I><SUB>2</SUB> &lt; <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> &lt; <I>i<SUB>k</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"><I>n</I>, satisfies<P>
+<pre>Pr{<I>A<SUB>i</I>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>i</I>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>ik</I></SUB>} =  Pr{<I>A<SUB>i</I>1</SUB>}Pr{<I>A<SUB>i</I>2</SUB>} <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> Pr{<I>A<SUB>i</I>k</SUB>}.</sub></sup></pre><P>
+For example, suppose we flip two fair coins. Let <I>A</I><SUB>1</SUB> be the event that the first coin is heads, let A<SUB>2</SUB> be the event that the second coin is heads, and let <I>A</I><SUB>3</SUB> be the event that the two coins are different. We have<P>
+<pre>          Pr{<I>A</I><SUB>1</SUB>}  =  1/2 ,</sub></sup></pre><P>
+<pre>          Pr{<I>A</I><SUB>2</SUB>}  =  1/2 ,</sub></sup></pre><P>
+<pre>          Pr{<I>A</I><SUB>3</SUB>}  =  1/2 ,</sub></sup></pre><P>
+<pre>     Pr{<I>A</I><SUB>1 </SUB><IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB>}  =  1/4 ,</sub></sup></pre><P>
+<pre>     Pr{<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB>}  =  1/4 ,</sub></sup></pre><P>
+<pre>     Pr{<I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB>}  =  1/4 ,</sub></sup></pre><P>
+<pre>Pr{<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB>}  =  0.</sub></sup></pre><P>
+Since for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> &lt; <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> 3, we have Pr{<I>A<SUB>i</I></SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>j</I></SUB>} = Pr{<I>A<SUB>i</I></SUB>}Pr{<I>A<SUB>j</I></SUB>} = 1/4, the events <I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, and <I>A</I><SUB>3</SUB> are pairwise independent. The events are not mutually independent, however, because Pr{<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB>} = 0 and Pr{<I>A</I><SUB>1</SUB>} Pr{<I>A</I><SUB>2</SUB>} Pr{<I>A</I><SUB>3</SUB>} = 1/8 <IMG SRC="../IMAGES/noteq.gif"> 0.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Bayes's theorem</h2><P>
+<a name="0749_12c5"><a name="0749_12c6">From the definition of conditional probability (6.19), it follows that for two events <I>A</I> and <I>B</I>, each with nonzero probability,<P>
+<pre>Pr{<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I>} = Pr{<I>B</I>}Pr{<I>A</I>|<I>B</I>}</sub></sup></pre><P>
+<h4><a name="0749_12c7">(6.20)<a name="0749_12c7"></sub></sup></h4><P>
+<pre>= Pr{<I>A</I>}Pr{<I>B</I>|<I>A</I>}.</sub></sup></pre><P>
+Solving for Pr{<I>A</I> |<I>B</I>}, we obtain<P>
+<img src="109_a.gif"><P>
+<h4><a name="0749_12c8">(6.21)<a name="0749_12c8"></sub></sup></h4><P>
+which is known as <I><B>Bayes's theorem</I></B>. The denominator Pr {<I>B</I>} is a normalizing constant that we can reexpress as follows. Since <img src="109_b.gif"> and <I>B</I> <IMG SRC="../IMAGES/dome.gif"> <I>A</I> and <img src="109_c.gif"> are mutually exclusive events,<P>
+<img src="109_d.gif"><P>
+Substituting into equation (6.21), we obtain an equivalent form of Bayes's theorem:<P>
+<img src="109_e.gif"><P>
+Bayes's theorem can simplify the computing of conditional probabilities. For example, suppose that we have a fair coin and a biased coin that always comes up heads. We run an experiment consisting of three independent events: one of the two coins is chosen at random, the coin is flipped once, and then it is flipped again. Suppose that the chosen coin comes up heads both times. What is the probability that it is biased?<P>
+We solve this problem using Bayes<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s theorem. Let <I>A</I> be the event that the biased coin is chosen, and let <I>B</I> be the event that the coin comes up heads both times. We wish to determine Pr{<I>A|B</I>}. We have Pr{<I>A</I>} = 1/2, <img src="109_f.gif"> hence,<P>
+<img src="109_g.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="074a_12ca">Exercises<a name="074a_12ca"></h2><P>
+<a name="074a_12cb">6.2-1<a name="074a_12cb"><P>
+<a name="074a_12c7">Prove <I><B>Boole's inequality:</I></B> For any finite or countably infinite sequence of events <I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>,<I> . . . </I>,<P>
+<pre>Pr{<I>A</I><SUB>1 </SUB><IMG SRC="../IMAGES/wideu.gif"> <I>A</I><SUB>2 </SUB><IMG SRC="../IMAGES/wideu.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif">} <IMG SRC="../IMAGES/lteq12.gif"><I> </I>Pr{<I>A</I><SUB>1</SUB>} + Pr{<I>A</I><SUB>2</SUB>}+ <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> .</sub></sup></pre><P>
+<h4><a name="074a_12cc">(6.22)<a name="074a_12cc"></sub></sup></h4><P>
+<a name="074a_12cd">6.2-2<a name="074a_12cd"><P>
+Professor Rosencrantz flips one fair coin. Professor Guildenstern flips two fair coins. What is the probability that Professor Rosencrantz obtains more heads than Professor Guildenstern?<P>
+<a name="074a_12ce">6.2-3<a name="074a_12ce"><P>
+A deck of 10 cards, each bearing a distinct number from 1 to 10, is shuffled to mix the cards thoroughly. Three cards are removed one at a time from the deck. What is the probability that the three cards are selected in sorted (increasing) order?<P>
+<a name="074a_12cf">6.2-4<a name="074a_12cf"><P>
+You are given a biased coin, that when flipped, produces a head with (unknown) probability <I>p</I>, where 0 &lt; <I>p</I> &lt; 1. Show how a fair &quot;coin flip&quot; can be simulated by looking at multiple flips. (<I>Hint</I>: Flip the coin twice and then either output the result of the simulated fair flip or repeat the experiment.) Prove that your answer is correct.<P>
+<a name="074a_12d0">6.2-5<a name="074a_12d0"><P>
+Describe a procedure that takes as input two integers <I>a</I> and <I>b</I> such that 0 &lt; <I>a</I> &lt; <I>b</I> and, using fair coin flips, produces as output heads with probability <I>a</I>/<I>b</I> and tails with probability (<I>b</I> - <I>a</I>)/<I>b</I>. Give a bound on the expected number of coin flips, which should be polynomial in lg <I>b</I>.<P>
+<a name="074a_12d1">6.2-6<a name="074a_12d1"><P>
+Prove that<P>
+<img src="110_a.gif"><P>
+<a name="074a_12d2">6.2-7<a name="074a_12d2"><P>
+Prove that for any collection of events <I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, . . . , <I>A<SUB>n</I></SUB>,<P>
+<pre>Pr{<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>n</I></SUB>} = Pr{<I>A</I><SUB>1</SUB>} <IMG SRC="../IMAGES/dot10.gif"> Pr{<I>A</I><SUB>2 </SUB>| <I>A</I><SUB>1</SUB>} <IMG SRC="../IMAGES/dot10.gif"> Pr{<I>A</I><SUB>3 </SUB>| <I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB>}<IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"></sub></sup></pre><P>
+<pre>Pr{<I>A<SUB>n</I></SUB> | <I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>n</I>-1</SUB>}.</sub></sup></pre><P>
+<a name="074a_12d3">6.2-8<a name="074a_12d3"><P>
+Show how to construct a set of <I>n</I> events that are pairwise independent but such that any subset of <I>k</I> &gt; 2 of them are <I>not</I> mutually independent.<P>
+<a name="074a_12d4">6.2-9<a name="074a_12d4"><P>
+<a name="074a_12c8"><a name="074a_12c9">Two events <I>A</I> and <I>B</I> are <I><B>conditionally independent</I></B>, given <I>C</I>, if<P>
+<pre>Pr{<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I> | <I>C</I>} = Pr{<I>A</I> | <I>C</I>} <IMG SRC="../IMAGES/dot10.gif"> Pr{<I>B</I> | <I>C</I>} .</sub></sup></pre><P>
+Give a simple but nontrivial example of two events that are not independent but are conditionally independent given a third event.<P>
+<a name="074a_12d5">6.2-10<a name="074a_12d5"><P>
+You are a contestant in a game show in which a prize is hidden behind one of three curtains. You will win the prize if you select the correct curtain. After you have picked one curtain but before the curtain is lifted, the emcee lifts one of the other curtains, revealing an empty stage, and asks if you would like to switch from your current selection to the remaining curtain. How will your chances change if you switch?<P>
+<a name="074a_12d6">6.2-11<a name="074a_12d6"><P>
+A prison warden has randomly picked one prisoner among three to go free. The other two will be executed. The guard knows which one will go free but is forbidden to give any prisoner information regarding his status. Let us call the prisoners <I>X</I>, <I>Y</I>, and <I>Z</I>. Prisoner <I>X</I> asks the guard privately which of <I>Y</I> or <I>Z</I> will be executed, arguing that since he already knows that at least one of them must die, the guard won't be revealing any information about his own status. The guard tells <I>X</I> that <I>Y</I> is to be executed. Prisoner <I>X</I> feels happier now, since he figures that either he or prisoner <I>Z</I> will go free, which means that his probability of going free is now 1/2. Is he right, or are his chances still 1/3? Explain.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="074b_12d0">6.3 Discrete random variables<a name="074b_12d0"></h1><P>
+<a name="074b_12ca"><a name="074b_12cb"><a name="074b_12cc">A<B> </B><I><B>(</I>discrete</B><I>)</I> <B>random variable</B> <I>X</I> is a function from a finite or countably infinite sample space <I>S</I> to the real numbers. It associates a real number with each possible outcome of an experiment, which allows us to work with the probability distribution induced on the resulting set of numbers. Random variables can also be defined for uncountably infinite sample spaces, but they raise technical issues that are unnecessary to address for our purposes. Henceforth, we shall assume that random variables are discrete.<P>
+<a name="074b_12cd">For a random variable <I>X</I> and a real number <I>x</I>, we define the event <I>X</I> = <I>x </I>to be {<I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> : <I>X</I> (<I>s</I>) = <I>x</I>}; thus,<P>
+<img src="111_a.gif"><P>
+The function<P>
+<pre><I>f</I>(<I>x</I>) = Pr{<I>X</I> = <I>x</I>}</sub></sup></pre><P>
+is the <I><B>probability density function</I></B> of the random variable <I>X</I>. From the probability axioms, Pr{<I>X</I> = <I>x</I>} <IMG SRC="../IMAGES/gteq.gif"> 0 and <IMG SRC="../IMAGES/sum14.gif"><B><I><SUB>x</I></SUB> Pr{<I>X</I> = <I>x</I>} = 1.</B><P>
+As an example, consider the experiment of rolling a pair of ordinary, 6-sided dice. There are 36 possible elementary events in the sample space. We assume that the probability distribution is uniform, so that each elementary event <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> is equally likely: Pr {<I>s</I>} = 1/36. Define the random variable <I>X</I> to be the <I>maximum</I> of the two values showing on the dice. We have Pr {<I>X</I> = 3} = 5/36, since <I>X</I> assigns a value of 3 to 5 of the 36 possible elementary events, namely, (1, 3), (2, 3), (3, 3), (3, 2), and (3, 1).<P>
+<a name="074b_12ce">It is common for several random variables to be defined on the same sample space. If <I>X</I> and <I>Y</I> are random variables, the function<P>
+<pre><I>f</I>(<I>x</I>,<I>y</I>) = Pr{<I>X</I> = <I>x</I> and <I>Y</I> = <I>y</I>}</sub></sup></pre><P>
+is the <I><B>joint probability density function</I></B> of <I>X</I> and <I>Y</I>. For a fixed value <I>y</I>,<P>
+<img src="111_b.gif"><P>
+and similarly, for a fixed value <I>x</I>,<P>
+<img src="111_c.gif"><P>
+Using the definition (6.19) of conditional probability, we have<P>
+<img src="112_a.gif"><P>
+<a name="074b_12cf">We define two random variables <I>X</I> and <I>Y</I> to be <I><B>independent</I></B> if for all <I>x </I>and <I>y</I>, the events <I>X</I> = <I>x</I> and <I>Y</I> = <I>y</I> are independent or, equivalently, if for all <I>x</I> and <I>y</I>, we have Pr{<I>X</I> = <I>x</I> and <I>Y</I> = <I>y</I>} = Pr{<I>X</I> = <I>x</I>} Pr{<I>Y</I> = <I>y</I>}.<P>
+Given a set of random variables defined over the same sample space, one can define new random variables as sums, products, or other functions of the original variables.<P>
+
+
+
+
+
+<h2>Expected value of a random variable</h2><P>
+<a name="074c_12d0"><a name="074c_12d1">The simplest and most useful summary of the distribution of a random variable is the &quot;average&quot; of the values it takes on. The <I><B>expected</I></B> <B>value</B> (or, synonymously, <I><B>expectation</I></B> or <I><B>mean</I></B>) of a discrete random variable <I>X</I> is<P>
+<img src="112_b.gif"><P>
+<h4><a name="074c_12d3">(6.23)<a name="074c_12d3"></sub></sup></h4><P>
+which is well defined if the sum is finite or converges absolutely. Sometimes the expectation of <I>X</I> is denoted by <IMG SRC="../IMAGES/mu12.gif"><I>x</I> or, when the random variable is apparent from context, simply by <IMG SRC="../IMAGES/mu12.gif"><I>.</I><P>
+Consider a game in which you flip two fair coins. You earn $3 for each head but lose $2 for each tail. The expected value of the random variable <I>X</I> representing your earnings is<P>
+<pre>E[<I>X</I>] = 6 <IMG SRC="../IMAGES/dot10.gif"> Pr{2 H'S} + 1 <IMG SRC="../IMAGES/dot10.gif"> Pr{1 H, 1 T} - 4 <IMG SRC="../IMAGES/dot10.gif"> Pr{2 T'S}</sub></sup></pre><P>
+<pre>= 6(1/4)+ 1(1/2) - 4(1/4)</sub></sup></pre><P>
+<pre>= 1 .</sub></sup></pre><P>
+The expectation of the sum of two random variables is the sum of their expectations, that is,<P>
+<pre>E[<I>X</I> + <I>Y</I>] = E[<I>X</I>] + E[<I>Y</I>] ,</sub></sup></pre><P>
+<h4><a name="074c_12d4">(6.24)<a name="074c_12d4"></sub></sup></h4><P>
+whenever E[<I>X</I>] and E[<I>Y</I>] are defined. This property extends to finite and absolutely convergent summations of expectations.<P>
+If <I>X</I> is any random variable, any function <I>g</I>(<I>x</I>) defines a new random variable <I>g</I>(<I>X</I>). If the expectation of <I>g</I>(<I>X</I>) is defined, then<P>
+<img src="112_c.gif"><P>
+Letting <I>g</I>(<I>x</I>) = <I>ax</I>, we have for any constant <I>a</I>,<P>
+<pre>E[<I>aX</I>] = <I>a</I>E[<I>X</I>] .</sub></sup></pre><P>
+<h4><a name="074c_12d5">(6.25)<a name="074c_12d5"></sub></sup></h4><P>
+<a name="074c_12d2">Consequently, expectations are linear: for any two random variables <I>X </I>and <I>Y</I> and any constant <I>a</I>,<P>
+<pre>E[<I>aX</I> + <I>Y</I>] =<I> a</I>E[<I>X</I>] + E[<I>Y</I>] .</sub></sup></pre><P>
+<h4><a name="074c_12d6">(6.26)<a name="074c_12d6"></sub></sup></h4><P>
+When two random variables <I>X</I> and <I>Y</I> are independent and each has a defined expectation,<P>
+<img src="113_a.gif"><P>
+In general, when <I>n</I> random variables <I>X</I><SUB>1</SUB>, <I>X</I><SUB>2</SUB>, . . . , <I>X<SUB>n</I></SUB> are mutually independent,<P>
+<pre>E[<I>X</I><SUB>1</SUB><I>X</I><SUB>2 </SUB><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>X<SUB>n</I></SUB>]<I> </I>= E[<I>X</I><SUB>1</SUB>]E[<I>X</I><SUB>2</SUB>] <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> E[<I>X<SUB>n</I></SUB>] .</sub></sup></pre><P>
+<h4><a name="074c_12d7">(6.27)<a name="074c_12d7"></sub></sup></h4><P>
+When a random variable <I>X</I> takes on values from the natural numbers N = {0,1, 2, . . .}, there is a nice formula for its expectation:<P>
+<img src="113_b.gif"><P>
+<h4><a name="074c_12d8">(6.28)<a name="074c_12d8"></sub></sup></h4><P>
+since each term Pr{<I>X</I> <IMG SRC="../IMAGES/gteq.gif"> <I>i</I>} is added in <I>i</I> times and subtracted out<I> i</I> - 1 times (except Pr{<I>X</I> <IMG SRC="../IMAGES/gteq.gif"> 0}, which is added in 0 times and not subtracted out at all).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Variance and standard deviation</h2><P>
+<a name="074d_12d3"><a name="074d_12d4">The <I><B>variance</I></B> of a random variable <I>X</I> with mean E [<I>X</I>] is<P>
+<pre>Var[<I>X</I>] = E[(<I>X</I>  - E[<I>X</I>])<SUP>2</SUP>]</sub></sup></pre><P>
+<pre>= E[<I>X</I><SUP>2</SUP>  - 2<I>X</I>E[<I>X</I>] + E<SUP>2</SUP>[<I>X</I>]]</sub></sup></pre><P>
+<pre>= E[<I>X</I><SUP>2</SUP>] - 2E[<I>X</I>E[<I>X</I>]] + E<SUP>2</SUP>[<I>X</I>]</sub></sup></pre><P>
+<pre>= E[<I>X</I><SUP>2</SUP>] - 2E<SUP>2</SUP>[<I>X]</I> + E<SUP>2</SUP>[<I>X</I>]</sub></sup></pre><P>
+<pre>= E[<I>X</I><SUP>2</SUP>] - E<SUP>2</SUP>[<I>X</I>].</sub></sup></pre><P>
+<h4><a name="074d_12d6">(6.29)<a name="074d_12d6"></sub></sup></h4><P>
+The justification for the equalities E [E<SUP>2</SUP> [<I>X</I>]] = E<SUP>2</SUP> [<I>X</I>] and E [<I>X</I>E [<I>X</I>]] = E<SUP>2</SUP> [<I>X</I>] is that E [<I>X</I>] is not a random variable but simply a real number, which means that equation (6.25) applies (with <I>a</I> = E[<I>X</I>]). Equation (6.29) can be rewritten to obtain an expression for the expectation of the square of a random variable:<P>
+<pre>E[<I>X</I><SUP>2</SUP>] = Var[<I>X</I>] + E<SUP>2</SUP>[<I>X</I>].</sub></sup></pre><P>
+<h4><a name="074d_12d7">(6.30)<a name="074d_12d7"></sub></sup></h4><P>
+The variance of a random variable <I>X</I> and the variance of <I>aX</I> are related:<P>
+<pre>Var[<I>aX</I>] = <I>a</I><SUP>2</SUP>Var[<I>X</I>].</sub></sup></pre><P>
+When <I>X</I> and <I>Y</I> are independent random variables,<P>
+<pre>Var[<I>X </I>+ <I>Y</I>] = Var[<I>X</I>] + Var[<I>Y</I>].</sub></sup></pre><P>
+In general, if <I>n</I> random variables <I>X</I><SUB>1</SUB>, <I>X</I><SUB>2</SUB>, . . . , <I>X<SUB>n</I></SUB> are pairwise independent, then<P>
+<img src="114_a.gif"><P>
+<h4><a name="074d_12d8">(6.31)<a name="074d_12d8"></sub></sup></h4><P>
+<a name="074d_12d5">The <I><B>standard deviation</I></B> of a random variable <I>X</I> is the positive square root of the variance of <I>X</I>. The standard deviation of a random variable <I>X</I> is sometimes denoted <IMG SRC="../IMAGES/sum14.gif"><I><SUB>x</I></SUB> or simply <IMG SRC="../IMAGES/sum14.gif">  when the random variable <I>X</I> is understood from context. With this notation, the variance of <I>X</I> is denoted <IMG SRC="../IMAGES/sum14.gif"><SUP>2</SUP>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="074e_12d7">Exercises<a name="074e_12d7"></h2><P>
+<a name="074e_12d8">6.3-1<a name="074e_12d8"><P>
+Two ordinary, 6-sided dice are rolled. What is the expectation of the sum of the two values showing? What is the expectation of the maximum of the two values showing?<P>
+<a name="074e_12d9">6.3-2<a name="074e_12d9"><P>
+An array A[1 . . <I>n</I>] contains <I>n</I> distinct numbers that are randomly ordered, with each permutation of the <I>n</I> numbers being equally likely. What is the expectation of the index of the maximum element in the array? What is the expectation of the index of the minimum element in the array?<P>
+<a name="074e_12da">6.3-3<a name="074e_12da"><P>
+A carnival game consists of three dice in a cage. A player can bet a dollar on any of the numbers 1 through 6. The cage is shaken, and the payoff is as follows. If the player's number doesn't appear on any of the dice, he loses his dollar. Otherwise, if his number appears on exactly <I>k</I> of the three dice, for <I>k</I> = 1, 2, 3, he keeps his dollar and wins <I>k</I> more dollars. What is his expected gain from playing the carnival game once?<P>
+<a name="074e_12db">6.3-4<a name="074e_12db"><P>
+Let <I>X</I> and <I>Y</I> be independent random variables. Prove that <I>f</I>(<I>X</I>) and <I>g</I>(<I>Y</I>) are independent for any choice of functions <I>f</I> and <I>g</I>.<P>
+<a name="074e_12dc">6.3-5<a name="074e_12dc"><P>
+<a name="074e_12d6">Let <I>X</I> be a nonnegative random variable, and suppose that E (<I>X</I>) is well defined. Prove <I><B>Markov's inequality:</I></B><P>
+<pre>Pr{<I>X </I><IMG SRC="../IMAGES/gteq.gif"> <I>t</I>} <IMG SRC="../IMAGES/lteq12.gif"> E[<I>X</I>]/<I>t</I>     </sub></sup></pre><P>
+<h4><a name="074e_12dd">(6.32)<a name="074e_12dd"></sub></sup></h4><P>
+for all <I>t</I> &gt; 0.<P>
+<a name="074e_12de">6.3-6<a name="074e_12de"><P>
+Let <I>S</I> be a sample space, and let <I>X</I> and <I>X</I>' be random variables such that <I>X</I>(<I>s</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>X</I>'(<I>s</I>) for all <I>s</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>S</I>. Prove that for any real constant<I> t</I>,<P>
+<pre>Pr{<I>X </I><IMG SRC="../IMAGES/gteq.gif"><I> t</I>} <IMG SRC="../IMAGES/gteq.gif"> Pr{<I>X</I>' <IMG SRC="../IMAGES/gteq.gif"> <I>t</I>} .</sub></sup></pre><P>
+<a name="074e_12df">6.3-7<a name="074e_12df"><P>
+Which is larger: the expectation of the square of a random variable, or the square of its expectation?<P>
+<a name="074e_12e0">6.3-8<a name="074e_12e0"><P>
+Show that for any random variable <I>X</I> that takes on only the values 0 and 1, we have Var [<I>X</I>] = E [<I>X</I>] E [1 - X].<P>
+<a name="074e_12e1">6.3-9<a name="074e_12e1"><P>
+Prove that Var[<I>aX</I>] = <I>a</I><SUP>2</SUP>Var[<I>x</I>] from the definition (6.29) of variance.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="074f_12da">6.4 The geometric and binomial distributions<a name="074f_12da"></h1><P>
+<a name="074f_12d7"><a name="074f_12d8"><a name="074f_12d9">A coin flip is an instance of a <I><B>Bernoulli trial</I></B>, which is defined as an experiment with only two possible outcomes: <I><B>success</I></B>, which occurs with probability <I>p,</I> and <I><B>failure</I></B>, which occurs with probability <I>q</I> = 1 - <I>p</I>. When we speak of <I><B>Bernoulli trials</I></B> collectively, we mean that the trials are mutually independent and, unless we specifically say otherwise, that each has the same probability <I>p</I> for success. Two important distributions arise from Bernoulli trials: the geometric distribution and the binomial distribution.<P>
+
+
+
+
+
+<h2>The geometric distribution</h2><P>
+<a name="0750_12da"><a name="0750_12db"><a name="0750_12dc">Suppose we have a sequence of Bernoulli trials, each with a probability <I>p</I> of success and a probability <I>q</I> = 1 - <I>p</I> of failure. How many trials occur before we obtain a success? Let the random variable <I>X</I> be the number of trials needed to obtain a success. Then <I>X</I> has values in the range {1, 2, . . .}, and for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1,<P>
+<pre>Pr{<I>X</I> = <I>k</I>} = <I>q<SUP>k</I>-1</SUP><I>p ,</I></sub></sup></pre><P>
+<h4><a name="0750_12de">(6.33)<a name="0750_12de"></sub></sup></h4><P>
+since we have <I>k</I> - 1 failures before the one success. A probability distribution satisfying equation (6.33) is said to be a <I><B>geometric distribution</I></B><I>. </I>Figure 6.1 illustrates such a distribution.<P>
+<img src="116_a.gif"><P>
+<h4><a name="0750_12df">Figure 6.1 A geometric distribution with probability p = 1/3 of success and a probability q = 1 - p of failure. The expectation of the distribution is 1/p = 3.<a name="0750_12df"></sub></sup></h4><P>
+Assuming <I>p</I> &lt; 1, the expectation of a geometric distribution can be calculated using identity (3.6):<P>
+<img src="116_b.gif"><P>
+<h4>(6.34.)</sub></sup></h4><P>
+<a name="0750_12dd">Thus, on average, it takes 1/<I>p</I> trials before we obtain a success, an intuitive result. The variance, which can be calculated similarly, is<P>
+<pre>Var[<I>X</I>] = <I>q</I>/<I>p</I><SUP>2 </SUP>.</sub></sup></pre><P>
+<h4><a name="0750_12e0">(6.35)<a name="0750_12e0"></sub></sup></h4><P>
+As an example, suppose we repeatedly roll two dice until we obtain either a seven or an eleven. Of the 36 possible outcomes, 6 yield a seven and 2 yield an eleven. Thus, the probability of success is <I>p</I> = 8/36 = 2/9, and we must roll 1/<I>p</I> = 9/2 = 4.5 times on average to obtain a seven or eleven.<P>
+<img src="117_a.gif"><P>
+<h4><a name="0750_12e1">Figure 6.2 The binomial distribution b(k; 15, 1/3) resulting from n = 15 Bernoulli trials, each with probability p = 1/3 of success. The expectation of the distribution is np = 5.<a name="0750_12e1"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>The binomial distribution</h2><P>
+<a name="0751_12de"><a name="0751_12df"><a name="0751_12e0">How many successes occur during <I>n</I> Bernoulli trials, where a success occurs with probability <I>p</I> and a failure with probability <I>q</I> = 1 - <I>p</I>? Define the random variable <I>X</I> to be the number of successes in <I>n</I> trials. Then <I>X</I> has values in the range {0, 1, . . . , <I>n</I>}, and for <I>k</I> = 0, . . . , <I>n</I>,<P>
+<img src="117_b.gif"><P>
+<h4><a name="0751_12e3">(6.36)<a name="0751_12e3"></sub></sup></h4><P>
+since there are <img src="117_c.gif"> ways to pick which <I>k</I> of the <I>n </I>trials are successes, and the probability that each occurs is <I>p<SUP>k</SUP>q<SUP>n</I></SUP>-<I><SUP>k</I>.</SUP> A probability distribution satisfying equation (6.36) is said to be a <I><B>binomial distribution</I></B>. For convenience, we define the family of binomial distributions using the notation<P>
+<img src="117_d.gif"><P>
+<h4><a name="0751_12e4">(6.37)<a name="0751_12e4"></sub></sup></h4><P>
+Figure 6.2 illustrates a binomial distribution. The name &quot;binomial&quot; comes from the fact that (6.37) is the <I>k</I>th term of the expansion of (<I>p </I>+<I> q</I>)<I><SUP>n</I></SUP>. Consequently, since <I>p </I>+ <I>q</I> = 1,<P>
+<img src="117_e.gif"><P>
+<h4><a name="0751_12e5">(6.38)<a name="0751_12e5"></sub></sup></h4><P>
+as is required by axiom 2 of the probability axioms.<P>
+We can compute the expectation of a random variable having a binomial distribution from equations (6.14) and (6.38). Let <I>X</I> be a random variable that follows the binomial distribution <I>b</I>(<I>k; n, p</I>), and let <I>q</I> = 1 - <I>p</I>. By the definition of expectation, we have<P>
+<img src="118_a.gif"><P>
+<h4><a name="0751_12e6">(6.39)<a name="0751_12e6"></sub></sup></h4><P>
+By using the linearity of expectation, we can obtain the same result with substantially less algebra. Let <I>X<SUB>i</I></SUB> be the random variable describing the number of successes in the <I>i</I>th trial. Then E[<I>X<SUB>i</I></SUB>] = <I>p</I> <IMG SRC="../IMAGES/dot10.gif"> 1+ <I>q</I> <IMG SRC="../IMAGES/dot10.gif"> 0 = <I>p</I>, and by linearity of expectation (6.26), the expected number of successes for <I>n</I> trials is<P>
+<img src="118_b.gif"><P>
+<a name="0751_12e1">The same approach can be used to calculate the variance of the distribution. Using equation (6.29), we have <img src="118_c.gif">. Since <I>X<SUB>i</SUB> </I>only takes on the values 0 and 1, we have <img src="118_d.gif">, and hence<P>
+<pre>Var[<I>X<SUB>i</I></SUB>] = <I>p</I> - <I>p</I><SUP>2</SUP> = <I>pq </I>.</sub></sup></pre><P>
+<h4><a name="0751_12e7">(6.40)<a name="0751_12e7"></sub></sup></h4><P>
+To compute the variance of <I>X</I>, we take advantage of the independence of the <I>n</I> trials; thus, by equation (6.31),<P>
+<img src="118_e.gif"><P>
+<h4><a name="0751_12e8">(6.41)<a name="0751_12e8"></sub></sup></h4><P>
+As can be seen from Figure 6.2, the binomial distribution <I>b(k;n,p</I>) increases as <I>k</I> runs from 0 to <I>n</I> until it reaches the mean <I>np</I>, and then it decreases. We can prove that the distribution always behaves in this manner by looking at the ratio of successive terms:<P>
+<img src="119_a.gif"><P>
+<h4><a name="0751_12e9">(6.42)<a name="0751_12e9"></sub></sup></h4><P>
+This ratio is greater than 1 precisely when (<I>n</I> + 1)<I>p - k</I> is positive. Consequently, <I>b(k;n,p) &gt; b(k - </I>1<I>;n,p</I>) for <I>k</I> &lt; (<I>n</I> + 1)<I>p</I> (the distribution increases), and <I>b(k;n,p</I>) &lt; <I>b(k</I> - 1;<I>n</I>,<I>p</I>) for <I>k</I> &gt; (<I>n</I> + l)<I>p</I> (the distribution decreases). If <I>k</I> = (<I>n</I> + 1) <I>p </I>is an integer, then <I>b</I>(<I>k;n,p</I>)<I> </I>=<I> b(k - </I>1<I>;n,p</I>), so the distribution has two maxima: at <I>k</I> = (<I>n</I> + l) <I>p</I> and at <I>k</I> - 1 = (<I>n</I> + 1)<I>p - </I>1<I> </I>=<I> np - q</I>. Otherwise, it attains a maximum at the unique integer <I>k</I> that lies in the range <I>np - q &lt; k &lt; </I>(<I>n + </I>1)<I>p</I>.<P>
+<a name="0751_12e2">The following lemma provides an upper bound on the binomial distribution.<P>
+<a name="0751_12ea">Lemma 6.1<a name="0751_12ea"><P>
+Let <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 0, let 0 &lt; <I>p</I> &lt; 1, let <I>q</I> = 1 - <I>p</I>, and let 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>. Then<P>
+<img src="119_b.gif"><P>
+<I><B>Proof</I></B>     Using equation (6.10), we have<P>
+<img src="119_c.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0752_12e5">Exercises<a name="0752_12e5"></h2><P>
+<a name="0752_12e6">6.4-1<a name="0752_12e6"><P>
+Verify axiom 2 of the probability axioms for the geometric distribution.<P>
+<a name="0752_12e7">6.4-2<a name="0752_12e7"><P>
+How many times on average must we flip 6 fair coins before we obtain 3 heads and 3 tails?<P>
+<a name="0752_12e8">6.4-3<a name="0752_12e8"><P>
+Show that <I>b</I>(<I>k</I>; <I>n</I>, <I>p</I>) = <I>b</I>(<I>n</I> - <I>k</I>; <I>n</I>, <I>q</I>), where <I>q</I> = 1 - <I>p</I>.<P>
+<a name="0752_12e9">6.4-4<a name="0752_12e9"><P>
+<a name="0752_12e3"><a name="0752_12e4">Show that value of the maximum of the binomial distribution <I>b(k; n, p</I>) is approximately <img src="120_a.gif"> where <I>q </I>=<I> 1 </I>-<I> p</I>.<P>
+<a name="0752_12ea">6.4-5<a name="0752_12ea"><P>
+Show that the probability of no successes in <I>n</I> Bernoulli trials, each with probability <I>p</I> = 1/<I>n</I>, is approximately 1/<I>e</I>. Show that the probability of exactly one success is also approximately 1/<I>e</I>.<P>
+<a name="0752_12eb">6.4-6<a name="0752_12eb"><P>
+Professor Rosencrantz flips a fair coin <I>n</I> times, and so does Professor Guildenstern. Show that the probability that they get the same number of heads is <img src="120_b.gif">. (<I>Hint</I>: For Professor Rosencrantz, call a head a success; for Professor Guildenstern, call a tail a success.) Use your argument to verify the identity<P>
+<img src="120_c.gif"><P>
+<a name="0752_12ec">6.4-7<a name="0752_12ec"><P>
+Show that for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>,<P>
+<pre><I>b(k;n</I>, 1/2) <IMG SRC="../IMAGES/lteq12.gif"> 2<I><SUP>nH(k/n)-n</I></SUP>,</sub></sup></pre><P>
+where <I>H</I>(<I>x</I>) is the entropy function (6.13).<P>
+<a name="0752_12ed">6.4-8<a name="0752_12ed"><P>
+Consider <I>n</I> Bernoulli trials, where for <I>i</I> = 1,2, . . . ,<I>n</I>, the <I>i</I>th trial has probability <I>p<SUB>i</I></SUB> of success, and let <I>X</I> be the random variable denoting the total number of successes. Let <I>p </I><IMG SRC="../IMAGES/gteq.gif"><I> p<SUB>i</I></SUB> for all <I>i</I> = 1, 2, . . . , <I>n</I>. Prove that for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k </I><IMG SRC="../IMAGES/lteq12.gif"> n<I>,</I><P>
+<img src="120_d.gif"><P>
+<a name="0752_12ee">6.4-9<a name="0752_12ee"><P>
+Let <I>X</I> be the random variable for the total number of successes in a set <I>A</I> of <I>n</I> Bernoulli trials, where the <I>i</I>th trial has a probability <I>p<SUB>i</I></SUB> of success, and let <I>X</I>'<I><FONT FACE="Times New Roman" SIZE=5> </I></FONT>be the random variable for the total number of successes in a second set <I>A</I><I>'</I> of <I>n</I> Bernoulli trials, where the <I>i</I>th trial has a probability p'<I><SUB>i </I></SUB><IMG SRC="../IMAGES/gteq.gif"> <I>p<SUB>i</I></SUB> of success. Prove that for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k </I><IMG SRC="../IMAGES/lteq12.gif"><I> n</I>,<P>
+<pre>Pr{<I>X</I>' <IMG SRC="../IMAGES/gteq.gif"> k} <IMG SRC="../IMAGES/gteq.gif"> Pr{<I>X</I> <IMG SRC="../IMAGES/gteq.gif"> k} .</sub></sup></pre><P>
+(<I>Hint</I>: Show how to obtain the Bernoulli trials in <I>A</I>' by an experiment involving the trials of <I>A</I>, and use the result of Exercise 6.3-6.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0753_12e8">* 6.5 The tails of the binomial distribution<a name="0753_12e8"></h1><P>
+<a name="0753_12e5"><a name="0753_12e6"><a name="0753_12e7">The probability of having at least, or at most, <I>k</I> successes in <I>n</I> Bernoulli trials, each with probability <I>p</I> of success, is often of more interest than the probability of having exactly <I>k</I> successes. In this section, we investigate the <I><B>tails</I></B> of the binomial distribution: the two regions of the distribution <I>b(k; n, p</I>) that are far from the mean <I>np</I>. We shall prove several important bounds on (the sum of all terms in) a tail.<P>
+We first provide a bound on the right tail of the distribution <I>b(k; n, p</I>). Bounds on the left tail can be determined by inverting the roles of successes and failures.<P>
+<a name="0753_12e9">Theorem 6.2<a name="0753_12e9"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where success occurs with probability <I>p</I>. Let <I>X</I> be the random variable denoting the total number of successes. Then for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k </I><IMG SRC="../IMAGES/lteq12.gif"><I> n</I>, the probability of at least <I>k</I> successes is<P>
+<img src="121_a.gif"><P>
+<I><B>Proof     </I></B>We make use of the inequality (6.15)<P>
+<img src="121_b.gif"><P>
+We have<P>
+<img src="121_c.gif"><P>
+since <img src="122_a.gif"> by equation (6.38).      <P>
+The following corollary restates the theorem for the left tail of the binomial distribution. In general, we shall leave it to the reader to adapt the bounds from one tail to the other.<P>
+<a name="0753_12ea">Corollary 6.3<a name="0753_12ea"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where success occurs with probability <I>p</I>. If <I>X</I> is the random variable denoting the total number of successes, then for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, the probability of at most <I>k</I> successes is<P>
+<img src="122_b.gif"><P>
+Our next bound focuses on the left tail of the binomial distribution. Far from the mean, the number of successes in the left tail diminishes exponentially, as the following theorem shows.<P>
+<a name="0753_12eb">Theorem 6.4<a name="0753_12eb"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where success occurs with probability <I>p</I> and failure with probability <I>q</I> = 1 - <I>p</I>. Let <I>X</I> be the random variable denoting the total number of successes. Then for 0 <I>&lt;</I> <I>k</I> &lt; <I>np</I>, the probability of fewer than <I>k</I> successes is<P>
+<img src="122_c.gif"><P>
+<I><B>Proof     </I></B>We bound the series <img src="122_d.gif"> by a geometric series using the technique from Section 3.2, page 47. For <I>i</I> = 1, 2, . . . , <I>k</I>, we have from equation (6.42),<P>
+<img src="122_e.gif"><P>
+If we let<P>
+<img src="123_a.gif"><P>
+it follows that<P>
+<pre><I>b</I>(<I>i</I> - 1;<I>n</I>,<I>p</I>) &lt; <I>x</I> <I>b</I>(<I>i</I>;<I>n</I>,<I>p</I>)</sub></sup></pre><P>
+for 0 &lt; <I>i </I><IMG SRC="../IMAGES/lteq12.gif"><I> k</I>. Iterating, we obtain<P>
+<pre><I>b</I>(<I>i</I>;<I>n</I>,<I>p</I>) &lt; x<I><SUP>k</I>-<I>i</I> </SUP><I>b</I>(<I>k</I>;<I>n</I>,<I>p</I>)</sub></sup></pre><P>
+for 0 <IMG SRC="../IMAGES/lteq12.gif"> i &lt; k, and hence<P>
+<img src="123_b.gif"><P>
+When <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>np</I>/2, we have <I>kq</I>/(<I>np - k</I>) <IMG SRC="../IMAGES/lteq12.gif"> 1, which means that <I>b(k; n, p</I>) bounds the sum of all terms smaller than <I>k</I>. As an example, suppose we flip <I>n</I> fair coins. Using <I>p</I> = 1/2 and <I>k</I> = <I>n</I>/4, Theorem 6.4 tells us that the probability of obtaining fewer than <I>n</I>/4 heads is less than the probability of obtaining exactly <I>n</I>/4 heads. Furthermore, for any <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 4, the probability of obtaining fewer than <I>n/r</I> heads is less than that of obtaining exactly <I>n/r </I>heads. Theorem 6.4 can also be quite useful in conjunction with upper bounds on the binomial distribution, such as Lemma 6.1.<P>
+A bound on the right tail can be determined similarly.<P>
+<a name="0753_12ec">Corollary 6.5<a name="0753_12ec"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where success occurs with probability <I>p</I>. Let <I>X</I> be the random variable denoting the total number of successes. Then for <I>np &lt; k &lt; n</I>, the probability of more than <I>k</I> successes is<P>
+<img src="123_c.gif"><P>
+The next theorem considers <I>n</I> Bernoulli trials, each with a probability <I>p<SUB>i</I></SUB> of success, for <I>i</I> = 1, 2, . . . , <I>n</I>. As the subsequent corollary shows, we can use the theorem to provide a bound on the right tail of the binomial distribution by setting <I>p<SUB>i</I></SUB> = <I>p</I> for each trial.<P>
+<a name="0753_12ed">Theorem 6.6<a name="0753_12ed"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where in the <I>i</I>th trial, for <I>i</I> = 1, 2 , . . . , <I>n</I>, success occurs with probability <I>p<SUB>i</I></SUB> and failure occurs with probability <I>q<SUB>i</SUB> </I>=<I> </I>1<I> - p<SUB>i</I></SUB>. Let <I>X</I> be the random variable describing the total number of successes, and let <IMG SRC="../IMAGES/mu12.gif"> = E[<I>X</I>]. Then for <I>r </I>&gt; <IMG SRC="../IMAGES/mu12.gif">,<P>
+<img src="124_a.gif"><P>
+<I><B>Proof     </I></B>Since for any <IMG SRC="../IMAGES/alpha12.gif"> &gt; 0, the function <I>e</I><IMG SRC="../IMAGES/alpha12.gif"><SUP><I>x</SUP> </I>is strictly increasing in <I>x</I>,<P>
+<pre>Pr{<I>X</I> - <IMG SRC="../IMAGES/mu12.gif"> <IMG SRC="../IMAGES/gteq.gif"> <I>r</I>} = Pr{<I>e</I><SUP></SUP><IMG SRC="../IMAGES/alpha12.gif">(<I>X-</I><SUP><IMG SRC="../IMAGES/mu12.gif">)</SUP> <IMG SRC="../IMAGES/gteq.gif"> <I>e</I><SUP></SUP><IMG SRC="../IMAGES/alpha12.gif"><I>r</I><SUP>} ,</sub></sup></pre><P>
+where<I> </I><IMG SRC="../IMAGES/alpha12.gif"> will be determined later. Using Markov's inequality (6.32), we obtain<P>
+<pre>Pr{<I>X</I> - <IMG SRC="../IMAGES/mu12.gif"> <IMG SRC="../IMAGES/gteq.gif"> <I>r</I>} <IMG SRC="../IMAGES/lteq12.gif"> E[<I>e</I><SUP></SUP><IMG SRC="../IMAGES/alpha12.gif">(<I>X-</I><SUP><IMG SRC="../IMAGES/mu12.gif">)</SUP>]<I>e</I><SUP>-</SUP><IMG SRC="../IMAGES/alpha12.gif"><I>r </I><SUP>.</sub></sup></pre><P>
+<h4><a name="0753_12ee">(6.43)<a name="0753_12ee"></sub></sup></h4><P>
+The bulk of the proof consists of bounding E<FONT FACE="Times New Roman" SIZE=4>[<I>e</I><IMG SRC="../IMAGES/alpha12.gif">(<I><FONT FACE="Times New Roman" SIZE=1>X<FONT FACE="Courier New" SIZE=2>-</I><IMG SRC="../IMAGES/mu12.gif">)<FONT FACE="Times New Roman" SIZE=4>]</FONT> </FONT></FONT></FONT>and substituting a suitable value for <IMG SRC="../IMAGES/alpha12.gif"><I></I> in inequality (6.43). First, we evaluate E<FONT FACE="Times New Roman" SIZE=4>[<I>e</I><IMG SRC="../IMAGES/alpha12.gif">(<I><FONT FACE="Times New Roman" SIZE=1>X</I><FONT FACE="Courier New" SIZE=2>-<SUP><IMG SRC="../IMAGES/mu12.gif">)</SUP><FONT FACE="Times New Roman" SIZE=4>]</FONT>. </FONT></FONT></FONT>For <I>i</I> = 1, 2, . . . , <I>n</I>, let <I>X<SUB>i</I></SUB> be the random variable that is 1 if the <I>i</I>th Bernoulli trial is a success and 0 if it is a failure. Thus,<P>
+<img src="124_b.gif"><P>
+and<P>
+<img src="124_c.gif"><P>
+Substituting for <I>X</I> - <IMG SRC="../IMAGES/mu12.gif">, we obtain<P>
+<img src="124_d.gif"><P>
+which follows from (6.27), since the mutual independence of the random variables <I>X<SUB>i</I></SUB> implies the mutual independence of the random variables <I>e</I><IMG SRC="../IMAGES/alpha12.gif">(<I><FONT FACE="Times New Roman" SIZE=1>X<FONT FACE="Courier New" SIZE=2>i-pi</I>) </FONT></FONT>(see Exercise 6.3-4). By the definition of expectation,<P>
+<pre>E [<I>e</I> <IMG SRC="../IMAGES/alpha12.gif">(<I>X<SUB>i</I></SUB>-<I>p<SUB>i</I></SUB>)] = <I>e</I><IMG SRC="../IMAGES/alpha12.gif">(1-<I>p<SUB>i</I></SUB>) <I>p<SUB>i</SUB> </I>+ <I>e</I><IMG SRC="../IMAGES/alpha12.gif">(0-<I>p<SUB>i</I></SUB>) <I>q<SUB>i</I></sub></sup></pre><P>
+<pre>= <I>p<SUB>i</SUB>e</I><IMG SRC="../IMAGES/alpha12.gif">q<SUB>i<I></SUB> + </I>q<SUB>i</SUB>e<I>-<IMG SRC="../IMAGES/alpha12.gif"></I>p<SUB>i<I></I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>p<SUB>i</SUB>e</I><IMG SRC="../IMAGES/alpha12.gif"> + 1</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> ex(<I>p<SUB>i</SUB>e</I><IMG SRC="../IMAGES/alpha12.gif">) ,</sub></sup></pre><P>
+<h4><a name="0753_12ef">(6.44)<a name="0753_12ef"></sub></sup></h4><P>
+where exp(<I>x</I>) denotes the exponential function: exp(<I>x</I>) = <I>e<SUP>x</I></SUP>. (Inequality (6.44) follows from the inequalities <IMG SRC="../IMAGES/alpha12.gif"> &gt; 0, <I>q</I> <IMG SRC="../IMAGES/lteq12.gif"> 1, <I>e</I><IMG SRC="../IMAGES/alpha12.gif">q<I><SUP><IMG SRC="../IMAGES/lteq12.gif"></SUP><FONT FACE="Courier New" SIZE=2> <SUP></I>e<I><IMG SRC="../IMAGES/alpha12.gif"></I></FONT></SUP>, and <I>e<SUP>-</I></SUP><IMG SRC="../IMAGES/alpha12.gif"><I>p</I><SUP> <IMG SRC="../IMAGES/lteq12.gif"></sup> 1, and the last line follows from inequality (2.7)). Consequently,<P>
+<img src="125_a.gif"><P>
+since <img src="125_b.gif">. Hence, from inequality (6.43), it follows that<P>
+<pre>Pr{<I>X</I> - <IMG SRC="../IMAGES/mu12.gif"> <IMG SRC="../IMAGES/gteq.gif"> <I>r</I>} <IMG SRC="../IMAGES/lteq12.gif"> exp(<IMG SRC="../IMAGES/mu12.gif"><I>e</I><SUP></SUP><IMG SRC="../IMAGES/alpha12.gif"><SUP> - <IMG SRC="../IMAGES/alpha12.gif"><I>r</I>) .</sub></sup></pre><P>
+<h4><a name="0753_12f0">(6.45)<a name="0753_12f0"></sub></sup></h4><P>
+Choosing <IMG SRC="../IMAGES/alpha12.gif"> = 1n(<I>r/</I><IMG SRC="../IMAGES/mu12.gif"><I></I>) (see Exercise 6.5-6), we obtain<P>
+<img src="125_c.gif"><P>
+When applied to Bernoulli trials in which each trial has the same probability of success, Theorem 6.6 yields the following corollary bounding the right tail of a binomial distribution.<P>
+<a name="0753_12f1">Corollary 6.7<a name="0753_12f1"><P>
+Consider a sequence of<I> n</I> Bernoulli trials, where in each trial success occurs with probability <I>p</I> and failure occurs with probability <I>q</I> = 1 - <I>p</I>. Then for<P>
+<img src="125_d.gif"><P>
+<I><B>Proof     </I></B>For a binomial distribution, equation (6.39) implies that <IMG SRC="../IMAGES/mu12.gif"> = E [<I>X</I>] = <I>np</I>.      <P>
+
+
+
+
+
+<h2><a name="0754_0001">Exercises<a name="0754_0001"></h2><P>
+<a name="0754_0002">6.5-1<a name="0754_0002"><P>
+Which is less likely: obtaining no heads when you flip a fair coin <I>n</I> times, or obtaining fewer than <I>n</I> heads when you flip the coin 4<I>n</I> times?<P>
+<a name="0754_0003">6.5-2<a name="0754_0003"><P>
+Show that<P>
+<img src="125_e.gif"><P>
+for all <I>a</I> &gt; 0 and all <I>k</I> such that 0 &lt; <I>k</I> &lt; <I>n</I>.<P>
+<a name="0754_0004">6.5-3<a name="0754_0004"><P>
+Prove that if 0 &lt; <I>k</I> &lt; <I>np</I>, where 0 &lt; <I>p</I> &lt; 1 and <I>q</I> = 1 - <I>p</I>, then<P>
+<img src="126_a.gif"><P>
+<a name="0754_0005">6.5-4<a name="0754_0005"><P>
+Show that the conditions of Theorem 6.6 imply that<P>
+<img src="126_b.gif"><P>
+Similarly, show that the conditions of Corollary 6.7 imply that<P>
+<img src="126_c.gif"><P>
+<a name="0754_0006">6.5-5<a name="0754_0006"><P>
+Consider a sequence of <I>n</I> Bernoulli trials, where in the <I>i</I>th trial, for <I>i</I> = 1, 2, . . . , <I>n</I>, success occurs with probability p<I><SUB>i</I></SUB> and failure occurs with probability <I>q<SUB>i</I></SUB> = 1 - <I>p<SUB>i</I></SUB>. Let <I>X</I> be the random variable describing the total number of successes, and let <IMG SRC="../IMAGES/mu12.gif"> = E [<I>X</I>]. Show that for <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 0,<P>
+<pre>Pr{<I>X</I> - <IMG SRC="../IMAGES/mu12.gif">] <IMG SRC="../IMAGES/gteq.gif"> <I>r</I>} <IMG SRC="../IMAGES/lteq12.gif"> <I>e-<SUP>r</I>2/2<I>n</I></SUP>.</sub></sup></pre><P>
+(<I>Hint</I>: Prove that <I>p</I><SUB>i</SUB><I>e</I><IMG SRC="../IMAGES/alpha12.gif">qi<SUP> <I>+ </I>q<SUB>i</SUB>e<I></SUP>-<SUP><IMG SRC="../IMAGES/alpha12.gif"></I><I>pi</SUP> </I><IMG SRC="../IMAGES/lteq12.gif"> <I>e</I><SUP>-</SUP><IMG SRC="../IMAGES/alpha12.gif">2/2. Then follow the outline of the proof of Theorem 6.6, using this inequality in place of inequality (6.44).)<P>
+<a name="0754_0007">6.5-6<a name="0754_0007"><P>
+Show that choosing <IMG SRC="../IMAGES/alpha12.gif"> = 1n(<I>r</I>/<IMG SRC="../IMAGES/mu12.gif">) minimizes the right-hand side of inequality (6.45).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0755_12e9">6.6 Probabilistic analysis<a name="0755_12e9"></h1><P>
+<a name="0755_12e8">This section uses three examples to illustrate probabilistic analysis. The first determines the probability that in a room of <I>k</I> people, some pair shares the same birthday. The second example examines the random tossing of balls into bins. The third investigates &quot;streaks&quot; of consecutive heads in coin flipping.<P>
+
+
+
+
+
+<h2><a name="0756_12eb">6.6.1 The birthday paradox<a name="0756_12eb"></h2><P>
+<a name="0756_12e9"><a name="0756_12ea">A good example to illustrate probabilistic reasoning is the classical <I><B>birthday paradox</I></B>. How many people must there be in a room before there is a good chance two of them were born on the same day of the year? The answer is surprisingly few. The paradox is that it is in fact far fewer than the number of days in the year, as we shall see.<P>
+To answer the question, we index the people in the room with the integers 1, 2, . . . , <I>k</I>, where <I>k</I> is the number of people in the room. We ignore the issue of leap years and assume that all years have <I>n</I> = 365 days. For <I>i</I> = 1, 2, . . . , <I>k</I>, let <I>b<SUB>i</I></SUB> be the day of the year on which <I>i</I>'s birthday falls, where 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>b<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>. We also assume that birthdays are uniformly distributed across the <I>n</I> days of the year, so that Pr{<I>bi</I> = <I>r</I>} = 1/<I>n</I> for <I>i</I> = 1, 2, . . . , <I>k</I> and <I>r</I> = 1, 2, . . . , <I>n.</I><P>
+The probability that two people<I> i</I> and <I>j</I> have matching birthdays depends on whether the random selection of birthdays is independent. If birthdays are independent, then the probability that <I>i</I>'s birthday and <I>j</I>'s birthday both fall on day <I>r</I> is<P>
+<pre>Pr{<I>b<SUB>i</I></SUB> = <I>r</I> and <I>b<SUB>j</I></SUB> = <I>r</I>} = Pr{<I>b<SUB>i</I></SUB> = <I>r</I>}Pr {<I>b<SUB>j</I></SUB> = <I>r</I>}</sub></sup></pre><P>
+<pre>= 1/<I>n</I><SUP>2 </SUP>.</sub></sup></pre><P>
+Thus, the probability that they both fall on the same day is<P>
+<img src="127_a.gif"><P>
+More intuitively, once <I>b<SUB>i</I></SUB> is chosen, the probability that <I>b<SUB>j</I></SUB> is chosen the same is 1/<I>n</I>. Thus, the probability that <I>i</I> and <I>j</I> have the same birthday is the same as the probability that the birthday of one of them falls on a given day. Notice, however, that this coincidence depends on the assumption that the birthdays are independent.<P>
+We can analyze the probability of at least 2 out of <I>k</I> people having matching birthdays by looking at the complementary event. The probability that at least two of the birthdays match is 1 minus the probability that all the birthdays are different. The event that <I>k</I> people have distinct birthdays is<P>
+<img src="127_b.gif"><P>
+where <I>A<SUB>i</I></SUB> is the event that person (<I>i </I>+ 1)'s birthday is different from person <I>j</I>'s for all <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I>, that is,<P>
+<pre><I>A<SUB>i</I></SUB> = {<I>b<SUB>i</SUB> </I><SUB>+1</SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>b<SUB>j</I></SUB>: <I>j</I> = 1, 2 . . . , <I>i</I>}.</sub></sup></pre><P>
+Since we can write <I>B<SUB>k</I></SUB> = <I>A<SUB>k</I> - 1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>B<SUB>k</I> - 1</SUB>, we obtain from equation (6.20) the recurrence<P>
+<pre>Pr{<I>B<SUB>k</I></SUB>} = Pr{<I>B<SUB>k</I> - 1</SUB>}Pr{<I>A<SUB>k</I> - 1</SUB> <IMG SRC="../IMAGES/sglvrt.gif"> <I>B<SUB>k</I> - 1</SUB>} ,</sub></sup></pre><P>
+<h4><a name="0756_12ec">(6.46)<a name="0756_12ec"></sub></sup></h4><P>
+where we take Pr{<I>B</I><SUB>1</SUB>} = 1 as an initial condition. In other words, the probability that <I>b</I><SUB>1</SUB><I>, b</I><SUB>2</SUB><I>,...,b<SUB>k</I></SUB> are distinct birthdays is the probability that <I>b</I><SUB>1</SUB><I>, b</I><SUB>2</SUB><I>, . . . , b<SUB>k - </I>1</SUB><I>, </I>are distinct birthdays times the probability that <I>b<SUB>k</SUB> </I><IMG SRC="../IMAGES/noteq.gif"><I> b<SUB>i</SUB> </I>for<I> i</I> = 1, 2, . . . , <I>k - 1</I>, given that b<I><SUB>1</SUB></I>,b<I><SUB>2</SUB></I><B>,<I></B>...,</I>b<SUB>k<I> - 1</SUB></I> are distinct.<P>
+If <I>b<SUB>1</SUB>, b<SUB>2</SUB>, . . . , b<SUB>k</I> - 1</SUB> are distinct, the conditional probability that <I>b<SUB>k</SUB> </I><IMG SRC="../IMAGES/noteq.gif"> <I>b<SUB>i</I></SUB> for <I>i</I> = 1, 2, . . . , <I>k</I> - 1 is (<I>n</I> - <I>k</I> + 1)/<I>n</I>, since out of the <I>n</I> days, there are <I>n</I> - (<I>k</I> - 1) that are not taken. By iterating the recurrence (6.46), we obtain<P>
+<img src="128_a.gif"><P>
+The inequality (2.7), 1 + <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>e<SUP>x</I></SUP>, gives us<P>
+<img src="128_b.gif"><P>
+when -<I>k</I>(<I>k</I> - l)/2<I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> l<I>n</I>(1/2). The probability that all <I>k</I> birthdays are distinct is at most 1/2 when <I>k</I>(<I>k</I> - 1) <IMG SRC="../IMAGES/gteq.gif"> 2<I>n </I>ln 2 or, solving the quadratic equation, when <img src="128_c.gif">. For <I>n</I> = 365, we must have <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 23. Thus, if at least 23 people are in a room, the probability is at least 1/2 that at least two people have the same birthday. On Mars, a year is 669 Martian days long; it therefore takes 31 Martians to get the same effect.<P>
+
+
+
+
+
+<h3>Another method of analysis</h3><P>
+<a name="0757_12eb">We can use the linearity of expectation (equation (6.26)) to provide a simpler but approximate analysis of the birthday paradox. For each pair (<I>i, j</I>) of the <I>k</I> people in the room, let us define the random variable <I>X<SUB>ij</I></SUB>, for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I>, by<P>
+<img src="128_d.gif"><P>
+The probability that two people have matching birthdays is 1/<I>n</I>, and thus by the definition of expectation (6.23),<P>
+<pre>E[<I>X<SUB>ij</I></SUB>] = 1 <IMG SRC="../IMAGES/dot10.gif"> (1/<I>n</I>) + 0 <IMG SRC="../IMAGES/dot10.gif"> (1 - 1/<I>n</I>)</sub></sup></pre><P>
+<pre>= 1/<I>n</I>.</sub></sup></pre><P>
+The expected number of pairs of individuals having the same birthday is, by equation (6.24), just the sum of the individual expectations of the pairs, which is<P>
+<img src="129_a.gif"><P>
+When <I>k</I>(<I>k</I> -1) <IMG SRC="../IMAGES/gteq.gif"> 2<I>n</I>, therefore, the expected number of pairs of birthdays is at least 1. Thus, if we have at least <img src="129_b.gif"> individuals in a room, we can expect at least two to have the same birthday. For <I>n</I> = 365, if <I>k</I> = 28, the expected number of pairs with the same birthday is (28<IMG SRC="../IMAGES/dot10.gif">27)/(2<IMG SRC="../IMAGES/dot10.gif">365) <IMG SRC="../IMAGES/approx18.gif"> 1.0356. Thus, with at least 28 people, we expect to find at least one matching pair of birthdays. On Mars, where a year is 669 Martian days long, we need at least 38 Martians.<P>
+The first analysis determined the number of people required for the probability to exceed 1/2 that a matching pair of birthdays exists, and the second analysis determined the number such that the expected number of matching birthdays is 1. Although the numbers of people differ for the two situations, they are the same asymptotically: <img src="129_c.gif">.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0758_12f2">6.6.2 Balls and bins<a name="0758_12f2"></h2><P>
+<a name="0758_12ec"><a name="0758_12ed"><a name="0758_12ee">Consider the process of randomly tossing identical balls into <I>b</I> bins, numbered 1, 2, . . . , <I>b</I>. The tosses are independent, and on each toss the ball is equally likely to end up in any bin. The probability that a tossed ball lands in any given bin is 1/<I>b</I>. Thus, the ball-tossing process is a sequence of Bernoulli trials with a probability 1/<I>b</I> of success, where success means that the ball falls in the given bin. A variety of interesting questions can be asked about the ball-tossing process.<P>
+<a name="0758_12ef"><I>How many balls fall in a given bin?</I> The number of balls that fall in a given bin follows the binomial distribution <I>b(k; n</I>, 1/<I>b</I>). If <I>n</I> balls are tossed, the expected number of balls that fall in the given bin is <I>n</I>/<I>b</I>.<P>
+<a name="0758_12f0"><I>How many balls must one toss, on the average, until a given bin contains a ball?</I> The number of tosses until the given bin receives a ball follows the geometric distribution with probability 1/<I>b</I>, and thus the expected number of tosses until success is 1/(1/<I>b</I>) = <I>b</I>.<P>
+<I>How many balls must one toss until every bin contains at least one ball? </I>Let us call a toss in which a ball falls into an empty bin a &quot;hit.&quot; We want to know the average number <I>n</I> of tosses required to get <I>b</I> hits.<P>
+The hits can be used to partition the <I>n</I> tosses into stages. The <I>i</I>th stage consists of the tosses after the (<I>i</I> - 1)st hit until the <I>i</I>th hit. The first stage consists of the first toss, since we are guaranteed to have a hit when all bins are empty. For each toss during the <I>i</I>th stage, there are <I>i</I> -1 bins that contain balls and <I>b - i</I> + 1 empty bins. Thus, for all tosses in the <I>i</I>th stage, the probability of obtaining a hit is (<I>b - i</I> + 1)/<I>b</I>.<P>
+Let <I>n<SUB>i</I></SUB> denote the number of tosses in the <I>i</I>th stage. Thus, the number of tosses required to get <I>b</I> hits is <I>n</I> = <img src="130_a.gif">. Each random variable <I>n<SUB>i </I></SUB>has a geometric distribution with probability of success (<I>b</I> - <I>i</I> + 1)/<I>b</I>, and therefore<P>
+<img src="130_b.gif"><P>
+<a name="0758_12f1">By linearity of expectation,<P>
+<img src="130_c.gif"><P>
+The last line follows from the bound (3.5) on the harmonic series. It therefore takes approximately <I>b</I> ln <I>b</I> tosses before we can expect that every bin has a ball.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0759_12f6">6.6.3 Streaks<a name="0759_12f6"></h2><P>
+<a name="0759_12f2"><a name="0759_12f3"><a name="0759_12f4">Suppose you flip a fair coin <I>n</I> times. What is the longest streak of consecutive heads that you expect to see? The answer is <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>), as the following analysis shows.<P>
+<a name="0759_12f5">We first prove that the expected length of the longest streak of heads is <I>O</I>(lg <I>n</I>). Let <I>A<SUB>ik</I></SUB> be the event that a streak of heads of length at least <I>k</I> begins with the <I>i</I>th coin flip or, more precisely, the event that the <I>k </I>consecutive coin flips <I>i</I>, <I>i</I>+ 1, . . ., <I>i</I>+<I>k</I> - 1 yield only heads, where 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n </I>and 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - <I>k</I> + 1. For any given event <I>A<SUB>ik</I></SUB>, the probability that all <I>k </I>flips are heads has a geometric distribution with <I>p</I> = <I>q</I> = 1/2:<P>
+<pre>Pr {<I>A<SUB>ik</I></SUB>} = 1/2<I><SUP>k </SUP>.</I></sub></sup></pre><P>
+<h4><a name="0759_12f7">(6.47)<a name="0759_12f7"></sub></sup></h4><P>
+<pre>For <I>k</I> = 2 <IMG SRC="../IMAGES/hfbrul14.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrur14.gif">,</sub></sup></pre><P>
+<pre>Pr{<I>A<SUB>i</I>,2</SUB><IMG SRC="../IMAGES/hfbrul14.gif">1g <I>n</I><SUB><IMG SRC="../IMAGES/hfbrur14.gif"></SUB>} = 1/2 <SUP>2</SUP><IMG SRC="../IMAGES/hfbrul14.gif">1g <I>n</I><SUP><IMG SRC="../IMAGES/hfbrur14.gif"></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> 1/2 <SUP>2 1g <I>n</I></sub></sup></pre><P>
+<pre>= 1/<I>n</I><SUP>2</SUP>,</sub></sup></pre><P>
+and thus the probability that a streak of heads of length at least <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>2 1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"><I></I></FONT> begins in position <I>i</I> is quite small, especially considering that there are at most <I>n</I> positions (actually <I>n</I> - 2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"> </FONT>+ 1 ) where the streak can begin. The probability that a streak of heads of length at least <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>2 1g <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> begins anywhere is therefore<P>
+<img src="131_a.gif"><P>
+since by Boole's inequality (6.22), the probability of a union of events is at most the sum of the probabilities of the individual events. (Note that Boole's inequality holds even for events such as these that are not independent.)<P>
+The probability is therefore at most 1/<I>n</I> that any streak has length at least 2 <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"><I>; </I>hence</FONT>, the probability is at least 1 - 1/<I>n</I> that the longest streak has length less than 2 <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I></I>. Since every streak has length at most <I>n</I>, the expected length of the longest streak is bounded above by<P>
+<pre>(2 <IMG SRC="../IMAGES/hfbrul14.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrur14.gif"> )(1 - 1/<I>n</I>) + <I>n</I>(1/<I>n</I>) = <I>O</I>(lg <I>n</I>).</sub></sup></pre><P>
+The chances that a streak of heads exceeds <I>r</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"><I></I></FONT> flips diminish quickly with <I>r</I>. For <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 1, the probability that a streak of <I>r</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I></I> heads starts in position <I>i</I> is<P>
+<pre>Pr{<I>Ai,r</I><IMG SRC="../IMAGES/hfbrul14.gif">1g <I>n</I><IMG SRC="../IMAGES/hfbrur14.gif">} = 1/2<I><SUP>r</I></SUP><IMG SRC="../IMAGES/hfbrul14.gif">lg <I>n</I><SUP><IMG SRC="../IMAGES/hfbrur14.gif"></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> 1/<I>n<SUP>r</I></SUP>.</sub></sup></pre><P>
+Thus, the probability is at most <I>n</I>/<I>n<SUP>r</I></SUP> = 1/<I>n<SUP>r</I></SUP>-<FONT FACE="Times New Roman" SIZE=1>1</FONT> that the longest streak is at least <I>r</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"><I></I></FONT>, or equivalently, the probability is at least 1- 1/<I>n<SUP><FONT FACE="Courier New" SIZE=2>r</I></SUP>-<I><FONT FACE="Times New Roman" SIZE=1>1</I></FONT> </FONT>that the longest streak has length less than <I>r</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n</I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+As an example, for <I>n</I> = 1000 coin flips, the probability of having a streak of at least 2 <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I></I> = 20 heads is at most 1/<I>n</I> = 1/1000<I></I>. The chances of having a streak longer than 3 <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I></I> = 30 heads is at most 1/<I>n</I><SUP>2</SUP> = 1/1,000,000.<P>
+We now prove a complementary lower bound: the expected length of the longest streak of heads in <I>n</I> coin flips is <IMG SRC="../IMAGES/omega12.gif">(1g <I>n</I>). To prove this bound, we look for streaks of length <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT><I> </I>/2. From equation (6.47), we have<P>
+<img src="131_b.gif"><P>
+The probability that a streak of heads of length at least <IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n<SUB></I></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"><I></I> /2 does not begin in position <I>i</I> is therefore at most <img src="131_c.gif">. We can partition the <I>n</I> coin flips into at least <SUB></SUB><IMG SRC="../IMAGES/hfbrdl12.gif">2<I>n</I>/<SUB> </SUB><IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n</I><SUB></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"><SUB><I></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"></I> groups of <SUB></SUB><IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n</I><SUB></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"><I> </I>/2 consecutive coin flips. Since these groups are formed from mutually exclusive, independent coin flips, the probability that every one of these groups <I>fails</I> to be a streak of length <SUB></SUB><IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n</I><SUB><IMG SRC="../IMAGES/hfbrdr12.gif"></SUB><I></I> /2 is<P>
+<img src="131_d.gif"><P>
+For this argument, we used inequality (2.7), 1+ <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> e<I><SUP>x</I></SUP>, and the fact, which you might want to verify, that (2<I>n</I>/1g <I>n</I> - 1) / <img src="132_a.gif"> <IMG SRC="../IMAGES/gteq.gif"> 1g <I>n</I> for <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 2. (For <I>n</I> = 1, the probability that every group fails to be a streak is trivially at most 1/<I>n</I> = 1.)<P>
+Thus, the probability that the longest streak exceeds <IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"><I></I> /2 is at least 1- 1/<I>n</I>. Since the longest streak has length at least 0, the expected length of the longest streak is at least<P>
+<pre>(<IMG SRC="../IMAGES/hfbrdl12.gif">1g <I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"><I> /2)(1 - 1/</I>n<I>) + 0<IMG SRC="../IMAGES/dot10.gif">(1/</I>n<I>) = <IMG SRC="../IMAGES/omega12.gif">(1g </I>n<I>).</I></sub></sup></pre><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="075a_12fc">Exercises<a name="075a_12fc"></h2><P>
+<a name="075a_12fd">6.6-1<a name="075a_12fd"><P>
+<a name="075a_12f6"><a name="075a_12f7">Suppose that balls are tossed into  <I>b</I> bins. Each toss is independent, and each ball is equally likely to end up in any bin. What is the expected number of ball tosses before at least one of the bins contains two balls?<P>
+<a name="075a_12fe">6.6-2<a name="075a_12fe"><P>
+<a name="075a_12f8"><a name="075a_12f9">For the analysis of the birthday paradox, is it important that the birthdays be mutually independent, or is pairwise independence sufficient? Justify your answer.<P>
+<a name="075a_12ff">6.6-3<a name="075a_12ff"><P>
+How many people should be invited to a party in order to make it likely that there are <I>three</I> people with the same birthday?<P>
+<a name="075a_1300">6.6-4<a name="075a_1300"><P>
+What is the probability that a <I>k-</I>string over a set of size <I>n</I> is actually a <I>k-</I>permutation? How does this question relate to the birthday paradox?<P>
+<a name="075a_1301">6.6-5<a name="075a_1301"><P>
+Suppose that <I>n</I> balls are tossed into <I>n</I> bins, where each toss is independent and the ball is equally likely to end up in any bin. What is the expected number of empty bins? What is the expected number of bins with exactly one ball?<P>
+<a name="075a_1302">6.6-6<a name="075a_1302"><P>
+<a name="075a_12fa"><a name="075a_12fb">Sharpen the lower bound on streak length by showing that in <I>n</I> flips of a fair coin, the probability is less than 1/<I>n</I> that no streak longer than 1g <I>n</I> - 2 1g 1g <I>n</I> consecutive heads occurs.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="075b_1302">Problems<a name="075b_1302"></h1><P>
+<a name="075b_1303">6-1 Balls and bins<a name="075b_1303"><P>
+<a name="075b_12fc">In this problem, we investigate the effect of various assumptions on the number of ways of placing <I>n</I> balls into <I>b</I> distinct bins.<P>
+<I><B>a.</I></B>     Suppose that the <I>n</I> balls are distinct and that their order within a bin does not matter. Argue that the number of ways of placing the balls in the bins is <I>b<SUP>n</I></SUP>.<P>
+<I><B>b.</I></B>     Suppose that the balls are distinct and that the balls in each bin are ordered. Prove that the number of ways of placing the balls in the bins is (<I>b</I> + <I>n</I> - 1 )!/(<I>b</I> - 1)!. (<I>Hint:</I> Consider the number of ways of arranging <I>n</I> distinct balls and <I>b</I> - 1 indistinguishable sticks in a row.)<P>
+<I><B>c.</I></B>     Suppose that the balls are identical, and hence their order within a bin does not matter. Show that the number of ways of placing the balls in the bins is <img src="133_a.gif">. (<I>Hint:</I> Of the arrangements in part (b), how many are repeated if the balls are made identical?)<P>
+<I><B>d.</I></B>     Suppose that the balls are identical and that no bin may contain more than one ball. Show that the number of ways of placing the balls is <img src="133_b.gif">.<P>
+<I><B>e.</I></B>     Suppose that the balls are identical and that no bin may be left empty. Show that the number of ways of placing the balls is <img src="133_c.gif">.<P>
+<a name="075b_1304">6-2 Analysis of max program<a name="075b_1304"><P>
+<a name="075b_12fd">The following program determines the maximum value in an unordered array <I>A</I>[1 . . <I>n</I>].<P>
+<pre>1 <I>max</I><IMG SRC="../IMAGES/arrlt12.gif"> -<IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>2 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>3       <B>do </B><img src="133_d.gif"> Compare <I>A</I>[<I>i</I>] to <I>max</I>.</sub></sup></pre><P>
+<pre>4          <B>if</B> <I>A</I>[<I>i</I>] &gt; <I>max</I></sub></sup></pre><P>
+<pre>5             <B>then</B> <I>max</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+We want to determine the average number of times the assignment in line 5 is executed. Assume that all numbers in <I>A</I> are randomly drawn from the interval [0, 1].<P>
+<I><B>a.</I></B>     If a number <I>x</I> is randomly chosen from a set of <I>n</I> distinct numbers, what is the probability that <I>x</I> is the largest number in the set?<P>
+<I><B>b.</I></B>     When line 5 of the program is executed, what is the relationship between <I>A</I>[<I>i</I>] and <I>A</I>[<I>j</I>] for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I>?<P>
+<I><B>c.</I></B>     For each <I>i</I> in the range 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, what is the probability that line 5 is executed?<P>
+<I><B>d.</I></B>     Let <I>s</I><SUB>1</SUB>, <I>s</I><SUB>2,</SUB> . . ., <I>s<SUB>n</I></SUB> be <I>n</I> random variables, where <I>s<SUB>i</I></SUB> represents the number of times (0 or 1) that line 5 is executed during the <I>i</I>th iteration of the <B>for</B> loop. What is E[<I>s<SUB>i</I></SUB>]<SUB>?</sub><P>
+<I><B>e.</I></B>     Let <I>s</I> = <I>s</I><SUB>1</SUB> + <I>s</I><SUB>2</SUB> +... + <I>sn</I> be the total number of times that line 5 is executed during some run of the program. Show that E[<I>s</I>] = <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>).<P>
+<a name="075b_1305">6-3 Hiring problem<a name="075b_1305"><P>
+<a name="075b_12fe">Professor Dixon needs to hire a new research assistant. She has arranged interviews with <I>n</I> applicants and would like to base her decision solely on their qualifications. Unfortunately, university regulations require that after each interview she immediately reject or offer the position to the applicant.<P>
+Professor Dixon decides to adopt the strategy of selecting a positive integer <I>k</I> &lt; <I>n</I>, interviewing and then rejecting the first <I>k</I> applicants, and hiring the first applicant thereafter who is better qualified than all preceding applicants. If the best-qualified applicant is among the first <I>k</I> interviewed, then she will hire the <I>n</I>th applicant. Show that Professor Dixon maximizes her chances of hiring the best-qualified applicant by choosing <I>k</I> approximately equal to <I>n/e</I> and that her chances of hiring the best-qualified applicant are then approximately 1/<I>e</I>.<P>
+<a name="075b_1306">6-4 Probabilistic counting<a name="075b_1306"><P>
+<a name="075b_12ff"><a name="075b_1300"><a name="075b_1301">With a <I>t</I>-bit counter, we can ordinarily only count up to 2<I><SUP>t</I></SUP> - 1. With R. Morris's <I><B>probabilistic counting</I></B>, we can count up to a much larger value at the expense of some loss of precision.<P>
+We let a counter value of <I>i</I> represent a count of <I>n<SUB>i</I></SUB> for <I>i</I> = 0, 1, ..., 2<I><SUP>t</I></SUP> - 1,<SUB> </SUB>where the <I>n<SUB>i</I></SUB> form an increasing sequence of nonnegative values. We assume that the initial value of the counter is 0, representing a count of <I>n<SUB>0</I></SUB> = 0. The <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation works on a counter containing the value <I>i</I> in a probabilistic manner. If <I>i</I> = 2<I><SUP>t</I></SUP> - 1, then an overflow error is reported. Otherwise, the counter is increased by 1 with probability 1/(<I>n<SUB>i</I>+l</SUB> - <I>n<SUB>i</I></SUB>), and it remains unchanged with probability 1 - l/(<I>n<SUB>i</I>+1</SUB> - <I>n<SUB>i</I></SUB>).<P>
+If we select <I>n<SUB>i</I></SUB> = <I>i</I> for all <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0, then the counter is an ordinary one. More interesting situations arise if we select, say, <I>n<SUB>i</I></SUB> = 2<I><SUP>i</I>-1</SUP> for <I>i</I> &gt; 0 or <I>n<SUB>i</I></SUB> = <I>F<SUB>i</I></SUB> (the <I>i</I>th Fibonacci number--see Section 2.2).<P>
+For this problem, assume that <I>n</I><SUB>2</SUB><I><SUP><FONT FACE="Times New Roman" SIZE=1>t</SUP><SUB>-</I>1</FONT></SUB> is large enough that the probability of an overflow error is negligible.<P>
+<I><B>a.</I></B>     Show that the expected value represented by the counter after <I>n </I><FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations have been performed is exactly <I>n</I>.<P>
+<I><B>b.</I></B>     The analysis of the variance of the count represented by the counter depends on the sequence of the <I>n<SUB>i</I></SUB>. Let us consider a simple case: <I>n<SUB>i</I></SUB> = 100<I>i</I> for all <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0. Estimate the variance in the value represented by the register after <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations have been performed.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The first general methods for solving probability problems were discussed in a famous correspondence between B. Pascal and P. de Fermat, which began in 1654, and in a book by C. Huygens in 1657. Rigorous probability theory began with the work of J. Bernoulli in 1713 and A. De Moivre in 1730. Further developments of the theory were provided by P. S. de Laplace, S.-D. Poisson, and C. F. Gauss.<P>
+Sums of random variables were originally studied by P. L. Chebyshev and A. A. Markov. Probability theory was axiomatized by A. N. Kolmogorov in 1933. Bounds on the tails of distributions were provided by Chernoff [40] and Hoeffding [99]. Seminal work in random combinatorial structures was done by P. Erd&ouml;s.<P>
+Knuth [121] and Liu [140] are good references for elementary combinatorics and counting. Standard textbooks such as Billingsley [28], Chung [41], Drake [57], Feller [66], and Rozanov [171] offer comprehensive introductions to probability. Bollob&aacute;s [30], Hofri [100], and Spencer [179] contain a wealth of advanced probabilistic techniques.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="partii.htm">Part II</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

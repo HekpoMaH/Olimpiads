@@ -1,0 +1,131 @@
+{
+TASK: cars
+LANG: PASCAL
+}
+program cars;
+
+const
+	MAXN					= 500000;
+	MAXM					= 5000000;
+	mdl					= 987654321;
+
+type
+	Integer					= LongInt;
+	TEdge					= record
+		t, n				: Integer;
+	end;
+	THeapElement				= record
+		v, i				: Integer;
+	end;
+
+var
+	g					: Array [1 .. MAXM] of TEdge;
+	head					: Array [1 .. MAXN] of Integer;
+	lvl					: Array [1 .. MAXN] of Integer;
+	p, inh					: Array [1 .. MAXN] of Integer;
+	heap					: Array [1 .. MAXN] of THeapElement;
+	hn					: Integer;
+	gn, i, q, nb, j, n, e			: Integer;
+	answ					: Integer;
+
+procedure readInput;
+begin
+	readln(n);
+	for i := 1 to n do begin
+		head[i] := 0;
+		lvl[i] := 0;
+	end;
+	gn := 0;
+	for i := 1 to n do begin
+		read(q);
+		for j := 1 to q do begin
+			read(nb);
+			inc(lvl[nb]);
+			gn := gn + 1; g[gn].t := nb; g[gn].n := head[i]; head[i] := gn;
+		end;
+		if (q = 0) then e := i;
+		readln;
+	end;
+end;
+
+procedure swapel(var a, b: THeapElement);
+var
+	t					: THeapElement;
+begin
+	t := a; a := b; b := t;
+end;
+
+procedure update(x: Integer);
+var
+	i					: Integer;
+begin
+	i := x;
+	while (i div 2 > 0) and (heap[i div 2].v > heap[i].v) do begin
+		inh[heap[i div 2].i] := i;
+		inh[heap[i].i] := i div  2;
+		swapel(heap[i], heap[i div 2]);
+		i := i div 2;
+	end;
+end;
+
+procedure delheap(var v, ind: Integer);
+var
+	i, imin					: Integer;
+begin
+	v := heap[1].v;
+	ind := heap[1].i;
+	inh[heap[hn].i] := 1;
+	swapel(heap[1], heap[hn]);
+	hn := hn - 1;
+	i := 1;
+	while (i * 2 <= hn) do begin
+		if (i * 2 = hn) then imin := i * 2
+		else if (heap[i * 2].v < heap[i * 2 + 1].v) then imin := i * 2
+		else imin := i * 2 + 1;
+		if (heap[i].v < heap[imin].v) then break;
+		inh[heap[imin].i] := i;
+		inh[heap[i].i] := imin;
+		swapel(heap[i], heap[imin]);
+		i := imin;
+	end;
+end;
+
+procedure Solve;
+var
+	v, ind, i, j, s					: Integer;
+begin
+	for i := 1 to n do
+		if (lvl[i] = 0) then begin
+			s := i;
+			break;
+		end;
+	for i := 1 to n do
+		p[i] := 0;
+	p[s] := 1;
+	hn := 0;
+	for i := 1 to n do begin
+		hn := hn + 1;
+		heap[hn].v := lvl[i];
+		heap[hn].i := i;
+		inh[i] := hn;
+		update(hn);
+	end;
+	while (hn > 0) do begin
+		delheap(v, ind);
+		i := head[ind];
+		while (i > 0) do begin
+			j := g[i].t;
+			p[j] := (p[j] + p[ind]) mod mdl;
+			dec(heap[inh[j]].v);
+			update(inh[j]);
+			i := g[i].n;
+		end;
+	end;
+	answ := p[e];
+end;
+
+begin
+	readInput;
+	Solve;
+	writeln(answ);
+end.

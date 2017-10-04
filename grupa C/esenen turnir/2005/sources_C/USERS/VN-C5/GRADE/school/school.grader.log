@@ -1,0 +1,44 @@
+task : school
+language : C
+compile time : 264
+data_num : 10
+input : data/school.01.in, output :./tmp/result.execute, sol : data/school.01.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/school.02.in, output :./tmp/result.execute, sol : data/school.02.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/school.03.in, output :./tmp/result.execute, sol : data/school.03.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/school.04.in, output :./tmp/result.execute, sol : data/school.04.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/school.05.in, output :./tmp/result.execute, sol : data/school.05.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/school.06.in, output :./tmp/result.execute, sol : data/school.06.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 2
+input : data/school.07.in, output :./tmp/result.execute, sol : data/school.07.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 2
+input : data/school.08.in, output :./tmp/result.execute, sol : data/school.08.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 3
+input : data/school.09.in, output :./tmp/result.execute, sol : data/school.09.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 3
+input : data/school.10.in, output :./tmp/result.execute, sol : data/school.10.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 3

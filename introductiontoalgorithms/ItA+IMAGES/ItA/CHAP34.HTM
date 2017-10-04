@@ -1,0 +1,587 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 34: STRING MATCHING</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap35.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap33.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="09c8_1bcf">CHAPTER 34: STRING MATCHING<a name="09c8_1bcf"></h1><P>
+<a name="09c8_1bbf"><a name="09c8_1bc0"><a name="09c8_1bc1">Finding all occurrences of a pattern in a text is a problem that arises frequently in text-editing programs. Typically, the text is a document being edited, and the pattern searched for is a particular word supplied by the user. Efficient algorithms for this problem can greatly aid the responsiveness of the text-editing program. String-matching algorithms are also used, for example, to search for particular patterns in DNA sequences.<P>
+<a name="09c8_1bc2"><a name="09c8_1bc3"><a name="09c8_1bc4">We formalize the <I><B>string-matching problem</I></B> as follows. We assume that the text is an array <I>T</I>[1 . . <I>n</I>] of length <I>n</I> and that the pattern is an array <I>P</I>[1 . . <I>m</I>] of length <I>m</I>. We further assume that the elements of <I>P</I> and <I>T</I> are characters drawn from a finite alphabet <IMG SRC="../IMAGES/sum14.gif">. For example, we may have <IMG SRC="../IMAGES/sum14.gif"> = {<FONT FACE="Courier New" SIZE=2>0,</FONT> <FONT FACE="Courier New" SIZE=2>1</FONT>} or <IMG SRC="../IMAGES/sum14.gif"> = {<FONT FACE="Courier New" SIZE=2>a</FONT>, <FONT FACE="Courier New" SIZE=2>b</FONT>, . . . , <FONT FACE="Courier New" SIZE=2>z</FONT>}. The character arrays <I>P</I> and <I>T</I> are often called <I><B>strings</I></B> of characters.<P>
+<a name="09c8_1bc5"><a name="09c8_1bc6"><a name="09c8_1bc7">We say that pattern <I>P</I> <I><B>occurs with shift</I></B> <I><B>s</I></B> in text <I>T</I> (or, equivalently, that pattern <I>P</I> <I><B>occurs beginning at position s </I>+ 1</B> in text <I>T</I>) if 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>s</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - <I>m</I> and <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>] = <I>P</I>[1 . . <I>m</I>] (that is, if <I>T</I>[<I>s</I> + <I>j</I>] = P[<I>j</I>], for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>). If <I>P</I> occurs with shift <I>s</I> in <I>T</I>, then we call <I>s</I> a <I><B>valid shift</I></B>; otherwise, we call <I>s</I> an <I><B>invalid shift</I></B>. The string-matching problem is the problem of finding all valid shifts with which a given pattern <I>P</I> occurs in a given text <I>T</I>. Figure 34.1 illustrates these definitions.<P>
+This chapter is organized as follows. In Section 34.1 we review the naive brute-force algorithm for the string-matching problem, which has worst-case running time <I>O</I>((<I>n</I> - <I>m</I> + 1)<I>m</I>). Section 34.2 presents an interesting string-matching algorithm, due to Rabin and Karp. This algorithm also has worst-case running time <I>O</I>((<I>n</I> - <I>m</I> + 1)<I>m</I>), but it works much better on average and in practice. It also generalizes nicely to other pattern-matching problems. Section 34.3 then describes a string-matching algorithm that begins by constructing a finite automaton specifically designed to search for occurrences of the given pattern <I>P</I> in a text. This algorithm runs in time <I>O</I>(<I>n</I> + <I>m</I> <IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">). The similar but much cleverer Knuth-Morris-Pratt (or KMP) algorithm is presented in Section 34.4; the KMP algorithm runs in time <I>O</I>(<I>n</I> + <I>m</I>). Finally, Section 34.5 describes an algorithm due to Boyer and Moore that is often the best practical choice, although its worst-case running time (like that of the Rabin-Karp algorithm) is no better than that of the naive string-matching algorithm.<P>
+<img src="853_a.gif"><P>
+<h4><a name="09c8_1bd0">Figure 34.1 The string-matching problem. The goal is to find all occurrences of the pattern P = abaa in the text T = abcabaabcabac. The pattern occurs only once in the text, at shift s = 3. The shift s = 3 is said to be a valid shift. Each character of the pattern is connected by a vertical line to the matching character in the text, and all matched characters are shown shaded.<a name="09c8_1bd0"></sub></sup></h4><P>
+Notation and terminology<P>
+<a name="09c8_1bc8"><a name="09c8_1bc9">We shall let <IMG SRC="../IMAGES/sum14.gif">* (read &quot;sigma-star&quot;) denote the set of all finite-length strings formed using characters from the alphabet <IMG SRC="../IMAGES/sum14.gif">. In this chapter, we consider only finite-length strings. The zero-length <I><B>empty string</I></B>, denoted <IMG SRC="../IMAGES/epsilon.gif"><I></I>, also belongs to <IMG SRC="../IMAGES/sum14.gif">*. The length of a string <I>x</I> is denoted |<I>x</I>|. The <I><B>concatenation</I> </B>of two strings <I>x</I> and <I>y</I>, denoted <I>xy</I>, has length |<I>x</I>| + |<I>y</I>| and consists of the characters from <I>x</I> followed by the characters from <I>y</I>.<P>
+<a name="09c8_1bca"><a name="09c8_1bcb"><a name="09c8_1bcc"><a name="09c8_1bcd">We say that a string <I>w</I> is a <I><B>prefix</I></B> of a string <I>x</I>, denoted <img src="854_a.gif"> for some string <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">*. Note that if <img src="854_b.gif">, then |<I>w</I>| <IMG SRC="../IMAGES/lteq12.gif"> |<I>x</I>|. Similarly, we say that a string <I>w</I> is a <I><B>suffix</I></B> of a string <I>x, </I>denoted <img src="854_c.gif"> for some <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">*. It follows from <img src="854_d.gif"> that |<I>w</I>| <IMG SRC="../IMAGES/lteq12.gif"> |<I>x</I>|. The empty string <IMG SRC="../IMAGES/epsilon.gif"><I></I> is both a suffix and a prefix of every string. For example, we have <FONT FACE="Courier New" SIZE=2>ab</FONT> <img src="854_e.gif"> <FONT FACE="Courier New" SIZE=2>abcca </FONT>and <FONT FACE="Courier New" SIZE=2>cca </FONT><img src="854_f.gif"> <FONT FACE="Courier New" SIZE=2>abcca</FONT>. It is useful to note that for any strings <I>x</I> and <I>y</I> and any character <I>a</I>, we have <img src="854_g.gif"> if and only if <img src="854_h.gif">. Also note that <img src="854_i.gif"> are transitive relations. The following lemma will be useful later.<P>
+<a name="09c8_1bd1">Lemma 34.1<a name="09c8_1bd1"><P>
+<a name="09c8_1bce">Suppose that <I>x</I>, <I>y</I>, and <I>z</I> are strings such that <img src="854_j.gif">. If |<I>x</I>| <IMG SRC="../IMAGES/lteq12.gif"> |<I>y</I>|, then <img src="854_k.gif">. If |<I>x</I>| <IMG SRC="../IMAGES/gteq.gif"> |<I>y</I>|, then <img src="854_l.gif">. If |<I>x</I>| = |<I>y</I>|, then <I>x</I> = <I>y</I>.<P>
+<I><B>Proof     </I></B>See Figure 34.2 for a graphical proof.      <P>
+For brevity of notation, we shall denote the <I>k</I>-character prefix <I>P</I>[1 . . <I>k</I>] of the pattern <I>P</I>[1 . . <I>m</I>] by <I>P<SUB>k</I></SUB>. Thus, <I>P</I><SUB>0</SUB> = <IMG SRC="../IMAGES/epsilon.gif"><I></I> and <I>P<SUB>m</I></SUB> = <I>P</I> = <I>P</I>[1 . . <I>m</I>]. Similarly, we denote the <I>k</I>-character prefix of the text <I>T</I> as <I>T<SUB>k</I></SUB>. Using this notation, we can state the string-matching problem as that of finding all shifts <I>s</I> in the range 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>s</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - <I>m</I> such that <img src="854_m.gif">.<P>
+In our pseudocode, we allow two equal-length strings to be compared for equality as a primitive operation. If the strings are compared from left to right and the comparison stops when a mismatch is discovered, we assume that the time taken by such a test is a linear function of the number of matching characters discovered. To be precise, the test "<I>x</I> = <I>y</I>" is assumed to take time <IMG SRC="../IMAGES/bound.gif">(<I>t </I>+ 1), where <I>t</I> is the length of the longest string <I>z</I> such that <img src="855_e.gif">.<P>
+<img src="855_a.gif"><P>
+<h4><a name="09c8_1bd2">Figure 34.2 A graphical proof of Lemma 34.1. We suppose that <img src="855_b.gif">. The three parts of the figure illustrate the three cases of the lemma. Vertical lines connect matching regions (shown shaded) of the strings. (a) If |x| <IMG SRC="../IMAGES/lteq12.gif"> |y|, then <img src="855_c.gif">. (b) If |x| <IMG SRC="../IMAGES/gteq.gif"> |y|, then <img src="855_d.gif">. (c) If |x| = |y|, then x = y.<a name="09c8_1bd2"></sub></sup></h4><P>
+
+
+
+
+
+<h1><a name="09ca_1bd2">34.1 The naive string-matching algorithm<a name="09ca_1bd2"></h1><P>
+<a name="09ca_1bcf"><a name="09ca_1bd0">The naive algorithm finds all valid shifts using a loop that checks the condition <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s + 1 . . s + m</I>] for each of the <I>n</I> - <I>m</I> + 1 possible values of <I>s</I>.<P>
+<pre><a name="09ca_1bd1">NAIVE-STRING-MATCHER(<I>T, P</I>)</sub></sup></pre><P>
+<pre>1 <I> n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2 <I> m</I> <IMG SRC="../IMAGES/arrlt12.gif"> length[<I>P</I>]</sub></sup></pre><P>
+<pre>3<B>  for</B> <I>s </I><IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> - <I>m</I></sub></sup></pre><P>
+<pre>4   <B>     do </B><I><B>if</I></B> <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>]</sub></sup></pre><P>
+<pre>5<B>              then </B>print &quot;Pattern occurs with shift&quot; <I>s</I></sub></sup></pre><P>
+The naive string-matching procedure can be interpreted graphically as sliding a &quot;template&quot; containing the pattern over the text, noting for which shifts all of the characters on the template equal the corresponding characters in the text, as illustrated in Figure 34.3. The <B>for</B> loop beginning on line 3 considers each possible shift explicitly. The test on line 4 determines whether the current shift is valid or not; this test involves an implicit loop to check corresponding character positions until all positions match successfully or a mismatch is found. Line 5 prints out each valid shift <I>s</I>.<P>
+<img src="856_a.gif"><P>
+<h4><a name="09ca_1bd3">Figure 34.3 The operation of the naive string matcher for the pattern P = <FONT FACE="Courier New" SIZE=2>aab</FONT> and the text T = <FONT FACE="Courier New" SIZE=2>acaabc</FONT>. We can imagine the pattern P as a &quot;template&quot; that we slide next to the text. Parts (a)-(d) show the four successive alignments tried by the naive string matcher. In each part, vertical lines connect corresponding regions found to match (shown shaded), and a jagged line connects the first mismatched character found, if any. One occurrence of the pattern is found, at shift s = 2, shown in part (c).<a name="09ca_1bd3"></sub></sup></h4><P>
+Procedure <FONT FACE="Courier New" SIZE=2>NAIVE-</FONT><FONT FACE="Courier New" SIZE=2>STRING</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> takes time <IMG SRC="../IMAGES/bound.gif">((<I>n</I> - <I>m</I> + 1)<I>m</I>) in the worst case. For example, consider the text string <FONT FACE="Courier New" SIZE=2>a<I><SUP><FONT FACE="Courier New" SIZE=1>n</FONT></I></FONT></SUP> (a string of <I>n</I> <FONT FACE="Courier New" SIZE=2>a</FONT>'s) and the pattern <FONT FACE="Courier New" SIZE=2>a<I><SUP><FONT FACE="Courier New" SIZE=1>m</FONT></I></FONT></SUP>. For each of the <I>n</I> - <I>m</I> + 1 possible values of the shift <I>s</I>, the implicit loop on line 4 to compare corresponding characters must execute <I>m</I> times to validate the shift. The worst-case running time is thus <IMG SRC="../IMAGES/bound.gif">((<I>n</I> - <I>m</I> + 1)<I>m</I>), which is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) if <I>m</I> = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>.<P>
+As we shall see, <FONT FACE="Courier New" SIZE=2>NAIVE-</FONT><FONT FACE="Courier New" SIZE=2>STRING</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER </FONT>is not an optimal procedure for this problem. Indeed, in this chapter we shall show an algorithm with a worst-case running time of <I>O</I>(<I>n </I>+ <I>m</I>). The naive string-matcher is inefficient because information gained about the text for one value of <I>s</I> is totally ignored in considering other values of <I>s</I>. Such information can be very valuable, however. For example, if <I>P</I> = <FONT FACE="Courier New" SIZE=2>aaab</FONT> and we find that <I>s</I> = 0 is valid, then none of the shifts 1, 2, or 3 are valid, since <I>T</I>[4] = b. In the following sections, we examine several ways to make effective use of this sort of information.<P>
+
+
+
+
+
+<h2><a name="09cb_1bd4">Exercises<a name="09cb_1bd4"></h2><P>
+<a name="09cb_1bd5">34.1-1<a name="09cb_1bd5"><P>
+Show the comparisons the naive string matcher makes for the pattern <I>P</I> = <FONT FACE="Courier New" SIZE=2>0001</FONT> in the text <I>T</I> = <FONT FACE="Courier New" SIZE=2>000010001010001</FONT>.<P>
+<a name="09cb_1bd6">34.1-2<a name="09cb_1bd6"><P>
+Show that the worst-case time for the naive string matcher to find the <I>first</I> occurrence of a pattern in a text is <IMG SRC="../IMAGES/bound.gif">((<I>n</I> - <I>m</I> + 1)(<I>m</I> - 1)).<P>
+<a name="09cb_1bd7">34.1-3<a name="09cb_1bd7"><P>
+Suppose that all characters in the pattern <I>P</I> are different. Show how to accelerate N<FONT FACE="Courier New" SIZE=2>AIVE-</FONT><FONT FACE="Courier New" SIZE=2>STRING</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> to run in time <I>O</I>(<I>n</I>) on an <I>n</I>-character text <I>T</I>.<P>
+<a name="09cb_1bd8">34.1-4<a name="09cb_1bd8"><P>
+Suppose that pattern <I>P</I> and text <I>T</I> are <I>randomly</I> chosen strings of length <I>m</I> and <I>n</I>, respectively, from the <I>d</I>-ary alphabet <IMG SRC="../IMAGES/sum14.gif"><I><SUB>d</I></SUB> = {0, 1, . . . , <I>d</I> - 1},<I> </I>where<I> d</I> <IMG SRC="../IMAGES/gteq.gif"> 2. Show that the <I>expected</I> number of character-to-character comparisons made by the implicit loop in line 4 of the naive algorithm is<P>
+<img src="857_a.gif"><P>
+(Assume that the naive algorithm stops comparing characters for a given shift once a mismatch is found or the entire pattern is matched.) Thus, for randomly chosen strings, the naive algorithm is quite efficient.<P>
+<a name="09cb_1bd9">34.1-5<a name="09cb_1bd9"><P>
+<a name="09cb_1bd2"><a name="09cb_1bd3">Suppose we allow the pattern <I>P</I> to contain occurrences of a <I><B>gap character </I></B><img src="857_b.gif"> that can match an <I>arbitrary</I> string of characters (even one of zero length). For example, the pattern <img src="857_c.gif"> occurs in the text <FONT FACE="Courier New" SIZE=2>cabccbacbacab</FONT> as<P>
+<img src="857_d.gif"><P>
+Note that the gap character may occur an arbitrary number of times in the pattern but is assumed not to occur at all in the text. Give a polynomial-time algorithm to determine if such a pattern <I>P</I> occurs in a given text <I>T</I>, and analyze the running time of your algorithm.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09cc_1bd9">34.2 The Rabin-Karp algorithm<a name="09cc_1bd9"></h1><P>
+<a name="09cc_1bd4"><a name="09cc_1bd5">Rabin and Karp have proposed a string-matching algorithm that performs well in practice and that also generalizes to other algorithms for related problems, such as two-dimensional pattern matching. The worst-case running time of the Rabin-Karp algorithm is <I>O</I>((<I>n</I> - <I>m</I> + 1)<I>m</I>), but it has a good average-case running time.<P>
+This algorithm makes use of elementary number-theoretic notions such as the equivalence of two numbers modulo a third number. You may want to refer to Section 33.1 for the relevant definitions.<P>
+For expository purposes, let us assume that <IMG SRC="../IMAGES/sum14.gif"> = {<FONT FACE="Courier New" SIZE=2>0</FONT>, <FONT FACE="Courier New" SIZE=2>1</FONT>, <FONT FACE="Courier New" SIZE=2>2</FONT>, . . . , <FONT FACE="Courier New" SIZE=2>9</FONT>}, so that each character is a decimal digit. (In the general case, we can assume that each character is a digit in radix-<I>d</I> notation, where <I>d</I> = <IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">.) We can then view a string of <I>k</I> consecutive characters as representing a length-<I>k</I> decimal number. The character string <FONT FACE="Courier New" SIZE=2>31415</FONT> thus corresponds to the decimal number 31,415. Given the dual interpretation of the input characters as both graphical symbols and digits, we find it convenient in this section to denote them as we would digits, in our standard text font.<P>
+Given a pattern <I>P</I>[1 . . <I>m</I>], we let <I>p</I> denote its corresponding decimal value. In a similar manner, given a text <I>T</I>[1 . . <I>n</I>], we let <I>t<SUB>s</I></SUB> denote the decimal value of the length-<I>m</I> substring <I>T</I>[<I>s </I>+ 1 . . <I>s </I>+ <I>m</I>], for <I>s</I> = 0, 1, . . . , <I>n - m</I>. Certainly, <I>t<SUB>s</I></SUB> = <I>p</I> if and only if <I>T</I>[<I>s </I>+ 1 . . <I>s </I>+ <I>m</I>] = <I>P</I>[1 . . <I>m</I>]; thus, <I>s</I> is a valid shift if and only if <I>t</I><SUB>s</SUB> = <I>p</I>. If we could compute <I>p</I> in time <I>O</I>(<I>m</I>) and all of the <I>t<SUB>i</I></SUB> values in a total of <I>O</I>(<I>n</I>) time, then we could determine all valid shifts <I>s</I> in time <I>O</I>(<I>n</I>) by comparing <I>p</I> with each of the <I>t<SUB>s</I></SUB>'s. (For the moment, let's not worry about the possibility that <I>p</I> and the <I>t<SUB>s</I></SUB>'s might be very large numbers.)<P>
+We can compute <I>p</I> in time <I>O</I>(<I>m</I>) using Horner's rule (see Section 32.1):<P>
+<pre><I>p</I> = <I>P</I>[<I>m</I>] + 10 (<I>P</I>[<I>m </I>- 1] + 10(P[m - 2] + <I>. . .</I> + 10(<I>P</I>[2] + 10<I>P</I>[1])<I> . . . </I>)).</sub></sup></pre><P>
+The value <I>t</I><SUB>0</SUB> can be similarly computed from <I>T</I>[1 . . <I>m</I>] in time O(<I>m</I>).<P>
+To compute the remaining values <I>t</I><SUB>1</SUB>, <I>t</I><SUB>2</SUB>, . . . , <I>t<SUB>n-m</I></SUB> in time <I>O</I>(<I>n</I> - <I>m</I>), it suffices to observe that <I>t</I><SUB>s + 1</SUB> can be computed from <I>t</I><SUB>s</SUB> in constant time, since<P>
+<pre><I>t<SUB>s</I> + 1  </SUB> =   10(<I>t<SUB>s</I></SUB> - 10<I><SUP>m</I> - 1</SUP><I>T</I>[<I>s </I>+ 1]) + <I>T</I>[<I>s </I>+ m <I>+ </I>1].</sub></sup></pre><P>
+<h4><a name="09cc_1bda">(34.1)<a name="09cc_1bda"></sub></sup></h4><P>
+For example, if <I>m</I>= 5 and <I>t<SUB>s</I></SUB> = 31415, then we wish to remove the high-order digit <I>T</I>[<I>s </I>+ 1] = 3 and bring in the new low-order digit (suppose it is <I>T</I>[<I>s </I>+ 5 + 1] = 2) to obtain<P>
+<pre><I>t<SUB>s</I>+1 </SUB>= 10(31415 - 10000.3) + 2</sub></sup></pre><P>
+<pre>= 14152 .</sub></sup></pre><P>
+Subtracting 10<I><SUP>m</I></SUP>-1 <I>T</I>[<I>s</I>+1] removes the high-order digit from <I>t<SUB>s</I></SUB>, multiplying the result by 10 shifts the number left one position, and adding <I>T</I>[<I>s </I>+ <I>m </I>+ 1] brings in the appropriate low-order digit. If the constant 10<I><SUP><FONT FACE="Courier New" SIZE=2>m</I></SUP>-1</FONT><SUP> </SUP>is precomputed (which can be done in time <I>O</I>(1g <I>m</I>) using the techniques of Section 33.6, although for this application a straightforward <I>O</I>(<I>m</I>) method is quite adequate), then each execution of equation (34.1) takes a constant number of arithmetic operations. Thus, p and <I>t</I><SUB>0</SUB>, <I>t</I><SUB>1</SUB>, . . . , <I>t<SUB>n</I></SUB>-<I>m</I> can all be computed in time <I>O</I>(<I>n </I>+ <I>m</I>), and we can find all occurrences of the pattern <I>P</I>[1 . . <I>m</I>] in the text <I>T</I>[1 . . <I>n</I>] in time <I>O</I>(<I>n </I>+ <I>m</I>).<P>
+The only difficulty with this procedure is that <I>p</I> and <I>t<SUB>s</I></SUB> may be too large to work with conveniently. If <I>P</I> contains <I>m</I> characters, then assuming that each arithmetic operation on <I>p</I> (which is <I>m</I> digits long) takes "constant time" is unreasonable. Fortunately, there is a simple cure for this problem, as shown in Figure 34.4 : compute <I>p</I> and the <I>t<SUB>s</I></SUB>'s modulo a suitable modulus <I>q</I>. Since the computation of <I>p</I>, <I>t</I><SUB>0</SUB>, and the recurrence (34.1) can all be performed modulo <I>q</I>, we see that <I>p</I> and all the <I>t<SUB>s</I></SUB>'s can be computed modulo <I>q</I> in time <I>O</I>(<I>n </I>+ <I>m</I>). The modulus <I>q</I> is typically chosen as a prime such that 10<I>q</I> just fits within one computer word, which allows all of the necessary computations to be performed with single-precision arithmetic.<P>
+<img src="859_a.gif"><P>
+<h4><a name="09cc_1bdb">Figure 34.4 The Rabin-Karp algorithm. Each character is a decimal digit, and we compute values modulo 13. (a) A text string. A window of length 5 is shown shaded. The numerical value of the shaded number is computed modulo 13, yielding the value 7. (b) The same text string with values computed modulo 13 for each possible position of a length-5 window. Assuming the pattern P = 31415, we look for windows whose value modulo 13 is 7, since 31415 <IMG SRC="../IMAGES/equiv10.gif"> 7 (mod 13). Two such windows are found, shown shaded in the figure. The first, beginning at text position 7, is indeed an occurrence of the pattern, while the second, beginning at text position 13, is a spurious hit. (c) Computing the value for a window in constant time, given the value for the previous window. The first window has value 31415. Dropping the high-order digit 3, shifting left (multiplying by 10), and then adding in the low-order digit 2 gives us the new value 14152. All computations are performed modulo 13, however, so the value for the first window is 7, and the value computed for the new window is 8.<a name="09cc_1bdb"></sub></sup></h4><P>
+In general, with a <I>d</I>-ary alphabet {0, 1, . . . ,<I>d</I> - 1}, we choose <I>q</I> so that <I>d q </I>fits within a computer word and adjust the recurrence equation (34.1) to work modulo <I>q</I>, so that it becomes<P>
+<pre><I>t<SUB>s</I>+1</SUB> = (<I>d</I>(<I>t<SUB>s</I></SUB> - <I>T</I>[<I>s</I> + 1]<I>h</I>) + <I>T</I>[<I>s</I> + <I>m</I> + 1]) mod <I>q </I>,</sub></sup></pre><P>
+<h4><a name="09cc_1bdc">(34.2)<a name="09cc_1bdc"></sub></sup></h4><P>
+where <I>h</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>d<SUP>m</I>-1</SUP> (mod <I>q</I>) is the value of the digit "1" in the high-order position of an <I>m</I>-digit text window.<P>
+<a name="09cc_1bd6">The ointment of working modulo <I>q</I> now contains a fly, however, since <I>t<SUB>s</I></SUB> <IMG SRC="../IMAGES/equiv10.gif"> <I>p</I> (mod <I>q</I>) does not imply that <I>t<SUB>s</I></SUB> = <I>p</I>. On the other hand, if <img src="860_a.gif"> (mod <I>q</I>), then we definitely have that <I>t<SUB>s</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>p</I>, so that shift <I>s</I> is invalid. We can thus use the test <I>t<SUB>s</I></SUB> <IMG SRC="../IMAGES/equiv10.gif"> <I>p</I> (mod <I>q</I>) as a fast heuristic test to rule out invalid shifts <I>s</I>. Any shift <I>s</I> for which <I>t<SUB>s</I></SUB> <IMG SRC="../IMAGES/equiv10.gif"> <I>p</I> (mod <I>q</I>) must be tested further to see if <I>s</I> is really valid or we just have a <I><B>spurious hit</I></B>. This testing can be done by explicitly checking the condition <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>]. If <I>q</I> is large enough, then we can hope that spurious hits occur infrequently enough that the cost of the extra checking is low.<P>
+The following procedure makes these ideas precise. The inputs to the procedure are the text <I>T</I>, the pattern <I>P</I>, the radix <I>d</I> to use (which is typically taken to be |<IMG SRC="../IMAGES/sum14.gif">|), and the prime <I>q</I> to use.<P>
+<pre><a name="09cc_1bd7">RABIN-KARP-MATCHER(<I>T, P, d, q</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2 <I>m</I><IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>P</I>]</sub></sup></pre><P>
+<pre>3 <I>h</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>d<SUP>m</I></SUP>-<I>1<SUP> mod </I>q</sub></sup></pre><P>
+<pre>4 <I>p</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5 <I>t</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>7<B>       do</B> <I>p</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>dp</I> + <I>P</I>[<I>i</I>]) mod <I>q</I></sub></sup></pre><P>
+<pre>8<I>          t</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>dt</I><SUB>0</SUB> + <I>T</I>[<I>i</I>]) mod <I>q</I></sub></sup></pre><P>
+<pre>9 <B>for</B> <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> - <I>m</I></sub></sup></pre><P>
+<pre>10      <B>do if</B> <I>p</I> = <I>t<SUB>s</I></sub></sup></pre><P>
+<pre>11<B>            then if</B> <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>]</sub></sup></pre><P>
+<pre>12<B>                    then</B> &quot;Pattern occurs with shift&quot; <I>s</I></sub></sup></pre><P>
+<pre>13<B>         if</B> <I>s</I> &lt; <I>n</I> - <I>m</I></sub></sup></pre><P>
+<pre>14<B>           then</B> <I>t<SUB>s</I>+1</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d</I>(<I>t<SUB>s</I></SUB> - <I>T</I>[<I>s</I> + 1]<I>h</I>) + <I>T</I>[<I>s</I> + <I>m</I> + 1]) mod <I>q</I></sub></sup></pre><P>
+The procedure <FONT FACE="Courier New" SIZE=2>RABIN</FONT>-<FONT FACE="Courier New" SIZE=2>KARP</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> works as follows. All characters are interpreted as radix-<I>d</I> digits. The subscripts on <I>t</I> are provided only for clarity; the program works correctly if all the subscripts are dropped. Line 3 initializes <I>h</I> to the value of the high-order digit position of an <I>m</I>-digit window. Lines 4-8 compute <I>p</I> as the value of <I>P</I>[1 . . <I>m</I>] mod <I>q </I>and <I>t</I><SUB>0</SUB> as the value of <I>T</I>[1 . . <I>m</I>] mod <I>q</I>. The <B>for</B> loop beginning on line 9 iterates through all possible shifts <I>s</I>. The loop has the following invariant: whenever line 10 is executed, <I>t<SUB>s</I></SUB> = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>] mod <I>q</I>. If <I>p</I> = <I>t<SUB>s</I></SUB> in line 10 (a &quot;hit&quot;), then we check to see if <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>] in line 11 to rule out the possibility of a spurious hit. Any valid shifts found are printed out on line 12. If <I>s</I> &lt; <I>n</I> - <I>m</I> (checked in line 13), then the <B>for</B> loop is to be executed at least one more time, and so line 14 is first executed to ensure that the loop invariant holds when line 10 is again reached. Line 14 computes the value of <I>t<SUB>s+</I>1</SUB> mod <I>q</I> from the value of <I>t<SUB>s</I></SUB> mod <I>q</I> in constant time using equation (34.2) directly.<P>
+<a name="09cc_1bd8">The running time of <FONT FACE="Courier New" SIZE=2>RABIN</FONT>-<FONT FACE="Courier New" SIZE=2>KARP</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> is <IMG SRC="../IMAGES/bound.gif">((<I>n</I> - <I>m</I> + 1)<I>m</I>) in the worst case, since (like the naive string-matching algorithm) the Rabin-Karp algorithm explicitly verifies every valid shift. If <I>P</I> = a<I><SUP>m</I></SUP> and <I>T</I> = a<I><SUP>n</I></SUP>, then the verifications take time <IMG SRC="../IMAGES/bound.gif">((<I>n</I> - <I>m</I> + 1)<I>m</I>), since each of the <I>n</I> - <I>m</I> + 1 possible shifts is valid. (Note also that the computation of <I>d<SUP>m</I>-1</SUP> mod <I>q</I> on line 3 and the loop on lines 6-8 take time <I>O</I>(<I>m</I>) = <I>O</I>((<I>n</I> - <I>m</I> + 1 )<I>m</I>).)<P>
+In many applications, we expect few valid shifts (perhaps <I>O</I>(1) of them), and so the expected running time of the algorithm is <I>O</I>(<I>n</I> + <I>m</I>) plus the time required to process spurious hits. We can base a heuristic analysis on the assumption that reducing values modulo <I>q</I> acts like a random mapping from <IMG SRC="../IMAGES/sum14.gif">* to <B>Z</B><I><SUB>q</I></SUB>. (See the discussion on the use of division for hashing in Section 12.3.1. It is difficult to formalize and prove such an assumption, although one viable approach is to assume that <I>q</I> is chosen randomly from integers of the appropriate size. We shall not pursue this formalization here.) We can then expect that the number of spurious hits is <I>O</I>(<I>n</I>/<I>q</I>), since the chance that an arbitrary <I>t<SUB>s</I></SUB> will be equivalent to <I>p</I>, modulo <I>q</I>, can be estimated as 1/<I>q</I>. The expected amount of time taken by the Rabin-Karp algorithm is then<P>
+<pre><I>O</I>(<I>n</I>) + <I>O</I>(<I>m</I>(<I>v</I> +<I> n</I>/<I>q</I>)),</sub></sup></pre><P>
+where <I>v</I> is the number of valid shifts. This running time is <I>O</I>(<I>n</I>) if we choose <I>q</I> <IMG SRC="../IMAGES/gteq.gif"> <I>m</I>. That is, if the expected number of valid shifts is small (<I>O</I>(1)) and the prime <I>q</I> is chosen to be larger than the length of the pattern, then we can expect the Rabin-Karp procedure to run in time <I>O</I>(<I>n</I> + <I>m</I>).<P>
+
+
+
+
+
+<h2><a name="09cd_1bda">Exercises<a name="09cd_1bda"></h2><P>
+<a name="09cd_1bdb">34.2-1<a name="09cd_1bdb"><P>
+Working modulo <I>q</I> = 11, how many spurious hits does the Rabin-Karp matcher encounter in the text <I>T</I> = 3141592653589793 when looking for the pattern <I>P</I> = 26? <P>
+<a name="09cd_1bdc">34.2-2<a name="09cd_1bdc"><P>
+How would you extend the Rabin-Karp method to the problem of searching a text string for an occurrence of any one of a given set of <I>k</I> patterns?<P>
+<a name="09cd_1bdd">34.2-3<a name="09cd_1bdd"><P>
+Show how to extend the Rabin-Karp method to handle the problem of looking for a given <I>m</I> X <I>m</I> pattern in an <I>n</I> X <I>n</I> array of characters. (The pattern may be shifted vertically and horizontally, but it may not be rotated.)<P>
+<a name="09cd_1bde">34.2-4<a name="09cd_1bde"><P>
+<a name="09cd_1bd9">Alice has a copy of a long <I>n</I>-bit file <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>-1</SUB>, <I>a<SUB>n</I>-2</SUB>, . . . , <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, and Bob similarly has an <I>n</I>-bit file <I>B = </I><IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>n<I>-1</SUB>, </I>b<SUB>n<I>-2</SUB>, . . . ,</I>b<I><SUB>0</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Alice and Bob wish to know if their files are identical. To avoid transmitting all of <I>A</I> or <I>B</I>, they use the following fast probabilistic check. Together, they select a prime <I>q</I> &gt; 1000<I>n</I> and randomly select an integer <I>x</I> from {0, 1, . . . , <I>n</I> - 1}. Then, Alice evaluates<P>
+<img src="862_a.gif"><P>
+and Bob similarly evaluates <I>B</I>(<I>x</I>). Prove that if <I>A</I> <IMG SRC="../IMAGES/noteq.gif"> <I>B</I>, there is at most one chance in 1000 that <I>A</I>(<I>x</I>) = <I>B</I>(<I>x</I>), whereas if the two files are the same, <I>A</I>(<I>x</I>) is necessarily the same as <I>B</I>(<I>x</I>). (<I>Hint</I>: See Exercise 33.4-4.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09ce_1bdb">34.3 String matching with finite automata<a name="09ce_1bdb"></h1><P>
+<a name="09ce_1bda">Many string-matching algorithms build a finite automaton that scans the text string <I>T</I> for all occurrences of the pattern <I>P</I>. This section presents a method for building such an automaton. These string-matching automata are very efficient: they examine each text character <I>exactly once</I>, taking constant time per text character. The time used--after the automaton is built--is therefore <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). The time to build the automaton, however, can be large if <IMG SRC="../IMAGES/sum14.gif"> is large. Section 34.4 describes a clever way around this problem.<P>
+We begin this section with the definition of a finite automaton. We then examine a special string-matching automaton and show how it can be used to find occurrences of a pattern in a text. This discussion includes details on how to simulate the behavior of a string-matching automaton on a given text. Finally, we shall show how to construct the string-matching automaton for a given input pattern.<P>
+
+
+
+
+
+<h2>Finite automata</h2><P>
+<a name="09cf_1bdb"><a name="09cf_1bdc"><a name="09cf_1bdd">A <I><B>finite automaton</I></B> <I>M</I> is a 5-tuple (<I>Q, q</I><SUB>0</SUB>, <I>A</I>, <IMG SRC="../IMAGES/sum14.gif">, <IMG SRC="../IMAGES/delta12.gif">), where<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>Q</I> is a finite set of <B>states</B>,<P>
+<a name="09cf_1bde"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>q</I><SUB>0</SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>Q</I> is the <B>start state</B>,<P>
+<a name="09cf_1bdf"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>Q</I> is a distinguished set of <B>accepting states</B>,<P>
+<a name="09cf_1be0"><a name="09cf_1be1"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <IMG SRC="../IMAGES/sum14.gif"> is a finite <B>input alphabet</B>,<P>
+<a name="09cf_1be2"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <IMG SRC="../IMAGES/delta12.gif"> is a function from <I>Q</I> X <IMG SRC="../IMAGES/sum14.gif"> into <I>Q</I>, called the <B>transition function</B> of <I>M</I>.<P>
+<img src="863_a.gif"><P>
+<h4><a name="09cf_1be7">Figure 34.5 A simple two-state finite automaton with state set Q = {0, 1}, start state q<SUB>0</SUB> = 0, and input alphabet <IMG SRC="../IMAGES/sum14.gif"> = {a, b}. (a) A tabular representation of the transition function <IMG SRC="../IMAGES/delta12.gif">. (b) An equivalent state-transition diagram. State 1 is the only accepting state (shown blackened). Directed edges represent transitions. For example, the edge from state 1 to state 0 labeled b indicates <IMG SRC="../IMAGES/delta12.gif">(1, b) = 0. This automaton accepts those strings that end in an odd number of a's. More precisely, a string x is accepted if and only if x = yz, where y = <IMG SRC="../IMAGES/epsilon.gif"> or y ends with a b, and z = a<SUP>k</SUP><FONT FACE="Times New Roman" SIZE=2></FONT>, where k is odd. For example, the sequence of states this automaton enters for input abaaa (including the start state) is <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, 0, 1, 0, 1<IMG SRC="../IMAGES/wdrtchv.gif">, and so it accepts this input. For input abbaa, the sequence of states is <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, 0, 0, 1, 0<IMG SRC="../IMAGES/wdrtchv.gif">, and so it rejects this input.<a name="09cf_1be7"></sub></sup></h4><P>
+<a name="09cf_1be3"><a name="09cf_1be4"><a name="09cf_1be5">The finite automaton begins in state <I>q</I><SUB>0</SUB> and reads the characters of its input string one at a time. If the automaton is in state <I>q</I> and reads input character <I>a</I>, it moves (&quot;makes a transition&quot;) from state <I>q</I> to state <IMG SRC="../IMAGES/delta12.gif"> (<I>q, a</I>). Whenever its current state <I>q</I> is a member of <I>A</I>, the machine <I>M</I> is said to have <I><B>accepted</I></B> the string read so far. An input that is not accepted is said to be <I><B>rejected</I></B>. Figure 34.5 illustrates these definitions with a simple two-state automaton.<P>
+<a name="09cf_1be6">A finite automaton <I>M</I> induces a function &oslash;, called the <I><B>final-state function</I></B>, from <IMG SRC="../IMAGES/sum14.gif">* to <I>Q</I> such that &oslash;(<I>w</I>) is the state <I>M</I> ends up in after scanning the string <I>w</I>. Thus, <I>M</I> accepts a string <I>w</I> if and only if &oslash;(<I>w</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>. The function &oslash; is defined by the recursive relation<P>
+<pre>&oslash;(<IMG SRC="../IMAGES/epsilon.gif"><I>)  = </I>q<SUB><I></SUB><IMG SRC="../IMAGES/omicr.gif"> </I><SUB>,</sub></sup></pre><P>
+<pre>&oslash;(<I>wa</I>)  = <IMG SRC="../IMAGES/delta12.gif"><I>(&oslash;(</I>w<I>), </I>a<I>)  for </I>w<I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">*, </I>a<I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">.</I></sub></sup></pre><P>
+<P>
+
+
+
+
+
+
+
+<h2>String-matching automata</h2><P>
+<a name="09d0_1be7"><a name="09d0_1be8">There is a string-matching automaton for every pattern <I>P</I>; this automaton must be constructed from the pattern in a preprocessing step before it can be used to search the text string. Figure 34.6 illustrates this construction for the pattern <I>P</I> = <FONT FACE="Courier New" SIZE=2>ababaca</FONT>. From now on, we shall assume that <I>P</I> is a given fixed pattern string; for brevity, we shall not indicate the dependence upon <I>P</I> in our notation.<P>
+<img src="864_a.gif"><P>
+<h4><a name="09d0_1bed">Figure 34.6 (a) A state-transition diagram for the string-matching automaton that accepts all strings ending in the string ababaca. State 0 is the start state, and state 7 (shown blackened) is the only accepting state. A directed edge from state i to state j labeled a represents <IMG SRC="../IMAGES/delta12.gif">(i,a) = j. The right-going edges forming the "spine" of the automaton, shown heavy in the figure, correspond to successful matches between pattern and input characters. The left-going edges correspond to failing matches. Some edges corresponding to failing matches are not shown; by convention, if a state i has no outgoing edge labeled a for some a <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">, then <IMG SRC="../IMAGES/delta12.gif">(i,a) = 0. (b) The corresponding transition function <IMG SRC="../IMAGES/delta12.gif">, and the pattern string P = <FONT FACE="Courier New" SIZE=2>ababaca</FONT>. The entries corresponding to successful matches between pattern and input characters are shown shaded. (c) The operation of the automaton on the text T = <FONT FACE="Courier New" SIZE=2>abababacaba</FONT>. Under each text character T[i] is given the state &oslash;(T<SUB>i</SUB>) the automaton is in after processing the prefix T<SUB>i</SUB>. One occurrence of the pattern is found, ending in position 9.<a name="09d0_1bed"></sub></sup></h4><P>
+<a name="09d0_1be9">In order to specify the string-matching automaton corresponding to a given pattern <I>P</I>[1 . . <I>m</I>], we first define an auxiliary function <IMG SRC="../IMAGES/sum14.gif"><I></I>, called the <I><B>suffix function</I></B> corresponding to <I>P</I>. The function <IMG SRC="../IMAGES/sum14.gif"><I> </I>is a mapping from <IMG SRC="../IMAGES/sum14.gif">* to {0, 1, . . . , <I>m</I>} such that <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>) is the length of the longest prefix of <I>P</I> that is a suffix of <I>x</I>:<P>
+<img src="865_a.gif"><P>
+The suffix function <IMG SRC="../IMAGES/sum14.gif"> is well defined since the empty string <I>P</I><SUB>0</SUB> = <IMG SRC="../IMAGES/epsilon.gif"><I></I> is a suffix of every string. As examples, for the pattern <I>P</I> = <FONT FACE="Courier New" SIZE=2>ab</FONT>, we have <IMG SRC="../IMAGES/sum14.gif"><I>(<IMG SRC="../IMAGES/epsilon.gif"></I>) = 0, <IMG SRC="../IMAGES/sum14.gif">(<FONT FACE="Courier New" SIZE=2>ccaca</FONT>) = 1, and <IMG SRC="../IMAGES/sum14.gif"><I></I>(<FONT FACE="Courier New" SIZE=2>ccab</FONT>) = 2. For a pattern <I>P</I> of length <I>m</I>, we have <IMG SRC="../IMAGES/sum14.gif"><I>(</I>x<I>) = </I><I>m</I> if and only if <img src="865_b.gif">. It follows from the definition of the suffix function that if <img src="865_c.gif">, then <IMG SRC="../IMAGES/sum14.gif"><I>(</I>x<I>) <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif"></I>(<I>y</I>).<P>
+We define the string-matching automaton corresponding to a given pattern P[1 . . <I>m</I>] as follows.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The state set <I>Q</I> is {0, 1, . . . , <I>m</I>}. The start state <I>q</I><SUB>0</SUB> is state 0, and state<I> m</I> is the only accepting state.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The transition function <IMG SRC="../IMAGES/delta12.gif"><I></I> is defined by the following equation, for any state <I>q</I> and character <I>a</I>:<P>
+<pre><IMG SRC="../IMAGES/delta12.gif"> (<I>q</I>, <I>a</I>) = <IMG SRC="../IMAGES/sum14.gif">(<I>P<SUB>q</SUB>a</I>) .</sub></sup></pre><P>
+<h4><a name="09d0_1bee">(34.3)<a name="09d0_1bee"></sub></sup></h4><P>
+Here is an intuitive rationale for defining <IMG SRC="../IMAGES/delta12.gif"> <I>(</I>q, a<I>) = <IMG SRC="../IMAGES/sum14.gif"></I>(<I>P<SUB>q </SUB>a</I>). The machine maintains as an invariant of its operation that<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>T<SUB>i</I></SUB>) = <IMG SRC="../IMAGES/sum14.gif">(<I>T<SUB>i</I></SUB>) ;</sub></sup></pre><P>
+<h4><a name="09d0_1bef">(34.4)<a name="09d0_1bef"></sub></sup></h4><P>
+this result is proved as Theorem 34.4 below. In words, this means that after scanning the first<I> i</I> characters of the text string <I>T</I>, the machine is in state <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>T<SUB>i</I></SUB>)<I> = q</I>, where <I>q</I> = <IMG SRC="../IMAGES/sum14.gif"><I> </I>(<I>T<SUB>i</SUB>)</I> is the length of the longest suffix of <I>T<SUB>i</I></SUB> that is also a prefix of the pattern <I>P</I>. If the next character scanned is <I>T</I>[<I>i</I> + 1] = <I>a</I>, then the machine should make a transition to state <IMG SRC="../IMAGES/sum14.gif"><I>(</I>T<SUB>i <I></SUB>+ 1) = <IMG SRC="../IMAGES/sum14.gif"></I>(<I>T<SUB>i</SUB>a</I>). The proof of the theorem shows that <IMG SRC="../IMAGES/sum14.gif"><I>(</I>T<SUB>i</SUB>a<I>) = <IMG SRC="../IMAGES/sum14.gif"></I>(<I>P<SUB>q</SUB>a</I>). That is, to compute the length of the longest suffix of <I>T<SUB>i</SUB>a</I> that is a prefix of <I>P</I>, we can compute the longest suffix of <I>P<SUB>q</SUB>a</I> that is a prefix of <I>P</I>. At each state, the machine only needs to know the length of the longest prefix of <I>P</I> that is a suffix of what has been read so far. Therefore, setting <IMG SRC="../IMAGES/delta12.gif">(q, a) = <I><IMG SRC="../IMAGES/sum14.gif">(P<SUB>q</SUB>a)</I> maintains the desired invariant (34.4). This informal argument will be made rigorous shortly.<P>
+In the string-matching automaton of Figure 34.6, for example, we have <IMG SRC="../IMAGES/delta12.gif"><I></I>(5, <FONT FACE="Courier New" SIZE=2>b</FONT>) = 4. This follows from the fact that if the automaton reads a b in state <I>q</I> = 5, then <I>P<SUB>q</I></SUB><FONT FACE="Courier New" SIZE=1>b</FONT> = <FONT FACE="Courier New" SIZE=2>ababab</FONT>, and the longest prefix of <I>P</I> that is also a suffix of <FONT FACE="Courier New" SIZE=2>ababab</FONT> is <I>P</I><SUB>4</SUB> = <FONT FACE="Courier New" SIZE=2>abab</FONT>.<P>
+To clarify the operation of a string-matching automaton, we now give a simple, efficient program for simulating the behavior of such an automaton (represented by its transition function <IMG SRC="../IMAGES/delta12.gif"><I></I>) in finding occurrences of a pattern <I>P</I> of length <I>m</I> in an input text <I>T</I>[1 . . <I>n</I>]. As for any string-matching automaton for a pattern of length <I>m</I>, the state set <I>Q</I> is {0,1, . . . , <I>m</I>}, the start state is 0, and the only accepting state is state <I>m</I>.<P>
+<img src="866_a.gif"><P>
+<h4><a name="09d0_1bf0">Figure 34.7 An illustration for the proof of Lemma 34.2. The figure shows that r <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif">(x) + 1, where r = <IMG SRC="../IMAGES/sum14.gif">(xa).<a name="09d0_1bf0"></sub></sup></h4><P>
+<pre><a name="09d0_1bea">FINITE-AUTOMATON-MATCHER(<I>T, </I><IMG SRC="../IMAGES/delta12.gif">,<I> </I>m<I>)</I></sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2  <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>3<B>  for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4        <B>do</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/delta12.gif"><I> (</I>q, T<I>[</I>i<I>])</I></sub></sup></pre><P>
+<pre>5<B>           if</B> <I>q</I> = <I>m</I></sub></sup></pre><P>
+<pre>6              <B>then</B> <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> - <I>m</I></sub></sup></pre><P>
+<pre>7                   print &quot;Pattern occurs with shift&quot; <I>s</I></sub></sup></pre><P>
+The simple loop structure of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> implies that its running time on a text string of length <I>n</I> is <I>O</I>(<I>n</I>). This running time, however, does not include the time required to compute the transition function <IMG SRC="../IMAGES/delta12.gif"><I></I>. We address this problem later, after proving that the procedure <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-M<FONT FACE="Courier New" SIZE=2>ATCHER </FONT>operates correctly.<P>
+Consider the operation of the automaton on an input text <I>T</I>[1 . . <I>n</I>]. We shall prove that the automaton is in state <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>T<SUB>j</I></SUB>) after scanning character <I>T</I>[<I>i</I>]. Since <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>T<SUB>i</I></SUB>) = <I>m</I> if and only if <img src="866_b.gif">, the machine is in the accepting state <I>m</I> if and only if the pattern <I>P</I> has just been scanned. To prove this result, we make use of the following two lemmas about the suffix function <IMG SRC="../IMAGES/sum14.gif"><I>.</I><P>
+<a name="09d0_1bf1">Lemma 34.2<a name="09d0_1bf1"><P>
+<a name="09d0_1beb">For any string <I>x</I> and character <I>a</I><B>,</B> we have <IMG SRC="../IMAGES/sum14.gif"><I>(</I>xa<I>)</I> <I><IMG SRC="../IMAGES/lteq12.gif"> </I><IMG SRC="../IMAGES/sum14.gif"><I>(</I>x<I>) </I>+ <I>1</I>.<P>
+<I><B>Proof     </I></B>Referring to Figure 34.7, let <I>r</I> = <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>). If <I>r</I> = 0, then the conclusion <I>r</I> <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>) + 1 is trivially satisfied, by the nonnegativity of <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>). So assume that <I>r</I> &gt; 0. Now, <img src="866_c.gif">, by the definition of <IMG SRC="../IMAGES/sum14.gif"><I></I>. Thus, <img src="866_d.gif">, by dropping the <I>a</I> from the end of <I>P<SUB>r</I></SUB> and from the end of <I>xa</I>. Therefore, <I>r</I> - 1 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>), since <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>) is largest <I>k</I> such that <img src="866_e.gif">.      <P>
+<a name="09d0_1bf2">Lemma 34.3<a name="09d0_1bf2"><P>
+<a name="09d0_1bec">For any string <I>x</I> and character <I>a</I>, if <I>q</I> = <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>x</I>), then <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>) = <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>P<SUB>q</SUB>a</I>).<P>
+<I><B>Proof</I></B>     From the definition of <IMG SRC="../IMAGES/sum14.gif">, we have <img src="866_f.gif">. As Figure 34.8 shows, <img src="866_g.gif">. If we let <I>r</I> = <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>), then <I>r</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>q</I> + 1 by Lemma 34.2. Since <img src="867_b.gif">, and <IMG SRC="../IMAGES/sglvrt.gif"><I>Pr</I><IMG SRC="../IMAGES/sglvrt.gif"> <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sglvrt.gif"><I>Pqa</I><IMG SRC="../IMAGES/sglvrt.gif">, Lemma 34.1 implies that <img src="867_c.gif">. Therefore, <I>r </I><IMG SRC="../IMAGES/lteq12.gif"> <I><IMG SRC="../IMAGES/sum14.gif"></I><I></I>(<I>P<SUB>q</SUB>a)</I>, that is, <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>) <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>P<SUB>q</SUB>a</I>). But we also have <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>P<SUB>q</SUB>a</I>) <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>), since <img src="867_d.gif">. Thus, <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>xa</I>) = <IMG SRC="../IMAGES/sum14.gif"><I></I>(<I>P<SUB>q</SUB>a</I>).      <P>
+<img src="867_a.gif"><P>
+<h4><a name="09d0_1bf3">Figure 34.8 An illustration for the proof of Lemma 34.3. The figure shows that r = <IMG SRC="../IMAGES/sum14.gif">(P<SUB>q</SUB>a), where q = <IMG SRC="../IMAGES/sum14.gif">(x) and r = <IMG SRC="../IMAGES/sum14.gif">(xa).<a name="09d0_1bf3"></sub></sup></h4><P>
+We are now ready to prove our main theorem characterizing the behavior of a string-matching automaton on a given input text. As noted above, this theorem shows that the automaton is merely keeping track, at each step, of the longest prefix of the pattern that is a suffix of what has been read so far.<P>
+<a name="09d0_1bf4">Theorem 34.4<a name="09d0_1bf4"><P>
+If <img src="867_e.gif"><I> </I>is the final-state function of a string-matching automaton for a given pattern <I>P</I> and <I>T</I>[1 . . <I>n</I>] is an input text for the automaton, then<P>
+<img src="867_f.gif"><P>
+<I><B>Proof     </I></B>The proof is by induction on <I>i</I>. For <I>i</I> = 0, the theorem is trivially true, since <I>T</I><SUB>0</SUB> = <IMG SRC="../IMAGES/epsilon.gif"><I></I>. Thus, <img src="867_g.gif">.<P>
+Now, we assume that <img src="867_h.gif"> and prove that <img src="867_i.gif">. Let <I>q</I> denote <img src="867_j.gif">, and let <I>a</I> denote <I>T</I>[<I>i</I> + 1]. Then,<P>
+<img src="867_k.gif"><P>
+By induction, the theorem is proved.      <P>
+By Theorem 34.4, if the machine enters state <I>q</I> on line 4, then <I>q</I> is the largest value such that <img src="867_l.gif">. Thus, we have <I>q = m</I> on line 5 if and only if an occurrence of the pattern <I>P</I> has just been scanned. We conclude that <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> operates correctly.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing the transition function</h2><P>
+<a name="09d1_1bed">The following procedure computes the transition function <IMG SRC="../IMAGES/delta12.gif"> <I>from a given pattern </I>P<I>[1 . . </I>m<I>].</I><P>
+<pre><a name="09d1_1bee">COMPUTE-TRANSITION-FUNCTION(<I>P</I>, <IMG SRC="../IMAGES/sum14.gif">)</sub></sup></pre><P>
+<pre>1 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>P</I>]</sub></sup></pre><P>
+<pre>2 <B>for</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>3     <B>do for</B> each character <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> *</sub></sup></pre><P>
+<pre>4            <B>do</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> min (<I>m</I> + 1, <I>q</I> + 2)</sub></sup></pre><P>
+<pre>5               <B>repeat</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> - 1</sub></sup></pre><P>
+<img src="868_a.gif"><P>
+<pre>7             <IMG SRC="../IMAGES/delta12.gif"><I>(</I>q, a<I>) <IMG SRC="../IMAGES/arrlt12.gif"> </I>k</sub></sup></pre><P>
+<pre>8 <B>return</B> <IMG SRC="../IMAGES/delta12.gif"></sub></sup></pre><P>
+This procedure computes <IMG SRC="../IMAGES/delta12.gif"><I>(</I>q, a<I>) in a straightforward manner according to its definition. The nested loops beginning on lines 2 and 3 consider all states </I>q<I> and characters </I>a<I>, and lines 4-7 set <IMG SRC="../IMAGES/delta12.gif"></I>(<I>q, a</I>) to be the largest <I>k</I> such that <img src="868_b.gif">. The code starts with the largest conceivable value of <I>k</I>, which is min(<I>m, q</I> + 1), and decreases <I>k</I> until <img src="868_c.gif">.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>TRANSITION</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is <I>O</I>(<I>m</I><SUP>3</SUP><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">), because the outer loops contribute a factor of <I>m </I><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif"> , the inner <B>repeat</B> loop can run at most <I>m</I> + 1 times, and the test <img src="868_d.gif"> on line 6 can require comparing up to <I>m</I> characters. Much faster procedures exist; the time required to compute <IMG SRC="../IMAGES/delta12.gif"><I> </I>from <I>P</I> can be improved to <I>O</I>(<I>m</I><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">) by utilizing some cleverly computed information about the pattern <I>P</I> (see Exercise 34.4-6). With this improved procedure for computing <IMG SRC="../IMAGES/delta12.gif">, the total running time to find all occurrences of a length-<I>m</I> pattern in a length-<I>n</I> text over an alphabet <IMG SRC="../IMAGES/sum14.gif"> is <I>O(n</I> + <I>m</I><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09d2_1bf2">Exercises<a name="09d2_1bf2"></h2><P>
+<a name="09d2_1bf3">34.3-1<a name="09d2_1bf3"><P>
+Construct the string-matching automaton for the pattern <I>P</I> = <FONT FACE="Courier New" SIZE=2>aabab</FONT> and illustrate its operation on the text string <I>T</I> = <FONT FACE="Courier New" SIZE=2>aaababaabaababaab</FONT>.<P>
+<a name="09d2_1bf4">34.3-2<a name="09d2_1bf4"><P>
+Draw a state-transition diagram for a string-matching automaton for the pattern <FONT FACE="Courier New" SIZE=2>ababbabbababbababbabb</FONT> over the alphabet <IMG SRC="../IMAGES/sum14.gif"> = {<FONT FACE="Courier New" SIZE=2>a</FONT>, <FONT FACE="Courier New" SIZE=2>b</FONT>}.<P>
+<a name="09d2_1bf5">34.3-3<a name="09d2_1bf5"><P>
+<a name="09d2_1bef">We call a pattern <I>P</I> <I><B>nonoverlappable</I></B> if <img src="868_e.gif"> implies <I>k</I> = 0 or <I>k</I> = <I>q</I>. Describe the state-transition diagram of the string-matching automaton for a nonoverlappable pattern.<P>
+<a name="09d2_1bf6">34.3-4<a name="09d2_1bf6"><P>
+<a name="09d2_1bf0">Given two patterns <I>P</I> and <I>P</I>', describe how to construct a finite automaton that determines all occurrences of <I>either</I> pattern. Try to minimize the number of states in your automaton.<P>
+<a name="09d2_1bf7">34.3-5<a name="09d2_1bf7"><P>
+<a name="09d2_1bf1">Given a pattern <I>P</I> containing gap characters (see Exercise 34.1-5), show how to build a finite automaton that can find an occurrence of <I>P</I> in a text <I>T </I>in <I>O</I>(<I>n</I>) time, where <I>n</I> = <IMG SRC="../IMAGES/sglvrt.gif"><I>T</I><IMG SRC="../IMAGES/sglvrt.gif">.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09d3_1bf5">34.4 The Knuth-Morris-Pratt algorithm<a name="09d3_1bf5"></h1><P>
+<a name="09d3_1bf2"><a name="09d3_1bf3"><a name="09d3_1bf4">We now present a linear-time string-matching algorithm due to Knuth, Morris, and Pratt. Their algorithm achieves a <IMG SRC="../IMAGES/bound.gif">(<I>n + m</I>) running time by avoiding the computation of the transition function <IMG SRC="../IMAGES/delta12.gif"><I> </I>altogether, and it does the pattern matching using just an auxiliary function <IMG SRC="../IMAGES/piuc.gif"><I></I>[1 . . <I>m</I>] precomputed from the pattern in time <I>O</I>(<I>m</I>). The array <IMG SRC="../IMAGES/piuc.gif"><I> </I>allows the transition function <IMG SRC="../IMAGES/delta12.gif"><I> </I>to be computed efficiently (in an amortized sense) &quot;on the fly&quot; as needed. Roughly speaking, for any state <I>q</I> = 0, 1, . . . <I>, m,</I>and any character <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">, the value <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>] contains the information that is independent of <I>a</I> and is needed to compute <IMG SRC="../IMAGES/delta12.gif"><I> </I>(<I>q, a</I>). (This remark will be clarified shortly.) Since the array <IMG SRC="../IMAGES/piuc.gif"><I> </I>has only <I>m</I> entries, whereas <IMG SRC="../IMAGES/delta12.gif"><I> </I>has <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/sum14.gif"><IMG SRC="../IMAGES/sglvrt.gif">) entries, we save a factor of <IMG SRC="../IMAGES/sum14.gif"> in the preprocessing by computing <IMG SRC="../IMAGES/piuc.gif"><I> </I>rather than <IMG SRC="../IMAGES/delta12.gif"><I>.</I><P>
+
+
+
+
+
+<h2>The prefix function for a pattern</h2><P>
+<a name="09d4_1bf5">The prefix function for a pattern encapsulates knowledge about how the pattern matches against shifts of itself. This information can be used to avoid testing useless shifts in the naive pattern-matching algorithm or to avoid the precomputation of <IMG SRC="../IMAGES/delta12.gif"><I></I> for a string-matching automaton.<P>
+Consider the operation of the naive string matcher. Figure 34.9(a) shows a particular shift <I>s</I> of a template containing the pattern <I>P</I> = ababaca against a text <I>T</I>. For this example, <I>q</I> = 5 of the characters have matched successfully, but the 6th pattern character fails to match the corresponding text character. The information that <I>q</I> characters have matched successfully determines the corresponding text characters. Knowing these <I>q</I> text characters allows us to determine immediately that certain shifts are invalid. In the example of the figure, the shift <I>s</I> + 1 is necessarily invalid, since the first pattern character, an a, would be aligned with a text character that is known to match with the second pattern character, a b. The shift <I>s</I> + 2 shown in part (b) of the figure, however, aligns the first three pattern characters with three text characters that must necessarily match. In general, it is useful to know the answer to the following question:<P>
+Given that pattern characters <I>P</I>[1 . . <I>q</I>] match text characters <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>q</I>], what is the least shift <I>s</I><I>'</I> &gt; <I>s</I> such that<P>
+<pre><I>P</I>[1 . . <I>k</I>] = T[s' 1 . . s' <I>k</I>],</sub></sup></pre><P>
+<h4><a name="09d4_1bf8">(34.5)<a name="09d4_1bf8"></sub></sup></h4><P>
+where <I>s</I>' <I>+ k</I> = <I>s + q</I>?<P>
+Such a shift <I>s</I>' is the first shift greater than <I>s</I> that is not necessarily invalid due to our knowledge of <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>q</I>]. In the best case, we have that <I>s</I><I>'</I> = <I>s</I> + <I>q</I>, and shifts <I>s</I> + 1, <I>s</I> + 2, . . . , <I>s</I> + <I>q</I> - 1 are all immediately ruled out. In any case, at the new shift <I>s</I>'<I> </I>we don't need to compare the first <I>k</I> characters of <I>P</I> with the corresponding characters of <I>T</I>, since we are guaranteed that they match by equation (34.5).<P>
+<img src="870_a.gif"><P>
+<h4><a name="09d4_1bf9">Figure 34.9 The prefix function <IMG SRC="../IMAGES/piuc.gif">. (a) The pattern P = ababaca is aligned with a text T so that the first q = 5 characters match. Matching characters, shown shaded, are connected by vertical lines. (b) Using only our knowledge of the 5 matched characters, we can deduce that a shift of s + 1 is invalid, but that a shift of s' = s + 2 is consistent with everything we know about the text and therefore is potentially valid. (c) The useful information for such deductions can be precomputed by comparing the pattern with itself. Here, we see that the longest prefix of P that is also a suffix of P<SUB>5</SUB> is P<SUB>3</SUB>. This infomation is precomputed and represented in the array <IMG SRC="../IMAGES/piuc.gif">, so that <IMG SRC="../IMAGES/piuc.gif">[5] = 3. Given that q characters have matched successfully at shift s, the next potentially valid shift is at s' = s + (q - <IMG SRC="../IMAGES/piuc.gif">[q]).<a name="09d4_1bf9"></sub></sup></h4><P>
+The necessary information can be precomputed by comparing the pattern against itself, as illustrated in Figure 34.9(<I>c</I>). Since <I>T</I>[<I>s</I>'<I> + 1 . . s'</I> + <I>k</I>] is part of the known portion of the text, it is a suffix of the string <I>P<SUB>q</I></SUB>. Equation (34.5) can therefore be interpreted as asking for the largest <I>k</I> &lt; <I>q </I>such that <img src="871_a.gif"><FONT FACE="Courier New" SIZE=2>.</FONT>Then, <I>s</I><I>'</I> = <I>s</I> + (<I>q - k</I>) is the next potentially valid shift. It turns out to be convenient to store the number <I>k</I> of matching characters at the new shift <B>s<I></B>'</I>, rather than storing, say, <I>s</I><I>'</I> - <I>s</I>. This information can be used to speed up both the naive string-matching algorithm and the finite-automaton matcher.<P>
+We formalize the precomputation required as follows. Given a pattern <I>P</I>[1 . . <I>m</I>], the <I><B>prefix function</I></B> for the pattern <I>P</I> is the function <IMG SRC="../IMAGES/piuc.gif"> : {1, 2, . . . , <I>m</I>}<IMG SRC="../IMAGES/arrow12.gif">{0, 1, . . . , <I>m</I> - 1 } such that<P>
+<img src="871_b.gif"><P>
+That is, <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] is the length of the longest prefix of <I>P</I> that is a proper suffix of <I>P<SUB>q</I></SUB>. As another example, Figure 34.10(a) gives the complete prefix function <IMG SRC="../IMAGES/piuc.gif"> for the pattern <FONT FACE="Courier New" SIZE=2>ababababca</FONT>. <P>
+The Knuth-Morris-Pratt matching algorithm is given in pseudocode below as the procedure KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>. It is mostly modeled after <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>, as we shall see. KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> calls the auxiliary procedure <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> to compute <IMG SRC="../IMAGES/piuc.gif">.<P>
+<pre><a name="09d4_1bf6">KMP-MATCHER(<I>T, P</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>P</I>]</sub></sup></pre><P>
+<pre>3 <IMG SRC="../IMAGES/piuc.gif"> <IMG SRC="../IMAGES/arrlt12.gif"> COMPUTE-PREFIX-FUNCTION(<I>P</I>)</sub></sup></pre><P>
+<pre>4 <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>6<B>      do while</B> <I>q</I> &gt; 0 and <I>P</I>[<I>q</I> + 1] <IMG SRC="../IMAGES/noteq.gif"> <I>T</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>7<B>             do</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>]</sub></sup></pre><P>
+<pre>8<B>        if</B> <I>P</I>[<I>q</I> + 1] = <I>T</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>9<B>           then</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I> + 1</sub></sup></pre><P>
+<pre>10<B>        if</B> <I>q</I> = <I>m</I></sub></sup></pre><P>
+<pre>11<B>           then</B> print &quot;Pattern occurs with shift&quot; <I>i</I> - <I>m</I></sub></sup></pre><P>
+<pre>12<I>                q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>]</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="09d4_1bf7">COMPUTE-PREFIX-FUNCTION(<I>P</I>)</sub></sup></pre><P>
+<pre>1 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>P</I>]</sub></sup></pre><P>
+<pre>2 <IMG SRC="../IMAGES/piuc.gif"> [1] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>3 <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>4 <B>for</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>5 <B>     do while</B> <I>k</I> &gt; 0 and <I>P</I>[<I>k</I> + 1 <IMG SRC="../IMAGES/noteq.gif"> <I>P</I>[<I>q</I>]</sub></sup></pre><P>
+<pre>6<B>            do</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>]</sub></sup></pre><P>
+<pre>7<B>        if</B> <I>P</I>[<I>k</I> + 1] = <I>P</I>[<I>q</I>]</sub></sup></pre><P>
+<pre>8<B>           then</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> + 1</sub></sup></pre><P>
+<pre>9        <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I></sub></sup></pre><P>
+<pre>10 <B>return</B> <IMG SRC="../IMAGES/piuc.gif"></sub></sup></pre><P>
+We begin with an analysis of the running times of these procedures. Proving these procedures correct will be more complicated.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Running-time analysis</h2><P>
+<a name="09d5_1bf8"><a name="09d5_1bf9">The running time of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is <I>O</I>(<I>m</I>), using an amortized analysis (see Chapter 18). We associate a potential of <I>k</I> with the current state <I>k</I> of the algorithm. This potential has an initial value of 0, by line 3. Line 6 decreases <I>k</I> whenever it is executed, since <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>] &lt; <I>k</I>. Since <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>] <IMG SRC="../IMAGES/gteq.gif"> 0 for all <I>k</I>, however, <I>k</I> can never become negative. The only other line that affects <I>k</I> is line 8, which increases <I>k</I> by at most one during each execution of the <B>for</B> loop body. Since <I>k</I> &lt; <I>q</I> upon entering the <B>for</B> loop, and since <I>q</I> is incremented in each iteration of the <B>for</B> loop body, <I>k</I> &lt; <I>q</I> always holds. (This justifies the claim that <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] &lt; <I>q</I> as well, by line 9.) We can pay for each execution of the <B>while</B> loop body on line 6 with the corresponding decrease in the potential function, since <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>] &lt; <I>k</I>. Line 8 increases the potential function by at most one, so that the amortized cost of the loop body on lines 5-9 is <I>O</I>(1). Since the number of outer-loop iterations is <I>O</I>(<I>m</I>), and since the final potential function is at least as great as the initial potential function, the total actual worst-case running time of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is <I>O</I>(<I>m</I>).<P>
+The Knuth-Morris-Pratt algorithm runs in time <I>O</I>(<I>m + n</I>). The call of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> takes <I>O</I>(<I>m</I>) time as we have just seen, and a similar amortized analysis, using the value of <I>q</I> as the potential function, shows that the remainder of KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> takes <I>O</I>(<I>n</I>) time.<P>
+Compared to F<FONT FACE="Courier New" SIZE=2>lNITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>, by using <IMG SRC="../IMAGES/piuc.gif"> rather than <IMG SRC="../IMAGES/delta12.gif"><I></I>, we have reduced the time for preprocessing the pattern from <I>O</I>(<I>m</I> |<IMG SRC="../IMAGES/sum14.gif">|) to <I>O</I>(<I>m</I>), while keeping the actual matching time bounded by <I>O</I>(<I>m + n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Correctness of the prefix-function computation</h2><P>
+We start with an essential lemma showing that by iterating the prefix function <IMG SRC="../IMAGES/piuc.gif"><I></I>, we can enumerate all the prefixes <I>P<SUB>k</I></SUB> that are suffixes of a given prefix <I>P<SUB>q</I></SUB>. Let<P>
+<pre><IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>] = {<I>q</I>, <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>], <IMG SRC="../IMAGES/piuc.gif"><SUP>2</SUP>[<I>q</I>], <IMG SRC="../IMAGES/piuc.gif"><SUP>3</SUP>[<I>q</I>], . . . , <IMG SRC="../IMAGES/piuc.gif"><SUP>t</SUP>[<I>q</I>]} ,</sub></sup></pre><P>
+where <IMG SRC="../IMAGES/piuc.gif"><I><SUP>i</I></SUP>[<I>q</I>] is defined in terms of functional composition, so that <IMG SRC="../IMAGES/piuc.gif"><I></I><SUP>0</SUP>[<I>q</I>] = <I>q</I> and <IMG SRC="../IMAGES/piuc.gif"><I></I><SUP>i<I>+</I>1</SUP>[<I>q</I>] = <IMG SRC="../IMAGES/piuc.gif">[<IMG SRC="../IMAGES/piuc.gif"><I><SUP>i</I></SUP>[<I>q</I>]] for <I>i</I> &gt; 1, and where it is understood that the sequence in <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>] stops when <IMG SRC="../IMAGES/piuc.gif"><I><SUP>t</I></SUP>[<I>q</I>] = 0 is reached.<P>
+<a name="09d6_1bfb">Lemma 34.5<a name="09d6_1bfb"><P>
+<a name="09d6_1bfa">Let <I>P</I> be a pattern of length <I>m</I> with prefix function <IMG SRC="../IMAGES/piuc.gif"><I></I>. Then, for <I>q</I> = 1, 2, . . . , <I>m</I>, we have <img src="872_a.gif">.<P>
+<I><B>Proof     </I></B>We first prove that<P>
+<pre><I>i</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>] implies <img src="872_b.gif"> .</sub></sup></pre><P>
+<h4><a name="09d6_1bfc">(34.6)<a name="09d6_1bfc"></sub></sup></h4><P>
+If <I>i</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>], then <I>i</I> = <IMG SRC="../IMAGES/piuc.gif"><I><SUP>u</I></SUP>[<I>q</I>] for some <I>u</I>. We prove equation (34.6) by induction on <I>u</I>. For <I>u</I> = 0, we have <I>i</I> = <I>q</I>, and the claim follows since <img src="873_d.gif">. Using the relation <img src="873_e.gif"> and the transitivity of <img src="873_f.gif"> establishes the claim for all <I>i</I> in <IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I>]. Therefore, <img src="873_g.gif">.<P>
+<img src="873_a.gif"><P>
+<h4><a name="09d6_1bfd">Figure 34.10 An illustration of Lemma 34.5 for the pattern P = ababababca and q = 8. (a) The <IMG SRC="../IMAGES/piuc.gif"> function for the given pattern. Since <IMG SRC="../IMAGES/piuc.gif">[8] = 6, <IMG SRC="../IMAGES/piuc.gif">[6] = 4, <IMG SRC="../IMAGES/piuc.gif">[4] = 2, and <IMG SRC="../IMAGES/piuc.gif">[2] = 0, by iterating <IMG SRC="../IMAGES/piuc.gif"> we obtain <IMG SRC="../IMAGES/piuc.gif">*[8] = {8, 6, 4, 2, 0}. (b) We slide the template containing the pattern P to the right and note when some prefix P<SUB>k</SUB> of P matches up with some proper suffix of P<SUB>8</SUB>; this happens for k = 6, 4, 2, and 0. In the figure, the first row gives P, and the dotted vertical line is drawn just after P<SUB>8</SUB>  Successive rows show all the shifts of P that cause some prefix P<SUB>k</SUB> of P to match some suffix of P<SUB>8</SUB>. Successfully matched characters are shown shaded. Vertical lines connect aligned matching characters. Thus, <img src="873_b.gif">. The lemma claims that <img src="873_c.gif"> for all q.<a name="09d6_1bfd"></sub></sup></h4><P>
+We prove that <img src="873_h.gif"> by contradiction. Suppose to the contrary that there is an integer in the set <img src="873_i.gif">, and let j be the largest such value. Because <I>q</I> is in <img src="873_j.gif">, we have <I>j &lt; q</I>, and so we let <I>j'</I> denote the smallest integer in <IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I>] that is greater than <I>j</I>. (We can choose <I>j'</I> = <I>q</I> if there is no other number in <IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I>] that is greater than <I>j</I>.) We have<I> </I><img src="873_k.gif"> because <img src="873_l.gif"> because <I>j'</I> <IMG SRC="../IMAGES/memof12.gif"><I> </I><IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I>]; thus, <img src="873_m.gif"> by Lemma 34.1. Moreover, <I>j</I> is the largest such value with this property. Therefore, we must have <IMG SRC="../IMAGES/piuc.gif">[<I>j'</I>] = <I>j</I> and thus <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>]. This contradiction proves the lemma.      <P>
+Figure 34.10 illustrates this lemma.<P>
+The algorithm <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> computes <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>] in order for <I>q</I> = 1, 2, . . . , <I>m</I>. The computation of <IMG SRC="../IMAGES/piuc.gif">[1] = 0 in line 2 of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is certainly correct, since <I><IMG SRC="../IMAGES/piuc.gif"></I>[<I>q</I>] &lt; <I>q</I> for all <I>q</I>. The following lemma and its corollary will be used to prove that <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> computes <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>] correctly for <I>q</I> &gt; 1.<P>
+<a name="09d6_1bfe">Lemma 34.6<a name="09d6_1bfe"><P>
+Let <I>P</I> be a pattern of length <I>m</I>, and let <IMG SRC="../IMAGES/piuc.gif"><I> be the prefix function for </I>P<I>. For </I>q<I> = 1, 2, . . . , </I>m<I>, if <IMG SRC="../IMAGES/piuc.gif"></I>[<I>q</I>] &gt; 0, then <IMG SRC="../IMAGES/piuc.gif">[q<I>] - 1</I> <I><IMG SRC="../IMAGES/memof12.gif"></I> <I><IMG SRC="../IMAGES/piuc.gif">*[</I>q<I> - 1].</I><P>
+<I><B>Proof     </I></B>If <I>k</I> = <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>] &gt; 0, then <img src="874_a.gif"> (by dropping the last character from <I>P<SUB>k</I></SUB> and <I>P<SUB>q</I></SUB>). By Lemma 34.5, therefore, <I>k</I> - l <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q </I>- 1].      <P>
+For <I>q</I> = 2, 3, . . . , <I>m</I>, define the subset <I>E<SUB>q</I>-1 </SUB><IMG SRC="../IMAGES/rgtubar.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I> - 1] by<P>
+<pre><I>E<SUB>q</I>-1</SUB> = {<I>k</I> : <I>k</I> <IMG SRC="../IMAGES/memof12.gif"><I> </I><IMG SRC="../IMAGES/piuc.gif"><I>*[</I>q <I>- 1] and </I>P<I>[</I>k <I>+ 1] = </I>P<I>[</I>q<I>]} .</I></sub></sup></pre><P>
+The set <I>E<SUB>q</I>-1</SUB> consists of the values <I>k</I> for which <img src="874_b.gif"> (by Lemma 34.5); because <I>P</I>[<I>k</I> + 1] = <I>P</I>[<I>q</I>], it is also the case that for these values of <I>k</I>, <img src="874_c.gif">. Intuitively, <I>E<SUB>q </I>- 1</SUB> consists of those values <I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I> - 1] such that we can extend <I>P<SUB>k</I></SUB> to <I>P<SUB>k</I>+1</SUB> and get a suffix of <I>P<SUB>q</I></SUB>.<P>
+<a name="09d6_1bff">Corollary 34.7<a name="09d6_1bff"><P>
+Let <I>P</I> be a pattern of length <I>m</I>, and let <IMG SRC="../IMAGES/piuc.gif"> be the prefix function for <I>P</I>. For <I>q</I> = 2, 3, . . . , <I>m</I>,<P>
+<img src="874_d.gif"><P>
+<I><B>Proof     </I></B>If <I>r</I> = <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>], then <img src="874_e.gif">, and so <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 1 implies <I>P</I>[<I>r</I>] = <I>P</I>[<I>q</I>]. By Lemma 34.6, therefore, if <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 1, then<P>
+<pre><I>r</I> = 1 + max {<I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I> - 1]: <I>P</I>[<I>k</I> + 1] = <I>P</I>[<I>q</I>]} .</sub></sup></pre><P>
+But the set maximized over is just <I>E<SUB>q</I></SUB>-1, so that <I>r</I> = 1 + max {<I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <I>E<SUB><FONT FACE="Courier New" SIZE=2>q</I></SUB>-1</FONT>} and <I>E<SUB>q</I></SUB>-1 is nonempty. If <I>r</I> = 0, there is no <I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I> - 1] for which we can extend <I>P<SUB><FONT FACE="Courier New" SIZE=2>k</I></FONT></SUB> to <I>P<SUB><FONT FACE="Courier New" SIZE=2>k</I>+1</FONT></SUB> and get a suffix of <I>P<SUB><FONT FACE="Courier New" SIZE=2>q</I></FONT></SUB>, since then we would have <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] &gt; 0. Thus, <img src="874_f.gif">.      <P>
+We now finish the proof that <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> computes <IMG SRC="../IMAGES/piuc.gif"> correctly. In the procedure <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>PREFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT>, at the start of each iteration of the <B>for</B> loop of lines 4-9, we have that <I>k</I> = <IMG SRC="../IMAGES/piuc.gif">[<I>q</I> - 1]. This condition is enforced by lines 2 and 3 when the loop is first entered, and it remains true in each successive iteration because of line 9. Lines 5-8 adjust k so that it now becomes the correct value of <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>]. The loop on lines 5-6 searches through all values <I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I> - 1] until one is found for which <I>P</I>[<I>k</I> + 1] = <I>P</I>[<I>q</I>]; at that point, we have that <I>k</I> is the largest value in the set <I>E<SUB>q</I></SUB>-1, so that, by Corollary 34.7, we can set <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] to <I>k</I> + 1. If no such <I>k</I> is found, <I>k</I> = 0 in lines 7-9, and <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] is set to 0. This completes our proof of the correctness of COMPUTE-PREFIX-FUNCTION.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Correctness of the KMP algorithm</h2><P>
+The procedure KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> can be viewed as a reimplementation of the procedure F<FONT FACE="Courier New" SIZE=2>INlTE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>. Specifically, we shall prove that the code on lines 6-9 of KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> is equivalent to line 4 of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>, which sets <I>q</I> to <IMG SRC="../IMAGES/delta12.gif">(<I>q</I>,<I>T</I>[<I>i</I>]). Instead of using a stored value of <IMG SRC="../IMAGES/delta12.gif">(<I>q</I>, <I>T</I>[<I>i</I>]), however, this value is recomputed as necessary from <IMG SRC="../IMAGES/piuc.gif"><I></I>. Once we have argued that KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> simulates the behavior of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>, the correctness of KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> follows from the correctness of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> (though we shall see in a moment why line 12 in KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> is necessary).<P>
+The correctness of KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> follows from the claim that either <IMG SRC="../IMAGES/delta12.gif">(<I>q</I>, <I>T</I>[<I>i</I>]) = 0 or else <IMG SRC="../IMAGES/delta12.gif">(<I>q</I>, <I>T</I>[<I>i</I>]) - 1 <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>]. To check this claim, let <I>k</I> = <IMG SRC="../IMAGES/delta12.gif">(<I>q</I>, <I>T</I>[<I>i</I>]). Then, <img src="875_a.gif"> by the definitions of <IMG SRC="../IMAGES/delta12.gif"> and <IMG SRC="../IMAGES/sum14.gif">. Therefore, either <I>k</I> = 0 or else <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <img src="875_b.gif"> by dropping the last character from both <I>P<SUB>k</I></SUB> and <I>P<SUB>q</SUB>T</I>[<I>i</I>] (in which case <I>k</I> - 1 <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>]). Therefore, either <I>k</I> = 0 or <I>k</I> - 1 <IMG SRC="../IMAGES/epsilon.gif"> <IMG SRC="../IMAGES/piuc.gif">*[<I>q</I>], proving the claim.<P>
+The claim is used as follows. Let <I>q</I><I>'</I> denote the value of <I>q</I> when line 6 is entered. We use the equivalence <img src="875_c.gif"><SUB> </SUB>to justify the iteration <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>q</I>] that enumerates the elements of <img src="875_d.gif">. Lines 6-9 determine <IMG SRC="../IMAGES/delta12.gif"><I>(</I>q<I>'</I>, <I>T</I>[<I>i</I>]) by examining the elements of <IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I><I>'</I>] in decreasing order. The code uses the claim to begin with <I>q</I> = <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>T<SUB>i </I></SUB>- 1) = <IMG SRC="../IMAGES/sum14.gif">(<I>T<SUB><FONT FACE="Courier New" SIZE=2>i </I></SUB>- 1</FONT>) and perform the iteration <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/piuc.gif">[<I>q</I>] until a <I>q</I> is found such that <I>q</I> = 0 or <I>P</I>[<I>q</I> + 1] = <I>T</I>[<I>i</I>]. In the former case, <IMG SRC="../IMAGES/delta12.gif"><I>(</I>q<I>'</I>, <I>T</I>[<I>i</I>]) = 0; in the latter case, <I>q</I> is the maximum element in <I>E<SUB>q</I><I>'</I></SUB>, so that <IMG SRC="../IMAGES/delta12.gif"> (<I>q</I><I>'</I>, <I>T</I>[<I>i</I>]) = <I>q</I> + 1 by Corollary 34.7.<P>
+Line 12 is necessary in KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> to avoid a possible reference to <I>P</I>[<I>m</I> + 1] on line 6 after an occurrence of <I>P</I> has been found. (The argument that <I>q</I> = <IMG SRC="../IMAGES/sum14.gif">(<I>T<SUB>i </I></SUB>- 1) upon the next execution of line 6 remains valid by the hint given in Exercise 34.4-6: <IMG SRC="../IMAGES/delta12.gif">(<I>m, a</I>) =<IMG SRC="../IMAGES/delta12.gif"> (<IMG SRC="../IMAGES/piuc.gif">[<I>m</I>], <I>a</I>) or, equivalently, <IMG SRC="../IMAGES/sum14.gif">(<I>Pa</I>) = <IMG SRC="../IMAGES/sum14.gif">(<I>P</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif">[<I>m</I>]<SUB><I>a</SUB></I></FONT>) for any <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">.) The remaining argument for the correctness of the Knuth-Morris-Pratt algorithm follows from the correctness of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>, since we now see that KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> simulates the behavior of <FONT FACE="Courier New" SIZE=2>FINITE</FONT>-<FONT FACE="Courier New" SIZE=2>AUTOMATON</FONT>-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09d8_1bfe">Exercises<a name="09d8_1bfe"></h2><P>
+<a name="09d8_1bff">34.4-1<a name="09d8_1bff"><P>
+Compute the prefix function <IMG SRC="../IMAGES/piuc.gif"> for the pattern <FONT FACE="Courier New" SIZE=2>ababbabbababbababbabb</FONT> when the alphabet is <IMG SRC="../IMAGES/sum14.gif"> = {<FONT FACE="Courier New" SIZE=2>a</FONT>, <FONT FACE="Courier New" SIZE=2>b</FONT>}.<P>
+<a name="09d8_1c00">34.4-2<a name="09d8_1c00"><P>
+Give an upper bound on the size of <IMG SRC="../IMAGES/piuc.gif"><I></I>*[<I>q</I>] as a function of <I>q</I>. Give an example to show that your bound is tight.<P>
+<a name="09d8_1c01">34.4-3<a name="09d8_1c01"><P>
+Explain how to determine the occurrences of pattern <I>P</I> in the text <I>T</I> by examining the <IMG SRC="../IMAGES/piuc.gif"><I></I> function for the string <I>PT</I> (the string of length <I>m</I> + <I>n</I> that is the concatenation of <I>P</I> and <I>T</I>).<P>
+<a name="09d8_1c02">34.4-4<a name="09d8_1c02"><P>
+Show how to improve KMP-<FONT FACE="Courier New" SIZE=2>MATCHER</FONT> by replacing the occurrence of <IMG SRC="../IMAGES/piuc.gif"> in line 7 (but not line 12) by <IMG SRC="../IMAGES/piuc.gif"><I>'</I>, where <IMG SRC="../IMAGES/piuc.gif"><I>'</I> is defined recursively for <I>q</I> = 1, 2, . . . , <I>m</I> by the equation<P>
+<img src="876_a.gif"><P>
+Explain why the modified algorithm is correct, and explain in what sense this modification constitutes an improvement.<P>
+<a name="09d8_1c03">34.4-5<a name="09d8_1c03"><P>
+<a name="09d8_1bfb"><a name="09d8_1bfc">Give a linear-time algorithm to determine if a text <I>T</I> is a cyclic rotation of another string <I>T</I><I>'</I>. For example, <FONT FACE="Courier New" SIZE=2>arc</FONT> and car are cyclic rotations of each other.<P>
+<a name="09d8_1c04">34.4-6<a name="09d8_1c04"><P>
+<a name="09d8_1bfd">Give an efficient algorithm for computing the transition function <IMG SRC="../IMAGES/delta12.gif"> for the string-matching automaton corresponding to a given pattern <I>P</I>. Your algorithm should run in time <I>O</I>(<I>m</I>|<IMG SRC="../IMAGES/sum14.gif">|). (<I>Hint</I>: Prove that <IMG SRC="../IMAGES/delta12.gif"><I>(</I>q, a<I>) = <IMG SRC="../IMAGES/delta12.gif">(<IMG SRC="../IMAGES/piuc.gif">[</I>q<I>], </I>a <I>) if </I>q<I> = </I>m<I> or </I>P<I>[</I>q<I> + 1] <IMG SRC="../IMAGES/noteq.gif"> </I>a<I>.)</I><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09d9_1c01">* 34.5 The Boyer-Moore algorithm<a name="09d9_1c01"></h1><P>
+<a name="09d9_1bfe"><a name="09d9_1bff">If the pattern <I>P</I> is relatively long and the alphabet <IMG SRC="../IMAGES/sum14.gif"> is reasonably large, then an algorithm due to Robert S. Boyer and J. Strother Moore is likely to be the most efficient string-matching algorithm.<P>
+<pre><a name="09d9_1c00">BOYER-MOORE-MATCHER(<I>T</I>, <I>P</I>, <IMG SRC="../IMAGES/sum14.gif">)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>P</I>]</sub></sup></pre><P>
+<pre>3 <IMG SRC="../IMAGES/lambdauc.gif"> <IMG SRC="../IMAGES/arrlt12.gif"> COMPUTE-LAST-OCCURRENCE-FUNCTION(<I>P, m,</I> <IMG SRC="../IMAGES/sum14.gif">)</sub></sup></pre><P>
+<pre>4 <IMG SRC="../IMAGES/gamma14.gif"> <IMG SRC="../IMAGES/arrlt12.gif"> COMPUTE-GOOD-SUFFIX-FUNCTION(<I>P, m</I>)</sub></sup></pre><P>
+<pre>5 <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6 <B>while </B><I>s</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n - m</I></sub></sup></pre><P>
+<pre>7      <B>do </B><I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>m</I></sub></sup></pre><P>
+<pre>8         <B>while</B> <I>j</I> &gt; 0 and <I>P</I>[<I>j</I>] = <I>T</I>[<I>s </I>+ <I>j</I>]</sub></sup></pre><P>
+<pre>9             <B>do</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I> - 1</sub></sup></pre><P>
+<pre>10        <B>if</B> <I>j</I> = 0</sub></sup></pre><P>
+<pre>11           <B>then</B> print "Pattern occurs at shift" <I>s</I></sub></sup></pre><P>
+<pre>12<I>                s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>s</I> + <IMG SRC="../IMAGES/gamma14.gif">[0]</sub></sup></pre><P>
+<pre>13           <B>else</B> <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>s</I> + max(<IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>], <I>j</I> - <IMG SRC="../IMAGES/lambdauc.gif">[<I>T</I>[<I>s</I> + <I>j</I>]])</sub></sup></pre><P>
+Aside from the mysterious-looking <IMG SRC="../IMAGES/lambdauc.gif">'s and <IMG SRC="../IMAGES/gamma14.gif">'s, this program looks remarkably like the naive string-matching algorithm. Indeed, suppose we comment out lines 3-4 and replace the updating of <I>s</I> on lines 12-13 with simple incrementations as follows:<P>
+<pre>12           <I>     s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>s</I> + 1</sub></sup></pre><P>
+<pre>13           <B>else </B><I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>s</I> + 1</sub></sup></pre><P>
+The modified program now acts exactly like the naive string matcher: the <B>while</B> loop beginning on line 6 considers each of the <I>n - m</I> + 1 possible shifts <I>s</I> in turn, and the <B>while</B> loop beginning on line 8 tests the condition <I>P</I>[1 . . <I>m</I>] = <I>T</I>[<I>s</I> + 1 . . <I>s</I> + <I>m</I>] by comparing <I>P</I>[<I>j</I>] with <I>T</I>[<I>s </I>+ <I>j</I>] for <I>j</I> = <I>m</I>, <I>m</I> - 1, . . . , 1. If the loop terminates with <I>j</I> = 0, a valid shift <I>s</I> has been found, and line 11 prints out the value of <I>s</I>. At this level, the only remarkable features of the Boyer-Moore algorithm are that it compares the pattern against the text <I>from right to left</I> and that it increases the shift <I>s</I> on lines 12-13 by a value that is not necessarily 1.<P>
+The Boyer-Moore algorithm incorporates two heuristics that allow it to avoid much of the work that our previous string-matching algorithms performed. These heuristics are so effective that they often allow the algorithm to skip altogether the examination of many text characters. These heuristics, known as the &quot;bad-character heuristic&quot; and the &quot;good-suffix heuristic,&quot; are illustrated in Figure 34.11. They can be viewed as operating independently in parallel. When a mismatch occurs, each heuristic proposes an amount by which <I>s</I> can safely be increased without missing a valid shift. The Boyer-Moore algorithm chooses the larger amount and increases <I>s</I> by that amount: when line 13 is reached after a mismatch, the bad-character heuristic proposes increasing <I>s</I> by <I>j</I> - <IMG SRC="../IMAGES/lambdauc.gif">[<I>T</I>[<I>s</I> + <I>j</I>]], and the good-suffix heuristic proposes increasing <I>s</I> by <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>].<P>
+<img src="878_a.gif"><P>
+<h4><a name="09d9_1c02">Figure 34.11 An illustration of the Boyer-Moore heuristics. (a) Matching the pattern <FONT FACE="Courier New" SIZE=2>reminiscence</FONT> against a text by comparing characters in a right-to-left manner. The shift s is invalid; although a &quot;good suffix&quot; ce of the pattern matched correctly against the corresponding characters in the text (matching characters are shown shaded), the &quot;bad character&quot; <FONT FACE="Courier New" SIZE=2>i</FONT>, which didn't match the corresponding character <FONT FACE="Courier New" SIZE=2>n</FONT> in the pattern, was discovered in the text. (b) The bad-character heuristic proposes moving the pattern to the right, if possible, by the amount that guarantees that the bad text character will match the rightmost occurrence of the bad character in the pattern. In this example, moving the pattern 4 positions to the right causes the bad text character <FONT FACE="Courier New" SIZE=2>i</FONT> in the text to match the rightmost <FONT FACE="Courier New" SIZE=2>i</FONT> in the pattern, at position 6. If the bad character doesn't occur in the pattern, then the pattern may be moved completely past the bad character in the text. If the rightmost occurrence of the bad character in the pattern is to the right of the current bad character position, then this heuristic makes no proposal. (c) With the good-suffix heuristic, the pattern is moved to the right by the least amount that guarantees that any pattern characters that align with the good suffix ce previously found in the text will match those suffix characters. In this example, moving the pattern 3 positions to the right satisfies this condition. Since the good-suffix heuristic proposes a movement of 3 positions, which is smaller than the 4-position proposal of the bad-character heuristic, the Boyer-Moore algorithm increases the shift by 4.<a name="09d9_1c02"></sub></sup></h4><P>
+
+
+
+
+
+<h2>The bad-character heuristic</h2><P>
+<a name="09da_1c01">When a mismatch occurs, the bad-character heuristic uses information about where the bad text character <I>T</I>[<I>s</I> + <I>j</I>] occurs in the pattern (if it occurs at all) to propose a new shift. In the best case, the mismatch occurs on the first comparison (<I>P</I>[<I>m</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>T</I>[<I>s</I> + <I>m</I>]) and the bad character <I>T</I>[<I>s</I> + <I>m</I>] does not occur in the pattern at all. (Imagine searching for <FONT FACE="Courier New" SIZE=2>a<I><SUP><FONT FACE="Courier New" SIZE=1>m </I></FONT></SUP>in the text string b<I><SUP>n</I></FONT></SUP>.) In this case, we can increase the shift <I>s</I> by <I>m</I>, since any shift smaller than <I>s</I> + <I>m</I> will align some pattern character against the bad character, causing a mismatch. If the best case occurs repeatedly, the Boyer-Moore algorithm examines only a fraction 1/<I>m</I> of the text characters, since each text character examined yields a mismatch, thus causing <I>s </I>to increase by <I>m</I>. This best-case behavior illustrates the power of matching right-to-left instead of left-to-right.<P>
+In general, the <I><B>bad-character heuristic</I></B> works as follows. Suppose we have just found a mismatch: <I>P</I>[<I>j</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>T</I>[<I>s</I> + <I>j</I>] for some <I>j</I>, where 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>. We then let <I>k</I> be the largest index in the range 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> such that <I>T</I>[<I>s</I> + <I>j</I>] = <I>P</I>[<I>k</I>], if any such <I>k</I> exists. Otherwise, we let <I>k</I> = 0. We claim that we may safely increase <I>s</I> by <I>j - k</I>. We must consider three cases to prove this claim, as illustrated by Figure 34.12.<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>k</I> = 0: As shown in Figure 34.12(a), the bad character <I>T</I>[<I>s</I> + <I>j</I>] didn't occur in the pattern at all, and so we can safely increase <I>s</I> by <I>j</I> without missing any valid shifts.<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>k</I> &lt; <I>j</I>: As shown in Figure 34.12(b), the rightmost occurrence of the bad character is in the pattern to the left of position <I>j</I>, so that <I>j</I> - <I>k</I> &gt; 0 and the pattern must be moved <I>j - k</I> characters to the right before the bad text character matches any pattern character. Therefore, we can safely increase <I>s</I> by <I>j - k</I> without missing any valid shifts.<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>k</I> &gt; <I>j</I>: As shown in Figure 34.12(c), <I>j - k</I> &lt; 0, and so the bad-character heuristic is essentially proposing to decrease <I>s</I>. This recommendation will be ignored by the Boyer-Moore algorithm, since the good-suffix heuristic will propose a shift to the right in all cases.<P>
+<a name="09da_1c02">The following simple program defines <IMG SRC="../IMAGES/lambdauc.gif">[<I>a</I>] to be the index of the rightmost position in the pattern at which character <I>a</I> occurs, for each <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif">. If <I>a</I> does not occur in the pattern, then <IMG SRC="../IMAGES/lambdauc.gif">[<I>a</I>] is set to 0. We call <IMG SRC="../IMAGES/lambdauc.gif"> the <I><B>last-occurrence function</I></B> for the pattern. With this definition, the expression <I>j</I> - <IMG SRC="../IMAGES/lambdauc.gif">[<I>T</I>[<I>s</I> + <I>j</I>]] on line 13 of <FONT FACE="Courier New" SIZE=2>BOYER</FONT>-<FONT FACE="Courier New" SIZE=2>MOORE</FONT> <FONT FACE="Courier New" SIZE=2>MATCHER</FONT> implements the bad-character heuristic. (Since <I>j</I> - <IMG SRC="../IMAGES/lambdauc.gif">[<I>T</I>[<I>s</I> + <I>j</I>]] is negative if the rightmost occurrence of the bad character <I>T</I>[<I>s</I> + <I>j</I>] in the pattern is to the right of position <I>j</I>, we rely on the positivity of <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>], proposed by the good-suffix heuristic, to ensure that the algorithm makes progress at each step.)<P>
+<img src="880_a.gif"><P>
+<h4><a name="09da_1c04">Figure 34.12 The cases of the bad-character heuristic. (a) The bad character <FONT FACE="Courier New" SIZE=2>h<FONT FACE="Times New Roman" SIZE=2> occurs nowhere in the pattern, and so the pattern can be advanced j = 11 characters until it has passed over the bad character. (b) The rightmost occurrence of the bad character in the pattern is at position k &lt; j, and so the pattern can be advanced j - k characters. Since j = 10 and k = 6 for the bad character <FONT FACE="Courier New" SIZE=2>i<FONT FACE="Times New Roman" SIZE=2>, the pattern can be advanced 4 positions until the <FONT FACE="Courier New" SIZE=2>i<FONT FACE="Times New Roman" SIZE=2>'s line up. (c) The rightmost occurrence of the bad character in the pattern is at position k &gt; j. In this example, j = 10 and k = 12 for the bad character <FONT FACE="Courier New" SIZE=2>e<FONT FACE="Times New Roman" SIZE=2>. The bad-character heuristic proposes a negative shift, which is ignored.<a name="09da_1c04"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<pre><a name="09da_1c03">COMPUTE-LAST-OCCURRENCE-FUNCTION(<I>P, m</I>, <IMG SRC="../IMAGES/sum14.gif">)</sub></sup></pre><P>
+<pre>1 <B>for</B> each character <I>a </I><IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif"></sub></sup></pre><P>
+<pre>2      <B>do</B> <IMG SRC="../IMAGES/lambdauc.gif">[<I>a</I>] = 0</sub></sup></pre><P>
+<pre>3 <B>for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif">1 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>4      <B>do</B> <IMG SRC="../IMAGES/lambdauc.gif">[<I>P</I>[<I>j</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I></sub></sup></pre><P>
+<pre>5 <B>return</B> <IMG SRC="../IMAGES/lambdauc.gif"></sub></sup></pre><P>
+The running time of procedure <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>LAST</FONT>-<FONT FACE="Courier New" SIZE=2>OCCURRENCE</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is <I>O</I>(|<IMG SRC="../IMAGES/sum14.gif">| + <I>m</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>The good-suffix heuristic</h2><P>
+<a name="09db_1c04"><a name="09db_1c05"><a name="09db_1c06">Let us define the relation <I>Q </I>~<I> R</I> (read &quot;<I>Q</I> is similar to <I>R&quot;</I>) for strings <I>Q </I>and <I>R</I> to mean that <img src="881_a.gif">. If two strings are similar, then we can align them with their rightmost characters matched, and no pair of aligned characters will disagree. The relation &quot;~&quot; is symmetric: <I>Q </I>~<I> R</I> if and only if <I>R </I>~<I> Q</I>. We also have, as a consequence of Lemma 34.1, that<P>
+<img src="881_b.gif"><P>
+<h4><a name="09db_1c09">(34.7)<a name="09db_1c09"></sub></sup></h4><P>
+If we find that P[<I>j</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>T</I>[<I>s + j</I>], where j &lt; <I>m</I>, then the <I><B>good-suffix heuristic</I></B> says that we can safely advance <I>s</I> by<P>
+<pre><IMG SRC="../IMAGES/gamma14.gif"> [<I>j</I>] = <I>m</I> - max {<I>k</I>: 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>m</I> and <I>P</I>[<I>j</I> + 1 . . <I>m</I>] ~ <I>P<SUB>k</I></SUB>} .</sub></sup></pre><P>
+<a name="09db_1c07">That is, <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] is the least amount we can advance <I>s</I> and not cause any characters in the &quot;good suffix&quot; <I>T</I>[<I>s</I> + j + 1 . . s + <I>m</I>] to be mismatched against the new alignment of the pattern. The function <IMG SRC="../IMAGES/gamma14.gif"> is well defined for all <I>j</I>, since <I>P</I>[<I>j</I> + 1 . . <I>m</I>] ~ <I>P</I><SUB>0</SUB> for all <I>j</I>: the empty string is similar to all strings. We call <IMG SRC="../IMAGES/gamma14.gif"> the <B>good-suffix function </B>for the pattern <I>P</I>.<P>
+We now show how to compute the good-suffix function <IMG SRC="../IMAGES/gamma14.gif">. We first observe that <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> - <IMG SRC="../IMAGES/piuc.gif">[<I>m</I>] for all <I>j</I>, as follows. If <I>w</I> = <IMG SRC="../IMAGES/piuc.gif">[<I>m</I>], then <img src="881_c.gif"><I> </I>by the definition of <IMG SRC="../IMAGES/piuc.gif">. Furthermore, since <img src="881_d.gif"> for any <I>j</I>, we have <I>P<SUB>w</I></SUB> ~ <I>P</I>[<I>j</I> + 1 . . <I>m</I>], by equation (34.7). Therefore, <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>m - </I><IMG SRC="../IMAGES/piuc.gif"><I>[</I>m<I>]</I> <I>for all </I>j<I>.</I><P>
+We can now rewrite our definition of <IMG SRC="../IMAGES/gamma14.gif"> as<P>
+<pre><IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] = <I>m</I> - max {<I>k </I>: <IMG SRC="../IMAGES/piuc.gif">[<I>m</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>m</I> and <I>P</I>[<I>j</I> + 1 . . <I>m</I>] ~ <I>P<SUB>k</I></SUB>} .</sub></sup></pre><P>
+The condition that <I>P</I>[<I>j</I> + 1 . . <I>m</I>]<I> ~ P<SUB>k</I></SUB> holds if either <img src="881_e.gif">. But the latter possibility implies that <img src="881_f.gif"> and thus  that <I>k </I><IMG SRC="../IMAGES/lteq12.gif"> <I><IMG SRC="../IMAGES/piuc.gif"></I>[<I>m</I>], by the definition of <IMG SRC="../IMAGES/piuc.gif">. This latter possibility cannot reduce the value of <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] below <I>m - </I><IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>m</I>]. We can therefore rewrite our definition of <IMG SRC="../IMAGES/gamma14.gif"> still further as follows:<P>
+<img src="881_g.gif"><P>
+(The second set may be empty.) It is worth observing that the definition implies that <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] &gt; 0 for all <I>j</I> = 1, 2, . . . , <I>m</I>, which ensures that the Boyer-Moore algorithm makes progress.<P>
+To simplify the expression for <IMG SRC="../IMAGES/gamma14.gif"> further, we define <I>P</I>' as the reverse of the pattern <I>P</I> and <IMG SRC="../IMAGES/piuc.gif">' as the corresponding prefix function. That is <I>P</I><I>'</I>[<I>i</I>] = <I>P</I>[<I>m</I> - <I>i</I> + 1] for <I>i</I> = 1, 2, . . . , <I>m</I>, and <IMG SRC="../IMAGES/piuc.gif">'[<I>t</I>] is the largest <I>u</I> such that <I>u</I> &lt; <I>t </I>and <img src="882_a.gif">.<P>
+If<I> k</I> is the largest possible value such that <img src="882_b.gif">, then we claim that<P>
+<pre><IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>] = <I>m - j </I>,</sub></sup></pre><P>
+<h4><a name="09db_1c0a">(34.8)<a name="09db_1c0a"></sub></sup></h4><P>
+where <I>l = </I>(<I>m - k</I>) + (<I>m - j</I>). To see that this claim is well defined, note that <img src="882_c.gif"> implies that <I>m - j </I><IMG SRC="../IMAGES/lteq12.gif"><I> k</I>, and thus <I>l </I><IMG SRC="../IMAGES/lteq12.gif"><I> m</I>. Also, <I>j </I>&lt;<I> m </I>and<I> k </I><IMG SRC="../IMAGES/lteq12.gif"><I> m</I>, so that <I>l</I> <IMG SRC="../IMAGES/gteq.gif"> 1. We prove this claim as follows. Since <img src="882_d.gif">. Therefore, <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>m - j</I>. Suppose now that <I>p &gt; m - j</I>, where <I>p = </I><IMG SRC="../IMAGES/piuc.gif"><I>'</I>[<I>l</I>]. Then, by the definition of <IMG SRC="../IMAGES/piuc.gif">', we have <img src="882_e.gif"> or, equivalently, <I>P</I>'<I>[1</I> . . p<I>]</I> = P<I>'</I>[<I>l - p + </I>1 <I>. . l</I>]. Rewriting this equation in terms of <I>P</I> rather than <I>P</I><I>'</I>, we have <I>P</I>[<I>m - p + </I>1 <I>. . m</I>] = <I>P</I>[<I>m - l + </I>1 <I>. . m - l + p</I>]. Substituting for <I>l = 2m - k - j</I>, we obtain <I>P</I>[<I>m - p + </I>1<I> . . m</I>]<I> = P</I>[<I>k - m + j + </I>1 <I>. . k - m + j +p</I>], which implies <img src="882_f.gif">. Since <I>p &gt; m - j</I>, we have <I>j + </I>1<I> &gt; m-p+</I>1, and so <img src="882_g.gif">, implying that <img src="882_h.gif"> by the transitivity of <img src="882_i.gif">. Finally, since <I>p &gt; m - j</I>, we have <I>k</I><I>' &gt; k</I>, where <I>k</I><I>' = k - m + j + p</I>, contradicting our choice of <I>k</I> as the largest possible value such that <img src="882_j.gif">. This contradiction means that we can't have <I>p &gt; m - j</I>, and hus <I> = m - j</I>, which proves the claim (34.8).<P>
+Using equation (34.8), and noting that <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>]<I> = m - j</I> implies that <I>j = m - </I><IMG SRC="../IMAGES/piuc.gif"><I>'</I>[<I>l</I>] and <I>k = m - l + </I><IMG SRC="../IMAGES/piuc.gif"><I>'</I>[<I>l</I>], we can rewrite our definition of <IMG SRC="../IMAGES/gamma14.gif"> still further:<P>
+<pre><IMG SRC="../IMAGES/gamma14.gif"><I>[</I>j<I>]</I>  =  m<I> - max({<IMG SRC="../IMAGES/piuc.gif">[</I>m<I>]}</I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/wideu.gif"> {<I>m - l</I> + <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>]: 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>l</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> and <I>j = m</I> - <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>]})</sub></sup></pre><P>
+<pre>=  min({<I>m</I> - <IMG SRC="../IMAGES/piuc.gif">[<I>m</I>]}</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/wideu.gif"> {<I>l</I> - <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>]: 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>l </I><IMG SRC="../IMAGES/lteq12.gif"> m<I> and </I>j = m<I> - <IMG SRC="../IMAGES/piuc.gif">'[</I>l<I>]}) .</I></sub></sup></pre><P>
+<h4><a name="09db_1c0b">(34.9)<a name="09db_1c0b"></sub></sup></h4><P>
+Again, the second set may be empty.<P>
+We are now ready to examine the procedure for computing <IMG SRC="../IMAGES/gamma14.gif">.<P>
+<pre><a name="09db_1c08">COMPUTE-GOOD-SUFFIX-FUNCTION(<I>P, m</I>)</sub></sup></pre><P>
+<pre>1 <IMG SRC="../IMAGES/piuc.gif"> <IMG SRC="../IMAGES/arrlt12.gif"> COMPUTE-PREFIX-FUNCTION(<I>P</I>)</sub></sup></pre><P>
+<pre>2 <I>P</I>' <IMG SRC="../IMAGES/arrlt12.gif"> reverse(<I>P</I>)</sub></sup></pre><P>
+<pre>3 <IMG SRC="../IMAGES/piuc.gif">' <IMG SRC="../IMAGES/arrlt12.gif"> COMPUTE-PREFIX-FUNCTION(<I>P</I>'<I>)</I></sub></sup></pre><P>
+<pre>4 <B>for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>5    <B>  do</B> <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>m</I> - <IMG SRC="../IMAGES/piuc.gif">[<I>m</I>]</sub></sup></pre><P>
+<pre>6 <B>for</B> <I>l </I><IMG SRC="../IMAGES/arrlt12.gif"><I> 1 <B>to</B> </I>m</sub></sup></pre><P>
+<pre>7<B>      do</B> <I>j </I><IMG SRC="../IMAGES/arrlt12.gif"> m<I> - <IMG SRC="../IMAGES/piuc.gif">'[</I>l<I>]</I></sub></sup></pre><P>
+<pre>8         <B>if</B> <IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] &gt; <I>l - </I><IMG SRC="../IMAGES/piuc.gif"><I>'</I>[<I>l</I>]</sub></sup></pre><P>
+<pre>9            <B>then </B><IMG SRC="../IMAGES/gamma14.gif">[<I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>l</I> - <IMG SRC="../IMAGES/piuc.gif">'[<I>l</I>]</sub></sup></pre><P>
+<pre>10<B> return </B><IMG SRC="../IMAGES/gamma14.gif"></sub></sup></pre><P>
+The procedure <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>GOOD</FONT>-<FONT FACE="Courier New" SIZE=2>SUFFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> is a straightforward implementation of equation (34.9). Its running time is <I>O</I>(<I>m</I>).<P>
+The worst-case running time of the Boyer-Moore algorithm is clearly <I>O</I>((<I>n - m</I> +1)<I>m</I> + |<IMG SRC="../IMAGES/sum14.gif">|), since <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>LAST</FONT>-<FONT FACE="Courier New" SIZE=2>OCCURRENCE</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> takes time <I>O</I>(<I>m</I> + |<IMG SRC="../IMAGES/sum14.gif">|), <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>GOOD</FONT>-<FONT FACE="Courier New" SIZE=2>SUFFIX</FONT>-<FONT FACE="Courier New" SIZE=2>FUNCTION</FONT> takes time <I>O</I>(<I>m</I>), and the Boyer-Moore algorithm (like the Rabin-Karp algorithm) spends <I>O</I>(<I>m</I>) time validating each valid shift <I>s</I>. In practice, however, the Boyer-Moore algorithm is often the algorithm of choice.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09dc_0001">Exercises<a name="09dc_0001"></h2><P>
+<a name="09dc_0002">34.5-1<a name="09dc_0002"><P>
+Compute the <IMG SRC="../IMAGES/lambdauc.gif"> and <IMG SRC="../IMAGES/gamma14.gif"> functions for the pattern <I>P</I> = <FONT FACE="Courier New" SIZE=2>0101101201</FONT> and the alphabet <IMG SRC="../IMAGES/sum14.gif"> = {0, 1, 2}.<P>
+<a name="09dc_0003">34.5-2<a name="09dc_0003"><P>
+Give examples to show that by combining the bad-character and good-suffix heuristics, the Boyer-Moore algorithm can perform much better than if it used just the good-suffix heuristic.<P>
+<a name="09dc_0004">34.5-3<a name="09dc_0004"><P>
+An improvement to the basic Boyer-Moore procedure that is often used in practice is to replace the <IMG SRC="../IMAGES/gamma14.gif"> function by <IMG SRC="../IMAGES/gamma14.gif">', defined by<P>
+<pre><IMG SRC="../IMAGES/gamma14.gif">'[<I>j</I>] = <I>m</I> - max{<I>k</I> : 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>m</I> and <I>P</I> [<I>j</I> + 1 . . <I>m</I>] ~ <I>P<SUB>k</I></SUB> and</sub></sup></pre><P>
+<pre>(<I>k</I> - <I>m</I> + <I>j</I> &gt; 0 implies <I>P</I>[<I>j</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>P</I>[<I>k</I> - <I>m</I> + <I>j</I>])} .</sub></sup></pre><P>
+In addition to ensuring that the characters in the good suffix will be mis-matched at the new shift, the <IMG SRC="../IMAGES/gamma14.gif">' function also guarantees that the same pattern character will not be matched up against the bad text character. Show how to compute the <IMG SRC="../IMAGES/gamma14.gif">' function efficiently.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09dd_1c0e">Problems<a name="09dd_1c0e"></h1><P>
+<a name="09dd_1c0f">34-1     String matching based on repetition factors<a name="09dd_1c0f"><P>
+<a name="09dd_1c09"><a name="09dd_1c0a">Let <I>y<SUP>i</I></SUP> denote the concatenation of string <I>y</I> with itself <I>i</I> times. For example, (<FONT FACE="Courier New" SIZE=2>ab</FONT>)<SUP>3</SUP> = <FONT FACE="Courier New" SIZE=2>ababab</FONT>. We say that a string <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif"><SUP>*</SUP> has <I><B>repetition factor</I></B> <I>r</I> if <I>x</I> = <I>y<SUP>r </I></SUP>for some string <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/sum14.gif"><SUP>*</SUP> and some <I>r</I> &gt; 0. Let <I>p</I>(<I>x</I>) denote the largest <I>r</I> such that <I>x</I> has repetition factor <I>r</I>.<P>
+<I><B>a</I></B><I>.     </I>Give an efficient algorithm that takes as input a pattern <I>P</I>[1 . . <I>m</I>] and computes <IMG SRC="../IMAGES/rho12.gif">(<I>P<SUB>i</I></SUB>) for<SUB> </SUB><I>i</I> = 1, 2, . . . , <I>m</I>. What is the running time of your algorithm?<P>
+<I><B>b</I></B>.     For any pattern <I>P</I>[1 . . <I>m</I>], let <I>p</I>*(<I>P</I>) be defined as max<SUB>1</SUB><IMG SRC="../IMAGES/lteq12.gif">i<SUB><IMG SRC="../IMAGES/lteq12.gif"><I>m</I></SUB> <IMG SRC="../IMAGES/rho12.gif">(<I>P<SUB>i</I></SUB>). Prove that if the pattern <I>P</I> is chosen randomly from the set of all binary strings of length <I>m</I>, then the expected value of <IMG SRC="../IMAGES/rho12.gif"><I>*</I>(<I>P</I>)<I> is O</I>(1).<P>
+<B>c</B>.     Argue that the following string-matching algorithm correctly finds all occurrences of pattern <I>P</I> in a text <I>T</I>[1 . . <I>n</I>] in time <I>O</I>(<IMG SRC="../IMAGES/rho12.gif">*(<I>P</I>)<I>n</I> + <I>m</I>).<P>
+<pre><a name="09dd_1c0b">REPETITION-MATCHER(<I>P,T</I>)</sub></sup></pre><P>
+<pre>1 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> length[<I>P</I>]</sub></sup></pre><P>
+<pre>2 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> length[<I>T</I>]</sub></sup></pre><P>
+<pre>3 <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 + <I>p</I><SUP>*</SUP>(<I>P</I>)</sub></sup></pre><P>
+<pre>4 <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5 <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6 <B>while</B> <I>s</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n - m</I></sub></sup></pre><P>
+<pre>7<B>      do if</B> <I>T</I>[<I>s</I> + <I>q</I> + 1] = <I>P</I>[<I>q</I> + 1]</sub></sup></pre><P>
+<pre>8<B>            then</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I> + 1</sub></sup></pre><P>
+<pre>9<B>                 if</B> <I>q</I> = <I>m</I></sub></sup></pre><P>
+<pre>10<B>                     then</B> print &quot;Pattern occurs with shift&quot; <I>s</I></sub></sup></pre><P>
+<pre>11<B>         if</B> <I>q = m</I> or <I>T</I>[<I>s</I> + <I>q</I> + 1] <IMG SRC="../IMAGES/noteq.gif"> <I>P</I>[<I>q + </I>1]</sub></sup></pre><P>
+<pre>12<I>            </I><B>then</B><I> s</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>s</I> + max(1, <IMG SRC="../IMAGES/hfbrul14.gif"><I>q/k</I><IMG SRC="../IMAGES/hfbrur14.gif"><I>)</I></sub></sup></pre><P>
+<pre>13<B>                 </B><I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+This algorithm is due to Galil and Seiferas. By extending these ideas greatly, they obtain a linear-time string-matching algorithm that uses only <I>O</I>(1) storage beyond what is required for <I>P</I> and <I>T</I>.<P>
+<a name="09dd_1c10">34-2     Parallel string matching<a name="09dd_1c10"><P>
+Consider the problem of string matching on a parallel computer. Assume that for a given pattern, we have a string-matching automaton <I>M</I> with state set <I>Q</I>. Let <IMG SRC="../IMAGES/phicap12.gif"> be the final-state function for <I>M</I>. Suppose that our input ext is <I>T</I>[1 . . <I>n</I>]. We wish to compute <IMG SRC="../IMAGES/phicap12.gif">(<I>T<SUB>i</I></SUB>) for <I>i</I> = 1, 2, . . . , <I>n</I>; that is, we wish to compute the final state for each refix. Our strategy is to use the parallel prefix computation described in Section 30.1.2.<P>
+For any input string <I>x</I>, define the function <IMG SRC="../IMAGES/delta12.gif"><I><SUB>x</I></SUB> : <I>Q</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>Q</I> such that if <I>M </I>starts in state <I>q</I> and reads input <I>x</I>, then <I>M</I> ends in state <IMG SRC="../IMAGES/delta12.gif"><I><SUB>x</I></SUB>(<I>q</I>).<P>
+<I><B>a</I></B>.     Prove that <img src="884_a.gif"> denotes functional composition:<P>
+<img src="884_b.gif"><P>
+<I><B>b</I></B>.     Argue that <img src="884_c.gif"> is an associative operation.<P>
+<a name="09dd_1c0c"><a name="09dd_1c0d"><I><B>c</I></B>.     Argue that <IMG SRC="../IMAGES/delta12.gif"><I><SUB>xy</I></SUB> can be computed from tabular representations of <IMG SRC="../IMAGES/delta12.gif"><I><SUB>x </I></SUB>and <IMG SRC="../IMAGES/delta12.gif"><I><SUB>y</I></SUB> in <I>O</I>(1) time on a CREW PRAM. Analyze how many processors are needed in terms of |<I>Q</I>|<I>."</I><P>
+<I><B>d</I></B>.     Prove that <IMG SRC="../IMAGES/phicap12.gif"> (<I>T<SUB>i</I></SUB>) = <IMG SRC="../IMAGES/delta12.gif"><I>T<SUB>i</I></SUB>(<I>q</I><SUB>0</SUB>), where <I>q</I><SUB>0</SUB> is the start state for <I>M.</I><P>
+<I><B>e</I></B>.     Show how to find all occurrences of a pattern in a text of length <I>n</I> in <I>O</I>(lg <I>n </I>) time on a CREW PRAM. Assume that the pattern is supplied in the form of the corresponding string-matching automaton.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The relation of string matching to the theory of finite automata is discussed by Aho, Hopcroft, and Ullman [4]. The Knuth-Morris-Pratt algorithm [125] was invented independently by Knuth and Pratt and by Morris; they published their work jointly. The Rabin-Karp algorithm was proposed by Rabin and Karp [117], and the Boyer-Moore algorithm is due to Boyer and Moore [32]. Galil and Seiferas [78] give an interesting deterministic linear-time string-matching algorithm that uses only <I>O</I>(1) space beyond that required to store the pattern and text.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap35.htm">Chapter 35</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,40 @@
+#include<iostream>
+using namespace std;
+long long bro,br,c[101],x,a1,n,i,used[101],ok,max1=-100,pm;
+int main()
+{   cin>>n;
+    a1=n;
+    while(a1!=0) {x=a1%10;
+                  if(x==0) {ok++;}
+                  bro++;
+                  if(used[x]==0){br++;}
+                  used[x]++;
+                  a1/=10;}
+                  
+    for(int i=1;i<=100;i++)
+    {if(used[i]>max1) {max1=used[i];pm=i;}  }                             
+    c[1]=1;c[2]=4;  
+    for(i=3;i<=bro;i++)
+    {c[i]=i*(c[i-1]+1);}
+     
+    if(n>=0 && n<=9) {cout<<1<<endl;}
+    else {            
+     
+     if(br==bro)
+     {
+     if(ok==0) { cout<<c[br]<<endl;}
+     if(ok>0) {cout<<c[br]-c[br]/br+1<<endl;}
+     } 
+     else         
+     if(bro==br+1 && ok==0) {cout<<((c[bro]-bro-(bro*(bro-1)))/2)+bro-1+((bro-1)+(bro-2)*(bro-2))<<endl;}
+     else
+     if(br==1) {cout<<bro<<endl;}
+     else 
+     if(br==2 && ok==bro-1) {cout<<bro+1<<endl;}
+     else
+     if(br==2 || max1==bro-1) {cout<<bro+((bro+1)*bro)/2<<endl;}
+//     else {br 
+    }           
+  //  system("pause");
+    return 0;
+}

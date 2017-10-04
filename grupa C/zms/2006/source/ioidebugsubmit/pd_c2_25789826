@@ -1,0 +1,96 @@
+{
+TASK:PHONE
+LANG:PASCAL
+}
+type chart=array[1..13]of char;
+
+var N:integer;
+    brcan:array[0..100]of integer;
+    num:array[0..100]of string;
+    sum:array[0..100] of real;
+    can:array[0..100,1..10]of 0..9;
+    gf:string;
+    nums:array[0..100]of set of char;
+    a:array[0..100,0..100]of real;
+
+procedure floid;
+ var i,j,k:integer;
+  begin
+   for i:=0 to n+1 do
+    for j:=0 to n+1 do
+     if a[i,j]=0 then a[i,j]:=9999;
+  for k:=0 to n+1 do
+   for i:=0 to n+1 do
+    for j:=0 to n+1 do
+     if(A[i,j]>A[i,k]+A[k,j]) then A[i,j]:=A[i,k]+A[k,j];
+
+   writeln(a[0,n]:0:2);
+
+  end;
+
+
+
+function canring(ind1,ind2:integer):boolean;
+ var i:byte;
+     ch:char;
+     num1:set of char;
+  begin
+   num1:=nums[ind2];
+   for i:=1 to brcan[ind1] do
+    begin
+     ch:=char(can[ind1,i]+48);
+
+      if ch in num1 then
+      num1:=num1-[ch];
+    end;
+   if num1=[] then canring:=true
+   else            canring:=false;
+  end;
+
+
+procedure readch(var s:string[10];ind:byte);
+ var i:integer;
+     ch:char;
+  begin
+   repeat
+    read(ch);
+    if(ch=' ')or(ch=#13)then break;
+    nums[ind]:=nums[ind]+[ch];
+    s:=s+ch;
+    until ch=' ';
+  end;
+
+procedure input;
+ var i,j:integer;
+ begin
+  readln(n);
+  for i:=0 to n do begin
+   readch(num[i],i);read(sum[i],brcan[i]);for j:=1 to brcan[i] do read(can[i,j]);readln;
+  end;
+
+  readch(gf,n+1);
+  for i:=0 to n-1 do
+   for j:=i+1 to n do
+    if canring(i,j) then
+     a[i,j]:=sum[i];
+
+
+  end;
+
+begin
+ input;
+ floid;
+ readln
+end.
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,195 @@
+/*
+TASK: festa
+LANG: C
+*/
+
+#include <stdio.h>
+#include <string.h>
+#include <math.h>
+
+typedef struct SHouse
+{
+  long long people, place;
+} house;
+
+typedef struct SHNode
+{
+  house data;
+  struct SHNode *left, *right;
+} node;
+
+typedef struct SPoint
+{
+  long long rpeople, lpeople, lval, rval;
+} point;
+
+long long hc;
+point points[200000];
+house houses[200000];
+node *tree;
+
+house d;
+void addnode(node **t)
+{
+  if(!*t)
+  {
+    *t=(node*)malloc(sizeof(node));
+    (*t)->data=d;
+    (*t)->left=(*t)->right=NULL;
+    return;
+  }
+  if(d.place==(*t)->data.place)
+  {
+    (*t)->data.people+=d.people;
+    return;
+  }
+  if(d.place<(*t)->data.place)
+    addnode(&(*t)->left);
+  else
+    addnode(&(*t)->right);
+}
+
+void add(long long  place, long long  people)
+{
+  d.place=place;
+  d.people=people;
+  addnode(&tree);
+}
+
+void deltree(node *t)
+{
+  if(t==NULL)
+    return;
+  deltree(t->left);
+  deltree(t->right);
+  free(t);
+}
+
+void printtree(node *t)
+{
+  if(t==NULL)
+    return;
+  printtree(t->left);
+  houses[hc++]=t->data;
+  printtree(t->right);
+}
+
+void inithouses(void)
+{
+  hc=0;
+  printtree(tree);
+}
+
+long long  cross(double a1, double b1, double a2, double b2, double s, long long  *v)
+{
+  static double x, y;
+  static long long  t;
+  x=(s+a1*b1-a2*b2)/(b1-b2);
+  y=ceil(x);
+  x=floor(x);
+  *v=fabs((x-a1)*b1+(a2-x)*b2-s);
+  t=fabs((y-a1)*b1+(a2-y)*b2-s);
+  if(*v<=t)
+    return x;
+  *v=t;
+  return y;
+}
+
+int inside(long long  x, long long  a, long long  b)
+{
+  if(x<=a&&x>=b||x>=a&&x<=b)
+    return 1;
+  return 0;
+}
+
+int main(void)
+{
+  short comm;
+  long long place, people, i, s, tx, bx, tv, bv;
+  while(scanf("%hd", &comm)!=EOF)
+    if(comm==1)
+    {
+      scanf("%Ld %Ld", &place, &people);
+      add(place, people);
+    }
+    else
+    {
+      scanf("%Ld", &s);
+      inithouses();
+      bv=0x7FFFFFFFFFFFFFFFLL;
+      points[0].lval=0;
+      points[0].lpeople=houses[0].people;
+      for(i=1; i<hc; ++i)
+      {
+        points[i].lpeople=points[i-1].lpeople+houses[i].people;
+        points[i].lval=points[i-1].lval+points[i-1].lpeople*(houses[i].place-houses[i-1].place);
+      }
+      points[--i].rval=0;
+      points[i].rpeople=houses[i].people;
+      for(--i; i>=0; --i)
+      {
+        points[i].rpeople=points[i+1].rpeople+houses[i].people;
+        points[i].rval=points[i+1].rval+points[i+1].rpeople*(houses[i+1].place-houses[i].place);
+        if(inside(s, points[i].lval+points[i].rval, points[i+1].lval+points[i+1].rval))
+        {
+          tx=cross(houses[i].place, points[i].lpeople, houses[i+1].place, points[i+1].rpeople, s-points[i].lval-points[i+1].rval, &tv);
+          if(tv<bv)
+          {
+            bv=tv;
+            bx=tx;
+          }
+        }
+        else
+        {
+          tx=houses[i].place;
+          tv=fabs((houses[i+1].place-tx)*points[i+1].rpeople+points[i+1].rval-s);
+          if(tv<bv)
+          {
+            bv=tv;
+            bx=tx;
+          }
+        }
+      }
+      if(inside(s, points[0].rval+(houses[0].place+100000000)*points[0].rpeople, points[0].rval))
+      {
+        tx=cross(-100000000, 0, houses[0].place, points[0].rpeople, s-points[0].rval, &tv);
+        if(tv<bv)
+        {
+          bv=tv;
+          bx=tx;
+        }
+      }
+      if(inside(s, points[hc-1].lval, points[hc-1].rval+(-houses[hc-1].place+100000000)*points[hc-1].lpeople))
+      {
+        tx=cross(houses[hc-1].place, points[hc-1].lpeople, 100000000, 0, s-points[hc-1].lval, &tv);
+        if(tv<bv)
+        {
+          bv=tv;
+          bx=tx;
+        }
+      }
+      tx=houses[hc-1].place;
+      tv=fabs((tx-houses[hc-2].place)*points[hc-2].lpeople+points[hc-2].lval-s);
+      if(tv<bv)
+      {
+        bv=tv;
+        bx=tx;
+      }
+      tx=-100000000;
+      tv=fabs((houses[0].place+100000000)*points[0].rpeople+points[0].rval-s);
+      if(tv<bv)
+      {
+        bv=tv;
+        bx=tx;
+      }
+      tx=100000000;
+      tv=fabs((-houses[hc-1].place+100000000)*points[hc-1].lpeople+points[hc-1].lval-s);
+      if(tv<bv)
+      {
+        bv=tv;
+        bx=tx;
+      }
+      printf("%Ld %Ld\n", bx, bv);
+    }
+  return 0;
+}

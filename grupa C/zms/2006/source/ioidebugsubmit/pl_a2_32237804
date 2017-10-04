@@ -1,0 +1,37 @@
+const
+  infile  = 'fest.in';
+  outfile = 'fest.out';
+
+var
+  f : text;
+  g : text;
+
+  sum, ppl, res : int64;
+
+  op, a, b : longint;
+
+
+begin
+  assign(f, infile);
+  assign(g, outfile);
+  rewrite(g);
+  reset(f);
+  while not eof(f) do
+  begin
+    read(f, op);
+    if op = 1 then
+    begin
+      readln(f, a, b);
+      sum:=sum + a*b;
+      ppl:=ppl + b;
+    end
+    else
+    begin
+      readln(f, a);
+      res:=round((sum - a) / ppl);
+      writeln(g, res, ' ', abs(a-(sum - res * ppl)));
+    end;
+  end;
+  close(g);
+  close(f);
+end.

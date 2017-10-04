@@ -1,0 +1,28 @@
+/*
+TASK: trick
+LANG: C++
+*/
+#include<iostream>
+#include<cstring>
+using namespace std;
+long long int x,num[100050],i=1;
+char sign[100050];
+int main()
+{
+   while(sign[i]!='=')
+   {
+       cin>>sign[i];
+       cin>>num[i];
+       if(sign[i]=='='){break;}
+       i++;
+   }
+   x=num[i];
+   for(int j=i-1;j>=1;j--)
+   {
+       if(sign[j]=='+'){x-=num[j];}
+       if(sign[j]=='-'){x+=num[j];}
+       if(sign[j]=='*'){x/=num[j];}
+   }
+   cout<<x<<endl;
+   return 0;
+}

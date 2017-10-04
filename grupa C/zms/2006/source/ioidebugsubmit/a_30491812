@@ -1,0 +1,94 @@
+/*
+TASK: cars
+LANG: C
+*/
+#include<stdio.h>
+#include<string.h>
+#include<time.h>
+#define in stdin;//fopen("/home/swetko/cars/in","r")
+#define mx 524288
+FILE*fn;
+
+unsigned _stklen=16777216*4;
+
+int c,q1,q2,c1,c2,c3,m;
+
+int e[mx*16];
+int top[mx];
+int tc;
+int v[mx];
+int ns[mx];
+int*nei[mx];
+
+int res[mx];
+
+char input[mx*128];
+int end,p;
+
+int getinput()
+  {int q1,c1,c2;
+  fscanf(fn,"%d\n",&c);
+  c1=0;
+  for(q1=0;q1<c;q1++)
+    {
+    fgets(input+c1,mx*32,fn);
+    c1+=strlen(input+c1);
+    input[c1-1]=' ';
+    }
+
+  end=c1;
+  return 0;}
+
+inline int getnext()
+  {int c1=0;
+  while(p<end&&input[p]!=' ')
+    c1=c1*10+input[p++]-48;
+  p++;
+  return c1;}
+
+
+void dfs(int a)
+  {int q1;
+  v[a]=1;
+  for(q1=0;q1<ns[a];q1++)if(!v[nei[a][q1]])dfs(nei[a][q1]);
+  top[tc++]=a;
+  return ;}
+int main()
+  {fn=in;
+  getinput();
+// fscanf(fn,"%d",&c);
+  for(q1=0;q1<c;q1++)
+    {c1=getnext();
+  //  fscanf(fn,"%d",&c1);
+    ns[q1]=c1;
+    nei[q1]=e+c3;
+    for(q2=0;q2<c1;q2++)
+      {
+      c2=getnext();
+    //  fscanf(fn,"%d",&c2);
+      c2--;
+      e[m++]=c2;
+      v[c2]=1;}
+    c3+=c1;}
+  fclose(fn);
+//  printf("%lf\n",(double)clock()/CLOCKS_PER_SEC);
+
+
+  for(q1=0;q1<c;q1++)if(v[q1]==0)break;
+  c1=q1;
+  for(q1=0;q1<c;q1++)v[q1]=0;
+  dfs(c1);
+
+
+  res[top[0]]=1;
+  for(q1=1;q1<c;q1++)
+    {c2=ns[top[q1]];
+    c3=top[q1];
+    for(q2=0;q2<c2;q2++)
+      res[c3]=(res[c3]+res[nei[c3][q2]])%987654321;
+    }
+    
+  printf("%d\n",res[top[c-1]]);
+  
+//  printf("%lf\n",(double)clock()/CLOCKS_PER_SEC);
+  return 0;}

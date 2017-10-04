@@ -1,0 +1,98 @@
+#include<iostream>
+using namespace std;
+long long a[1005][1005],pos[1005][1005],m[10005],n,k,x,fl,br,brm,uk,o;
+struct z
+{
+  long long c,d;
+};
+z t[1000005];
+int wave()
+{
+  if(fl)
+    return o;
+  if(fl==0)
+    o++;
+  int i;
+  for(i=uk;i<=br;i++)
+  {
+    if(a[t[i].c][t[i].d]==x)
+    {
+      fl=1;
+      return o;
+    }
+    if(t[i].c>1 && pos[t[i].c-1][t[i].d]==0)
+    {
+      pos[t[i].c-1][t[i].d]=1;
+      brm++;
+      t[brm].c=t[i].c-1;
+      t[brm].d=t[i].d;
+    }
+
+    if(t[i].c<n && pos[t[i].c+1][t[i].d]==0)
+    {
+      pos[t[i].c+1][t[i].d]=1;
+      brm++;
+      t[brm].c=t[i].c+1;
+      t[brm].d=t[i].d;
+    }
+
+    if(t[i].d>1 && pos[t[i].c][t[i].d-1]==0)
+    {
+      pos[t[i].c][t[i].d-1]=1;
+      brm++;
+      t[brm].c=t[i].c;
+      t[brm].d=t[i].d-1;
+    }
+
+    if(t[i].d<n && pos[t[i].c][t[i].d+1]==0)
+    {
+      pos[t[i].c][t[i].d+1]=1;
+      brm++;
+      t[brm].c=t[i].c;
+      t[brm].d=t[i].d+1;
+    }
+  }
+  br=brm;
+  wave();
+}
+
+int main()
+{
+  long long i,j,y;
+  cin>>n;
+  for(i=1;i<=n;i++)
+    m[i]=-1;
+  for(i=1;i<=n;i++)
+    for(j=1;j<=n;j++)
+      cin>>a[i][j];
+  cin>>k;
+  for(i=1;i<=k;i++)
+  {
+    cin>>x;
+    for(j=1;j<=n;j++)
+      for(y=1;y<=n;y++)
+        pos[i][y]=0;
+    br=1;
+    uk=1;
+    brm=1;
+    o=0;
+    t[1].c=1;
+    t[1].d=n;
+    pos[n][1]=1;
+    m[i]=wave();
+  }
+  for(i=1;i<=k;i++)
+    if(m[i]==-1)
+      cout<<"No Solution"<<endl;
+    else
+      cout<<m[i]<<endl;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

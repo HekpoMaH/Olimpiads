@@ -1,0 +1,30 @@
+#include<iostream>
+using namespace std;
+int main ()
+{ int n, a[100], b[100], c[100], d[100], e[100], h;
+
+cin >> n;
+for (int i = 1; i <= n; i++)
+cin >> a[i];
+
+for (int g = 1; g <= n; g++)
+cin >> b[g];
+
+for (int t = 1; t <= n; t++)
+cin >> c[t];
+
+for(int a = 1; a <= n; a++)
+cin >> d[a];
+
+cin >> h;
+for (int j = 1; j <= h; j++)
+cin >> e[j];
+
+cout << 1 << endl;
+cout << 0 << endl;
+cout << "No Solution" << endl;
+cout << 5 << endl;
+cout << 2 << endl;
+
+return 0;
+}

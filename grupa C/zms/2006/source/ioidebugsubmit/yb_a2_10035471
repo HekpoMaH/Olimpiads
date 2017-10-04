@@ -1,0 +1,33 @@
+{
+TASK: FESTA
+LANG: PASCAL
+}
+var
+   m                    : array[-1000..1000] of longint;
+   i,j,k,l              : integer;
+
+begin
+     while not eof do
+           begin
+                read(i);
+                if i=1 then
+                   begin
+                        readln(i,j);
+                        for k:= -1000 to 1000 do
+                            M[k]:=M[k]+(abs(k-i))*j;
+                   end
+                else
+                    begin
+                         readln(i);
+                         j:=-1000;
+                         l:=abs(M[j]-i);
+                         for k:= -999 to 1000 do
+                             if (abs(M[k]-i)<l) then
+                                begin
+                                     l:=abs(M[k]-i);
+                                     j:=k;
+                                end;
+                         writeln(j,' ',l);
+                    end;
+           end;
+end.

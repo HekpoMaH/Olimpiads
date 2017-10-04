@@ -1,0 +1,97 @@
+/*
+TASK: phone
+LANG: C
+*/
+#include<stdio.h>
+#include<string.h>
+#define max_val 100000
+#define maxN 105
+
+float A[maxN][maxN];
+
+char tel[maxN][12];float tax[maxN];
+short can[maxN][10];
+int n;
+
+float result=0;
+
+void init()
+{
+int i;
+scanf("%d",&n);n++;
+for (i=1;i<=n;i++)
+    {
+    int u,y;
+    scanf("%s %f %d",&tel[i],&tax[i],&u);
+    for (y=0;y<u;y++)
+        {
+        int q;
+        scanf("%d",&q);
+        can[i][q] = 1;
+        }
+    }
+scanf("%s",&tel[n+1]);
+}
+
+void naberi(int i, int j)
+{
+int p,q=1;
+    for (p=0;p<strlen(tel[j]);p++)
+        if (can[i][(char)tel[j][p] - 48] != 1)
+           q = -1;
+        if (q == 1) A[i][j] = tax[i];
+}
+
+void work()
+{
+int i,j;
+for (i=1;i<=n+1;i++) for (j=1;j<=n+1;j++) A[i][j] = -1;
+for (i=1;i<=n;i++)
+    for (j=1;j<=n+1;j++) if (i != j) naberi(i,j);
+}
+
+/*void test()
+{
+int i,j;
+for (i=1;i<=n;i++)
+    {
+    for (j=1;j<=n+1;j++)
+        printf("%f ",A[i][j]);
+    printf("\n");
+    }
+}    */
+
+void dijkstra()
+{
+int i,j,T[maxN];
+float d[maxN];
+for (i=2;i<=n+1;i++)
+    {
+    if (A[1][i] != -1) d[i] = A[1][i];
+       else d[i] = max_val;
+    T[i] = 1;
+    }
+T[1] = 0;
+while (1) {
+          int min = max_val,js;
+          for (j=2;j<=n+1;j++)
+              if (T[j] == 1 && d[j] < max_val)
+                 {min = d[j];js = j;}
+          if (min == max_val) break;
+          T[js] = 0;
+          for (i=1;i<=n+1;i++)
+              if (A[js][i] != -1)
+                 if (A[js][i]+d[js] < d[i]) d[i] = A[js][i]+d[js];
+          }
+result = d[n+1];
+}
+
+int main()
+{
+init();
+work();
+//test();
+dijkstra();
+printf("%.2f\n",result);
+return 0;
+}

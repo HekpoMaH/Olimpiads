@@ -1,0 +1,26 @@
+#include<iostream>
+
+
+using namespace std;
+long a[50000],b[50000];
+long n,k,i,j;
+long long song;
+int main()
+{cin>>n;
+
+for(i=0;i<n;i++)
+{cin>>k;a[k]=i;}
+
+
+for(i=0;i<n;i++)
+{cin>>k;b[k]=i;}
+
+for(i=1;i<=n-1;i++)
+for(j=i+1;j<=n;j++)
+{
+    if(a[i]>a[j] && b[i]>b[j] || a[i]<a[j] && b[i]<b[j] ){song++;}
+}
+cout<<(long long)(n*(n-1)/2)-song<<endl;
+
+return 0;
+}

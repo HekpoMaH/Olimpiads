@@ -1,0 +1,66 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru"
+ lang="ru" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ru:c:math:floor</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-08-11T08:46:49-0700" />
+<meta name="keywords" content="ru,c,math,floor" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/ru/c/math/floor?do=index" title="Все страницы" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=ru:c:math" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/ru/c/math/floor" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/ru/c/math/floor" />
+<link rel="canonical" href="floor" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='ru:c:math';var JSINFO = {"id":"ru:c:math:floor","namespace":"ru:c:math"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="floor" id="floor">floor</a></h2>
+<div class="level2">
+
+<p>
+Синтаксис:
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;cmath&gt;</span>
+    <span class="kw4">double</span> floor<span class="br0">&#40;</span> <span class="kw4">double</span> arg <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+Функция floor() возвращает наибольшее целое не превышающее значения arg.
+Например,
+</p>
+<pre class="c code c++" style="font-family:monospace;">     y <span class="sy0">=</span> <span class="nu16">6.04</span><span class="sy0">;</span>
+     x <span class="sy0">=</span> floor<span class="br0">&#40;</span> y <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+занесёт в переменную x значение 6.0.
+</p>
+
+<p>
+C++ так же представляет следующие перегруженные формы:
+
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;cmath&gt;</span>
+    <span class="kw4">float</span> floor<span class="br0">&#40;</span> <span class="kw4">float</span> arg <span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// схожа с floorf() в C99</span>
+    <span class="kw4">long</span> <span class="kw4">double</span> floor<span class="br0">&#40;</span> <span class="kw4">long</span> <span class="kw4">double</span> arg <span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// схожа с floorl() в C99</span></pre>
+<p>
+Похожие темы: <a href="http://www.cppreference.com/wiki/ru/c/math/ceil" class="wikilink2" title="ru:c:math:ceil" rel="nofollow">ceil</a>, <a href="http://www.cppreference.com/wiki/ru/c/math/fmod" class="wikilink2" title="ru:c:math:fmod" rel="nofollow">fmod</a>
+
+</p>
+
+</div>
+<!-- SECTION "floor" [3-] --></div>
+</body>
+</html>

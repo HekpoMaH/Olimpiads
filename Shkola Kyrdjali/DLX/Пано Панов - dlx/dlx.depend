@@ -1,0 +1,10 @@
+# depslib dependency file v1.0
+1410063947 source:c:\projects\dlx\dlx\dlx.cpp
+	<iostream>
+	<stdio.h>
+	"dlx.h"
+
+1404705822 c:\projects\dlx\dlx\dlx.h
+	<cstring>
+	<climits>
+

@@ -1,0 +1,50 @@
+/*
+TASK:school
+LANG:C++
+*/
+#include <iostream>
+using namespace std;
+int matrix[500][500],used[500],i,M,N,a,b,queue[500];
+int cnt=1;
+int groups=0;
+
+void alldfs(int vertex)
+{
+	used[vertex]=1;
+	for(i=1;i<=N;i++)
+	{
+		if(matrix[vertex][i] && !used[i])
+		{
+			queue[cnt]=vertex;
+			cnt++;
+			alldfs(i);
+		}
+	}
+	cnt--;
+	if(cnt<=0) return;
+	else alldfs(queue[cnt]);
+}
+
+
+int main()
+{
+	cin>>N>>M;
+	for(i=1;i<=M;i++)
+	{
+		cin>>a>>b;
+		matrix[a][b]=1;
+		matrix[b][a]=1;
+	}
+	for(int x=1;x<=N;x++)
+		if(!used[x])
+		{
+			alldfs(x);
+			groups++;
+		}
+	cout << groups<<endl;
+	return 0;
+}
+
+
+
+

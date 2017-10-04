@@ -1,0 +1,25 @@
+#include<cstdio>
+using namespace std;
+int main()
+{
+    int a[5500],b[5500],i,j,n,br;
+    scanf("%d",&n);
+    for(i=0;i<n;i++)
+    scanf("%d",&a[i]);
+    for(i=0;i<n;i++)
+    scanf("%d",&b[i]);
+    br=0;
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            if(a[i]==b[j])
+            {
+                a[i]=b[j]=-1;
+                break;
+            }
+            if(a[i]!=-1 && b[j]!=-1) br++;
+        }
+    }
+    printf("%d\n",br);
+}

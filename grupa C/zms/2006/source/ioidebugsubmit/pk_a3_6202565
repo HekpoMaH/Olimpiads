@@ -1,0 +1,8 @@
+for()
+d[i]=a[s][i];
+for(k=0;k<=n-2;k++)
+for(i=0;i<n;i++)
+for(j=0;j<n;j++)
+if(d[i]>d[j]+a[j][i])
+       =
+a[i][j]=a[i][k]+a[k][j];

@@ -1,0 +1,70 @@
+{
+TASK MORSE
+LANG PASCAL
+}
+var
+   code:string;
+   morse:array[1..255]of string[10];
+   i,len:integer;
+procedure ChCh(ch:char;pos:integer);
+begin
+   case ch of
+      'a','A':morse[pos]:='.-';
+      'b','B':morse[pos]:='-...';
+      'c','C':morse[pos]:='-.-.';
+      'd','D':morse[pos]:='-..';
+      'e','E':morse[pos]:='.';
+      'f','F':morse[pos]:='..-.';
+      'g','G':morse[pos]:='--.';
+      'h','H':morse[pos]:='....';
+      'i','I':morse[pos]:='..';
+      'j','J':morse[pos]:='.---';
+      'k','K':morse[pos]:='-.-';
+      'l','L':morse[pos]:='.-..';
+      'm','M':morse[pos]:='--';
+      'n','N':morse[pos]:='-.';
+      'o','O':morse[pos]:='---';
+      'p','P':morse[pos]:='.--.';
+      'q','Q':morse[pos]:='--.-';
+      'r','R':morse[pos]:='.-.';
+      's','S':morse[pos]:='...';
+      't','T':morse[pos]:='-';
+      'u','U':morse[pos]:='..-';
+      'v','V':morse[pos]:='...-';
+      'w','W':morse[pos]:='.--';
+      'x','X':morse[pos]:='-..-';
+      'y','Y':morse[pos]:='-.--';
+      'z','Z':morse[pos]:='--..';
+      '1':morse[pos]:='.----';
+      '2':morse[pos]:='..---';
+      '3':morse[pos]:='...--';
+      '4':morse[pos]:='....-';
+      '5':morse[pos]:='.....';
+      '6':morse[pos]:='-....';
+      '7':morse[pos]:='--...';
+      '8':morse[pos]:='---..';
+      '9':morse[pos]:='----.';
+      '0':morse[pos]:='-----';
+      '.':morse[pos]:='.-.-.-';
+      ',':morse[pos]:='--..--';
+      '-':morse[pos]:='-..-.';
+      '?':morse[pos]:='..--..';
+      ' ':morse[pos]:='.-.-.';
+   end;
+end;
+begin
+   readln(code);
+   len:=length(code);
+   for i:=1 to len do
+      if code[i]=' ' then
+         if code[i-1]=' ' then
+            continue
+         else
+            ChCh(code[i],i)
+      else
+         ChCh(code[i],i);
+   for i:=1 to len do
+      if morse[i]<>'' then
+         write(morse[i],' ');
+   writeln('...-.-');
+end.

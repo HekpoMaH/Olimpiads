@@ -1,0 +1,25 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int br=0,i,x;
+    char a[10000];
+    for(i=0;i<=10;i++)
+{
+    cin >> a[i];
+}
+
+
+    cout<<13<<endl;
+
+
+
+ //   cout<<a[3]/a[2]+a[1]-a[0]<<endl;
+    
+    
+    
+    
+ //   cin >> x;
+    
+ return 0;   
+}

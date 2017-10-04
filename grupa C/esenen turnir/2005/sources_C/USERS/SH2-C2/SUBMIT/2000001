@@ -1,0 +1,32 @@
+/*
+TASK:SCHOOL
+LANG:C++
+*/
+#include<iostream.h>
+int N,M,A[100][100],br;
+void BFS(int x)
+{ int Q[100],f=0,l=-1;
+br=M/2;int pom;
+Q[++l]=x;
+while(l<f)
+{
+for(int i=1;i<=M;i++)
+ for(int j=1;j<=M;i++)
+ {if(A[i][j]==1)Q[++l]=i;
+  pom=Q[f++];
+  if(A[i][j]==0&&A[pom][j]==0)br++;
+ }
+}
+}
+int main()
+{
+int a;int b;
+cin>>N>>M;
+for(int i=0;i<M;i++)
+ {cin>>a>>b;
+ A[a][b]==1;
+ }
+BFS(M);
+cout<<br<<endl;
+return 0;
+}

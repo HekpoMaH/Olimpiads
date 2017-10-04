@@ -1,0 +1,96 @@
+/*
+TASK: songs
+LANG: C++
+*/
+#include<iostream>
+#include<string>
+#include<iomanip>
+#include<cmath>
+#include<queue>
+#include<stack>
+using namespace std;
+long long int a[10000],b[10000];
+int main()
+{
+    long long int br=0;
+    long long int n;cin>>n;
+    for(int i=1;i<=n;i++)
+    {cin>>a[i];}
+    for(int j=1;j<=n;j++)
+    {cin>>b[j];}
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=n;j++)
+        {
+            if(a[i]==b[j]){
+                if(i==1&&j==1)
+                {
+                   for(int k=1;k<=n;k++)
+                    {
+                        for(int m=1;m<=n;m++)
+                        {
+
+                            if(a[i+k]==b[j+m]){if((i!=j)&&((i+k)!=(j+m))){br++;}}
+                        }
+                    }
+                }
+                if(i==1&&j==n)
+                {
+                 for(int k=1;k<=n;k++)
+                    {
+                        for(int m=1;m<=n-1;m++)
+                        {
+
+                            if(a[i+k]==b[j-m]){if((i!=j)&&((i+k)!=(j-m))){br++;}}
+                        }
+                    }
+                }
+                if(i==n&&j==1)
+                {
+                    for(int k=1;k<=n-1;k++)
+                    {
+                        for(int m=1;m<=n;m++)
+                        {
+
+                            if(a[i-k]==b[j+m]){if((i!=j)&&((i-k)!=(j+m))){br++;}}
+                        }
+                    }
+
+                }
+                if(i==n&&j==n)
+                {
+                    for(int k=1;k<=n-1;k++)
+                    {
+                        for(int m=1;m<=n-1;m++)
+                        {
+
+                            if(a[i-k]==b[j-m]){if((i!=j)&&((i-+k)!=(j-m))){br++;}}
+                        }
+                    }
+                }
+                if(i!=1&&i!=n&&j!=1&&j!=n)
+                {
+                    for(int k=1;k<=n-i;k++)
+                    {
+                        for(int m=1;m<=n-j;m++)
+                        {if(a[i-k]==b[j-m]){if((i!=j)&&((i-k)!=(j-m))){br++;}}
+                        }
+                    }
+                    for(int k=i;k<=n;k++)
+                    {
+                        for(int m=j;m<=n;m++)
+                        {
+
+                            if(a[i+k]==b[j+m]){if((i!=j)&&((i+k)!=(j+m))){br++;}}
+                        }
+                    }
+                }
+
+                   }
+        }
+    }
+    cout<<br<<endl;
+
+
+return 0;
+}

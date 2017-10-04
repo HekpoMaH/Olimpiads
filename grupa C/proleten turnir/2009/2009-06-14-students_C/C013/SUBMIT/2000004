@@ -1,0 +1,48 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+long ok,br,s,f,s1,f1,n,m,i,c[201][201],b[201][201],j,x,y,used[201];
+vector<long> a[201];
+void rec(long x, long br)
+{long i,j;
+ c[x][0]++;
+ c[x][c[x][0]]=br;
+ j=a[x].size();
+ for(i=0;i<j;i++)
+ if(used[a[x][i]]==0) {used[a[x][i]]=1;rec(a[x][i],br+1);used[a[x][i]]=0;}
+}
+void rec1(long x, long br)
+{long i,j;
+ b[x][0]++;
+ b[x][b[x][0]]=br;
+ j=a[x].size();
+ for(i=0;i<j;i++)
+ if(used[a[x][i]]==0) {used[a[x][i]]=1;rec(a[x][i],br+1);used[a[x][i]]=0;}
+}
+int main()
+ {
+ scanf("%d%d",&n,&m);
+ for(i=1;i<=n;i++)
+ {scanf("%d%d",&x,&y);
+  a[x].push_back(y);
+  a[y].push_back(x);
+ }
+ scanf("%d%d%d%d",&s,&f,&s1,&f1);
+ x=a[s].size();
+ for(i=0;i<x;i++)
+ rec(a[s][i],1);
+ x=a[s1].size();
+ for(i=0;i<x;i++)
+ rec1(a[s1][i],1);
+ for(i=1;i<=n;i++)
+ {ok=0;
+  for(j=1;j<=c[i][0];j++)
+  if(ok==1) break;
+  else
+  for(x=1;x<=b[i][0];x++)
+  if(b[i][x]==c[i][j]) {ok=1;br++;break;}
+ }
+ cout<<br<<endl;
+ //system("PAUSE");
+ return 0;
+ }

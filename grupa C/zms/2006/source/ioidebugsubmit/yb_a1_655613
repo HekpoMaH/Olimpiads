@@ -1,0 +1,18 @@
+{
+TASK: expres
+LANG: PASCAL
+}
+program express;
+
+type
+	Integer					= LongInt;
+
+var
+	s					: Array [1 .. 6] of AnsiString;
+	n, k, i					: Integer;
+
+begin
+	readln(n, k);
+	for i := 1 to 6 do
+		readln(s[i]);
+end.

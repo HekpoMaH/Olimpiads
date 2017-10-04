@@ -1,0 +1,9 @@
+Var K:Longint;
+    S:String;
+Begin
+ Repeat
+  Write('Enter K ');
+  ReadLn(K);
+ Until K<100000000;
+  Write('Vuvedete cifrite ');
+  ReadLn(S);

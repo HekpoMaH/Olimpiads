@@ -1,0 +1,10 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+
+{  int a=5,b=4,c=3,d=2,e=1;
+  if (cin>>a>>c>>e>>d>>a>>b>>a>>c>>d>>e>>b) cout<<b<<endl;
+   return 0;
+}

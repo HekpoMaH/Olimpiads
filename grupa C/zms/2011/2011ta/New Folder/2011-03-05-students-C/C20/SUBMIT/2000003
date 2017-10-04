@@ -1,0 +1,19 @@
+#include<cstdio>
+using namespace std;
+int main() {
+	int a;
+	char b = '0';
+	int tek_x = 1 , bon = 0 , res;
+	while ( b != '=' ) {
+		scanf ( "\n%c%d" , &b , &a );
+		if ( b == '+' ) bon += a;
+		if ( b == '-' ) bon -= a;
+		if ( b == '*' ) {
+			tek_x *= a;
+			bon *= a;
+		}
+		if ( b == '=' ) res = a;
+	}
+	printf ( "%d\n" ,( res - bon ) / tek_x );
+	return 0;
+}

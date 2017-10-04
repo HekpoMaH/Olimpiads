@@ -1,0 +1,139 @@
+/*
+TASK:MORSE
+LANG:C++
+*/
+#include <iostream.h>
+char text[300];
+int main()
+{
+	cin.getline(text,300,'\n');
+	for(int i=0;text[i]!='\0';i++)
+	{
+		if(text[i]=='a' || text[i]=='A')
+			cout<<".- ";
+
+		if(text[i]=='b' || text[i]=='B')
+			cout<<"-... ";
+
+		if(text[i]=='c' || text[i]=='C')
+			cout<<"-.-. ";
+
+		if(text[i]=='d' || text[i]=='D')
+			cout<<"-.. ";
+
+		if(text[i]=='e' || text[i]=='E')
+			cout<<". ";
+
+		if(text[i]=='f' || text[i]=='F')
+			cout<<"..-. ";
+
+		if(text[i]=='g' || text[i]=='G')
+			cout<<"--. ";
+
+		if(text[i]=='h' || text[i]=='H')
+			cout<<".... ";
+
+		if(text[i]=='i' || text[i]=='I')
+			cout<<".. ";
+
+		if(text[i]=='j' || text[i]=='J')
+			cout<<".--- ";
+
+		if(text[i]=='k' || text[i]=='K')
+			cout<<"-.- ";
+
+		if(text[i]=='l' || text[i]=='L')
+			cout<<".-.. ";
+
+		if(text[i]=='m' || text[i]=='M')
+			cout<<"-- ";
+
+		if(text[i]=='n' || text[i]=='N')
+			cout<<"-. ";
+
+		if(text[i]=='o' || text[i]=='O')
+			cout<<"--- ";
+
+		if(text[i]=='p' || text[i]=='P')
+			cout<<".--. ";
+
+		if(text[i]=='q' || text[i]=='Q')
+			cout<<"--.- ";
+
+		if(text[i]=='r' || text[i]=='R')
+			cout<<".-. ";
+
+		if(text[i]=='s' || text[i]=='S')
+			cout<<"... ";
+
+		if(text[i]=='t' || text[i]=='T')
+			cout<<"- ";
+
+		if(text[i]=='u' || text[i]=='U')
+			cout<<"..- ";
+
+		if(text[i]=='v' || text[i]=='V')
+			cout<<"...- ";
+
+		if(text[i]=='w' || text[i]=='W')
+			cout<<".-- ";
+
+		if(text[i]=='x' || text[i]=='X')
+			cout<<"-..- ";
+
+		if(text[i]=='y' || text[i]=='Y')
+			cout<<"-.-- ";
+
+		if(text[i]=='z' || text[i]=='Z')
+			cout<<"--.. ";
+
+		if(text[i]=='1')
+			cout<<".---- ";
+
+		if(text[i]=='2')
+			cout<<"..--- ";
+
+		if(text[i]=='3')
+			cout<<"...-- ";
+
+		if(text[i]=='4')
+			cout<<"....- ";
+
+		if(text[i]=='5')
+			cout<<"..... ";
+
+		if(text[i]=='6')
+			cout<<"-.... ";
+
+		if(text[i]=='7')
+			cout<<"--... ";
+
+		if(text[i]=='8')
+			cout<<"---.. ";
+
+		if(text[i]=='9')
+			cout<<"----. ";
+
+		if(text[i]=='0')
+			cout<<"----- ";
+
+		if(text[i]=='.')
+			cout<<".-.-.- ";
+
+		if(text[i]==',')
+			cout<<"--..-- ";
+
+		if(text[i]=='-')
+			cout<<"-..-. ";
+
+		if(text[i]=='?')
+			cout<<"..--.. ";
+	
+		if(text[i-1]!=' ')
+			if(text[i]==' ')
+				cout<<".-.-. ";
+		}
+		cout<<"...-.-";
+	return 0;
+
+}

@@ -1,0 +1,40 @@
+{
+TASK:number
+LANG:pascal
+}
+{$R-}
+var
+   n,d1,d2,d3,t,k,i,NumOfNums:integer;
+   a:array[1..20]of word;
+function IsDivisible:boolean;
+begin
+   for i:=1 to n-1 do
+      if (((10*a[i]+a[i+1])mod d1=0)or((10*a[i]+a[i+1])mod d2=0)or((10*a[i]+a[i+1])mod d3=0))and(a[i]<>0) then
+         IsDivisible:=true
+      else
+      begin
+         IsDivisible:=false;
+         break;
+      end;
+end;
+begin
+   NumOfNums:=0;
+   read(n,d1,d2,d3);
+   a[1]:=1;
+   repeat
+      k:=1;
+      for i:=n downto 1 do
+      begin
+         a[i]:=a[i]+k;
+         if a[i]>9 then
+         begin
+            a[i]:=a[i]mod 10;
+            k:=1;
+         end
+         else
+            k:=0;
+      end;
+      if IsDivisible then NumOfNums:=NumOfNums+1;
+   until k=1;
+   writeln(NumOfNums);
+end.

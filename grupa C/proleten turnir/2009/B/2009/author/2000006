@@ -1,0 +1,102 @@
+#include <stdio.h>
+
+#define MAXN 1000001
+
+long n, m, heap_len;
+long a[MAXN], inheap[MAXN];
+
+struct THeapElement {
+	long value;
+	long real_index;
+};
+
+struct THeapElement heap[MAXN];
+
+void swap(struct THeapElement *a, struct THeapElement *b) {
+	struct THeapElement temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void add_heap(long value, long real_index) {
+	long i;
+	heap_len = heap_len + 1;
+	heap[heap_len].value = value;
+	heap[heap_len].real_index = real_index;
+	inheap[real_index] = heap_len;
+	i = heap_len;
+	while ((i / 2 > 0) && (heap[i].value < heap[i / 2].value)) {		
+		inheap[heap[i].real_index] = i / 2;
+		inheap[heap[i / 2].real_index] = i;
+		swap(&heap[i], &heap[i / 2]);
+		i = i / 2;
+	}
+}
+
+void del_heap(long index) {
+	long min_i, i = index;
+	inheap[heap[heap_len].real_index] = index;
+	inheap[heap[index].real_index] = heap_len;
+	swap(&heap[index], &heap[heap_len]);
+	heap_len--;
+	while (i * 2 <= heap_len) {
+		if (i * 2 == heap_len)
+			min_i = heap_len ;
+		else if (heap[i * 2].value < heap[i * 2 + 1].value)
+			min_i = i * 2;
+		else
+			min_i = i * 2 + 1;
+		if (heap[i].value > heap[min_i].value) {
+			inheap[heap[min_i].real_index] = i;
+			inheap[heap[i].real_index] = min_i;
+			swap(&heap[i], &heap[min_i]);
+			i = min_i;
+		} else
+			break;
+	}
+	i = index;
+	while ((i / 2 > 0) && (heap[i].value < heap[i / 2].value)) {		
+		inheap[heap[i].real_index] = i / 2;
+		inheap[heap[i / 2].real_index] = i;
+		swap(&heap[i], &heap[i / 2]);
+		i = i / 2;
+	}
+}
+
+long min_heap() {
+	return heap[1].value;
+}
+
+int main () {
+	long i, j, min_start; 
+	long long min, current_sum;
+	heap_len = 0;
+	scanf("%ld %ld", &n, &m);
+	
+	for (i = 0; i < n; i++) scanf("%ld", &a[i]);
+	
+	current_sum = 0;
+	for (i = 0; i < m; i++) {
+		current_sum += a[i];
+		add_heap(a[i], i);
+	}
+	
+	min = current_sum - (m * min_heap());
+	min_start = 0;
+	
+	for (i = m; i < n; i++) {
+		current_sum -= a[i-m];
+		current_sum += a[i];
+		del_heap(inheap[i-m]);
+		add_heap(a[i], i);
+		if (current_sum - (m * min_heap()) < min) {
+			min = current_sum - (m * min_heap());
+			min_start = i - m + 1;
+		}
+	}
+	
+	printf("%lld\n", min);
+	printf("%ld\n", min_start + 1);
+	
+	return 0;
+}

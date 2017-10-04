@@ -1,0 +1,437 @@
+25
+3 5
+A 3
+B 2
+C 2
+A
+B C
+A B
+A B
+C
+3 5
+A 3
+B 2
+C 2
+A
+B C
+A B
+A B
+C
+3 5
+A 2
+B 2
+C 1
+A
+B C
+A B
+A B
+C
+3 5
+A 3
+B 3
+C 3
+A
+B C
+A B
+A B
+C
+1 1
+aaa 1
+aaa
+1 1
+aaa 2
+aaa
+1 1
+aaa 1
+
+1 3
+aaa 3
+aaa
+aaa
+aaa
+1 3
+aaa 3
+aaa
+
+aaa
+1 3
+aaa 3
+aaa
+
+aaa
+15 15
+a 2
+b 2
+c 1
+d 2
+e 1
+f 1
+g 2
+h 1
+i 1
+j 1
+k 1
+l 1
+m 1
+n 2
+o 1
+g j o
+a c d e g l m
+b c f g m n o
+g i l m
+b j k m o
+b i m
+i m o
+e n
+
+c d e k l m n o
+b c g i m o
+g l m n
+b d e g h j m
+a d f g i j k
+b d h j m n
+15 15
+a 2
+b 2
+c 1
+d 2
+e 1
+f 1
+g 2
+h 1
+i 1
+j 1
+k 1
+l 1
+m 1
+n 2
+o 1
+a c e g j k o
+a c d e f g i j l m
+a b c f g k l m n o
+a b c e g i l m n o
+b e f g i j k m o
+h i m b e
+a g i m o
+b c e i k n
+b g c k d f i l
+c d e g k l m n o
+b c e g i m o
+a b g m n h i l
+b d e g h o j m n
+f g i a d e j k
+b d e g h j k m n o
+15 15
+a 2
+b 1
+c 1
+d 2
+e 1
+f 3
+g 2
+h 2
+i 2
+j 1
+k 1
+l 2
+m 2
+n 2
+o 3
+a b c d e f g h i j k l m n o
+a b c d e f g h i j k l m n o
+a b c d e f g h i j k l m n o
+a b c d e f g i j k l m n o
+a b c d e f g h i j k l m n o
+a b c e f h i j k l m n
+a b c e f g h i j k m o
+a b c d e g i j k l n o
+b c d e f g h i j k l n o
+c d e f g i k l m n o
+a b c d e f g i j k l m n o
+a b e g h i j k l m n o
+a b c d e f g h j k m n o
+a c d e f g h i j k m n
+a b c d e f g h i j k l m n o
+15 15
+a 3
+b 2
+c 2
+d 3
+e 2
+f 4
+g 3
+h 3
+i 3
+j 2
+k 2
+l 3
+m 3
+n 3
+o 4
+a b c d e f g j k l m o
+a c d e f g i j l m o
+a b c f g k l m n o
+a b c e f g i j l m n o
+a b d e f g h i j k m o
+b c e h i j k m
+a g h i m o
+a b c e g i k n
+b c d e f g h i k l n
+c d e f g k l m n o
+a b c d e f g i k l m n o
+a b e g h i j k l m n o
+b c d e f g h j m n o
+a d e f g h i j k
+b c d e f g h i j k m n o
+15 15
+a 5
+b 4
+c 4
+d 2
+e 4
+f 6
+g 2
+h 2
+i 2
+j 4
+k 1
+l 2
+m 5
+n 2
+o 3
+a b c d e f g j k l m o
+a c d e f g i j l m o
+a b c f g k l m n o
+a b c e f g i j l m n o
+a b d e f g h i j k m o
+b c e h i j k m
+a g h i m o
+a b c e g i k n
+b c d e f g h i k l n
+c d e f g k l m n o
+a b c d e f g i k l m n o
+a b e g h i j k l m n o
+b c d e f g h j m n o
+a d e f g h i j k
+b c d e f g h i j k m n o
+15 15
+a 5
+b 5
+c 3
+d 4
+e 2
+f 2
+g 4
+h 2
+i 3
+j 3
+k 2
+l 2
+m 3
+n 4
+o 2
+a b c d e f g i j k l m o
+a c d e f g i j l m o
+a b c e f g k l m n o
+a b c d e f g i j l m n o
+a b d e f g h i j k l m o
+a b c e f h i j k m n
+a g h i m o
+a b c e g i k n
+b c d e f g h i j k l n
+c d e f g i k l m n o
+a b c d e f g i j k l m n o
+a b e g h i j k l m n o
+b c d e f g h j m n o
+a d e f g h i j k
+b c d e f g h i j k l m n o
+15 50
+a 6
+b 3
+c 4
+d 2
+e 6
+f 6
+g 3
+h 5
+i 4
+j 5
+k 6
+l 6
+m 3
+n 5
+o 6
+g j o
+a c d e g l m
+b c f g m n o
+g i l m
+b j k m o
+b i m
+i m o
+e n
+
+c d e k l m n o
+b c g i m o
+g l m n
+b d e g h j m
+a d f g i j k
+b d h j m n
+h i j k
+e f i k l n
+a d h
+a c d e h i k m n
+c d f g h k m o
+c o
+e f g j k n o
+a b e g n
+d e
+f i j l n
+k l m o
+h j k l
+e k m o
+b d e i l m
+b l m
+e f h i m o
+a i j l o
+d e g i j k l m o
+b f g i k m
+a b i l m
+b m
+d g h l
+d e g h n
+e f h o
+d j k
+f i l n
+c e g h k l n
+c f g j m
+l m n o
+b c g i l m
+a d f i
+e g l
+a b d e g k m o
+b c d e f j k l o
+a b c e f g h k
+15 50
+a 8
+b 5
+c 6
+d 4
+e 8
+f 8
+g 5
+h 7
+i 6
+j 7
+k 8
+l 8
+m 5
+n 7
+o 8
+a b c d e f g j k l m o
+a c d e f g i j l m o
+a b c f g k l m n o
+a b c e f g i j l m n o
+a b d e f g h i j k m o
+b c e h i j k m
+a g h i m o
+a b c e g i k n
+b c d e f g h i k l n
+c d e f g k l m n o
+a b c d e f g i k l m n o
+a b e g h i j k l m n o
+b c d e f g h j m n o
+a d e f g h i j k
+b c d e f g h i j k m n o
+b d f g h i j k l n o
+a c e f g h i k l m n
+a c d g h i k m o
+a b c d e f h i j k m n o
+a c d e f g h j k l m o
+a c e j k m n o
+c e f g h i j k m n o
+a b e f g j k l m n o
+a c d e g i j l
+a b c d e f g i j l n
+b c e f g h i k l m n o
+a e g h i j k l m n o
+c e g h k l m o
+b c d e f h i j k l m n
+a b d e h i j k l m
+a c d e f g h i k m n o
+a d e f i j l n o
+b d e f g h i j k l m o
+b d e f g h i j k m
+a b d f g h i j l m n o
+a b c d e h i k l m o
+a d g h i k l n o
+b d e f g h i j n o
+a e f h j l n o
+a c d e g h j k l n o
+b c d e f h i l n o
+a b c d e g h i k l m n o
+a c f g i j k m
+a c e f g h j l m n o
+b c d f g i j k l m n
+a d e f g h i l m n o
+a b c e g h i l m n o
+a b c d e g h k m n o
+b c d e f g i j k l n o
+a b c d e f g h j k m o
+2 2
+1 2
+2 1
+1 2
+2
+2 2
+1 1
+2 1
+1 2
+2
+2 2
+AbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghij 2
+AbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghiz 2
+AbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghij
+AbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghijAbcdefghiz
+10 15
+0 4
+1 4
+2 2
+3 3
+4 1
+5 1
+6 3
+7 1
+8 2
+9 2
+0 1 2 4 5 8 9
+0 1 2 3 7 8
+3 4 5 7 9
+2 3 5 6 8
+0 2 5 9
+0 2 5 7 8 9
+3 2 1 0
+0 1 4 5 6
+1 4 5 7 8
+0 1 3 6 8 9
+0 1 2 3 4 8 9
+3 9
+0 2 5 6 7 8 9
+1 3 5 7 9
+0 1 2
+3 0
+a 1
+b 2
+c 3
+4 5
+IOI 3
+IPSC 2
+TopCoder 2
+SEERC 10
+IOI
+IPSC TopCoder
+IOI IPSC
+IOI IPSC
+TopCoder SEERC
+1 1
+SampleContest 1
+SampleContest

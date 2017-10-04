@@ -1,0 +1,53 @@
+{
+TASK:SCHOOL
+LANG:PASCAL
+}
+var
+currentvert,br,levelvert,queueend,p,n,j,i,m,x,y,u:integer;
+opaska,used:array[1..500]of integer;
+a:array[1..150,1..150]of integer;
+procedure yyy(i:integer);
+begin
+  if br<>0 then
+  for y:=1 to n do
+   opaska[y]:=0;
+
+ opaska[1]:=i;
+ used[i]:=1;
+ currentvert:=1;levelvert:=2;queueend:=2;
+ while currentvert<queueend do
+  begin
+   for p:=currentvert to queueend do
+    begin
+     currentvert:=currentvert+1;
+     for j:=1 to n do
+      if (a[opaska[p],j]=1)and(used[j]=0) then
+       begin
+        opaska[queueend]:=j;
+        queueend:=queueend+1;
+        used[j]:=1;
+       end;
+    end;
+    levelvert:=queueend;
+
+  end;
+end;
+begin
+read(n,m);
+for i:=1 to m do
+ begin
+  read(x,y);
+  a[x,y]:=1;
+  a[y,x]:=1;
+ end;
+ br:=0;
+ for u:=1 to n do
+  begin
+  if used[u]=0 then
+   begin
+    yyy(u);
+    br:=br+1;
+   end;
+  end;
+ writeln(br);
+end.

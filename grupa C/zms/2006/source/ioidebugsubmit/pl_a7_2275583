@@ -1,0 +1,35 @@
+{
+TASK: FESTA
+LANG: PASCAL
+}
+
+const b = -10000;
+      e = 50000;
+var a, st : array[1..100000]of longint;
+    d, otg, poz, br, i, j, m, n, s, p ,q, x, y : longint;
+
+Begin
+ while not eof do begin
+  read( p);
+  if p=1 then begin
+    readln( x, y);
+    inc(br);
+    a[br]:=x;
+    st[br]:=y;
+  end;
+  if p=2 then begin
+    readln( x);
+    s:=0;
+    otg:=9999999;
+    for i:=b to e do begin
+      s:=0;
+      for j:=1 to br do begin
+        d:=abs(a[j]-i);
+        s:=s+d*st[j];
+      end;
+      if abs(s-x)<otg then begin otg:=abs(s-x); poz:=i; end;
+    end;
+    writeln(poz, ' ', otg);
+  end;
+ end;
+end.

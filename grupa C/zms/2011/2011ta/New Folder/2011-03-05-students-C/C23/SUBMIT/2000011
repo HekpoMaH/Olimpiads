@@ -1,0 +1,47 @@
+#include<iostream>
+#include<stack>
+
+using namespace std;
+
+stack <unsigned long long> a;
+stack <char>  b;
+
+string c;
+unsigned long long n,k,i;
+char s;
+
+long long solve()
+{
+    while(!b.empty())
+    {
+        if(b.top()=='*'){n/=a.top();b.pop();a.pop();}
+         else if(b.top()=='-'){n+=a.top();b.pop();a.pop();}
+     else {n-=a.top();b.pop();a.pop();}
+
+     }
+
+return n;
+}
+
+
+int main()
+{i=0;
+    while(1)
+    { c='\0';
+        i++;
+
+        if(i%2==1){
+            cin>>s;
+        if(s=='+' || s=='*' || s=='-')b.push(s);
+        else if(s=='=')break;
+        }
+        else {cin>>n;a.push(n);
+              }
+    }
+cin>>n;
+
+
+cout<<solve()<<endl;
+
+return 0;
+}

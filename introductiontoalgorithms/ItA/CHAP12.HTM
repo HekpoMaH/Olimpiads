@@ -1,0 +1,492 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 12: HASH TABLES</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap13.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap11.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="07c0_1428">CHAPTER 12: HASH TABLES<a name="07c0_1428"></h1><P>
+<a name="07c0_1426"><a name="07c0_1427">Many applications require a dynamic set that supports only the dictionary operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>, and <FONT FACE="Courier New" SIZE=2>DELETE</FONT>. For example, a compiler for a computer language maintains a symbol table, in which the keys of elements are arbitrary character strings that correspond to identifiers in the language. A hash table is an effective data structure for implementing dictionaries. Although searching for an element in a hash table can take as long as searching for an element in a linked list--<IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time in the worst case--in practice, hashing performs extremely well. Under reasonable assumptions, the expected time to search for an element in a hash table is <I>O</I>(1).<P>
+A hash table is a generalization of the simpler notion of an ordinary array. Directly addressing into an ordinary array makes effective use of our ability to examine an arbitrary position in an array in <I>O</I> (1) time. Section 12.1 discusses direct addressing in more detail. Direct addressing is applicable when we can afford to allocate an array that has one position for every possible key.<P>
+When the number of keys actually stored is small relative to the total number of possible keys, hash tables become an effective alternative to directly addressing an array, since a hash table typically uses an array of size proportional to the number of keys actually stored. Instead of using the key as an array index directly, the array index is <I>computed</I> from the key. Section 12.2 presents the main ideas, and Section 12.3 describes how array indices can be computed from keys using hash functions. Several variations on the basic theme are presented and analyzed; the "bottom line" is that hashing is an extremely effective and practical technique: the basic dictionary operations require only <I>O</I> (1) time on the average.<P>
+
+
+
+
+
+<h1><a name="07c2_1433">12.1 Direct-address tables<a name="07c2_1433"></h1><P>
+<a name="07c2_1428"><a name="07c2_1429"><a name="07c2_142a"><a name="07c2_142b">Direct addressing is a simple technique that works well when the universe <I>U</I> of keys is reasonably small. Suppose that an application needs a dynamic set in which each element has a key drawn from the universe <I>U</I> = {0,1, . . . , m - 1}, where <I>m</I> is not too large. We shall assume that no two elements have the same key.<P>
+<img src="220_a.gif"><P>
+<h4><a name="07c2_1434">Figure 12.1 Implementing a dynamic set by a direct-address table T. Each key in the universe U = {0,1, . . . , 9} corresponds to an index in the table. The set K = {2, 3, 5, 8} of actual keys determines the slots in the table that contain pointers to elements. The other slots, heavily shaded, contain <FONT FACE="Courier New" SIZE=2>NIL<FONT FACE="Times New Roman" SIZE=2>.<a name="07c2_1434"></FONT></FONT></sub></sup></h4><P>
+<a name="07c2_142c"><a name="07c2_142d"><a name="07c2_142e"><a name="07c2_142f">To represent the dynamic set, we use an array, or <I><B>direct-address table</I></B>, <I>T</I> [0 . . <I>m</I> - 1], in which each position, or <I><B>slot</I></B>, corresponds to a key in the universe <I>U</I>. Figure 12.1 illustrates the approach; slot <I>k</I> points to an element in the set with key <I>k</I>. If the set contains no element with key <I>k</I>, then <I>T</I>[<I>k</I>] = <FONT FACE="Courier New" SIZE=2>NIL.</FONT><P>
+The dictionary operations are trivial to implement.<P>
+<pre><a name="07c2_1430">DIRECT-ADDRESS-SEARCH(<I>T,k</I>)</sub></sup></pre><P>
+<pre><B>return</B> <I>T</I>[<I>k</I>]</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07c2_1431">DIRECT-ADDRESS-INSERT(<I>T,x</I>)</sub></sup></pre><P>
+<pre><I>T</I>[<I>key</I>[<I>x</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07c2_1432">DIRECT-ADDRESS-DELETE(<I>T,x</I>)</sub></sup></pre><P>
+<pre><I>T</I>[<I>key</I>[<I>x</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+Each of these operations is fast: only <I>O</I>(1) time is required.<P>
+For some applications, the elements in the dynamic set can be stored in the direct-address table itself. That is, rather than storing an element<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s key and satellite data in an object external to the direct-address table, with a pointer from a slot in the table to the object, we can store the object in the slot itself, thus saving space. Moreover, it is often unnecessary to store the key field of the object, since if we have the index of an object in the table, we have its key. If keys are not stored, however, we must have some way to tell if the slot is empty.<P>
+
+
+
+
+
+<h2><a name="07c3_1435">Exercises<a name="07c3_1435"></h2><P>
+<a name="07c3_1436">12.1-1<a name="07c3_1436"><P>
+Consider a dynamic set <I>S</I> that is represented by a direct-address table <I>T </I>of length <I>m</I>. Describe a procedure that finds the maximum element of <I>S</I>. What is the worst-case performance of your procedure?<P>
+<a name="07c3_1437">12.1-2<a name="07c3_1437"><P>
+<a name="07c3_1433"><a name="07c3_1434">A <I><B>bit vector</I></B> is simply an array of bits (0<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s and 1<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s). A bit vector of length <I>m</I> takes much less space than an array of <I>m </I>pointers. Describe how to use a bit vector to represent a dynamic set of distinct elements with no satellite data. Dictionary operations should run in <I>O</I>(1) time.<P>
+<a name="07c3_1438">12.1-3<a name="07c3_1438"><P>
+Suggest how to implement a direct-address table in which the keys of stored elements do not need to be distinct and the elements can have satellite data. All three dictionary operations (<FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, and <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>) should run in <I>O</I>(1) time. (Don't forget that <FONT FACE="Courier New" SIZE=2>DELETE</FONT> takes as an argument a pointer to an object to be deleted, not a key.)<P>
+<a name="07c3_1439">12.1-4<a name="07c3_1439"><P>
+We wish to implement a dictionary by using direct addressing on a <I>huge </I>array. At the start, the array entries may contain garbage, and initializing the entire array is impractical because of its size. Describe a scheme for implementing a direct-address dictionary on a huge array. Each stored object should use <I>O</I>(1) space; the operations <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>, <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> should take <I>O</I>(1) time each; and the initialization of the data structure should take <I>O</I>(1) time. (<I>Hint:</I> Use an additional stack, whose size is the number of keys actually stored in the dictionary, to help determine whether a given entry in the huge array is valid or not.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07c4_143b">12.2 Hash tables<a name="07c4_143b"></h1><P>
+<a name="07c4_1435"><a name="07c4_1436"><a name="07c4_1437">The difficulty with direct addressing is obvious: if the universe <I>U</I> is large, storing a table <I>T</I> of size |<I>U</I>| may be impractical, or even impossible, given the memory available on a typical computer. Furthermore, the set <I>K</I> of keys <I>actually stored</I> may be so small relative to <I>U</I> that most of the space allocated for <I>T</I> would be wasted.<P>
+When the set <I>K</I> of keys stored in a dictionary is much smaller than the universe <I>U</I> of all possible keys, a hash table requires much less storage than a direct-address table. Specifically, the storage requirements can be reduced to <IMG SRC="../IMAGES/bound.gif">(|<I>K</I>|<I></I>), even though searching for an element in the hash table still requires only <I>O</I>(1) time. (The only catch is that this bound is for the <I>average time</I>, whereas for direct addressing it holds for the <I>worst-case time</I>.)<P>
+<img src="222_a.gif"><P>
+<h4><a name="07c4_143c">Figure 12.2 Using a hash function h to map keys to hash-table slots. Keys k<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2> and k<SUB>5</SUB><FONT FACE="Times New Roman" SIZE=2> map to the same slot, so they collide.<a name="07c4_143c"></FONT></FONT></sub></sup></h4><P>
+<a name="07c4_1438">With direct addressing, an element with key <I>k</I> is stored in slot <I>k</I>. With hashing, this element is stored in slot <I>h</I>(<I>k</I>); that is, a <I><B>hash function</I></B> <I>h</I> is used to compute the slot from the key <I>k</I>. Here <I>h</I> maps the universe <I>U</I> of keys into the slots of a <I><B>hash table</I></B> <I>T</I>[0 . . <I>m</I> - 1]:<P>
+<pre><I>h: U</I> <IMG SRC="../IMAGES/arrow12.gif">{0,1, . . . , <I>m </I>- 1} .</sub></sup></pre><P>
+<a name="07c4_1439">We say that an element with key <I>k</I> <I><B>hashes</I></B> to slot <I>h(k)</I>; we also say that <I>h(k)</I> is the <I><B>hash value</I></B> of key <I>k</I>. Figure 12.2 illustrates the basic idea. The point of the hash function is to reduce the range of array indices that need to be handled. Instead of |<I>U</I>| values, we need to handle only <I>m</I> values. Storage requirements are correspondingly reduced.<P>
+<a name="07c4_143a">The fly in the ointment of this beautiful idea is that two keys may hash to the same slot--a <I><B>collision</I>.</B> Fortunately, there are effective techniques for resolving the conflict created by collisions.<P>
+Of course, the ideal solution would be to avoid collisions altogether. We might try to achieve this goal by choosing a suitable hash function <I>h</I>. One idea is to make <I>h</I> appear to be &quot;random,&quot; thus avoiding collisions or at least minimizing their number. The very term &quot;to hash,&quot; evoking images of random mixing and chopping, captures the spirit of this approach. (Of course, a hash function <I>h</I> must be deterministic in that a given input <I>k</I> should always produce the same output <I>h(k)</I>.) Since |<I>U</I>| &gt; <I>m</I>, however, there must be two keys that have the same hash value; avoiding collisions altogether is therefore impossible. Thus, while a well-designed, &quot;random&quot;- looking hash function can minimize the number of collisions, we still need a method for resolving the collisions that do occur.<P>
+The remainder of this section presents the simplest collision resolution technique, called chaining. Section 12.4 introduces an alternative method for resolving collisions, called open addressing.<P>
+<img src="223_a.gif"><P>
+<h4><a name="07c4_143d">Figure 12.3 Collision resolution by chaining. Each hash-table slot T[j] contains a linked list of all the keys whose hash value is j. For example, h(k<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2>) = h(k<SUB>4</SUB><FONT FACE="Times New Roman" SIZE=2>) and h(k<SUB>5</SUB><FONT FACE="Times New Roman" SIZE=2>) = h(k<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>) = h(k<SUB>7</SUB><FONT FACE="Times New Roman" SIZE=2>).<a name="07c4_143d"></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+
+
+
+
+
+<h2>Collision resolution by chaining</h2><P>
+<a name="07c5_143b"><a name="07c5_143c"><a name="07c5_143d">In <I><B>chaining</I></B>, we put all the elements that hash to the same slot in a linked list, as shown in Figure 12.3. Slot <I>j</I> contains a pointer to the head of the list of all stored elements that hash to <I>j</I>; if there are no such elements, slot <I>j</I> contains <FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+The dictionary operations on a hash table <I>T</I> are easy to implement when collisions are resolved by chaining.<P>
+<pre><a name="07c5_143e"><a name="07c5_143f">CHAINED-HASH-INSERT(<I>T,x</I>)</sub></sup></pre><P>
+<pre>insert <I>x</I> at the head of list <I>T</I>[<I>h</I>(<I>key</I>[<I>x</I>])]</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07c5_1440"><a name="07c5_1441">CHAINED-HASH-SEARCH(<I>T,k</I>)</sub></sup></pre><P>
+<pre>search for an element with key <I>k</I> in list <I>T</I>[<I>h</I>(<I>k</I>)]</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07c5_1442"><a name="07c5_1443">CHAINED-HASH-DELETE(<I>T,x</I>)</sub></sup></pre><P>
+<pre>delete <I>x</I> from the list <I>T</I>[<I>h</I>(<I>key</I>[<I>x</I>])]</sub></sup></pre><P>
+The worst-case running time for insertion is <I>O</I>(1). For searching, the worst-case running time is proportional to the length of the list; we shall analyze this more closely below. Deletion of an element <I>x</I> can be accomplished in <I>O</I>(1) time if the lists are doubly linked. (If the lists are singly linked, we must first find <I>x</I> in the list <I>T</I>[<I>h</I>(<I>key</I>[<I>x</I>])], so that the <I>next</I> link of <I>x</I>'s predecessor can be properly set to splice <I>x</I> out; in this case, deletion and searching have essentially the same running time.)<P>
+<P>
+
+
+
+
+
+
+
+<h2>Analysis of hashing with chaining</h2><P>
+<a name="07c6_1444">How well does hashing with chaining perform? In particular, how long does it take to search for an element with a given key?<P>
+<a name="07c6_1445">Given a hash table <I>T</I> with <I>m</I> slots that stores <I>n</I> elements, we define the <I><B>load factor</I></B> <IMG SRC="../IMAGES/alpha12.gif"> for <I>T</I> as <I>n/m</I>, that is, the average number of elements stored in a chain. Our analysis will be in terms of <IMG SRC="../IMAGES/alpha12.gif">; that is, we imagine <IMG SRC="../IMAGES/alpha12.gif"> staying fixed as <I>n</I> and <I>m</I> go to infinity. (Note that <IMG SRC="../IMAGES/alpha12.gif"> can be less than, equal to, or greater than l .)<P>
+The worst-case behavior of hashing with chaining is terrible: all <I>n</I> keys hash to the same slot, creating a list of length <I>n</I>. The worst-case time for searching is thus <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) plus the time to compute the hash function--no better than if we used one linked list for all the elements. Clearly, hash tables are not used for their worst-case performance.<P>
+<a name="07c6_1446">The average performance of hashing depends on how well the hash function <I>h</I> distributes the set of keys to be stored among the <I>m</I> slots, on the average. Section 12.3 discusses these issues, but for now we shall assume that any given element is equally likely to hash into any of the <I>m</I> slots, independently of where any other element has hashed to. We call this the assumption of <I><B>simple uniform hashing</I></B>.<P>
+We assume that the hash value <I>h</I>(<I>k</I>) can be computed in <I>O</I>(1) time, so that the time required to search for an element with key <I>k</I> depends linearly on the length of the list <I>T</I>[<I>h</I>(<I>k</I>)]. Setting aside the <I>O</I>(1) time required to compute the hash function and access slot <I>h</I>(<I>k</I>), let us consider the expected number of elements examined by the search algorithm, that is, the number of elements in the list <I>T</I>[<I>h</I>(<I>k</I>)] that are checked to see if their keys are equal to <I>k</I>. We shall consider two cases. In the first, the search is unsuccessful: no element in the table has key <I>k</I>. In the second, the search successfully finds an element with key <I>k</I>.<P>
+<a name="07c6_1448">Theorem 12.1<a name="07c6_1448"><P>
+In a hash table in which collisions are resolved by chaining, an unsuccessful search takes time <IMG SRC="../IMAGES/bound.gif">(1 + <IMG SRC="../IMAGES/alpha12.gif"> ), on the average, under the assumption of simple uniform hashing.<P>
+<I><B>Proof     </I></B>Under the assumption of simple uniform hashing, any key <I>k</I> is equally likely to hash to any of the <I>m</I> slots. The average time to search unsuccessfully for a key <I>k</I> is thus the average time to search to the end of one of the <I>m</I> lists. The average length of such a list is the load factor <IMG SRC="../IMAGES/alpha12.gif"> = <I>n/m</I>. Thus, the expected number of elements examined in an unsuccessful search is <IMG SRC="../IMAGES/alpha12.gif">, and the total time required (including the time for computing <I>h</I>(<I>k</I>)) is <IMG SRC="../IMAGES/bound.gif">(1 + <IMG SRC="../IMAGES/alpha12.gif">).      <P>
+<a name="07c6_1449">Theorem 12.2<a name="07c6_1449"><P>
+<a name="07c6_1447">In a hash table in which collisions are resolved by chaining, a successful search takes time <IMG SRC="../IMAGES/bound.gif">(1 +<IMG SRC="../IMAGES/alpha12.gif">), on the average, under the assumption of simple uniform hashing.<P>
+<I><B>Proof     </I></B>We assume that the key being searched for is equally likely to be any of the <I>n</I> keys stored in the table. We also assume that the <FONT FACE="Courier New" SIZE=2>CHAINED</FONT>-<FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure inserts a new element at the end of the list instead of the front. (By Exercise 12.2-3, the average successful search time is the same whether new elements are inserted at the front of the list or at the end.) The expected number of elements examined during a successful search is 1 more than the number of elements examined when the sought-for element was inserted (since every new element goes at the end of the list). To find the expected number of elements examined, we therefore take the average, over the <I>n</I> items in the table, of 1 plus the expected length of the list to which the <I>i</I>th element is added. The expected length of that list is (<I>i</I>- 1)/<I>m</I>, and so the expected number of elements examined in a successful search is<P>
+<img src="225_a.gif"><P>
+Thus, the total time required for a successful search (including the time for computing the hash function) is <IMG SRC="../IMAGES/bound.gif">(2 + <IMG SRC="../IMAGES/alpha12.gif">/2 - 1/2<I>m</I>) = <IMG SRC="../IMAGES/bound.gif">(1 + <IMG SRC="../IMAGES/alpha12.gif">).      <P>
+What does this analysis mean? If the number of hash-table slots is at least proportional to the number of elements in the table, we have <I>n</I> = <I>O</I>(<I>m</I>) and, consequently, <IMG SRC="../IMAGES/alpha12.gif"> = <I>n/m </I>= <I>O</I>(<I>m</I>)<I>/m</I> = <I>O</I>(1). Thus, searching takes constant time on average. Since insertion takes <I>O</I>( l ) worst-case time (see Exercise 12.2-3), and deletion takes <I>O</I>(l) worst-case time when the lists are doubly linked, all dictionary operations can be supported in <I>O</I>( l ) time on average.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07c7_1449">Exercises<a name="07c7_1449"></h2><P>
+<a name="07c7_144a">12.2-1<a name="07c7_144a"><P>
+Suppose we use a random hash function <I>h</I> to hash <I>n</I> distinct keys into an array <I>T</I> of length <I>m</I>. What is the expected number of collisions? More precisely, what is the expected cardinality of {(<I>x,y</I>):<I> h</I>(<I>x</I>) = <I>h</I>(<I>y</I>)}?<P>
+<a name="07c7_144b">12.2-2<a name="07c7_144b"><P>
+Demonstrate the insertion of the keys 5, 28, 19, 15, 20, 33, 12, 17, 10 into a hash table with collisions resolved by chaining. Let the table have 9 slots, and let the hash function be <I>h</I>(<I>k</I>) = <I>k</I> mod 9.<P>
+<a name="07c7_144c">12.2-3<a name="07c7_144c"><P>
+Argue that the expected time for a successful search with chaining is the same whether new elements are inserted at the front or at the end of a list. (<I>Hint:</I> Show that the expected successful search time is the same for <I>any </I>two orderings of any list.)<P>
+<a name="07c7_144d">12.2-4<a name="07c7_144d"><P>
+Professor Marley hypothesizes that substantial performance gains can be obtained if we modify the chaining scheme so that each list is kept in sorted order. How does the professor's modification affect the running time for successful searches, unsuccessful searches, insertions, and deletions?<P>
+<a name="07c7_144e">12.2-5<a name="07c7_144e"><P>
+<a name="07c7_1448">Suggest how storage for elements can be allocated and deallocated within the hash table itself by linking all unused slots into a free list. Assume that one slot can store a flag and either one element plus a pointer or two pointers. All dictionary and free-list operations should run in <I>O</I>(l) expected time. Does the free list need to be doubly linked, or does a singly linked free list suffice?<P>
+<a name="07c7_144f">12.2-6<a name="07c7_144f"><P>
+Show that if |<I>U</I>| &gt; <I>nm</I>, there is a subset of <I>U</I> of size <I>n</I> consisting of keys that all hash to the same slot, so that the worst-case searching time for hashing with chaining is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07c8_144a">12.3 Hash functions<a name="07c8_144a"></h1><P>
+<a name="07c8_1449">In this section, we discuss some issues regarding the design of good hash functions and then present three schemes for their creation: hashing by division, hashing by multiplication, and universal hashing.<P>
+
+
+
+
+
+<h2>What makes a good hash function?</h2><P>
+A good hash function satisfies (approximately) the assumption of simple uniform hashing: each key is equally likely to hash to any of the <I>m</I> slots. More formally, let us assume that each key is drawn independently from <I>U </I>according to a probability distribution <I>P</I>; that is, <I>P(k)</I> is the probability that <I>k</I> is drawn. Then the assumption of simple uniform hashing is that<P>
+<img src="227_a.gif"><P>
+<h4><a name="07c9_144b">(12.1)<a name="07c9_144b"></sub></sup></h4><P>
+Unfortunately, it is generally not possible to check this condition, since <I>P </I>is usually unknown.<P>
+Sometimes (rarely) we do know the distribution <I>P</I>. For example, suppose the keys are known to be random real numbers <I>k</I> independently and uniformly distributed in the range 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; 1. In this case, the hash function<P>
+<pre><I>h</I>(<I>k</I>) = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>km</I><IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+can be shown to satisfy equation (12.1).<P>
+<a name="07c9_144a">In practice, heuristic techniques can be used to create a hash function that is likely to perform well. Qualitative information about <I>P</I> is sometimes useful in this design process. For example, consider a compiler's symbol table, in which the keys are arbitrary character strings representing identifiers in a program. It is common for closely related symbols, such as <FONT FACE="Courier New" SIZE=2>pt</FONT> and <FONT FACE="Courier New" SIZE=2>pts</FONT>, to occur in the same program. A good hash function would minimize the chance that such variants hash to the same slot.<P>
+A common approach is to derive the hash value in a way that is expected to be independent of any patterns that might exist in the data. For example, the "division method" (discussed further below) computes the hash value as the remainder when the key is divided by a specified prime number. Unless that prime is somehow related to patterns in the probability distribution <I>P</I>, this method gives good results.<P>
+Finally, we note that some applications of hash functions might require stronger properties than are provided by simple uniform hashing. For example, we might want keys that are "close" in some sense to yield hash values that are far apart. (This property is especially desirable when we are using linear probing, defined in Section 12.4.)<P>
+<P>
+
+
+
+
+
+
+
+<h2>Interpreting keys as natural numbers</h2><P>
+Most hash functions assume that the universe of keys is the set <B>N</B> = {0,1,2, . . .} of natural numbers. Thus, if the keys are not natural numbers, a way must be found to interpret them as natural numbers. For example, a key that is a character string can be interpreted as an integer expressed in suitable radix notation. Thus, the identifier <FONT FACE="Courier New" SIZE=2>pt</FONT> might be interpreted as the pair of decimal integers (112,116), since <FONT FACE="Courier New" SIZE=2>p</FONT> = 112 and <FONT FACE="Courier New" SIZE=2>t</FONT> = 116 in the ASCII character set; then, expressed as a radix-128 integer, <FONT FACE="Courier New" SIZE=2>pt</FONT> becomes (112 <IMG SRC="../IMAGES/dot10.gif"> 128) + 116 = 14452. It is usually straightforward in any given application to devise some such simple method for interpreting each key as a (possibly large) natural number. In what follows, we shall assume that the keys are natural numbers.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07cb_144d">12.3.1 The division method<a name="07cb_144d"></h2><P>
+<a name="07cb_144b"><a name="07cb_144c">In the <I><B>division method</I></B> for creating hash functions, we map a key <I>k</I> into one of <I>m</I> slots by taking the remainder of <I>k</I> divided by <I>m</I>. That is, the hash function is<P>
+<pre><I>h</I>(<I>k</I>) = <I>k</I> mod <I>m</I> .</sub></sup></pre><P>
+For example, if the hash table has size <I>m</I> = 12 and the key is <I>k</I> = 100, then <I>h(k)</I> = 4. Since it requires only a single division operation, hashing by division is quite fast.<P>
+When using the division method, we usually avoid certain values of <I>m. </I>For example, <I>m</I> should not be a power of 2, since if <I>m</I> = 2<I><SUP>p</I></SUP>, then <I>h(k) </I>is just the <I>p</I> lowest-order bits of <I>k.</I> Unless it is known a priori that the probability distribution on keys makes all low-order <I>p</I>-bit patterns equally likely, it is better to make the hash function depend on all the bits of the key. Powers of 10 should be avoided if the application deals with decimal numbers as keys, since then the hash function does not depend on all the decimal digits of <I>k</I>. Finally, it can be shown that when <I>m</I> = 2<I><SUP>p</I></SUP> - 1 and <I>k </I>is a character string interpreted in radix 2<I><SUP>p</I></SUP>, two strings that are identical except for a transposition of two adjacent characters will hash to the same value.<P>
+Good values for <I>m</I> are primes not too close to exact powers of 2. For example, suppose we wish to allocate a hash table, with collisions resolved by chaining, to hold roughly <I>n</I> = 2000 character strings, where a character has 8 bits. We don't mind examining an average of 3 elements in an unsuccessful search, so we allocate a hash table of size <I>m</I> = 701. The number 701 is chosen because it is a prime near <IMG SRC="../IMAGES/alpha12.gif"> = 2000/3 but not near any power of 2. Treating each key <I>k</I> as an integer, our hash function would be<P>
+<pre><I>h</I>(<I>k</I>) =<I> k</I> mod 701 .</sub></sup></pre><P>
+As a precautionary measure, we could check how evenly this hash function distributes sets of keys among the slots, where the keys are chosen from "real" data.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07cc_144f">12.3.2 The multiplication method<a name="07cc_144f"></h2><P>
+<a name="07cc_144d"><a name="07cc_144e">The <I><B>multiplication method</I></B> for creating hash functions operates in two steps. First, we multiply the key <I>k</I> by a constant <I>A</I> in the range 0 &lt; <I>A</I> &lt; 1 and extract the fractional part of <I>kA</I>. Then, we multiply this value by <I>m </I>and take the floor of the result. In short, the hash function is<P>
+<pre><I>h</I>(<I>k</I>) = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I> (<I>k</I> <I>A</I> mod 1)<IMG SRC="../IMAGES/hfbrdr12.gif"> ,</sub></sup></pre><P>
+where "<I>k A</I> mod 1" means the fractional part of <I>kA</I>, that is, <I>kA - </I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>kA</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>.<P>
+An advantage of the multiplication method is that the value of <I>m</I> is not critical. We typically choose it to be a power of 2--<I>m</I> = 2<I><SUP>p</I></SUP> for someinteger<I> p</I>--since we can then easily implement the function on most computers as follows. Suppose that the word size of the machine is <I>w</I> bits and that <I>k</I> fits into a single word. Referring to Figure 12.4, we first multiply <I>k</I> by the <I>w</I>-bit integer <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>A <IMG SRC="../IMAGES/dot10.gif"> 2<I><SUP>w</I></SUP><IMG SRC="../IMAGES/hfbrdr12.gif">. The result is a 2<I>w</I>-bit value <I>r</I><SUB>1</SUB> 2<I><SUP>w</I></SUP> + <I>r</I><SUB>0</SUB>, where <I>r</I><SUB>1</SUB> is the high-order word of the product and <I>r</I><SUB>0</SUB> is the low-order word of the product. The desired <I>p</I>-bit hash value consists of the <I>p</I> most significant bits of <I>r</I><SUB>0</SUB>.<P>
+<img src="229_a.gif"><P>
+<h4><a name="07cc_1450">Figure 12.4 The multiplication method of hashing. The w-bit representation of the key k is multiplied by the w-bit value <IMG SRC="../IMAGES/hfbrdl12.gif">A.2<SUP>w</SUP><IMG SRC="../IMAGES/hfbrdr12.gif"><FONT FACE="Times New Roman" SIZE=2>, </FONT>where 0 &lt; A &lt; 1 is a suitable constant. The p highest-order bits of the lower w-bit half of the product form the desired hash value h(k).<a name="07cc_1450"></sub></sup></h4><P>
+Although this method works with any value of the constant <I>A</I>, it works better with some values than with others. The optimal choice depends on the characteristics of the data being hashed. Knuth [123] discusses the choice of <I>A</I> in some detail and suggests that<P>
+<img src="229_b.gif"><P>
+<h4><a name="07cc_1451">(12.2)<a name="07cc_1451"></sub></sup></h4><P>
+is likely to work reasonably well.<P>
+As an example, if we have <I>k</I> = 123456, <I>m</I> = 10000, and <I>A</I> as in equation (12.2), then<P>
+<pre><I>h</I>(<I>k</I>)  =  <IMG SRC="../IMAGES/hfbrdl12.gif">10000 <IMG SRC="../IMAGES/dot10.gif"> (123456 <IMG SRC="../IMAGES/dot10.gif"> 0.61803 . . . mod 1)<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>=  <IMG SRC="../IMAGES/hfbrdl12.gif">10000 <IMG SRC="../IMAGES/dot10.gif"> (76300.0041151. . . mod 1)<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>=  <IMG SRC="../IMAGES/hfbrdl12.gif">10000 <IMG SRC="../IMAGES/dot10.gif"> 0.0041151 . . .<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>=  <IMG SRC="../IMAGES/hfbrdl12.gif">41.151 . . .<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>=  41 .</sub></sup></pre><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07cd_1455">12.3.3 Universal hashing<a name="07cd_1455"></h2><P>
+<a name="07cd_144f"><a name="07cd_1450"><a name="07cd_1451"><a name="07cd_1452">If a malicious adversary chooses the keys to be hashed, then he can choose <I>n</I> keys that all hash to the same slot, yielding an average retrieval time of <IMG SRC="../IMAGES/bound.gif"> (<I>n</I>). Any fixed hash function is vulnerable to this sort of worst-case behavior; the only effective way to improve the situation is to choose the hash function <I>randomly</I> in a way that is <I>independent</I> of the keys that are actually going to be stored. This approach, called <I><B>universal hashing</I></B>, yields good performance on the average, no matter what keys are chosen by the adversary.<P>
+<a name="07cd_1453">The main idea behind universal hashing is to select the hash function at random at run time from a carefully designed class of functions. As in the case of quicksort, randomization guarantees that no single input will always evoke worst-case behavior. Because of the randomization, the algorithm can behave differently on each execution, even for the same input. This approach guarantees good average-case performance, no matter what keys are provided as input. Returning to the example of a compiler's symbol table, we find that the programmer<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s choice of identifiers cannot now cause consistently poor hashing performance. Poor performance occurs only if the compiler chooses a random hash function that causes the set of identifiers to hash poorly, but the probability of this occurring is small and is the same for any set of identifiers of the same size.<P>
+Let <img src="230_a.gif"> be a finite collection of hash functions that map a given universe <I>U</I> of keys into the range {0,1, . . . , <I>m </I>- 1}. Such a collection is said to be <I><B>universal</I></B> if for each pair of distinct keys <I>x,y </I><IMG SRC="../IMAGES/memof12.gif"> U<I>, the number of hash functions <img src="230_b.gif"> for which </I>h<I>(</I>x<I>) = </I>h<I>(</I>y<I>) is precisely <img src="230_c.gif">. In other words, with a hash function randomly chosen from <img src="230_d.gif">, the chance of a collision between </I>x<I> and </I>y<I> when </I>x <I><IMG SRC="../IMAGES/noteq.gif"> y</I> is exactly 1/<I>m</I>, which is exactly the chance of a collision if <I>h</I>(<I>x</I>) and <I>h</I>(<I>y</I>) are randomly chosen from the set {0,1, . . . , <I>m</I> - 1}.<P>
+The following theorem shows that a universal class of hash functions gives good average-case behavior.<P>
+<a name="07cd_1456">Theorem 12.3<a name="07cd_1456"><P>
+If <I>h</I> is chosen from a universal collection of hash functions and is used to hash <I>n</I> keys into a table of size <I>m</I>, where <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>, the expected number of collisions involving a particular key <I>x</I> is less than 1.<P>
+<I><B>Proof     </I></B>For each pair <I>y, z</I> of distinct keys, let <I>c<SUB>yz</I></SUB> be a random variable that is 1 if <I>h</I>(<I>y</I>) = <I>h</I>(<I>z</I>) (i.e., if <I>y</I> and <I>z</I> collide using <I>h</I>) and 0 otherwise. Since, by definition, a single pair of keys collides with probability 1/<I>m</I>, we have<P>
+<pre>E[<I>c<SUB>yz</I></SUB>] = 1/<I>m</I> .</sub></sup></pre><P>
+Let <I>C<SUB>x</I></SUB> be the total number of collisions involving key <I>x</I> in a hash table <I>T</I> of size <I>m</I> containing <I>n</I> keys. Equation (6.24) gives<P>
+<img src="230_e.gif"><P>
+Since <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>, we have E [<I>C<SUB>x</I></SUB>] &lt; 1.      <P>
+But how easy is it to design a universal class of hash functions? It is quite easy, as a little number theory will help us prove. Let us choose our table size <I>m</I> to be prime (as in the division method). We decompose a key <I>x</I> into <I>r</I>+ 1 bytes (i.e., characters, or fixed-width binary substrings), so that <I>x</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>0</SUB>,<I> x</I><SUB>1</SUB>,<I>. . . </I>,<I> x<SUB>r</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">; the only requirement is that the maximum value of a byte should be less than <I>m</I>. Let <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>0</SUB>,<I> a</I><SUB>1</SUB>,<I> . . .</I> ,<I> a<SUB>r</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> denote a sequence of <I>r</I> + 1 elements chosen randomly from the set {0,1, . . . , <I>m</I> - 1}. We define a corresponding hash function <img src="231_a.gif">:<P>
+<img src="231_b.gif"><P>
+<h4><a name="07cd_1457">(12.3)<a name="07cd_1457"></sub></sup></h4><P>
+With this definition,<P>
+<img src="231_c.gif"><P>
+<h4><a name="07cd_1458">(12.4)<a name="07cd_1458"></sub></sup></h4><P>
+has <I>m<SUP>r</I>+1</SUP> members.<P>
+<a name="07cd_1459">Theorem 12.4<a name="07cd_1459"><P>
+The class <img src="231_d.gif"> defined by equations (12.3) and (12.4) is a universal class of hash functions.<P>
+<I><B>Proof     </I></B>Consider any pair of distinct keys <I>x, y</I>. Assume that <I>x</I><SUB>0</SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>y</I><SUB>0</SUB>. (A similar argument can be made for a difference in any other byte position.) For any fixed values of <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>r</I></SUB>, there is exactly one value of <I>a</I><SUB>0</SUB> that satisfies the equation <I>h</I>(<I>x</I>) = <I>h</I>(<I>y</I>); this <I>a</I><SUB>0</SUB> is the solution to<P>
+<img src="231_e.gif"><P>
+<a name="07cd_1454">To see this property, note that since <I>m</I> is prime, the nonzero quantity <I>x</I><SUB>0</SUB><I> - y</I><SUB>0</SUB> has a multiplicative inverse modulo <I>m</I>, and thus there is a unique solution for <I>a</I><SUB>0</SUB> modulo <I>m</I>. (See Section 33.4.) Therefore, each pair of keys <I>x</I> and <I>y</I> collides for exactly <I>m<SUP>r</I></SUP> values of <I>a</I>, since they collide exactly once for each possible value of <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>l</SUB>,<I> a</I><SUB>2</SUB>,<I> . . .</I>,<I> a<SUB>r</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>(i.e., for the unique value of <I>a</I><SUB><FONT FACE="Courier New" SIZE=2>0</FONT></SUB> noted above). Since there are <I>m<SUP>r+</I>l</SUP> possible values for the sequence a, keys <I>x</I> and <I>y</I> collide with probability exactly <I>m<SUP>r</SUP>/m<SUP>r+</I>1</SUP> = 1/<I>m</I>. Therefore, <img src="231_f.gif"> is universal.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07ce_1456">Exercises<a name="07ce_1456"></h2><P>
+<a name="07ce_1457">12.3-1<a name="07ce_1457"><P>
+<a name="07ce_1455">Suppose we wish to search a linked list of length <I>n</I>, where each element contains a key <I>k</I> along with a hash value <I>h</I>(<I>k</I>). Each key is a long character string. How might we take advantage of the hash values when searching the list for an element with a given key?<P>
+<a name="07ce_1458">12.3-2<a name="07ce_1458"><P>
+Suppose a string of <I>r</I> characters is hashed into <I>m</I> slots by treating it as a radix-128 number and then using the division method. The number <I>m</I> is easily represented as a 32-bit computer word, but the string of <I>r</I> characters, treated as a radix-128 number, takes many words. How can we apply the division method to compute the hash value of the character string without using more than a constant number of words of storage outside the string itself?<P>
+<a name="07ce_1459">12.3-3<a name="07ce_1459"><P>
+Consider a version of the division method in which <I>h</I>(<I>k</I>) = <I>k</I> mod <I>m</I>, where <I>m = </I>2<I><SUP>p</SUP> - I and k</I> is a character string interpreted in radix 2<I><SUP>p</I></SUP>. Show that if string <I>x</I> can be derived from string <I>y</I> by permuting its characters, then <I>x</I> and <I>y</I> hash to the same value. Give an example of an application in which this property would be undesirable in a hash function.<P>
+<a name="07ce_145a">12.3-4<a name="07ce_145a"><P>
+Consider a hash table of size <I>m</I> = 1000 and the hash function <I>h</I>(<I>k</I>) = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m </I></FONT>(<I>k A</I> mod 1)<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> for <I>A</I> = <img src="232_a.gif">. Compute the locations to which the keys 61, 62, 63, 64, and 65 are mapped.<P>
+<a name="07ce_145b">12.3-5<a name="07ce_145b"><P>
+Show that if we restrict each component <I>a<SUB>i</I></SUB> of <I>a</I> in equation (12.3) to be nonzero, then the set <img src="232_b.gif"> as defined in equation (12.4) is not universal. (<I>Hint:</I> Consider the keys <I>x</I> = 0 and <I>y</I> = 1.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07cf_1460">12.4 Open addressing<a name="07cf_1460"></h1><P>
+<a name="07cf_1456"><a name="07cf_1457"><a name="07cf_1458">In <I><B>open addressing</I></B>, all elements are stored in the hash table itself. That is, each table entry contains either an element of the dynamic set or <FONT FACE="Courier New" SIZE=2>NIL</FONT>. When searching for an element, we systematically examine table slots until the desired element is found or it is clear that the element is not in the table. There are no lists and no elements stored outside the table, as there are in chaining. Thus, in open addressing, the hash table can "fill up" so that no further insertions can be made; the load factor <IMG SRC="../IMAGES/alpha12.gif"> can never exceed 1.<P>
+Of course, we could store the linked lists for chaining inside the hash table, in the otherwise unused hash-table slots (see Exercise 12.2-5), but the advantage of open addressing is that it avoids pointers altogether. Instead of following pointers, we <I>compute</I> the sequence of slots to be examined. The extra memory freed by not storing pointers provides the hash table with a larger number of slots for the same amount of memory, potentially yielding fewer collisions and faster retrieval.<P>
+<a name="07cf_1459"><a name="07cf_145a"><a name="07cf_145b">To perform insertion using open addressing, we successively examine, or <I><B>probe</I></B>, the hash table until we find an empty slot in which to put the key. Instead of being fixed in the order 0, 1, . . . , <I>m</I> - 1 (which requires <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) search time), the sequence of positions probed <I>depends upon the key being inserted.</I> To determine which slots to probe, we extend the hash function to include the probe number (starting from 0) as a second input. Thus, the hash function becomes<P>
+<pre><I>h</I>:<I>U </I>X {0, 1, . . . , <I>m</I> -1} <IMG SRC="../IMAGES/arrow12.gif"> {0, 1, . . . , <I>m</I> -1} .</sub></sup></pre><P>
+With open addressing, we require that for every key <I>k</I>, the <I><B>probe sequence</I></B><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif"><I>h</I>(<I>k</I>, 0), <I>h</I>(<I>k</I>, 1), . . . , <I>h</I>(<I>k</I>, <I>m</I> - 1)<IMG SRC="../IMAGES/wdrtchv.gif"></sub></sup></pre><P>
+be a permutation of <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, . . . , <I>m</I> - 1<IMG SRC="../IMAGES/wdrtchv.gif">, so that every hash-table position is eventually considered as a slot for a new key as the table fills up. In the following pseudocode, we assume that the elements in the hash table <I>T</I> are keys with no satellite information; the key <I>k</I> is identical to the element containing key <I>k</I>. Each slot contains either a key or <FONT FACE="Courier New" SIZE=2>NIL</FONT> (if the slot is empty).<P>
+<pre><a name="07cf_145c">HASH-INSERT(<I>T</I>,<I>k</I>)</sub></sup></pre><P>
+<pre>1<I>  i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2<B>   repeat</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>h</I>(<I>k</I>,<I>i</I>)</sub></sup></pre><P>
+<pre>3<B>          if</B> <I>T</I>[<I>j</I>] = NIL</sub></sup></pre><P>
+<pre>4<B>             then</B> <I>T</I>[<I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I></sub></sup></pre><P>
+<pre>5                  <B>return</B> <I>j</I></sub></sup></pre><P>
+<pre>6             <B>else</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> + 1</sub></sup></pre><P>
+<pre>7<B>  until</B> <I>i</I> = <I>m</I></sub></sup></pre><P>
+<pre>8<B> error</B> "hash table overflow"</sub></sup></pre><P>
+The algorithm for searching for key <I>k</I> probes the same sequence of slots that the insertion algorithm examined when key <I>k</I> was inserted. Therefore, the search can terminate (unsuccessfully) when it finds an empty slot, since <I>k</I> would have been inserted there and not later in its probe sequence. (Note that this argument assumes that keys are not deleted from the hash table.) The procedure <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> takes as input a hash table <I>T</I> and a key <I>k</I>, returning <I>j</I> if slot <I>j</I> is found to contain key <I>k</I>, or <FONT FACE="Times New Roman" SIZE=1>NIL</FONT> if key <I>k</I> is not present in table <I>T</I>.<P>
+<pre><a name="07cf_145d">HASH-SEARCH(<I>T</I>, <I>k</I>)</sub></sup></pre><P>
+<pre>1 <I> i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2   <B>repeat</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>h</I>(<I>k</I>, <I>i</I>)</sub></sup></pre><P>
+<pre>3          <B>if </B><I>T</I>[<I>j</I>]= <I>j</I></sub></sup></pre><P>
+<pre>4             <B>then</B> <B>return</B> <I>j</I></sub></sup></pre><P>
+<pre>5           <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> + 1</sub></sup></pre><P>
+<pre>6<B>    until</B> <I>T</I>[<I>j</I>] = NIL or <I>i</I> = <I>m</I></sub></sup></pre><P>
+<pre>7<B>  return</B> NIL</sub></sup></pre><P>
+<a name="07cf_145e">Deletion from an open-address hash table is difficult. When we delete a key from slot <I>i</I>, we cannot simply mark that slot as empty by storing <FONT FACE="Courier New" SIZE=2>NIL</FONT> in it. Doing so might make it impossible to retrieve any key <I>k</I> during whose insertion we had probed slot <I>i</I> and found it occupied. One solution is to mark the slot by storing in it the special value <FONT FACE="Courier New" SIZE=2>DELETED</FONT> instead of <FONT FACE="Courier New" SIZE=2>NIL</FONT>. We would then modify the procedure <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> so that it keeps on looking when it sees the value <FONT FACE="Courier New" SIZE=2>DELETED</FONT>, while <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> would treat such a slot as if it were empty so that a new key can be inserted. When we do this, though, the search times are no longer dependent on the load factor <IMG SRC="../IMAGES/alpha12.gif">, and for this reason chaining is more commonly selected as a collision resolution technique when keys must be deleted.<P>
+<a name="07cf_145f">In our analysis, we make the assumption of <I><B>uniform hashing:</I></B> we assume that each key considered is equally likely to have any of the <I>m</I>! permutations of {0, 1, . . . , <I>m</I> - 1} as its probe sequence. Uniform hashing generalizes the notion of simple uniform hashing defined earlier to the situation in which the hash function produces not just a single number, but a whole probe sequence. True uniform hashing is difficult to implement, however, and in practice suitable approximations (such as double hashing, defined below) are used.<P>
+Three techniques are commonly used to compute the probe sequences required for open addressing: linear probing, quadratic probing, and double hashing. These techniques all guarantee that <IMG SRC="../IMAGES/lftwdchv.gif"><I>h</I>(<I>k</I>, 1), <I>h</I>(<I>k</I>, 2), . . . , <I>h</I>(<I>k</I>, <I>m</I>)<IMG SRC="../IMAGES/wdrtchv.gif"> is a permutation of <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, . . . , <I>m</I> - 1<IMG SRC="../IMAGES/wdrtchv.gif"> for each key <I>k</I>. None of these techniques fulfills the assumption of uniform hashing, however, since none of them is capable of generating more than <I>m</I><SUP>2</SUP> different probe sequences (instead of the <I>m</I>! that uniform hashing requires). Double hashing has the greatest number of probe sequences and, as one might expect, seems to give the best results.<P>
+
+
+
+
+
+<h3>Linear probing</h3><P>
+<a name="07d0_1460"><a name="07d0_1461">Given an ordinary hash function <I>h</I>': <I>U</I> <IMG SRC="../IMAGES/arrow12.gif"> {0, 1, . . . , <I>m</I> - 1}, the method of <I><B>linear probing</I></B> uses the hash function<P>
+<pre><I>h</I>(<I>k</I>,<I>i</I>) = (<I>h</I>'(<I>k</I>) + <I>i</I>) mod <I>m</I></sub></sup></pre><P>
+for <I>i</I> = 0,1,...,<I>m</I> - 1. Given key <I>k</I>, the first slot probed is <I>T</I>[<I>h</I>'(<I>k</I>)]. We next probe slot <I>T</I>[<I>h</I>'(<I>k</I>) + 1], and so on up to slot <I>T</I>[<I>m</I> - 1]. Then we wrap around to slots <I>T</I>[0], <I>T</I>[1], . . . , until we finally probe slot <I>T</I>[<I>h</I>'(<I>k</I>) - 1]. Since the initial probe position determines the entire probe sequence, only <I>m</I> distinct probe sequences are used with linear probing.<P>
+<a name="07d0_1462"><a name="07d0_1463">Linear probing is easy to implement, but it suffers from a problem known as <I><B>primary clustering</I></B>. Long runs of occupied slots build up, increasing the average search time. For example, if we have <I>n</I> = <I>m</I>/2 keys in the table, where every even-indexed slot is occupied and every odd-indexed slot is empty, then the average unsuccessful search takes 1.5 probes. If the first <I>n</I> = <I>m</I>/2 locations are the ones occupied, however, the average number of probes increases to about <I>n</I>/4 = <I>m</I>/8. Clusters are likely to arise, since if an empty slot is preceded by <I>i</I> full slots, then the probability that the empty slot is the next one filled is (<I>i</I> + 1)/<I>m</I>, compared with a probability of 1/<I>m </I>if the preceding slot was empty. Thus, runs of occupied slots tend to get longer, and linear probing is not a very good approximation to uniform hashing.<P>
+<P>
+
+
+
+
+
+
+
+<h3>Quadratic probing</h3><P>
+<a name="07d1_1464"><a name="07d1_1465"><a name="07d1_1466"><I><B>Quadratic probing</I></B> uses a hash function of the form<P>
+<pre><I>h</I>(<I>k</I>,<I>i</I>) = (<I>h</I>'(<I>k</I>) + <I>c</I><SUB>1</SUB><I>i</I> + <I>c</I><SUB>2</SUB><I>i</I><SUP>2</SUP>) mod <I>m</I>,</sub></sup></pre><P>
+<h4><a name="07d1_1467">(12.5)<a name="07d1_1467"></sub></sup></h4><P>
+where (as in linear probing) <I>h</I>' is an auxiliary hash function, <I>c</I><SUB>1</SUB> and <I>c</I><SUB>2</SUB> <IMG SRC="../IMAGES/noteq.gif"> 0 are auxiliary constants, and <I>i</I> = 0, 1, . . . , <I>m</I> - 1. The initial position probed is <I>T</I>[<I>h</I>'(<I>k</I>)]; later positions probed are offset by amounts that depend in a quadratic manner on the probe number <I>i</I>. This method works much better than linear probing, but to make full use of the hash table, the values of <I>c</I><SUB>1</SUB>, <I>c</I><SUB>2</SUB>, and <I>m</I> are constrained. Problem 12-4 shows one way to select these parameters. Also, if two keys have the same initial probe position, then their probe sequences are the same, since <I>h</I>(<I>k</I><SUB>1</SUB>, 0) = <I>h</I>(<I>k</I><SUB>2</SUB>, 0) implies <I>h</I>(<I>k</I><SUB>1</SUB>, <I>i</I>) = <I>h</I>(<I>k</I><SUB>2</SUB>, <I>i</I>). This leads to a milder form of clustering, called <I><B>secondary clustering</I></B><I>.</I> As in linear probing, the initial probe determines the entire sequence, so only <I>m</I> distinct probe sequences are used.<P>
+<P>
+
+
+
+
+
+
+
+<h3>Double hashing</h3><P>
+<a name="07d2_1467"><a name="07d2_1468">Double hashing is one of the best methods available for open addressing because the permutations produced have many of the characteristics of randomly chosen permutations. <I><B>Double hashing</I></B> uses a hash function of the form<P>
+<pre><I>h</I>(<I>k</I>, <I>i</I>) = (<I>h</I><SUB>1</SUB>(<I>k</I>) + <I>ih</I><SUB>2</SUB>(<I>k</I>)) mod <I>m</I>,</sub></sup></pre><P>
+where <I>h</I><SUB>1</SUB> and <I>h</I><SUB>2</SUB> are auxiliary hash functions. The initial position probed is <I>T</I>[<I>h</I><SUB>1</SUB> (<I>k</I>)]; successive probe positions are offset from previous positions by the amount <I>h</I><SUB>2</SUB>(<I>k</I>), modulo <I>m</I>. Thus, unlike the case of linear or quadratic probing, the probe sequence here depends in two ways upon the key <I>k</I>, since the initial probe position, the offset, or both, may vary. Figure 12.5 gives an example of insertion by double hashing.<P>
+<img src="236_a.gif"><P>
+<h4><a name="07d2_1469">Figure 12.5 Insertion by double hashing. Here we have a hash table of size 13 with h<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2>(k)</FONT> = k mod 13 and h<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>(k)</FONT> = 1 + (k mod 11). Since 14 <IMG SRC="../IMAGES/equiv10.gif"> 1 mod 13 and 14 <IMG SRC="../IMAGES/equiv10.gif"> 3 mod 11, the key 14 will be inserted into empty slot 9, after slots 1 and 5 have been examined and found to be already occupied.<a name="07d2_1469"></sub></sup></h4><P>
+The value <I>h</I><SUB>2</SUB>(<I>k</I>) must be relatively prime to the hash-table size <I>m</I> for the entire hash table to be searched. Otherwise, if <I>m</I> and <I>h</I><SUB>2</SUB>(<I>k</I>) have greatest common divisor <I>d</I> &gt; 1 for some key <I>k</I>, then a search for key <I>k</I> would examine only (1/<I>d</I>)th of the hash table. (See Chapter 33.) A convenient way to ensure this condition is to let <I>m</I> be a power of 2 and to design <I>h</I><SUB>2</SUB> so that it always produces an odd number. Another way is to let <I>m</I> be prime and to design <I>h</I><SUB>2</SUB> so that it always returns a positive integer less than <I>m</I>. For example, we could choose <I>m</I> prime and let<P>
+<pre><I>h</I><SUB>1</SUB>(<I>k</I>) = <I>k</I> mod <I>m</I> ,</sub></sup></pre><P>
+<pre><I>h</I><SUB>2</SUB>(<I>k</I>) = 1 + (<I>k</I> mod <I>m</I>'),</sub></sup></pre><P>
+where <I>m</I>' is chosen to be slightly less than <I>m</I> (say, <I>m</I> - 1 or <I>m</I> - 2). For example, if <I>k</I> = 123456 and <I>m</I> = 701, we have <I>h</I><SUB>1</SUB>(<I>k</I>) = 80 and <I>h</I><SUB>2</SUB>(<I>k</I>) = 257, so the first probe is to position 80, and then every 257th slot (modulo <I>m</I>) is examined until the key is found or every slot is examined.<P>
+Double hashing represents an improvement over linear or quadratic probing in that <IMG SRC="../IMAGES/bound.gif">(<I>m</I><SUP>2</SUP>) probe sequences are used, rather than <IMG SRC="../IMAGES/bound.gif">(<I>m</I>), since each possible (<I>h</I><SUB>1</SUB> (<I>k</I>), <I>h</I><SUB>2</SUB>(<I>k</I>)) pair yields a distinct probe sequence, and as we vary the key, the initial probe position <I>h</I><SUB>1</SUB>(<I>k</I>) and the offset <I>h</I><SUB>2</SUB>(<I>k</I>) may vary independently. As a result, the performance of double hashing appears to be very close to the performance of the "ideal" scheme of uniform hashing.<P>
+<P>
+
+
+
+
+
+
+
+<h3>Analysis of open-address hashing</h3><P>
+<a name="07d3_1469">Our analysis of open addressing, like our analysis of chaining, is expressed in terms of the load factor <IMG SRC="../IMAGES/alpha12.gif"> of the hash table, as <I>n</I> and <I>m</I> go to infinity. Recall that if <I>n</I> elements are stored in a table with <I>m</I> slots, the average number of elements per slot is <IMG SRC="../IMAGES/alpha12.gif"><I> = </I>n/m<I>. Of course, with open addressing, we have at most one element per slot, and thus </I>n<I> <IMG SRC="../IMAGES/lteq12.gif"> </I>m<I>, which implies <IMG SRC="../IMAGES/alpha12.gif"></I> <IMG SRC="../IMAGES/lteq12.gif"> 1.<P>
+We assume that uniform hashing is used. In this idealized scheme, the probe sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>h</I>(<I>k, </I>0), <I>h</I>(k, 1), . . . , <I>h(k, m</I> - 1)<IMG SRC="../IMAGES/wdrtchv.gif"> for each key <I>k</I> is equally likely to be any permutation on <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, . . . , <I>m</I> - 1<IMG SRC="../IMAGES/wdrtchv.gif">. That is, each possible probe sequence is equally likely to be used as the probe sequence for an insertion or a search. Of course, a given key has a unique fixed probe sequence associated with it; what is meant here is that, considering the probability distribution on the space of keys and the operation of the hash function on the keys, each possible probe sequence is equally likely.<P>
+We now analyze the expected number of probes for hashing with open addressing under the assumption of uniform hashing, beginning with an analysis of the number of probes made in an unsuccessful search.<P>
+<a name="07d3_146a">Theorem 12.5<a name="07d3_146a"><P>
+Given an open-address hash table with load factor <IMG SRC="../IMAGES/alpha12.gif"><I> = </I>n/m<I> &lt; 1, the expected number of probes in an unsuccessful search is at most 1/(1 - <IMG SRC="../IMAGES/alpha12.gif"></I>), assuming uniform hashing.<P>
+<I><B>Proof     </I></B>In an unsuccessful search, every probe but the last accesses an occupied slot that does not contain the desired key, and the last slot probed is empty. Let us define<P>
+<I>p<SUB>i</I></SUB> = Pr {exactly <I>i</I> probes access occupied slots}<P>
+for <I>i</I> = 0, 1, 2, . . . . For <I>i</I> &gt; <I>n</I>, we have <I>p<SUB>i</I></SUB> = 0, since we can find at most <I>n </I>slots already occupied. Thus, the expected number of probes is<P>
+<img src="237_a.gif"><P>
+<h4><a name="07d3_146b">(12.6)<a name="07d3_146b"></sub></sup></h4><P>
+To evaluate equation (12.6), we define<P>
+<I>q<SUB>i</I></SUB> = Pr {at least <I>i</I> probes access occupied slots}<P>
+for <I>i</I> = 0, 1, 2, . . . . We can then use identity (6.28):<P>
+<img src="237_b.gif"><P>
+What is the value of <I>q<SUB>i</I></SUB> for <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 1? The probability that the first probe accesses an occupied slot is <I>n/m</I>; thus,<P>
+<img src="238_a.gif"><P>
+With uniform hashing, a second probe, if necessary, is to one of the remaining <I>m</I> - 1 unprobed slots, <I>n</I> - 1 of which are occupied. We make a second probe only if the first probe accesses an occupied slot; thus,<P>
+<img src="238_b.gif"><P>
+In general, the <I>i</I>th probe is made only if the first <I>i </I>- 1 probes access occupied slots, and the slot probed is equally likely to be any of the remaining <I>m</I> - <I>i</I> + 1 slots, <I>n</I> - <I>i</I> + 1 of which are occupied. Thus,<P>
+<img src="238_c.gif"><P>
+for <I>i</I> = 1, 2, . . . , <I>n</I>, since (<I>n</I> - <I>j</I>) / (<I>m</I> - <I>j</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>n </I>/ <I>m</I> if <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> and <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 0. After <I>n</I> probes, all <I>n</I> occupied slots have been seen and will not be probed again, and thus <I>q<SUB>i</I></SUB> = 0 for <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I>.<P>
+We are now ready to evaluate equation (12.6). Given the assumption that <IMG SRC="../IMAGES/alpha12.gif"><I></I> &lt; 1, the average number of probes in an unsuccessful search is<P>
+<img src="238_d.gif"><P>
+<h4><a name="07d3_146c">(12.7)<a name="07d3_146c"></sub></sup></h4><P>
+Equation (12.7) has an intuitive interpretation: one probe is always made, with probability approximately <IMG SRC="../IMAGES/alpha12.gif"> a second probe is needed, with probability approximately <IMG SRC="../IMAGES/alpha12.gif"><I><SUP></I>2</SUP> a third probe is needed, and so on.                <P>
+If <IMG SRC="../IMAGES/alpha12.gif"><I></I> is a constant, Theorem 12.5 predicts that an unsuccessful search runs in <I>O</I>(1) time. For example, if the hash table is half full, the average number of probes in an unsuccessful search is 1/(1 - .5) = 2. If it is 90 percent full, the average number of probes is 1/(1 - .9) = 10.<P>
+Theorem 12.5 gives us the performance of the <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure almost immediately.<P>
+<a name="07d3_146d">Corollary 12.6<a name="07d3_146d"><P>
+Inserting an element into an open-address hash table with load factor <IMG SRC="../IMAGES/alpha12.gif"><I></I> requires at most 1/(1 - <IMG SRC="../IMAGES/alpha12.gif"><I></I>) probes on average, assuming uniform hashing.<P>
+<I><B>Proof</I></B>     An element is inserted only if there is room in the table, and thus <IMG SRC="../IMAGES/alpha12.gif"><I></I> &lt; 1. Inserting a key requires an unsuccessful search followed by placement of the key in the first empty slot found. Thus, the expected number of probes is 1/(1 - <IMG SRC="../IMAGES/alpha12.gif"><I></I>).      <P>
+Computing the expected number of probes for a successful search requires a little more work.<P>
+<a name="07d3_146e">Theorem 12.7<a name="07d3_146e"><P>
+Given an open-address hash table with load factor <IMG SRC="../IMAGES/alpha12.gif"><I></I> &lt; 1, the expected number of probes in a successful search is at most<P>
+<img src="239_a.gif"><P>
+assuming uniform hashing and assuming that each key in the table is equally likely to be searched for.<P>
+<I><B>Proof</I></B>     A search for a key <I>k</I> follows the same probe sequence as was followed when the element with key <I>k</I> was inserted. By Corollary 12.6, if <I>k</I> was the (<I>i</I> + 1)st key inserted into the hash table, the expected number of probes made in a search for <I>k</I> is at most 1 / (1 - <I>i/m</I>) = <I>m/</I>(<I>m</I> - <I>i</I>). Averaging over all <I>n</I> keys in the hash table gives us the average number of probes in a successful search:<P>
+<img src="239_b.gif"><P>
+where <I>H<SUB>i</I></SUB> = <img src="239_c.gif"> is the <I>i</I>th harmonic number (as defined in equation (3.5)). Using the bounds ln <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>H<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> ln <I>i</I> + 1 from equations (3.11)and (3.12), we obtain<P>
+<img src="239_d.gif"><P>
+for a bound on the expected number of probes in a successful search.      <P>
+If the hash table is half full, the expected number of probes is less than 3.387. If the hash table is 90 percent full, the expected number of probes is less than 3.670.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07d4_1471">Exercises<a name="07d4_1471"></h2><P>
+<a name="07d4_1472">12.4-1<a name="07d4_1472"><P>
+<a name="07d4_146a">Consider inserting the keys 10, 22, 31, 4, 15, 28, 17, 88, 59 into a hash table of length <I>m</I> = 11 using open addressing with the primary hash function <I>h</I>'(<I>k</I>) = <I>k</I> mod <I>m</I>. Illustrate the result of inserting these keys using linear probing, using quadratic probing with <I>c</I><SUB>1</SUB> = 1 and <I>c</I><SUB>2</SUB> = 3, and using double hashing with <I>h</I><SUB>2</SUB>(<I>k</I>) = 1 + (<I>k</I> mod (<I>m</I> - 1)).<P>
+<a name="07d4_1473">12.4-2<a name="07d4_1473"><P>
+<a name="07d4_146b"><a name="07d4_146c"><a name="07d4_146d">Write pseudocode for <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> as outlined in the text, and modify <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>HASH</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> to incorporate the special value <FONT FACE="Courier New" SIZE=2>DELETED</FONT>.<P>
+<a name="07d4_1474">12.4-3<a name="07d4_1474"><P>
+<a name="07d4_146e">Suppose that we use double hashing to resolve collisions; that is, we use the hash function <I>h</I>(<I>k</I>, <I>i</I>) = (<I>h</I><SUB>1</SUB>(<I>k</I>) + <I>ih</I><SUB>2</SUB>(<I>k</I>)) mod <I>m</I>. Show that the probe sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>h</I>(<I>k</I>, 0), <I>h</I>(<I>k</I>, 1), . . . , <I>h</I>(<I>k</I>, <I>m</I> - 1)<IMG SRC="../IMAGES/wdrtchv.gif"> is a permutation of the slot sequence <IMG SRC="../IMAGES/lftwdchv.gif">0, 1, . . . , <I>m </I>- 1<IMG SRC="../IMAGES/wdrtchv.gif"> if and only if <I>h</I><SUB>2</SUB>(<I>k</I>) is relatively prime to <I>m</I>. (<I>Hint</I>: See Chapter 33.)<P>
+<a name="07d4_1475">12.4-4<a name="07d4_1475"><P>
+Consider an open-address hash table with uniform hashing and a load factor <IMG SRC="../IMAGES/alpha12.gif"><I></I> = 1/2. What is the expected number of probes in an unsuccessful search? What is the expected number of probes in a successful search? Repeat these calculations for the load factors 3/4 and 7/8.<P>
+<a name="07d4_1476">12.4-5<a name="07d4_1476"><P>
+Suppose that we insert <I>n</I> keys into a hash table of size <I>m</I> using open addressing and uniform hashing. Let <I>p</I>(<I>n</I>, <I>m</I>) be the probability that no collisions occur. Show that <I>p</I>(<I>n</I>, <I>m</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>e</I><SUP>-<I>n</I>(<I>n </I>- 1)/2<I>m</I></SUP>. (<I>Hint</I>: See equation (2.7).) Argue that when <I>n</I> exceeds <img src="240_a.gif">, the probability of avoiding collisions goes rapidly to zero.<P>
+<a name="07d4_1477">12.4-6<a name="07d4_1477"><P>
+<a name="07d4_146f"><a name="07d4_1470">The bound on the harmonic series can be improved to<P>
+<img src="240_b.gif"><P>
+<h4><a name="07d4_1478">(12.8)<a name="07d4_1478"></sub></sup></h4><P>
+where <IMG SRC="../IMAGES/gamma14.gif"><I></I> = 0.5772156649 . . . is known as <I><B>Euler's constant</I></B> and <IMG SRC="../IMAGES/memof12.gif"> satisfies 0 &lt; <IMG SRC="../IMAGES/memof12.gif"> &lt; 1. (See Knuth [121] for a derivation.) How does this improved approximation for the harmonic series affect the statement and proof of Theorem 12.7?<P>
+<a name="07d4_1479">12.4-7<a name="07d4_1479"><P>
+Consider an open-address hash table with a load factor <IMG SRC="../IMAGES/alpha12.gif"><I></I>. Find the nonzero value <IMG SRC="../IMAGES/alpha12.gif"> for which the expected number of probes in an unsuccessful search equals twice the expected number of probes in a successful search. Use the estimate (1/<IMG SRC="../IMAGES/alpha12.gif"><I></I>) ln(1/(1 - <IMG SRC="../IMAGES/alpha12.gif"><I></I>)) for the number of probes required for a successful search.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07d5_147e">Problems<a name="07d5_147e"></h1><P>
+<a name="07d5_147f">12-1     Longest-probe bound for hashing<a name="07d5_147f"><P>
+<a name="07d5_1471"><a name="07d5_1472">A hash table of size <I>m</I> is used to store <I>n</I> items, with <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>/2. Open addressing is used for collision resolution.<P>
+<I><B>a.</I></B>     Assuming uniform hashing, show that for <I>i</I> = 1, 2, . . . , <I>n</I>, the probability that the <I>i</I>th insertion requires strictly more than <I>k</I> probes is at most 2-<I><SUP>k</I></SUP>.<P>
+<I><B>b.</I></B>     Show that for <I>i</I> = 1, 2, . . ., <I>n</I>, the probability that the <I>i</I>th insertion requires more than 2 lg <I>n</I> probes is at most 1/<I>n</I><SUP>2</SUP>.<P>
+Let the random variable <I>X<SUB>i</I></SUB> denote the number of probes required by the <I>i</I>th insertion. You have shown in part (b) that Pr{<I>X<SUB>i</I></SUB> &gt;2 1g <I>n</I>} <IMG SRC="../IMAGES/lteq12.gif"> 1/<I>n</I><SUP>2</SUP>. Let the random variable <I>X</I> = max<SUB>1</SUB><IMG SRC="../IMAGES/lteq12.gif"><I>i</I><SUB><IMG SRC="../IMAGES/lteq12.gif">n</SUB> <I>X<SUB>i</I></SUB> denote the maximum number of probes required by any of the <I>n</I> insertions.<P>
+<I><B>c.</I></B>     Show that Pr{<I>X</I> &gt; 2 1g <I>n</I>} <IMG SRC="../IMAGES/lteq12.gif"> 1/<I>n</I>.<P>
+<I><B>d.</I></B>     Show that the expected length of the longest probe sequence is <I>E</I>[<I>X</I>] = <I>O</I>(lg <I>n</I>)<P>
+<a name="07d5_1480">12-2     Searching a static set<a name="07d5_1480"><P>
+<a name="07d5_1473"><a name="07d5_1474"><a name="07d5_1475"><a name="07d5_1476">You are asked to implement a dynamic set of <I>n</I> elements in which the keys are numbers. The set is static (no <FONT FACE="Courier New" SIZE=2>INSERT</FONT> or <FONT FACE="Courier New" SIZE=2>DELETE</FONT> operations), and the only operation required is <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>. You are given an arbitrary amount of time to preprocess the <I>n</I> elements so that <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> operations run quickly.<P>
+<I><B>a.</I></B>     Show that <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> can be implemented in <I>O</I>(1g <I>n</I>) worst-case time using no extra storage beyond what is needed to store the elements of the set themselves.<P>
+<I><B>b.</I></B>     Consider implementing the set by open-address hashing on <I>m </I>slots, and assume uniform hashing. What is the minimum amount of extra storage <I>m</I> - <I>n</I> required to make the average performance of an unsuccessful <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> operation be at least as good as the bound in part (a)? Your answer should be an asymptotic bound on <I>m</I> - <I>n</I> in terms of <I>n</I>.<P>
+<a name="07d5_1481">12-3     Slot-size bound for chaining<a name="07d5_1481"><P>
+<a name="07d5_1477"><a name="07d5_1478"><a name="07d5_1479">Suppose that we have a hash table with <I>n</I> slots, with collisions resolved by chaining, and suppose that <I>n</I> keys are inserted into the table. Each key is equally likely to be hashed to each slot. Let <I>M</I> be the maximum number of keys in any slot after all the keys have been inserted. Your mission is to prove an <I>O</I>(1g <I>n</I>/1g 1g <I>n</I>) upper bound on <I>E</I>[<I>M</I>], the expected value of <I>M</I>.<P>
+<I><B>a</I>.</B>     Argue that the probability <I>Q<SUB>k</I></SUB> that <I>k</I> keys hash to a particular slot is given by<P>
+<img src="242_a.gif"><P>
+<I><B>b.     </I></B>Let <I>P<SUB>k</I></SUB> be the probability that <I>M</I> = <I>k</I>, that is, the probability that the slot containing the most keys contains <I>k</I> keys. Show that <I>P<SUB>k</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>nQ<SUB>k</I></SUB>.<P>
+<I><B>c.     </I></B>Use Stirling's approximation, equation (2.1l), to show that <I>Q<SUB>k </I></SUB>&lt; <I>e<SUP>k</I></SUP>/<I>k<SUP>k</I></SUP>.<P>
+<I><B>d.     </I></B>Show that there exists a constant <I>c</I> &gt; 1 such that <I>Q<SUB>k</I><FONT FACE="Times New Roman" SIZE=1>0</FONT></SUB> &lt; 1/<I>n</I><SUP>3</SUP> for <I>k</I><SUB>0</SUB> = <I>c </I>lg <I>n</I>/lg lg <I>n</I>. Conclude that <I>P<SUB>k</I><FONT FACE="Times New Roman" SIZE=1>0</FONT></SUB> &lt; 1/<I>n</I><SUP>2</SUP> for <I>k</I><SUB>0</SUB> = <I>c </I>lg <I>n</I>/lg lg <I>n</I>.<P>
+<I><B>e</I>.</B>     Argue that<P>
+<img src="242_b.gif"><P>
+Conclude that E [<I>M</I>] = <I>O</I>(lg <I>n</I>/1g 1g <I>n</I>).<P>
+<a name="07d5_1482">12-4     Quadratic probing<a name="07d5_1482"><P>
+<a name="07d5_147a"><a name="07d5_147b">Suppose that we are given a key <I>k</I> to search for in a hash table with positions 0, 1, . . . , <I>m</I> - 1, and suppose that we have a hash function <I>h</I> mapping the key space into the set {0, 1, . . . , <I>m</I> - 1}. The search scheme is as follows.<P>
+1.     Compute the value <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>h</I>(<I>k</I>), and set <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0.<P>
+2.     Probe in position <I>i</I> for the desired key <I>k</I>. If you find it, or if this position is empty, terminate the search.<P>
+3.     Set <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>j</I> + l) mod <I>m</I> and <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>i</I> + <I>j</I>) mod <I>m</I>, and return to step 2.<P>
+Assume that <I>m</I> is a power of 2.<P>
+<I><B>a.</I></B>     Show that this scheme is an instance of the general &quot;quadratic probing&quot; scheme by exhibiting the appropriate constants <I>c</I><SUB>1</SUB> and <I>c</I><SUB>2</SUB> for equation (12.5).<P>
+<I><B>b.</I></B>     Prove that this algorithm examines every table position in the worst case.<P>
+<a name="07d5_1483">12-5     k-universal hashing<a name="07d5_1483"><P>
+<a name="07d5_147c"><a name="07d5_147d">Let <img src="242_c.gif"> be a class of hash functions in which each <I>h</I> maps the universe <I>U</I> of keys to {0, 1, . . . , <I>m</I> - 1}. We say that <img src="242_d.gif">is <I><B>k-universal</I></B> if, for every fixed sequence of <I>k</I> distinct keys &lt;<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>k</I></SUB>&gt; and for any <I>h</I> chosen at random from <img src="242_e.gif">, the sequence &lt;<I>h</I>(<I>x</I><SUB>l</SUB>), <I>h</I>(<I>x</I><SUB>2</SUB>), . . . , <I>h</I>(<I>x<SUB>k</I></SUB>)&gt; is equally likely to be any of the <I>m<SUP>k</I></SUP> sequences of length <I>k</I> with elements drawn from {0, 1, . . . , <I>m</I> -1}<I>.</I><P>
+<I><B>a.</I></B>     Show that if <img src="242_f.gif"> is 2-universal, then it is universal.<P>
+<I><B>b.</I></B>     Show that the class <img src="242_g.gif"> defined in Section 12.3.3 is not 2-universal.<P>
+<I><B>c.</I></B>     Show that if we modify the definition of <img src="243_a.gif"> in Section 12.3.3 so that each function also contains a constant term <I>b</I>, that is, if we replace <I>h</I>(<I>x</I>) with<P>
+<pre><I>h<SUB>a</I>,<I> b</I></SUB>(<I>x</I>)=<I>a</I> <IMG SRC="../IMAGES/dot10.gif"> <I>x </I>+ <I>b</I>,</sub></sup></pre><P>
+then <img src="243_b.gif"> is 2-universal.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Knuth [123] and Gonnet [90] are excellent references for the analysis of hashing algorithms. Knuth credits H. P. Luhn (1953) for inventing hash tables, along with the chaining method for resolving collisions. At about the same time, G. M. Amdahl originated the idea of open addressing.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap13.htm">Chapter 13</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

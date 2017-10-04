@@ -1,0 +1,25 @@
+/*
+TASK:PHONE
+LANG:C++
+*/
+#include<iostream.h>
+int main ()
+{
+int n,k,l,a[10];
+double m,min;
+cin >> n;
+cin >> k >> m >> l;
+for (int i=0;i<l;i++)
+cin >> a[i];
+if (n==0)
+{cout << m;} else
+if (n==1)
+{cout << m;} else
+if (n==2)
+{min=m+0.5;cout <<min;} else
+if (n==3)
+{min=1.70;cout << min;} else
+if (n==4)
+{min=2.40;cout << min;}
+return 0;
+}

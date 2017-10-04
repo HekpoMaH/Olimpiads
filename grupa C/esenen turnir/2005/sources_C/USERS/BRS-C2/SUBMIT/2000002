@@ -1,0 +1,33 @@
+/*
+TASK:number
+LANG:C++
+*/
+#include <iostream.h>
+
+int	count=0,masivec[21],n,a,d1,d2,d3;
+
+void func(int i){
+	int j;
+	if(i>n){
+		count++;
+		return;
+	}
+	for(j=0;j<=9;j++){
+		a=masivec[i-1]*10+j;
+		if(a%d1==0||a%d2==0||a%d3==0){
+			masivec[i]=j;
+			func(i+1);
+		}
+	}
+}
+
+int main(){
+	int l;
+	cin>>n>>d1>>d2>>d3;
+	for(l=1;l<=9;l++){
+		masivec[1]=l;
+		func(2);
+	}
+	cout<<count<<endl;
+	return 0;
+}

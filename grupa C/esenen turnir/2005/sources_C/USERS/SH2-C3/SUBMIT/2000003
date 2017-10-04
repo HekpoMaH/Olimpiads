@@ -1,0 +1,47 @@
+/*
+TASK:school
+LANG:C++
+*/
+#include<iostream.h>
+long a[600],v[600],b[600][600],n,m,br=0,na4=0,krai=0;
+void read()
+{ int i;
+cin>>n;
+cin>>m;
+for(i=1;i<=m;i++)
+{long q,w;
+cin>>q>>w;
+b[q][w]=1;
+}
+}
+int check()
+{int i;
+for(i=1;i<=n;i++)
+   if(a[i]==0)return i;
+   return 0;
+}
+void BFS(int o)
+{int i;
+a[o]=1;
+v[0]=o;na4=0;
+krai=0;
+while(krai>=na4)
+{
+for(i=1;i<=n;i++)
+{if(b[v[na4]][i]==1&&a[i]==0)
+     {v[++krai]=i;a[i]=1;}
+
+}
+na4++;
+}
+
+}
+int main()
+{ read();
+while(check())
+{br++;
+BFS(check());
+}
+cout<<br<<endl;
+return 0;
+}

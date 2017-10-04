@@ -1,0 +1,66 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+long n,m,i,j,a,b,c,d,sum,min1,br,used1[101],used2[101],fl;
+vector <long> v1,v2,v3,v4;
+int main()
+{
+    cin>>m>>n;
+    for(i=1;i<=m;i++)
+    {
+       cin>>a>>b>>c>>d;
+       v1.push_back(a);
+       v2.push_back(b);
+       v3.push_back(c);
+       v4.push_back(d);
+       sum=sum+d;
+    }
+    if (sum<n) {cout<<-1<<endl;}
+    else
+    {
+       while(1)
+       {
+          min1=1001;
+          for(i=0;i<=m-1;i++)
+          {
+             fl=0;
+             if (used1[i]==0) 
+             {
+                if (min1>=v3[i]) {min1=v3[i];fl=1;}
+             }
+             if (fl==1) {j=i;}   
+          }
+          used1[j]=1;
+          if (v4[j]>v2[j]) 
+          {
+             if (n>v4[j]) {br=br+v3[j]*v4[j];n=n-v4[j];v4[j]=0;}
+          }
+          if (n<1) {break;}
+          if (min1==1001) {break;}
+       }
+       if (n>0)
+       {
+          while(1)
+          {
+             min1=1001;
+             for(i=0;i<=m-1;i++)
+             {
+                fl=0;
+                if (used2[i]==0) 
+                {
+                   if (min1>=v1[i]) {min1=v1[i];fl=1;}
+                }
+                if (fl==1) {j=i;}   
+             } 
+             used2[j]=1;
+             if (n<v4[j]) {br=br+v1[j]*n;v4[j]=v4[j]-n;n=0;}
+             else {br=br+v1[j]*v4[j];n=n-v4[j];v4[j]=0;}
+             if (n<1) {break;}
+             if (min1==1001)break;
+          } 
+       }
+       cout<<br<<endl;
+    }
+    //system("pause");
+    return 0;
+}

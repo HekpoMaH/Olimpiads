@@ -1,0 +1,27 @@
+#include<cstdio>
+#include<map>
+int n,nm,dis;
+std::map<int,int> m;
+int main()
+{
+     scanf("%d",&n);
+     for(int i=0;i<n;++i)
+          for(int j=0;j<n;++j)
+          {
+               scanf("%d",&nm);
+               dis=n-j+i-1;
+               if(dis==0)--dis;
+               if(m[nm]==0)m[nm]=dis;
+               else if(m[nm]>dis)m[nm]=dis;
+          }
+     scanf("%d",&n);
+     for(int i=0;i<n;++i)
+     {
+          scanf("%d",&nm);
+          dis=m[nm];
+          if(dis==0)puts("No Solution");
+          else if(dis<0)puts("0");
+          else printf("%d\n",dis);
+     }
+     return 0;
+}

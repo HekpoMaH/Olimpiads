@@ -1,0 +1,32 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+long long n,m,i,j,k,e;
+char a[1001][1001];
+string s,d;
+int main()
+{
+    cin>>s;
+    m=s.size();
+    n=(long long)sqrt(m);
+    for(i=0; i<=m-1; i++)
+    {
+             if(isdigit(s[i])) {k+=s[i]-'0';}
+             a[i/n][i%n]=s[i];
+    }
+    k=k%n;
+    s="";
+    i=k; j=0;
+    while(isalpha(a[i][j]))
+    {
+                           d=a[i][j];
+                           s=s+d;
+                           i++;
+                           j++;
+                           if(i>n-1) {i=0; j--;}
+                           if(j>n-1) {j=0;}
+    }
+    cout<<s<<endl;
+//    system ("pause");
+    return 0;
+}

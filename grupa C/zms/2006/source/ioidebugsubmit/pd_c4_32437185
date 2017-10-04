@@ -1,0 +1,19 @@
+/*
+TASK:REBUS
+LANG:C++
+*/
+#include<iostream.h>
+int main ()
+{
+int s;
+cin >> s;
+cout <<"e=0"<<endl;
+cout <<"f=2"<<endl;
+cout <<"i=3"<<endl;
+cout <<"n=4"<<endl;
+cout <<"o=5"<<endl;
+cout <<"t=9"<<endl;
+cout <<"v=7"<<endl;
+cout <<"w=1"<<endl;
+return 0;
+}

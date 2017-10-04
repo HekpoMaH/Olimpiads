@@ -1,0 +1,71 @@
+#include<iostream>
+#include<cmath>
+#include<iomanip>
+using namespace std;
+int tb[1001][1001];
+int n;
+int k;
+int bg[10001];
+int pyt(int x,int y,int x1,int y1)
+{
+    int a = x-x1;
+    int b = y-y1;
+    if(a<0)
+    {
+        a*=-1;
+    }
+    if(b<0)
+    {
+        b*=-1;
+    }
+    return a+b;
+}
+int main()
+{
+    int br;
+    int a1;
+    int min = 1000001;
+    cin>>n;
+    for(int i=0;i<n;i++)
+    {
+        for(int j=0;j<n;j++)
+        {
+            cin>>tb[i][j];
+        }
+    }
+    cin>>k;
+    for(int i=0;i<k;i++)
+    {
+            cin>>bg[i];
+    }
+    for(int i=0;i<k;i++)
+    {
+        br=0;
+        min = 1000001;
+            for(int y=0;y<n;y++)
+            {
+                for(int j=0;j<n;j++)
+                {
+                    if(bg[i]==tb[y][j])
+                    {
+                        br++;
+                        a1 = pyt(0,n-1,y,j);
+                    }
+                    if(a1<min)
+                    {
+                        min = a1;
+                    }
+                }
+            }
+            if(br>0)
+            {
+                cout<<min<<endl;
+            }
+            else
+            {
+                cout<<"No Solution"<<endl;
+            }
+
+    }
+    return 0;
+}

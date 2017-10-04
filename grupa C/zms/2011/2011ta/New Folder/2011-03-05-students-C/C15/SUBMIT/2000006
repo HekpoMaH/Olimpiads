@@ -1,0 +1,39 @@
+#include <iostream>
+#include <string.h>
+using namespace std;
+// 1 za +, -1 za -, 3 za =, 2 za = *
+int x, pyrvod, chislo[100005], rez;
+string com[100005];
+int main(){
+    string kom;
+    /*if (pyrvo=="+") pyrvod = 1;
+    if (pyrvo=="-") pyrvod = 2;
+    if (pyrvo=="=") pyrvod = 3;
+    if (pyrvo=="*") pyrvod = 4;*/
+    int posch = 0, posk = 0;
+    for (int i = 1; i < 200000; i++){
+    if (i%2==0){
+    cin >> chislo[posch];
+    posch++;
+    }else{
+    cin >> com[posk];
+    kom = com[posk];
+    if (kom=="=") break;
+    posk++;
+    }
+    }
+    cin >> rez;
+    
+    for (int i = posk-1; i >= 0; i--){
+    if (com[i] == "+") rez = rez - chislo[i];
+    if (com[i] == "-") rez = rez + chislo[i];
+    if (com[i] == "*" && chislo[i]!=0) rez = rez / chislo[i];
+    if (com[i] == "*" && chislo[i]==0) rez = 0;
+    //cout << rez << endl;
+    //cout << com[i] << endl;
+    //cout << chislo[i] << endl;
+    }
+    cout << rez;
+ //   system("PAUSE");
+return 0;
+}

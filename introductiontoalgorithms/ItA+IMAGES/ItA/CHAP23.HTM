@@ -1,0 +1,537 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 23: ELEMENTARY GRAPH ALGORITHMS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap24.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="partvi.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="08a0_0001">CHAPTER 23: ELEMENTARY GRAPH ALGORITHMS<a name="08a0_0001"></h1><P>
+This chapter presents methods for representing a graph and for searching a graph. Searching a graph means systematically following the edges of the graph so as to visit the vertices of the graph. A graph-searching algorithm can discover much about the structure of a graph. Many algorithms begin by searching their input graph to obtain this structural information. Other graph algorithms are organized as simple elaborations of basic graph-searching algorithms. Techniques for searching a graph are at the heart of the field of graph algorithms.<P>
+Section 23.1 discusses the two most common computational representations of graphs: as adjacency lists and as adjacency matrices. Section 23.2 presents a simple graph-searching algorithm called breadth-first search and shows how to create a breadth-first tree. Section 23.3 presents depth-first search and proves some standard results about the order in which depth-first search visits vertices. Section 23.4 provides our first real application of depth-first search: topologically sorting a directed acyclic graph. A second application of depth-first search, finding the strongly connected components of a directed graph, is given in Section 23.5.<P>
+
+
+
+
+
+<h1><a name="08a2_1736">23.1 Representations of graphs<a name="08a2_1736"></h1><P>
+<a name="08a2_1727"><a name="08a2_1728"><a name="08a2_1729"><a name="08a2_172a">There are two standard ways to represent a graph <I>G</I> = (<I>V, E</I>): as a collection of adjacency lists or as an adjacency matrix. The adjacency-list representation is usually preferred, because it provides a compact way to represent <I><B>sparse</I></B> graphs--those for which |<I>E</I>| is much less than |<I>V|<SUP></I>2</SUP>. Most of the graph algorithms presented in this book assume that an input graph is represented in adjacency-list form. An adjacency-matrix representation may be preferred, however, when the graph is <I><B>dense</I></B><FONT FACE="CG Times (W1)" SIZE=2>--</FONT>|<I>E|</I> is close to |<I>V|<SUP></I>2 </SUP>-- or when we need to be able to tell quickly if there is an edge connecting two given vertices. For example, two of the all-pairs shortest-paths algorithms presented in Chapter 26 assume that their input graphs are represented by adjacency matrices.<P>
+<a name="08a2_172b"><a name="08a2_172c">The <I><B>adjacency-list representation</I></B> of a graph <I>G</I> = (<I>V, E</I>) consists of an array <I>Adj</I> of <I>|V|</I> lists, one for each vertex in <I>V.</I> For each <I>u </I><IMG SRC="../IMAGES/memof12.gif"><I> V,</I> the adjacency list <I>Adj</I>[<I>u</I>] contains (pointers to) all the vertices <I>v</I> such that there is an edge (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>. That is, <I>Adj</I>[<I>u</I>] consists of all the vertices adjacent to <I>u</I> in <I>G</I>. The vertices in each adjacency list are typically stored in an arbitrary order. Figure 23.1(b) is an adjacency-list representation of the undirected graph in Figure 23.1(a). Similarly, Figure 23.2(b) is an adjacency-list representation of the directed graph in Figure 23.2(a).<P>
+<img src="466_a.gif"><P>
+<h4><a name="08a2_1737">Figure 23.1 Two representations of an undirected graph. (a) An undirected graph G having five vertices and seven edges. (b) An adjacency-list representation of G. (c) The adjacency-matrix representation of G.<a name="08a2_1737"></sub></sup></h4><P>
+<img src="466_b.gif"><P>
+<h4><a name="08a2_1738">Figure 23.2 Two representations of a directed graph. (a) A directed graph G having six vertices and eight edges. (b) An adjacency-list representation of G. (c) The adjacency-matrix representation of G.<a name="08a2_1738"></sub></sup></h4><P>
+If <I>G</I> is a directed graph, the sum of the lengths of all the adjacency lists is |<I>E|</I>, since an edge of the form (<I>u,v</I>) is represented by having <I>v</I> appear in <I>Adj</I>[<I>u</I>]. If <I>G</I> is an undirected graph, the sum of the lengths of all the adjacency lists is 2|<I>E|</I>, since if (<I>u,v</I>) is an undirected edge, then <I>u</I> appears in <I>v</I>'s adjacency list and vice versa. Whether a graph is directed or not, the adjacency-list representation has the desirable property that the amount of memory it requires is <I>O</I>(max(<I>V, E</I>)) <I>= O</I>(<I>V + E</I>).<P>
+<a name="08a2_172d"><a name="08a2_172e"><a name="08a2_172f"><a name="08a2_1730">Adjacency lists can readily be adapted to represent <I><B>weighted graphs</I></B>, that is, graphs for which each edge has an associated <I><B>weight</I></B>, typically given by a<I><B> weight function</I></B><I> w </I>: <I>E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B>. For example, let <I>G</I> = (<I>V, E</I>) be a weighted graph with weight function <I>w</I>. The weight <I>w</I>(<I>u,v</I>) of the edge (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> is simply stored with vertex <I>v</I> in <I>u</I>'s adjacency list. The adjacency-list representation is quite robust in that it can be modified to support many other graph variants.<P>
+A potential disadvantage of the adjacency-list representation is that there is no quicker way to determine if a given edge (<I>u,v</I>) is present in the graph than to search for <I>v</I> in the adjacency list <I>Adj</I>[<I>u</I>]. This disadvantage can be remedied by an adjacency-matrix re presentation of the graph, at the cost of using asymptotically more memory.<P>
+<a name="08a2_1731"><a name="08a2_1732"><a name="08a2_1733">For the <I><B>adjacency-matrix representation</I></B> of a graph <I>G</I> = (<I>V, E</I>), we assume that the vertices are numbered 1, 2, . . . , |<I>V|</I> in some arbitrary manner. The adjacency-matrix representation of a graph <I>G</I> then consists of a |<I>V| <IMG SRC="../IMAGES/mult.gif"> |V|</I> matrix <I>A = </I>(<I>a<SUB>ij</I></SUB>) such that<P>
+<img src="467_a.gif"><P>
+Figures 23.1(c) and 23.2(c) are the adjacency matrices of the undirected and directed graphs in Figures 23.1(a) and 23.2(a), respectively. The adjacency matrix of a graph requires <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>2</SUP>) memory, independent of the number of edges in the graph.<P>
+<a name="08a2_1734"><a name="08a2_1735">Observe the symmetry along the main diagonal of the adjacency matrix in Figure 23.1(c). We define the the <I><B>transpose</I> </B>of a matrix <I>A</I> = (<I>a<SUB>ij</I></SUB>) to be the matrix <img src="467_b.gif"> given by <img src="467_c.gif">. Since in an undirected graph, (<I>u,v</I>) and (<I>v,u</I>) represent the same edge, the adjacency matrix <I>A</I> of an undirected graph is its own transpose: <I>A = A</I><SUP>T</SUP>. In some applications, it pays to store only the entries on and above the diagonal of the adjacency matrix, thereby cutting the memory needed to store the graph almost in half.<P>
+Like the adjacency-list representation of a graph, the adjacency-matrix representation can be used for weighted graphs. For example, if <I>G</I> = (<I>V, E</I>) is a weighted graph with edge-weight function <I>w</I>, the weight <I>w</I>(<I>u, v</I>) of the edge (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> is simply stored as the entry in row <I>u</I> and column <I>v </I>of the adjacency matrix. If an edge does not exist, a <FONT FACE="Courier New" SIZE=2>NIL</FONT> value can be stored as its corresponding matrix entry, though for many problems it is convenient to use a value such as 0 or <IMG SRC="../IMAGES/infin.gif">.<P>
+Although the adjacency-list representation is asymptotically at least as efficient as the adjacency-matrix representation, the simplicity of an adjacency matrix may make it preferable when graphs are reasonably small. Moreover, if the graph is unweighted, there is an additional advantage in storage for the adjacency-matrix representation. Rather than using one word of computer memory for each matrix entry, the adjacency matrix uses only one bit per entry.<P>
+
+
+
+
+
+<h2><a name="08a3_1740">Exercises<a name="08a3_1740"></h2><P>
+<a name="08a3_1741">23.1-1<a name="08a3_1741"><P>
+Given an adjacency-list representation of a directed graph, how long does it take to compute the out-degree of every vertex? How long does it take to compute the in-degrees?<P>
+<a name="08a3_1742">23.1-2<a name="08a3_1742"><P>
+Give an adjacency-list representation for a complete binary tree on 7 vertices. Give an equivalent adjacency-matrix representation. Assume that vertices are numbered from 1 to 7 as in a binary heap.<P>
+<a name="08a3_1743">23.1-3<a name="08a3_1743"><P>
+<a name="08a3_1736"><a name="08a3_1737">The <I><B>transpose</I></B> of a directed graph <I>G</I> = (<I>V, E</I>) is the graph <I>G</I><SUP>T</SUP> = (<I>V</I>, <I>E</I><SUP>T</SUP>), where <I>E</I><SUP>T</SUP> = {(<I>v,u</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> <IMG SRC="../IMAGES/mult.gif"><I> V </I>: (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>}. Thus, <I>G</I><SUP>T</SUP> is <I>G</I> with all its edges reversed. Describe efficient algorithms for computing <I>G</I><SUP>T</SUP> from <I>G</I>, for both the adjacency-list and adjacency-matrix representations of <I>G</I>. Analyze the running times of your algorithms.<P>
+<a name="08a3_1744">23.1-4<a name="08a3_1744"><P>
+<a name="08a3_1738"><a name="08a3_1739">Given an adjacency-list representation of a multigraph <I>G</I> = (<I>V, E</I>), describe an <I>O</I>(<I>V+E</I>)-time algorithm to compute the adjacency-list representation of the "equivalent" undirected graph <I>G</I><I>'</I> = (<I>V, E</I><I>'</I>), where <I>E</I><I>'</I> consists of the edges in <I>E</I> with all multiple edges between two vertices replaced by a single edge and with all self-loops removed.<P>
+<a name="08a3_1745">23.1-5<a name="08a3_1745"><P>
+<a name="08a3_173a"><a name="08a3_173b">The <I><B>square</I></B> of a directed graph <I>G</I> = (<I>V, E</I>) is the graph <I>G<SUP>2</I></SUP> = (<I>V, E</I><SUP>2</SUP>) such that (<I>u,w</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I><SUP>2</SUP> if and only if for some <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>, both (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> and (<I>v,w</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E.</I> That is,<I> G</I><SUP>2</SUP> contains an edge between <I>u</I> and <I>w</I> whenever <I>G</I> contains a path with exactly two edges between <I>u</I> and <I>w</I>. Describe efficient algorithms for computing <I>G</I><SUP>2</SUP> from <I>G </I>for both the adjacency-list and adjacency-matrix representations of <I>G</I>. Analyze the running times of your algorithms.<P>
+<a name="08a3_1746">23.1-6<a name="08a3_1746"><P>
+<a name="08a3_173c">When an adjacency-matrix representation is used, most graph algorithms require time <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>2</SUP>), but there are some exceptions. Show that determining whether a directed graph contains a <I><B>sink</I></B>--a vertex with in-degree |<I>V|</I> - 1 and out-degree 0--can be determined in time <I>O</I>(<I>V</I>), even if an adjacency-matrix representation is used.<P>
+<a name="08a3_1747">23.1-7<a name="08a3_1747"><P>
+<a name="08a3_173d"><a name="08a3_173e"><a name="08a3_173f">The <I><B>incidence matrix</I></B> of a directed graph <I>G</I> = (<I>V, E</I>) is a |<I>V| <IMG SRC="../IMAGES/mult.gif"> |</I>E| matrix <I>B</I> = (<I>b<SUB>ij</I></SUB>) such that<P>
+<img src="469_a.gif"><P>
+Describe what the entries of the matrix product <I>BB</I><SUP>T</SUP> represent, where <I>B</I><SUP>T </SUP>is the transpose of <I>B</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08a4_174d">23.2 Breadth-first search<a name="08a4_174d"></h1><P>
+<a name="08a4_1740"><a name="08a4_1741"><I><B>Breadth-first search</I></B> is one of the simplest algorithms for searching a graph and the archetype for many important graph algorithms. Dijkstra's single-source shortest-paths algorithm (Chapter 25) and Prim's minimum-spanning-tree algorithm (Section 24.2) use ideas similar to those in breadth-first search.<P>
+<a name="08a4_1742"><a name="08a4_1743"><a name="08a4_1744">Given a graph <I>G</I> = (<I>V, E</I>) and a distinguished <I><B>source</I></B> vertex <I>s</I>, breadth-first search systematically explores the edges of <I>G</I> to "discover" every vertex that is reachable from <I>s</I>. It computes the distance (fewest number of edges) from <I>s</I> to all such reachable vertices. It also produces a &quot;breadth-first tree&quot; with root <I>s</I> that contains all such reachable vertices. For any vertex <I>v</I> reachable from <I>s</I>, the path in the breadth-first tree from <I>s</I> to <I>v</I> corresponds to a &quot;shortest path&quot; from <I>s</I> to <I>v</I> in <I>G</I>, that is, a path containing the fewest number of edges. The algorithm works on both directed and undirected graphs.<P>
+Breadth-first search is so named because it expands the frontier between discovered and undiscovered vertices uniformly across the breadth of the frontier. That is, the algorithm discovers all vertices at distance <I>k</I> from <I>s</I> before discovering any vertices at distance <I>k</I> + 1.<P>
+<a name="08a4_1745"><a name="08a4_1746"><a name="08a4_1747"><a name="08a4_1748">To keep track of progress, breadth-first search colors each vertex white, gray, or black. All vertices start out white and may later become gray and then black. A vertex is <I><B>discovered</I></B> the first time it is encountered during the search, at which time it becomes nonwhite. Gray and black vertices, therefore, have been discovered, but breadth-first search distinguishes between them to ensure that the search proceeds in a breadth-first manner. If (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> and vertex <I>u</I> is black, then vertex <I>v</I> is either gray or black; that is, all vertices adjacent to black vertices have been discovered. Gray vertices may have some adjacent white vertices; they represent the frontier between discovered and undiscovered vertices.<P>
+<a name="08a4_1749"><a name="08a4_174a">Breadth-first search constructs a breadth-first tree, initially containing only its root, which is the source vertex <I>s</I>. Whenever a white vertex <I>v</I> is discovered in the course of scanning the adjacency list of an already discovered vertex <I>u</I>, the vertex <I>v</I> and the edge (<I>u</I>,<I>v</I>) are added to the tree. We say that <I>u</I> is the <I><B>predecessor</I></B> or <I><B>parent</I></B> of <I>v</I> in the breadth-first tree. Since a vertex is discovered at most once, it has at most one parent. Ancestor and descendant relationships in the breadth-first tree are defined relative to the root <I>s</I> as usual: if <I>u</I> is on a path in the tree from the root <I>s </I>to vertex <I>v</I>, then <I>u</I> is an ancestor of <I>v</I> and <I>v</I> is a descendant of <I>u.</I><P>
+<a name="08a4_174b">The breadth-first-search procedure BFS below assumes that the input graph<I> G</I> = (<I>V, E</I>) is represented using adjacency lists. It maintains several additional data structures with each vertex in the graph. The color of each vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> is stored in the variable <I>color</I>[<I>u</I>], and the predecessor of <I>u</I> is stored in the variable <IMG SRC="../IMAGES/piuc.gif">[<I>u</I>]. If <I>u</I> has no predecessor (for example, if <I>u</I> = <I>s</I> or <I>u</I> has not been discovered), then <IMG SRC="../IMAGES/piuc.gif">[<I>u</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>. The distance from the source s to vertex <I>u</I> computed by the algorithm is stored in <I>d</I>[<I>u</I>]<I>.</I> The algorithm also uses a first-in, first-out queue <I>Q</I> (see Section 11.1) to manage the set of gray vertices.<P>
+<pre><a name="08a4_174c"><B>BFS</B>(<I>G,s</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> each vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>] - {<I>s</I>}</sub></sup></pre><P>
+<pre>2       <B>do</B> <I>color</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> WHITE</sub></sup></pre><P>
+<pre>3          <I>d</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>4          <IMG SRC="../IMAGES/piuc.gif">[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>5  <I>color</I>[<I>s</I>] <IMG SRC="../IMAGES/arrlt12.gif"> GRAY</sub></sup></pre><P>
+<pre>6  <I>d</I>[<I>s</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>7  <IMG SRC="../IMAGES/piuc.gif">[<I>s</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>8  <I>Q</I> <IMG SRC="../IMAGES/arrlt12.gif"> {<I>s</I>}</sub></sup></pre><P>
+<pre>9  <B>while</B> <I>Q</I> <IMG SRC="../IMAGES/noteq.gif"> <img src="470_a.gif"></sub></sup></pre><P>
+<pre>10      <B>do</B> <I>u</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>head</I>[<I>Q</I>]</sub></sup></pre><P>
+<pre>11         <B>for</B> each <I>v</I> <IMG SRC="../IMAGES/memof12.gif"><B> </B><I>Adj</I>[<I>u</I>]</sub></sup></pre><P>
+<pre>12             <B>do if</B> <I>color</I>[<I>v</I>] = WHITE</sub></sup></pre><P>
+<pre>13                   <B>then</B> <I>color</I>[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> GRAY</sub></sup></pre><P>
+<pre>14                        <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>d</I>[<I>u</I>] + 1</sub></sup></pre><P>
+<pre>15                        <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>u</I></sub></sup></pre><P>
+<pre>16                        ENQUEUE(<I>Q,v</I>)</sub></sup></pre><P>
+<pre>17         DEQUEUE(<I>Q</I>)</sub></sup></pre><P>
+<pre>18         <I>color</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> BLACK</sub></sup></pre><P>
+Figure 23.3 illustrates the progress of BFS on a sample graph.<P>
+The procedure BFS works as follows. Lines 1-4 paint every vertex white, set <I>d</I> [<I>u</I>] to be infinity for every vertex <I>u</I>, and set the parent of every vertex to be <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Line 5 paints the source vertex <I>s</I> gray, since it is considered to be discovered when the procedure begins. Line 6 initializes <I>d</I>[<I>s</I>] to 0, and line 7 sets the predecessor of the source to be <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Line 8 initializes <I>Q</I> to the queue containing just the vertex <I>s</I>; thereafter, <I>Q</I> always contains the set of gray vertices.<P>
+The main loop of the program is contained in lines 9-18. The loop iterates as long as there remain gray vertices, which are discovered vertices that have not yet had their adjacency lists fully examined. Line 10 determines the gray vertex <I>u</I> at the head of the queue <I>Q</I>. The <B>for</B> loop of lines 11-16 considers each vertex <I>v</I> in the adjacency list of <I>u</I>. If <I>v</I> is white, then it has not yet been discovered, and the algorithm discovers it by executing lines 13-16. It is first grayed, and its distance <I>d</I>[<I>v</I>] is set to <I>d</I>[<I>u</I>] + 1. Then, <I>u</I> is recorded as its parent. Finally, it is placed at the tail of the queue <I>Q</I>. When all the vertices on <I>u</I>'s adjacency list have been examined, <I>u</I> is removed from <I>Q</I> and blackened in lines 17-18.<P>
+<img src="471_a.gif"><P>
+<h4><a name="08a4_174e">Figure 23.3 The operation of BFS on an undirected graph. Tree edges are shown shaded as they are produced by BFS. Within each vertex u is shown d[u]. The queue Q is shown at the beginning of each iteration of the while loop of lines 9-18. Vertex distances are shown next to vertices in the queue.<a name="08a4_174e"></sub></sup></h4><P>
+
+
+
+
+
+<h2>Analysis</h2><P>
+Before proving all the various properties of breadth-first search, we take on the somewhat easier job of analyzing its running time on an input graph <I>G</I> = (<I>V,E</I>). After initialization, no vertex is ever whitened, and thus the test in line 12 ensures that each vertex is enqueued at most once, and hence dequeued at most once. The operations of enqueuing and dequeuing take <I>O</I>(1) time, so the total time devoted to queue operations is <I>O</I>(<I>V</I>). Because the adjacency list of each vertex is scanned only when the vertex is dequeued, the adjacency list of each vertex is scanned at most once. Since the sum of the lengths of all the adjacency lists is <IMG SRC="../IMAGES/bound.gif">(<I>E</I>), at most <I>O</I>(<I>E</I>) time is spent in total scanning adjacency lists. The overhead for initialization is <I>O</I>(<I>V</I>), and thus the total running time of <B>BFS</B> is <I>O</I>(<I>V</I> + <I>E</I>). Thus, breadth-first search runs in time linear in the size of the adjacency- list representation of <I>G</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Shortest paths</h2><P>
+<a name="08a6_174d"><a name="08a6_174e"><a name="08a6_174f"><a name="08a6_1750"><a name="08a6_1751"><a name="08a6_1752">At the beginning of this section, we claimed that breadth-first search finds the distance to each reachable vertex in a graph <I>G</I> = (<I>V,E</I>) from a given source vertex <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. Define the <I><B>shortest-path distance</I></B> <IMG SRC="../IMAGES/delta12.gif"> (<I>s,v</I>) from s to <I>v</I> as the minimum number of edges in any path from vertex <I>s</I> to vertex <I>v</I>, or else <IMG SRC="../IMAGES/infin.gif"> if there is no path from <I>s</I> to <I>v</I>. A path of length <IMG SRC="../IMAGES/delta12.gif"> (<I>s</I>,<I>v</I>) from <I>s</I> to <I>v</I> is said to be a <I><B>shortest path</I></B><SUP>1</SUP> from <I>s</I> to <I>v</I>. Before showing that breadth-first search actually computes shortest-path distances, we investigate an important property of shortest-path distances.<P>
+<SUP>1</SUP> In Chapters 25 and 26, we shall generalize our study of shortest paths to weighted graphs, in which every edge has a real-valued weight and the weight of a path is the sum of the weights of its constituent edges. The graphs considered in the present chapter are unweighted.<P>
+<a name="08a6_1753">Lemma 23.1<a name="08a6_1753"><P>
+Let <I>G</I> = (<I>V,E</I>) be a directed or undirected graph, and let <I>s </I><IMG SRC="../IMAGES/memof12.gif"> <I>V</I> be an arbitrary vertex. Then, for any edge (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>,<P>
+<pre><IMG SRC="../IMAGES/delta12.gif">(<I>s</I>,<I>v</I>)<I> </I><IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>,<I>u</I>) + 1 .</sub></sup></pre><P>
+<I><B>Proof     </I></B>If <I>u</I> is reachable from <I>s</I>, then so is <I>v</I>. In this case, the shortest path from <I>s</I> to <I>v</I> cannot be longer than the shortest path from <I>s</I> to <I>v</I> followed by the edge (<I>u</I>, <I>v</I>), and thus the inequality holds. If <I>u</I> is not reachable from <I>s</I>, then <IMG SRC="../IMAGES/delta12.gif"> (<I>s,u</I>) = <IMG SRC="../IMAGES/infin.gif">, and the inequality holds.      <P>
+We want to show that BFS properly computes <I>d</I>[<I>v</I>] = <IMG SRC="../IMAGES/delta12.gif"><I></I> (<I>s</I>, <I>v</I>) for each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. We first show that <I>d </I>[<I>v</I>] bounds <IMG SRC="../IMAGES/delta12.gif"><I> (</I>s<I>, </I>v<I>) from above.</I><P>
+<a name="08a6_1754">Lemma 23.2<a name="08a6_1754"><P>
+Let <I>G</I> = (<I>V</I>,<I>E</I>) be a directed or undirected graph, and suppose that BFS is run on <I>G</I> from a given source vertex <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. Then upon termination, for each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, the value <I>d</I>[<I>v</I>] computed by BFS satisfies <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/delta12.gif"><I>(s, </I>v<I>).</I><P>
+<I><B>Proof     </I></B>We use induction on the number of times a vertex is placed in the queue <I>Q</I>. Our inductive hypothesis is that <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/delta12.gif"><I></I> (<I>s</I>,<I>v</I>) for all <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>.<P>
+The basis of the induction is the situation immediately after <I>s</I> is placed in <I>Q</I> in line 8 of BFS. The inductive hypothesis holds here, because <I>d</I>[<I>s</I>] = 0 = <IMG SRC="../IMAGES/delta12.gif"><I>(</I>s<I>, </I>s<I>) and </I>d<I>[</I>v<I>] = <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/delta12.gif"></I>(<I>s</I>, <I>v</I>) for all <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I> </I>V<I> - {</I>s<I>}.</I><P>
+For the inductive step, consider a white vertex <I>v</I> that is discovered during the search from a vertex <I>u</I>. The inductive hypothesis implies that <I>d</I>[<I>u</I>] <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/delta12.gif"><I></I>(<I>s</I>, <I>u</I>). From the assignment performed by line 14 and from Lemma 23.1, we obtain<P>
+<pre><I>d</I>[<I>v</I>]  =  <I>d</I>[<I>u</I>] + 1</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>,<I>u</I>) + 1</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>,<I>v</I>) .</sub></sup></pre><P>
+Vertex <I>v</I> is then inserted into the queue <I>Q</I>, and it is never inserted again because it is also grayed and the <B>then</B> clause of lines 13-16 is executed only for white vertices. Thus, the value of <I>d</I>[<I>v</I>] never changes again, and the inductive hypothesis is maintained.      <P>
+To prove that <I>d</I>[<I>v</I>] = <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>, <I>v</I>), we must first show more precisely how the queue <I>Q</I> operates during the course of BFS. The next lemma shows that at all times, there are at most two distinct <I>d</I> values in the queue.<P>
+<a name="08a6_1755">Lemma 23.3<a name="08a6_1755"><P>
+Suppose that during the execution of BFS on a graph <I>G</I> = (<I>V</I>, <I>E</I>), the queue <I>Q</I> contains the vertices <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . , <I>v</I><SUB>r</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, where <I>v</I><SUB>1</SUB> is the head of <I>Q </I>and <I>v<SUB>r</I></SUB> is the tail. Then, <I>d</I>[<I>v<SUB>r</I></SUB>] <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v</I><SUB>1</SUB>] + 1 and <I>d</I>[<I>v<SUB>i</I></SUB>] <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v<SUB>i</I> + 1</SUB>] for <I>i</I> = 1, 2, . . . , <I>r</I> - 1.<P>
+<I><B>Proof     </I></B>The proof is by induction on the number of queue operations. Initially, when the queue contains only <I>s</I>, the lemma certainly holds.<P>
+For the inductive step, we must prove the lemma holds after both dequeuing and enqueuing a vertex. If the head <I>v</I><SUB>1</SUB> of the queue is dequeued, the new head is <I>v</I><SUB>2</SUB>. (If the queue becomes empty, then the lemma holds vacuously.) But then we have <I>d</I>[<I>v<SUB>r</I></SUB>]<SUB> </SUB><IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v</I><SUB>1</SUB>] + 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v</I><SUB>2</SUB>] + 1, and the remaining inequalities are unaffected. Thus, the lemma follows with <I>v</I><SUB>2</SUB> as the head. Enqueuing a vertex requires closer examination of the code. In line 16 of BFS, when the vertex <I>v</I> is enqueued, thus becoming <I>v</I>r+1, the head <I>v</I><SUB>1</SUB> of <I>Q</I> is in fact the vertex <I>u</I> whose adjacency list is currently being scanned. Thus, <I>d</I>[<I>v<SUB>r</I></SUB>+1] = <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>] + 1 = <I>d</I>[<I>v</I><SUB>1</SUB>] + 1. We also have <I>d</I>[<I>v<SUB>r</I></SUB>] <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v</I><SUB>1</SUB>] + 1 = <I>d</I>[<I>u</I>] + 1 = <I>d</I>[<I>v</I>] = <I>d</I>[<I>v<SUB>r </I>+ 1</SUB>], and the remaining inequalities are unaffected. Thus, the lemma follows when <I>v </I>is enqueued.      <P>
+We can now prove that breadth-first search correctly finds shortest-path distances.<P>
+<a name="08a6_1756">Theorem 23.4<a name="08a6_1756"><P>
+Let <I>G</I> = (<I>V</I>, <I>E</I>) be a directed or undirected graph, and suppose that BFS is run on <I>G</I> from a given source vertex <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. Then, during its execution, BFS discovers every vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> that is reachable from the source <I>s</I>, and upon termination, <I>d</I>[<I>v</I>] = <IMG SRC="../IMAGES/delta12.gif"><I></I>(<I>s</I>, <I>v</I>) for all <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. Moreover, for any vertex <I>v</I> <IMG SRC="../IMAGES/noteq.gif"> <I>s</I> that is reachable from <I>s</I>, one of the shortest paths from <I>s</I> to <I>v</I> is the shortest path from <I>s</I> to <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] followed by the edge (<IMG SRC="../IMAGES/piuc.gif"><I>[</I>v<I>], </I>v<I>).</I><P>
+<I><B>Proof     </I></B>We start with the case in which <I>v</I> is unreachable from <I>s</I>. Since Lemma 23.2 gives <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/delta12.gif"><I></I>(<I>s</I>, <I>v</I>) = <IMG SRC="../IMAGES/infin.gif">, vertex <I>v </I>cannot have <I>d</I>[<I>v</I>] set to a finite value in line 14. By induction, there cannot be a first vertex whose <I>d</I> value is set to <IMG SRC="../IMAGES/infin.gif"> by line 14. Line 14 is therefore only executed only for vertices with finite <I>d</I> values. Thus, if <I>v</I> is unreachable, it is never discovered.<P>
+The main part of the proof is for vertices reachable from <I>s</I>. Let <I>V<SUB>k</I></SUB> denote the set of vertices at distance <I>k</I> from <I>s</I>; that is, <I>V<SUB>k</I></SUB> = {<I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V </I>: <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>, <I>v</I>) = <I>k</I>}. The proof proceeds by induction on <I>k</I>. As an inductive hypothesis, we assume that for each vertex <I>v </I><IMG SRC="../IMAGES/memof12.gif"> <I>V<SUB>k</I></SUB>, there is exactly one point during the execution of BFS at which<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>v</I> is grayed,<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>d</I>[<I>v</I>] is set to <I>k</I>,<P>
+<IMG SRC="../IMAGES/dot12.gif">     if <I>v</I> <IMG SRC="../IMAGES/noteq.gif"> <I>s</I>, then <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] is set to <I>u</I> for some <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V<SUB>k</I> - 1</SUB>, and<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>v</I> is inserted into the queue <I>Q</I>.<P>
+As we have noted before, there is certainly at most one such point.<P>
+The basis is for <I>k</I> = 0. We have <I>V</I><SUB>0</SUB> = {<I>s</I>}, since the source <I>s</I> is the only vertex at distance 0 from <I>s</I>. During the initialization, <I>s</I> is grayed, <I>d</I>[<I>s</I>] is set to 0, and <I>s</I> is placed into <I>Q</I>, so the inductive hypothesis holds.<P>
+For the inductive step, we start by noting that the queue <I>Q</I> is never empty until the algorithm terminates and that, once a vertex <I>u</I> is inserted into the queue, neither <I>d</I>[<I>u</I>] nor <IMG SRC="../IMAGES/piuc.gif">[<I>u</I>] ever changes. By Lemma 23.3, therefore, if vertices are inserted into the queue over the course of the algorithm in the order <I>v</I><SUB>1</SUB>, <I>v</I><SUB>2, . . . , </SUB><I>v<SUB>r</I></SUB>, then the sequence of distances is monotonically increasing: <I>d</I>[<I>v<SUB>i</I></SUB>] <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v<SUB>i + </I>1</SUB>] for <I>i</I> = 1, 2, . . . , <I>r</I> - 1.<P>
+Now let us consider an arbitrary vertex <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I> V<SUB>k</I></SUB>, where <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1. The monotonicity property, combined with <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>k</I> (by Lemma 23.2) and the inductive hypothesis, implies that <I>v</I> must be discovered after all vertices in <I>V<SUB>k </I>- 1</SUB> are enqueued, if it is discovered at all.<P>
+Since <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>, <I>v</I>) = <I>k</I>, there is a path of <I>k</I> edges from <I>s</I> to <I>v</I>, and thus there exists a vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V<SUB>k-</I>1</SUB> such that (<I>u</I>,<I>v</I>) <IMG SRC="../IMAGES/memof12.gif"><I> </I>E<I></I>. Without loss of generality, let <I>u</I> be the first such vertex grayed, which must happen since, by induction, all vertices in <I>V<SUB>k </I>- 1</SUB> are grayed. The code for BFS enqueues every grayed vertex, and hence <I>u</I> must ultimately appear as the head of the queue in line 10. When <I>u</I> appears as the head, its adjacency list is scanned and <I>v</I> is discovered. (The vertex <I>v</I> could not have been discovered earlier, since it is not adjacent to any vertex in <I>V<SUB>j</I></SUB> for <I>j</I> &lt; <I>k</I> - 1--otherwise, <I>v</I> could not belong to <I>V<SUB>k</SUB></I>--and by assumption, <I>u</I> is the first vertex discovered in <I>V<SUB>k -</I> 1</SUB> to which <I>v</I> is adjacent.) Line 13 grays <I>v</I>, line 14 establishes <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>] + 1 = <I>k</I>, line 15 sets <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] to <I>u</I>, and line 16 inserts <I>v</I> into the queue. Since <I>v</I> is an arbitrary vertex in <I>V<SUB>k</I></SUB>, the inductive hypothesis is proved.<P>
+To conclude the proof of the lemma, observe that if <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V<SUB>k</I></SUB>, then by what we have just seen, <IMG SRC="../IMAGES/piuc.gif"><I>[</I>v<I>] <IMG SRC="../IMAGES/memof12.gif"> </I><I>V<SUB>k - </I>1</SUB>. Thus, we can obtain a shortest path from <I>s</I> to <I>v</I> by taking a shortest path from <I>s</I> to <IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>v</I>] and then traversing the edge (<IMG SRC="../IMAGES/piuc.gif"><I></I>[<I>v</I>], <I>v</I>).      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Breadth-first trees</h2><P>
+<a name="08a7_1753"><a name="08a7_1754">The procedure BFS builds a breadth-first tree as it searches the graph, as illustrated in Figure 23.3. The tree is represented by the <IMG SRC="../IMAGES/piuc.gif"><I></I> field in each vertex. More formally, for a graph <I>G</I> = (<I>V, E</I>) with source <I>s</I>, we define the <I><B>predecessor subgraph</I></B> of <I>G</I> as <I>G</I><IMG SRC="../IMAGES/piuc.gif"> = (<I>V</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif"></FONT><SUB>,<I></SUB> E</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB>), where<P>
+<pre><I>V</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB> = {<I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V </I>: <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL} <IMG SRC="../IMAGES/wideu.gif"> {<I>s</I>}</sub></sup></pre><P>
+and<P>
+<pre><I>E</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB> = {(<IMG SRC="../IMAGES/piuc.gif">[<I>v</I>],<I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> : <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</SUB></I><SUB><IMG SRC="../IMAGES/piuc.gif"> <I></SUB>- {</I>s<I>}} .</I></sub></sup></pre><P>
+<a name="08a7_1755"><a name="08a7_1756"><a name="08a7_1757">The predecessor subgraph <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB> is a <I><B>breadth-first tree</I></B> if <I>V</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB></FONT></SUB> consists of the vertices reachable from <I>s</I> and, for all <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB>, there is a unique simple path from <I>s</I> to <I>v</I> in <I>G</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif"></FONT><SUB></SUB> that is also a shortest path from <I>s</I> to <I>v</I> in <I>G</I>. A breadth-first tree is in fact a tree, since it is connected and |<I>E</I><IMG SRC="../IMAGES/piuc.gif"><SUB>| = |<I>V</I></SUB><FONT FACE="Courier New" SIZE=2><SUB><IMG SRC="../IMAGES/piuc.gif"></FONT></SUB>|<I> </I>- 1 (see Theorem 5.2). The edges in <I>E</I><IMG SRC="../IMAGES/pi14.gif"><SUB></SUB> are called <I><B>tree edges.</I></B><P>
+After BFS has been run from a source <I>s</I> on a graph <I>G</I>, the following lemma shows that the predecessor subgraph is a breadth-first tree.<P>
+<a name="08a7_1759">Lemma 23.5<a name="08a7_1759"><P>
+When applied to a directed or undirected graph <I>G</I> = (<I>V, E</I>), procedure BFS constructs <IMG SRC="../IMAGES/piuc.gif"> so that the predecessor subgraph <I>G</I><IMG SRC="../IMAGES/piuc.gif"><I><SUB></SUB> = (</I>V<SUB><FONT FACE="Courier New" SIZE=2><I></SUB><IMG SRC="../IMAGES/piuc.gif"></I><SUB>,</SUB> E<I><IMG SRC="../IMAGES/piuc.gif"><SUB></I></FONT></SUB>) is a breadth-first tree.<P>
+<I><B>Proof</I></B><I>     </I>Line 15 of BFS only sets <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] = <I>u</I> if (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"><I>E</I> and <IMG SRC="../IMAGES/delta12.gif">(<I>s, v</I>) &lt; <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>--that is, if <I>v</I> is reachable from <I>s</I>--and thus <I>V</I><IMG SRC="../IMAGES/piuc.gif"><I><SUB></SUB> </I>consists of the vertices in <I>V </I>reachable from <I>v</I>. Since <I>G<SUB><FONT FACE="Courier New" SIZE=2></I></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB><I> </I></FONT>forms a tree, it contains a unique path from <I>s </I>to each vertex in <I>V</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB>. By applying Theorem 23.4 inductively, we conclude that every such path is a shortest path.      <P>
+The following procedure prints out the vertices on a shortest path from <I>s </I>to <I>v</I>, assuming that BFS has already been run to compute the shortest-path tree.<P>
+<pre><a name="08a7_1758">PRINT-PATH(<I>G,s,v</I>)</sub></sup></pre><P>
+<pre>1<B>  if</B> <I>v</I> = <I>s</I></sub></sup></pre><P>
+<pre>2<B>     then</B> print <I>s</I></sub></sup></pre><P>
+<pre>3<B>     else if</B> <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] = NIL</sub></sup></pre><P>
+<pre>4<B>             then</B> print &quot;no path from&quot; <I>s</I> &quot;to&quot; <I>v</I> &quot;exists&quot;</sub></sup></pre><P>
+<pre>5<B>             else</B> PRINT-PATH(<I>G,s,</I><IMG SRC="../IMAGES/piuc.gif">[<I>v</I>])</sub></sup></pre><P>
+<pre>6                  print <I>v</I></sub></sup></pre><P>
+This procedure runs in time linear in the number of vertices in the path printed, since each recursive call is for a path one vertex shorter.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08a8_175c">Exercises<a name="08a8_175c"></h2><P>
+<a name="08a8_175d">23.2-1<a name="08a8_175d"><P>
+Show the result of running breadth-first search on the directed graph of Figure 23.2(a), using vertex 3 as the source.<P>
+<a name="08a8_175e">23.2-2<a name="08a8_175e"><P>
+Show the result of running breadth-first search on the undirected graph of Figure 23.3, using vertex <I>u</I> as the source.<P>
+<a name="08a8_175f">23.2-3<a name="08a8_175f"><P>
+What is the running time of BFS if its input graph is represented by an adjacency matrix and the algorithm is modified to handle this form of input?<P>
+<a name="08a8_1760">23.2-4<a name="08a8_1760"><P>
+Argue that in a breadth-first search, the value <I>d</I>[<I>u</I>] assigned to a vertex <I>u </I>is independent of the order in which the vertices in each adjacency list are given.<P>
+<a name="08a8_1761">23.2-5<a name="08a8_1761"><P>
+Give an example of a directed graph <I>G</I> = (<I>V, E</I>), a source vertex <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V, </I>and a set of tree edges <I>E</I><IMG SRC="../IMAGES/piuc.gif"><I><SUB></SUB> <IMG SRC="../IMAGES/rgtubar.gif"></I> <I>E</I> such that for each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, the unique path in <I>E<SUB><FONT FACE="Courier New" SIZE=2></I></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB></FONT><I></SUB></I> from <I>s</I> to <I>v</I> is a shortest path in <I>G</I>, yet the set of edges <I>E</I><IMG SRC="../IMAGES/piuc.gif"><I><SUB></SUB> </I>cannot be produced by running BFS on <I>G</I>, no matter how the vertices are ordered in each adjacency list.<P>
+<a name="08a8_1762">23.2-6<a name="08a8_1762"><P>
+<a name="08a8_1759">Give an efficient algorithm to determine if an undirected graph is bipartite.<P>
+<a name="08a8_1763">23.2-7<a name="08a8_1763"><P>
+<a name="08a8_175a"><a name="08a8_175b">The <I><B>diameter</I></B> of a tree <I>T</I> = (<I>V, E</I>) is given by<P>
+<img src="476_a.gif"><P>
+that is, the diameter is the largest of all shortest-path distances in the tree. Give an efficient algorithm to compute the diameter of a tree, and analyze the running time of your algorithm.<P>
+<a name="08a8_1764">23.2-8<a name="08a8_1764"><P>
+Let <I>G</I> = (<I>V, E</I>) be an undirected graph. Give an <I>O</I>(<I>V</I> + <I>E</I>)-time algorithm to compute a path in <I>G</I> that traverses each edge in <I>E</I> exactly once in each direction. Describe how you can find your way out of a maze if you are given a large supply of pennies.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08a9_176e">23.3 Depth-first search<a name="08a9_176e"></h1><P>
+<a name="08a9_175c"><a name="08a9_175d">The strategy followed by depth-first search is, as its name implies, to search &quot;deeper&quot; in the graph whenever possible. In depth-first search, edges are explored out of the most recently discovered vertex <I>v</I> that still has unexplored edges leaving it. When all of <I>v</I>'s edges have been explored, the search &quot;backtracks&quot; to explore edges leaving the vertex from which <I>v</I> was discovered. This process continues until we have discovered all the vertices that are reachable from the original source vertex. If any undiscovered vertices remain, then one of them is selected as a new source and the search is repeated from that source. This entire process is repeated until all vertices are discovered.<P>
+<a name="08a9_175e">As in breadth-first search, whenever a vertex <I>v</I> is discovered during a scan of the adjacency list of an already discovered vertex <I>u</I>, depth-first search records this event by setting <I>v</I>'s predecessor field <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] to <I>u</I>. Unlike breadth-first search, whose predecessor subgraph forms a tree, the predecessor subgraph produced by a depth-first search may be composed of several trees, because the search may be repeated from multiple sources. The <I><B>predecessor subgraph</I></B> of a depth-first search is therefore defined slightly differently from that of a breadth-first search: we let <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB> = (<I>V</I>, <I>E</I></SUB><FONT FACE="Courier New" SIZE=2><SUB><IMG SRC="../IMAGES/piuc.gif"></FONT></SUB>), where<P>
+<pre><I>E</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB> = {(<IMG SRC="../IMAGES/piuc.gif">[<I>v</I>], <I>v</I>) : <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> and <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL} .</sub></sup></pre><P>
+<a name="08a9_175f"><a name="08a9_1760"><a name="08a9_1761"><a name="08a9_1762"><a name="08a9_1763"><a name="08a9_1764">The predecessor subgraph of a depth-first search forms a <I><B>depth-first forest</I></B> composed of several <I><B>depth-first trees.</I></B> The edges in <I>E</I><IMG SRC="../IMAGES/piuc.gif"> are called <I><B>tree edges</I></B>.<P>
+<a name="08a9_1765"><a name="08a9_1766"><a name="08a9_1767"><a name="08a9_1768"><a name="08a9_1769">As in breadth-first search, vertices are colored during the search to indicate their state. Each vertex is initially white, is grayed when it is <I><B>discovered</I></B> in the search, and is blackened when it is <I><B>finished</I></B>, that is, when its adjacency list has been examined completely. This technique guarantees that each vertex ends up in exactly one depth-first tree, so that these trees are disjoint.<P>
+<a name="08a9_176a">Besides creating a depth-first forest, depth-first search also <I><B>timestamps </I></B>each vertex. Each vertex <I>v</I> has two timestamps: the first timestamp <I>d</I>[<I>v</I>] records when <I>v</I> is first discovered (and grayed), and the second timestamp <I>f</I>[<I>v</I>] records when the search finishes examining <I>v</I>'s adjacency list (and blackens <I>v</I>). These timestamps are used in many graph algorithms and are generally helpful in reasoning about the behavior of depth-first search.<P>
+The procedure DFS below records when it discovers vertex <I>u</I> in the variable <I>d</I>[<I>u</I>] and when it finishes vertex <I>u</I> in the variable <I>f</I>[<I>u</I>]. These timestamps are integers between 1 and 2 |<I>V|, since there is one discovery event and one finishing event for each of the |</I>V| vertices. For every vertex <I>u</I>,<P>
+<pre><I>d</I>[<I>u</I>] &lt; <I>f</I>[<I>u</I>] .</sub></sup></pre><P>
+<h4><a name="08a9_176f">(23.1)<a name="08a9_176f"></sub></sup></h4><P>
+Vertex <I>u</I> is <FONT FACE="Courier New" SIZE=2>WHITE</FONT> before time <I>d</I>[<I>u</I>], <FONT FACE="Courier New" SIZE=2>GRAY</FONT> between time <I>d</I>[<I>u</I>] and time <I>f</I>[<I>u</I>], and <FONT FACE="Courier New" SIZE=2>BLACK</FONT> thereafter.<P>
+The following pseudocode is the basic depth-first-search algorithm. The input graph <I>G</I> may be undirected or directed. The variable <I>time</I> is a global variable that we use for timestamping.<P>
+<pre><a name="08a9_176b"><a name="08a9_176c">DFS(<I>G</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> each vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>2       <B>do</B> <I>color</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> WHITE</sub></sup></pre><P>
+<pre>3          <IMG SRC="../IMAGES/piuc.gif">[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>4  <I>time </I><IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5  <B>for</B> each vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>6       <B>do if</B> <I>color</I>[<I>u</I>] = WHITE</sub></sup></pre><P>
+<pre>7             <B>then</B> DFS-VISIT(<I>u</I>)</sub></sup></pre><P>
+<img src="478_a.gif"><P>
+Figure 23.4 illustrates the progress of DFS on the graph shown in Figure 23.2.<P>
+Procedure DFS works as follows. Lines 1-3 paint all vertices white and initialize their <IMG SRC="../IMAGES/piuc.gif"> fields to <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Line 4 resets the global time counter. Lines 5-7 check each vertex in <I>V</I> in turn and, when a white vertex is found, visit it using DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT>. Every time DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT>(<I>u</I>) is called in line 7, vertex <I>u</I> becomes the root of a new tree in the depth-first forest. When DFS returns, every vertex <I>u</I> has been assigned a discovery time <I>d</I>[<I>u</I>] and a finishing time &acirc;[<I>u</I>].<P>
+<a name="08a9_176d">In each call DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT>(<I>u</I>), vertex <I>u</I> is initially white. Line 1 paints <I>u </I>gray, and line 2 records the discovery time <I>d</I>[<I>u</I>] by incrementing and saving the global variable <I>time</I>. Lines 3-6 examine each vertex <I>v</I> adjacent to <I>u</I> and recursively visit <I>v</I> if it is white. As each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Adj</I>[<I>u</I>] is considered in line 3, we say that edge (<I>u, v</I>) is <I><B>explored</I></B> by the depth-first search. Finally, after every edge leaving <I>u</I> has been explored, lines 7-8 paint <I>u</I> black and record the finishing time in &acirc;[<I>u</I>].<P>
+<img src="479_a.gif"><P>
+<h4><a name="08a9_1770">Figure 23.4 The progress of the depth-first-search algorithm DFS on a directed graph. As edges are explored by the algorithm, they are shown as either shaded (if they are tree edges) or dashed (otherwise). Nontree edges are labeled B, C, or F according to whether they are back, cross, or forward edges. Vertices are timestamped by discovery time/finishing time.<a name="08a9_1770"></sub></sup></h4><P>
+What is the running time of DFS? The loops on lines 1-2 and lines 5-7 of DFS take time <IMG SRC="../IMAGES/bound.gif">(<I>V</I>), exclusive of the time to execute the calls to DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT>. The procedure DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> is called exactly once for each vertex the <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, since DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> is invoked only on white vertices and the first thing it does is paint the vertex gray. During an execution of DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT>(<I>v</I>), the loop on lines 3-6 is executed |<I>Adj</I>[<I>v</I>]<B>| times. Since</B><P>
+<img src="479_b.gif"><P>
+the total cost of executing lines 2-5 of DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>E</I>). The running time of DFS is therefore <IMG SRC="../IMAGES/bound.gif">(<I>V</I> + <I>E</I>).<P>
+
+
+
+
+
+<h2>Properties of depth-first search</h2><P>
+Depth-first search yields much information about the structure of a graph. Perhaps the most basic property of depth-first search is that the predecessor subgraph G<IMG SRC="../IMAGES/piuc.gif"><SUB> </SUB>does indeed form a forest of trees, since the structure of the depth-first trees exactly mirrors the structure of recursive calls of DFS-VISIT. That is, <I>u</I> = <IMG SRC="../IMAGES/piuc.gif">[<I>v</I>] if and only if DFS-VISIT (<I>v</I>) was called during a search of <I>u</I>'s adjacency list.<P>
+Another important property of depth-first search is that discovery and finishing times have <I><B>parenthesis</I></B><I> <B>structure</I></B>. If we represent the discovery of vertex <I>u</I> with a left parenthesis &quot;(<I>u</I>&quot; and represent its finishing by a right parenthesis &quot;<I>u</I>),&quot; then the history of discoveries and finishings makes a well-formed expression in the sense that the parentheses are properly nested. For example, the depth-first search of Figure 23.5(a) corresponds to the parenthesization shown in Figure 23.5(b). Another way of stating the condition of parenthesis structure is given in the following theorem.<P>
+<a name="08aa_1770">Theorem 23.6<a name="08aa_1770"><P>
+<a name="08aa_176e">In any depth-first search of a (directed or undirected) graph <I>G</I> = (<I>V, E</I>), for any two vertices <I>u</I> and <I>v</I>, exactly one of the following three conditions holds:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>the intervals [<I>d</I>[<I>u</I>], &acirc;[<I>u</I>]] and [<I>d</I>[<I>v</I>], &acirc;[<I>v</I>]] are entirely disjoint,<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>the interval [<I>d</I>[<I>u</I>], &acirc;[<I>u</I>]] is contained entirely within the interval [<I>d</I>[<I>v</I>], <FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]], and <I>u</I> is a descendant of <I>v</I> in the depth-first tree, or<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>the interval [<I>d</I>[<I>v</I>], <FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>v</I>]] is contained entirely within the interval [<I>d</I>[<I>u</I>], <FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]], and <I>v</I> is a descendant of <I>u</I> in the depth-first tree.<P>
+<I><B>Proof     </I></B>We begin with the case in which <I>d</I>[<I>u</I>] &lt; <I>d</I>[<I>v</I>]. There are two subcases to consider, according to whether <I>d</I>[<I>v</I>] &lt; <I>&acirc;</I>[<I>u</I>] or not. In the first subcase, <I>d</I>[<I>v</I>] &lt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>u</I>], so <I>v</I> was discovered while <I>u</I> was still gray. This implies that <I>v</I> is a descendant of <I>u</I>. Moreover, since <I>v</I> was discovered more recently than <I>u</I>, all of its outgoing edges are explored, and <I>v</I> is finished, before the search returns to and finishes <I>u</I>. In this case, therefore, the interval [<I>d</I>[<I>v</I>],&acirc;[<I>v</I>]] is entirely contained within the interval [<I>d</I>[<I>u</I>],<FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]]. In the other subcase, &acirc;[<I>u</I>] &lt; <I>d</I>[<I>v</I>], and inequality (23.1) implies that the intervals [<I>d</I>[<I>u</I>],&acirc;[<I>u</I>]] and [<I>d</I>[<I>v</I>],<FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>v</I>]] are disjoint.<P>
+The case in which <I>d</I>[<I>v</I>] &lt; <I>d</I>[<I>u</I>] is similar, with the roles of <I>u</I> and <I>v </I>reversed in the above argument.      <P>
+<a name="08aa_1771">Corollary 23.7<a name="08aa_1771"><P>
+Vertex <I>v</I> is a proper descendant of vertex <I>u</I> in the depth-first forest for a (directed or undirected) graph <I>G</I> if and only if <I>d</I>[<I>u</I>] &lt; <I>d</I>[<I>v</I>] &lt; &acirc;[<I>v</I>] &lt; <I>&acirc;</I>[<I>u</I>].<P>
+<I><B>Proof</I></B>     Immediate from Theorem 23.6.      <P>
+<img src="481_a.gif"><P>
+<h4><a name="08aa_1772">Figure 23.5 Properties of depth-first search. (a) The result of a depth-first search of a directed graph. Vertices are timestamped and edge types are indicated as in Figure 23.4. (b) Intervals for the discovery time and finishing time of each vertex correspond to the parenthesization shown. Each rectangle spans the interval given by the discovery and finishing times of the corresponding vertex. Tree edges are shown. If two intervals overlap, then one is nested within the other, and the vertex corresponding to the smaller interval is a descendant of the vertex corresponding to the larger. (c) The graph of part (a) redrawn with all tree and forward edges going down within a depth-first tree and all back edges going up from a descendant to an ancestor.<a name="08aa_1772"></sub></sup></h4><P>
+The next theorem gives another important characterization of when one vertex is a descendant of another in the depth-first forest.<P>
+<a name="08aa_1773">Theorem 23.8<a name="08aa_1773"><P>
+<a name="08aa_176f">In a depth-first forest of a (directed or undirected) graph <I>G</I> = (<I>V, E</I>), vertex <I>v</I> is a descendant of vertex <I>u</I> if and only if at the time <I>d</I>[<I>u</I>] that the search discovers <I>u</I>, vertex <I>v</I> can be reached from <I>u</I> along a path consisting entirely of white vertices.<P>
+<I><B>Proof     </I></B><IMG SRC="../IMAGES/rtbigar.gif">: Assume that <I>v</I> is a descendant of <I>u</I>. Let <I>w</I> be any vertex on the path between <I>u</I> and <I>v</I> in the depth-first tree, so that <I>w</I> is a descendant of <I>u</I>. By Corollary 23.7, <I>d</I>[<I>u</I>] &lt; <I>d</I>[<I>w</I>], and so <I>w</I> is white at time <I>d</I>[<I>u</I>].<P>
+<IMG SRC="../IMAGES/lftbigar.gif">: Suppose that vertex <I>v</I> is reachable from <I>u</I> along a path of white vertices at time <I>d</I>[<I>u</I>], but <I>v</I> does not become a descendant of <I>u</I> in the depth-first tree. Without loss of generality, assume that every other vertex along the path becomes a descendant of <I>u</I>. (Otherwise, let <I>v</I> be the closest vertex to <I>u</I> along the path that doesn't become a descendant of <I>u</I>.) Let <I>w </I>be the predecessor of <I>v</I> in the path, so that <I>w</I> is a descendant of <I>u</I> (<I>w</I> and <I>u </I>may in fact be the same vertex) and, by Corollary 23.7, &acirc;[<I>w</I>] <IMG SRC="../IMAGES/lteq12.gif"> <FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]. Note that <I>v</I> must be discovered after <I>u</I> is discovered, but before <I>w</I> is finished. Therefore, <I>d</I>[<I>u</I>] &lt; <I>d</I>[<I>v</I>] &lt; &acirc;[<I>w</I>] &lt;<FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]. Theorem 23.6 then implies that the interval [<I>d</I>[<I>v</I>], <FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>v</I>]] is contained entirely within the interval [<I>d</I>[<I>u</I>],<FONT FACE="CG Times (W1)" SIZE=2>&acirc;</FONT>[<I>u</I>]]. By Corollary 23.7, <I>v</I> must after all be a descendant of <I>u</I>.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Classification of edges</h2><P>
+<a name="08ab_1770"><a name="08ab_1771">Another interesting property of depth-first search is that the search can be used to classify the edges of the input graph <I>G</I> = (<I>V, E</I>). This edge classification can be used to glean important information about a graph. For example, in the next section, we shall see that a directed graph is acyclic if and only if a depth-first search yields no &quot;back&quot; edges (Lemma 23.10).<P>
+We can define four edge types in terms of the depth-first forest <I>G</I><IMG SRC="../IMAGES/piuc.gif"> <SUB></SUB>produced by a depth-first search on <I>G</I>.<P>
+<a name="08ab_1772"><a name="08ab_1773">1.     <I><B>Tree edges</I></B> are edges in the depth-first forest <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB>. <B>Edge</B> (<I>u, v</I>) is a tree edge if <I>v</I> was first discovered by exploring edge (<I>u, v</I>).<P>
+<a name="08ab_1774"><a name="08ab_1775">2.     <I><B>Back edges</I></B> are those edges (<I>u, v</I>) connecting a vertex <I>u</I> to an ancestor <I>v </I>in a depth-first tree. Self-loops are considered to be back edges.<P>
+<a name="08ab_1776"><a name="08ab_1777">3.     <I><B>Forward edges</I></B> are those nontree edges (<I>u, v</I>) connecting a vertex <I>u</I> to a descendant <I>v</I> in a depth-first tree.<P>
+<a name="08ab_1778"><a name="08ab_1779">4.     <I><B>Cross edges</I></B> are all other edges. They can go between vertices in the same depth-first tree, as long as one vertex is not an ancestor of the other, or they can go between vertices in different depth-first trees.<P>
+In Figures 23.4 and 23.5, edges are labeled to indicate their type. Figure 23.5(c) also shows how the graph of Figure 23.5(a) can be redrawn so that all tree and forward edges head downward in a depth-first tree and all back edges go up. Any graph can be redrawn in this fashion.<P>
+The DFS algorithm can be modified to classify edges as it encounters them. The key idea is that each edge (<I>u, v</I>) can be classified by the color of the vertex <I>v</I> that is reached when the edge is first explored (except that forward and cross edges are not distinguished):<P>
+1.     <FONT FACE="Courier New" SIZE=2>WHITE</FONT> indicates a tree edge,<P>
+2.     <FONT FACE="Courier New" SIZE=2>GRAY </FONT>indicates a back edge, and<P>
+3.     <FONT FACE="Courier New" SIZE=2>BLACK</FONT> indicates a forward or cross edge.<P>
+The first case is immediate from the specification of the algorithm. For the second case, observe that the gray vertices always form a linear chain of descendants corresponding to the stack of active DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> invocations; the number of gray vertices is one more than the depth in the depth-first forest of the vertex most recently discovered. Exploration always proceeds from the deepest gray vertex, so an edge that reaches another gray vertex reaches an ancestor. The third case handles the remaining possibility; it can be shown that such an edge (<I>u, v</I>) is a forward edge if <I>d</I>[<I>u</I>]<I> &lt; d</I>[<I>v</I>] and a cross edge if <I>d</I>[<I>u</I>] <I>&gt; d</I>[<I>v</I>]. (See Exercise 23.3-4.)<P>
+In an undirected graph, there may be some ambiguity in the type classification, since (<I>u, v</I>) and (<I>v, u</I>) are really the same edge. In such a case, the edge is classified as the<I> first</I> type in the classification list that applies. Equivalently (see Exercise 23.3-5), the edge is classified according to whichever of (<I>u, v</I>) or (<I>v, u</I>) is encountered first during the execution of the algorithm.<P>
+We now show that forward and cross edges never occur in a depth-first search of an undirected graph.<P>
+<a name="08ab_177a">Theorem 23.9<a name="08ab_177a"><P>
+In a depth-first search of an undirected graph <I>G,</I> every edge of <I>G</I> is either a tree edge or a back edge.<P>
+<I><B>Proof</I></B>     Let (<I>u, v</I>) be an arbitrary edge of <I>G,</I> and suppose without loss of generality that <I>d</I>[<I>u</I>]<I> &lt; d</I>[<I>v</I>]. Then, <I>v</I> must be discovered and finished before we finish <I>u,</I> since <I>v</I> is on <I>u</I>'s adjacency list. If the edge (<I>u, v</I>) is explored first in the direction from <I>u</I> to <I>v,</I> then (<I>u, v</I>) becomes a tree edge. If (<I>u, v</I>) is explored first in the direction from <I>v</I> to <I>u,</I> then (<I>u, v</I>) is a back edge, since <I>u</I> is still gray at the time the edge is first explored.      <P>
+We shall see many applications of these theorems in the following sections.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08ac_177f">Exercises<a name="08ac_177f"></h2><P>
+<a name="08ac_1780">23.3-1<a name="08ac_1780"><P>
+Make a 3-by-3 chart with row and column labels <FONT FACE="Courier New" SIZE=2>WHITE, GRAY,</FONT> and <FONT FACE="Courier New" SIZE=2>BLACK</FONT>. In each cell (<I>i, j</I>)<I>,</I> indicate whether, at any point during a depth-first search of a directed graph, there can be an edge from a vertex of color <I>i</I> to a vertex of color <I>j</I>. For each possible edge, indicate what edge types it can be. Make a second such chart for depth-first search of an undirected graph.<P>
+<img src="484_a.gif"><P>
+<h4><a name="08ac_1781">Figure 23.6 A directed graph for use in Exercises 23.3-2 and 23.5-2.<a name="08ac_1781"></sub></sup></h4><P>
+<a name="08ac_1782">23.3-2<a name="08ac_1782"><P>
+<a name="08ac_177a">Show how depth-first search works on the graph of Figure 23.6. Assume that the <B>for</B> loop of lines 5-7 of the DFS procedure considers the vertices in alphabetical order, and assume that each adjacency list is ordered alphabetically. Show the discovery and finishing times for each vertex, and show the classification of each edge.<P>
+<a name="08ac_1783">23.3-3<a name="08ac_1783"><P>
+Show the parenthesis structure of the depth-first search shown in Figure 23.4.<P>
+<a name="08ac_1784">23.3-4<a name="08ac_1784"><P>
+Show that edge (<I>u,v</I>) is<P>
+<I><B>a.     </I></B>a tree edge or forward edge if and only if <I>d</I>[<I>u</I>] &lt; <I>d</I>[<I>v</I>] &lt; <I>f</I>[<I>v</I>] &lt; <I>f</I>[<I>u</I>],<P>
+<I><B>b.     </I></B>a back edge if and only if <I>d</I>[<I>v</I>] &lt; <I>d</I>[<I>u</I>] &lt; <I>f</I>[<I>u</I>] &lt; <I>f</I>[<I>v</I>], and<P>
+<I><B>c.     </I></B>a cross edge if and only if <I>d</I>[<I>v</I>] &lt;<I> f</I>[<I>v</I>] &lt; <I>d</I>[<I>u</I>] &lt; <I>f</I>[<I>u</I>].<P>
+<a name="08ac_1785">23.3-5<a name="08ac_1785"><P>
+<a name="08ac_177b">Show that in an undirected graph, classifying an edge (<I>u, v</I>) as a tree edge or a back edge according to whether (<I>u,v</I>) or (<I>v,u</I>) is encountered first during the depth-first search is equivalent to classifying it according to the priority of types in the classification scheme.<P>
+<a name="08ac_1786">23.3-6<a name="08ac_1786"><P>
+Give a counterexample to the conjecture that if there is a path from <I>u to v </I>in a directed graph <I>G,</I> and if <I>d</I>[<I>u</I>]<I> &lt; d</I>[<I>v</I>] in a depth-first search of <I>G,</I> then <I>v</I> is a descendant of <I>u</I> in the depth-first forest produced.<P>
+<a name="08ac_1787">23.3-7<a name="08ac_1787"><P>
+Modify the pseudocode for depth-first search so that it prints out every edge in the directed graph <I>G,</I> together with its type. Show what modifications, if any, must be made if <I>G</I> is undirected.<P>
+<a name="08ac_1788">23.3-8<a name="08ac_1788"><P>
+Explain how a vertex <I>u</I> of a directed graph can end up in a depth-first tree containing only <I>u,</I> even though <I>u</I> has both incoming and outgoing edges in <I>G.</I><P>
+<a name="08ac_1789">23.3-9<a name="08ac_1789"><P>
+<a name="08ac_177c">Show that a depth-first search of an undirected graph <I>G</I> can be used to identify the connected components of <I>G,</I> and that the depth-first forest contains as many trees as <I>G </I>has connected components. More precisely, show how to modify depth-first search so that each vertex<I> v</I> is assigned an integer label <I>cc</I>[<I>v</I>] between 1 and <I>k,</I> where <I>k</I> is the number of connected components of <I>G,</I> such that <I>cc</I>[<I>u</I>]<I> = cc</I>[<I>v</I>] if and only if <I>u</I> and <I>v</I> are in the same connected component.<P>
+<a name="08ac_178a">23.3-10<a name="08ac_178a"><P>
+<a name="08ac_177d"><a name="08ac_177e">A directed graph <I>G = </I>(<I>V, E</I>) is <I><B>singly connected</I></B> if <img src="485_a.gif"> implies that there is at most one simple path from <I>u</I> to <I>v</I> for all vertices <I>u, v </I><IMG SRC="../IMAGES/memof12.gif"><I> V.</I> Give an efficient algorithm to determine whether or not a directed graph is singly connected.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08ad_1787">23.4 Topological sort<a name="08ad_1787"></h1><P>
+<a name="08ad_177f"><a name="08ad_1780"><a name="08ad_1781"><a name="08ad_1782">This section shows how depth-first search can be used to perform topological sorts of directed acyclic graphs, or &quot;dags&quot; as they are sometimes called. A <I><B>topological sort</I></B> of a dag <I>G = </I>(<I>V, E</I>) is a linear ordering of all its vertices such that if <I>G</I> contains an edge (<I>u, v</I>)<I>,</I> then <I>u</I> appears before <I>v </I>in the ordering. (If the graph is not acyclic, then no linear ordering is possible.) A topological sort of a graph can be viewed as an ordering of its vertices along a horizontal line so that all directed edges go from left to right. Topological sorting is thus different from the usual kind of &quot;sorting&quot; studied in Part II.<P>
+Directed acyclic graphs are used in many applications to indicate precedences among events. Figure 23.7 gives an example that arises when Professor Bumstead gets dressed in the morning. The professor must don certain garments before others (e.g., socks before shoes). Other items may be put on in any order (e.g., socks and pants). A directed edge (<I>u,v</I>) in the dag of Figure 23.7(a) indicates that garment <I>u</I> must be donned before garment <I>v</I>. A topological sort of this dag therefore gives an order for getting dressed. Figure 23.7(b) shows the topologically sorted dag as an ordering of vertices along a horizontal line such that all directed edges go from left to right.<P>
+<img src="486_a.gif"><P>
+<h4><a name="08ad_1788">Figure 23.7 (a) Professor Bumstead topologically sorts his clothing when getting dressed. Each directed edge (u,v) means that garment u must be put on before garment v. The discovery and finishing times from a depth-first search are shown next to each vertex. (b) The same graph shown topologically sorted. Its vertices are arranged from left to right in order of decreasing finishing time. Note that all directed edges go from left to right.<a name="08ad_1788"></sub></sup></h4><P>
+The following simple algorithm topologically sorts a dag.<P>
+<pre><a name="08ad_1783">TOPOLOGICAL-SORT(<I>G</I>)</sub></sup></pre><P>
+<pre>1  call DFS(<I>G</I>) to compute finishing times <I>f</I>[<I>v</I>] for each vertex <I>v</I></sub></sup></pre><P>
+<pre>2  as each vertex is finished, insert it onto the front of a linked list</sub></sup></pre><P>
+<pre>3<B>  return</B> the linked list of vertices</sub></sup></pre><P>
+Figure 23.7(b) shows how the topologically sorted vertices appear in reverse order of their finishing times.<P>
+We can perform a topological sort in time <IMG SRC="../IMAGES/bound.gif">(<I>V + E</I>)<I>,</I> since depth-first search takes <IMG SRC="../IMAGES/bound.gif">(<I>V + E</I>) time and it takes <I>0</I>(1) time to insert each of the |<I>V</I>| vertices onto the front of the linked list.<P>
+We prove the correctness of this algorithm using the following key lemma characterizing directed acyclic graphs.<P>
+<a name="08ad_1789">Lemma 23.10<a name="08ad_1789"><P>
+<a name="08ad_1784"><a name="08ad_1785"><a name="08ad_1786">A directed graph <I>G</I> is acyclic if and only if a depth-first search of <I>G</I> yields no back edges.<P>
+<I><B>Proof     </I></B><IMG SRC="../IMAGES/rtbigar.gif">: Suppose that there is a back edge (<I>u, v</I>). Then, vertex <I>v</I> is an ancestor of vertex <I>u</I> in the depth-first forest. There is thus a path from <I>v </I>to <I>u</I> in <I>G</I>, and the back edge (<I>u, v</I>) completes a cycle.<P>
+<img src="487_a.gif"><P>
+<h4><a name="08ad_178a">Figure 23.8 A dag for topological sorting.<a name="08ad_178a"></sub></sup></h4><P>
+<IMG SRC="../IMAGES/lftbigar.gif">: Suppose that <I>G</I> contains a cycle <I>c</I>. We show that a depth-first search of <I>G</I> yields a back edge. Let <I>v</I> be the first vertex to be discovered in <I>c</I>, and let (<I>u, v</I>) be the preceding edge in <I>c</I>. At time <I>d</I>[<I>v</I>], there is a path of white vertices from <I>v</I> to <I>u</I>. By the white-path theorem, vertex <I>u</I> becomes a descendant of <I>v</I> in the depth-first forest. Therefore, (<I>u, v</I>) is a back edge.      <P>
+<a name="08ad_178b">Theorem 23.11<a name="08ad_178b"><P>
+<FONT FACE="Courier New" SIZE=2>TOPOLOGICAL</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>(<I>G</I>) produces a topological sort of a directed acyclic graph <I>G</I>.<P>
+<I><B>Proof</I></B>     Suppose that DFS is run on a given dag <I>G</I> = (<I>V, E</I>) to determine finishing times for its vertices. It suffices to show that for any pair of distinct vertices <I>u,v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, if there is an edge in <I>G</I> from <I>u</I> to <I>v</I>, then <I>f</I>[<I>v</I>] &lt; <I>f</I>[<I>u</I>]. Consider any edge (<I>u,v</I>) explored by DFS(<I>G</I>). When this edge is explored, <I>v</I> cannot be gray, since then <I>v</I> would be an ancestor of <I>u </I>and (<I>u,v</I>) would be a back edge, contradicting Lemma 23.10. Therefore, <I>v</I> must be either white or black. If <I>v</I> is white, it becomes a descendant of <I>u</I>, and so <I>f</I>[<I>v</I>] &lt; <I>f</I>[<I>u</I>]. If <I>v</I> is black, then <I>f</I>[<I>v</I>] &lt; <I>f</I>[<I>u</I>] as well. Thus, for any edge (<I>u,v</I>) in the dag, we have <I>f</I>[<I>v</I>] &lt; <I>f</I>[<I>u</I>], proving the theorem.      <P>
+
+
+
+
+
+<h2><a name="08ae_1788">Exercises<a name="08ae_1788"></h2><P>
+<a name="08ae_1789">23.4-1<a name="08ae_1789"><P>
+Show the ordering of vertices produced by <FONT FACE="Courier New" SIZE=2>TOPOLOGICAL</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> when it is run on the dag of Figure 23.8.<P>
+<a name="08ae_178a">23.4-2<a name="08ae_178a"><P>
+There are many different orderings of the vertices of a directed graph <I>G </I>that are topological sorts of <I>G</I>. <FONT FACE="Courier New" SIZE=2>TOPOLOGICAL</FONT>-S<FONT FACE="Courier New" SIZE=2>ORT </FONT>produces the ordering that is the reverse of the depth-first finishing times. Show that not all topological sorts can be produced in this way: there exists a graph <I>G</I> such that one of the topological sorts of <I>G</I> cannot be produced by <FONT FACE="Courier New" SIZE=2>TOPOLOGICAL</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>, no matter what adjacency-list structure is given for <I>G</I>. Show also that there exists a graph for which two distinct adjacency-list representations yield the same topological sort.<P>
+<a name="08ae_178b">23.4-3<a name="08ae_178b"><P>
+<a name="08ae_1787">Give an algorithm that determines whether or not a given undirected graph <I>G</I> = (<I>V, E</I>) contains a cycle. Your algorithm should run in <I>O</I>(<I>V</I>) time, independent of |<I>E|.</I><P>
+<a name="08ae_178c">23.4-4<a name="08ae_178c"><P>
+Prove or disprove: If a directed graph <I>G</I> contains cycles, then <FONT FACE="Courier New" SIZE=2>TOPOLOGICAL</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>(<I>G</I>) produces a vertex ordering that minimizes the number of "bad" edges that are inconsistent with the ordering produced.<P>
+<a name="08ae_178d">23.4-5<a name="08ae_178d"><P>
+Another way to perform topological sorting on a directed acyclic graph <I>G</I> = (<I>V, E</I>) is to repeatedly find a vertex of in-degree 0, output it, and remove it and all of its outgoing edges from the graph. Explain how to implement this idea so that it runs in time <I>O</I>(<I>V</I> + <I>E</I>). What happens to this algorithm if <I>G</I> has cycles?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08af_178c">23.5 Strongly connected components<a name="08af_178c"></h1><P>
+<a name="08af_1788"><a name="08af_1789">We now consider a classic application of depth-first search: decomposing a directed graph into its strongly connected components. This section shows how to do this decomposition using two depth-first searches. Many algorithms that work with directed graphs begin with such a decomposition; this approach often allows the original problem to be divided into subproblems, one for each strongly connected component. Combining the solutions to the subproblems follows the structure of connections between strongly connected components; this structure can be represented by a graph known as the &quot;component&quot; graph, defined in Exercise 23.5-4.<P>
+Recall from Chapter 5 that a strongly connected component of a directed graph <I>G</I> = (<I>V</I>, <I>E</I>) is a maximal set of vertices <I>U</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>V</I> such that for every pair of vertices <I>u</I> and <I>v</I> in <I>U</I>, we have both <img src="488_a.gif"> that is, vertices <I>u</I> and <I>v</I> are reachable from each other. Figure 23.9 shows an example.<P>
+Our algorithm for finding strongly connected components of a graph <I>G</I> = (<I>V, E</I>) uses the transpose of <I>G, </I>which is defined in Exercise 23.1-3 to be the graph <I>G</I><SUP>T </SUP>= (<I>V, E</I><SUP>T</SUP>), where <I>E</I><SUP>T </SUP>= {(<I>u, v</I>): (<I>v, u</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>}. That is, <I>E</I><SUP>T </SUP>consists of the edges of <I>G</I> with their directions reversed. Given an adjacency-list representation of <I>G</I>, the time to create <I>G</I><SUP>T </SUP>is <I>O</I>(<I>V</I> + <I>E</I>). It is interesting to observe that <I>G</I> and <I>G</I><SUP>T </SUP>have exactly the same strongly connected components: <I>u</I> and <I>v</I> are reachable from each other in <I>G</I> if and only if they are reachable from each other in <I>G</I><SUP>T</SUP>. Figure 23.9(b) shows the transpose of the graph in Figure 23.9(a), with the strongly connected components shaded.<P>
+<img src="489_a.gif"><P>
+<h4><a name="08af_178d">Figure 23.9 (a) A directed graph G. The strongly connected components of G are shown as shaded regions. Each vertex is labeled with its discovery and finishing  times. Tree edges are shaded. (b) The graph G<SUP>T</SUP>, the transpose of G. The depth-first tree computed in line 3 of <FONT FACE="Courier New" SIZE=2>STRONGLY-CONNECTED-COMPONENTS</FONT> is shown, with tree edges shaded. Each strongly connected component corresponds to one depth-first tree. Vertices b, c, g, and h, which are heavily shaded, are forefathers of every vertex in their strongly connected component; these vertices are also the roots of the depth-first trees produced by the depth-first search of G<SUP>T</SUP>. (c) The acyclic component graph G<SUP>scc </SUP>obtained by shrinking each strongly connected component of G to a single vertex.<a name="08af_178d"></sub></sup></h4><P>
+The following linear-time (i.e., <IMG SRC="../IMAGES/bound.gif">(<I>V </I>+ <I>E</I>)-time) algorithm computes the strongly connected components of a directed graph <I>G</I> = (<I>V, E</I>) using two depth-first searches, one on <I>G</I> and one on <I>G</I><SUP>T</SUP>.<P>
+<pre><a name="08af_178a">STRONGLY-CONNECTED-COMPONENTS(<I>G</I>)</sub></sup></pre><P>
+<pre>1  call DFS(<I>G</I>) to compute finishing times <I>f</I>[<I>u</I>] for each vertex <I>u</I></sub></sup></pre><P>
+<pre>2  compute <I>G</I><SUP>T</sub></sup></pre><P>
+<pre>3  call DFS(<I>G</I><SUP>T</SUP>), but in the main loop of DFS, consider the vertices</sub></sup></pre><P>
+<pre>in order of decreasing <I>f</I>[<I>u</I>] (as computed in line 1)</sub></sup></pre><P>
+<pre>4  output the vertices of each tree in the depth-first forest of step 3 as a</sub></sup></pre><P>
+<pre>separate strongly connected component</sub></sup></pre><P>
+This simple-looking algorithm seems to have nothing to do with strongly connected components. In the remainder of this section, we unravel the mystery of its design and prove its correctness. We begin with two useful observations.<P>
+<a name="08af_178e">Lemma 23.12<a name="08af_178e"><P>
+If two vertices are in the same strongly connected component, then no path between them ever leaves the strongly connected component.<P>
+<I><B>Proof     </I></B>Let <I>u</I> and <I>v </I>be two vertices in the same strongly connected component. By the definition of strongly connected component, there are paths from <I>u</I> to <I>v</I> and from <I>v</I> to <I>u</I>. Let vertex <I>w</I> be on some path <img src="490_a.gif">, so that <I>w</I> is reachable from <I>u</I>. Moreover, since there is a path <img src="490_b.gif">, we know that <I>u</I> is reachable from <I>w</I> by the path <img src="490_c.gif">. Therefore, <I>u </I>and <I>w</I> are in the same strongly connected component. Since <I>w</I> was chosen arbitrarily, the theorem is proved.      <P>
+<a name="08af_178f">Theorem 23.13<a name="08af_178f"><P>
+In any depth-first search, all vertices in the same strongly connected component are placed in the same depth-first tree.<P>
+<I><B>Proof</I></B>     Of the vertices in the strongly connected component, let <I>r</I> be the first discovered. Because <I>r</I> is first, the other vertices in the strongly connected component are white at the time it is discovered. There are paths from <I>r</I> to every other vertex in the strongly connected component; because these paths never leave the strongly connected component (by Lemma 23.12), all vertices on them are white. Thus, by the white-path theorem, every vertex in the strongly connected component becomes a descendant of <I>r</I> in the depth-first tree.      <P>
+In the rest of this section, the notations <I>d</I>[<I>u</I>] and <I>f</I>[<I>u</I>] refer to the discovery and finishing times as computed by the first depth-first search in line 1 of <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT>. Similarly, the notation <img src="490_d.gif"> refers to the existence of a path in <I>G</I>, not in <I>G</I><SUP>T</SUP>.<P>
+<a name="08af_178b">To prove <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> correct, we introduce the notion of the <I><B>forefather</I></B><I> </I><IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) of a vertex <I>u</I>, which is the vertex <I>w </I>reachable from <I>u</I> that finished last in the depth-first search of line l. In other words,<P>
+<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) = that vertex <I>w</I> such that <img src="490_e.gif"> and <I>f</I>[<I>w</I>] is maximized .<P>
+Note that <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) = <I>u</I> is possible because <I>u</I> is reachable from itself, and hence<P>
+<pre><I>f</I>[<I>u</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I>(</I>u<I>)] .</I></sub></sup></pre><P>
+<h4><a name="08af_1790">(23.2)<a name="08af_1790"></sub></sup></h4><P>
+We can also show that <IMG SRC="../IMAGES/phicap12.gif">(<IMG SRC="../IMAGES/phicap12.gif">(u)) = <IMG SRC="../IMAGES/phicap12.gif">(u), by the following reasoning. For any vertices u, v <IMG SRC="../IMAGES/memof12.gif"> V,<P>
+<img src="490_f.gif"><P>
+<h4><a name="08af_1791">(23.3)<a name="08af_1791"></sub></sup></h4><P>
+since <img src="491_a.gif"> and the forefather has the maximum finishing time of all reachable vertices. Since <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) is reachable from <I>u</I>, formula (23.3) implies that <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I>(<IMG SRC="../IMAGES/phicap12.gif"></I>(<I>u</I>))] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)]. We also have <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>))], by inequality (23.2). Thus, <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>))] = <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)], and so we have <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)) = <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>), since two vertices that finish at the same time are in fact the same vertex.<P>
+As we shall see, every strongly connected component has one vertex that is the forefather of every vertex in the strongly connected component; this forefather is a &quot;representative vertex&quot; for the strongly connected component. In the depth-first search of <I>G</I>, it is the first vertex of the strongly connected component to be discovered, and it is the last vertex of the strongly connected component to be finished. In the depth-first search of <I>G</I><SUP>T</SUP>, it is the root of a depth-first tree. We now prove these properties.<P>
+The first theorem justifies calling &oslash;(<I>u</I>) a &quot;forefather&quot; of <I>u</I>.<P>
+<a name="08af_1792">Theorem 23.14<a name="08af_1792"><P>
+In a directed graph <I>G</I> = (<I>V, E</I>), the forefather <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) of any vertex <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> in any depth-first search of <I>G</I> is an ancestor of <I>u</I>.<P>
+<I><B>Proof     </I></B>If <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) = <I>u</I>, the theorem is trivially true. If <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) <IMG SRC="../IMAGES/noteq.gif"> <I>u</I>, consider the colors of the vertices at time <I>d</I>[<I>u</I>]. If <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) is black, then <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)] &lt; <I>f</I>[<I>u</I>], contradicting inequality (23.2). If <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) is gray, then it is an ancestor of <I>u</I>, and the theorem is proved.<P>
+It thus remains to prove that <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) is not white. There are two cases, according to the colors of the intermediate vertices, if any, on the path from <I>u</I> to <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>).<P>
+1.     If every intermediate vertex is white, then <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) becomes a descendant of <I>u</I>, by the white-path theorem. But then <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)] &lt; <I>f</I>[<I>u</I>], contradicting inequality (23.2).<P>
+2.     If some intermediate vertex is nonwhite, let <I>t</I> be the last nonwhite vertex on the path from <I>u</I> to <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>). Then, <I>t </I>must be gray, since there is never an edge from a black vertex to a white vertex, and <I>t</I>'s successor is white. But then there is a path of white vertices from <I>t</I> to <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>), and so <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>) is a descendant of <I>t</I> by the white-path theorem. This implies that <I>f</I>[<I>t</I>] &gt; <I>f</I>[<IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>)], contradicting our choice of <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>), since there is a path from <I>u </I>to <I>t</I>.      <P>
+<a name="08af_1793">Corollary 23.15<a name="08af_1793"><P>
+In any depth-first search of a directed graph <I>G</I> = (<I>V, E</I>), vertices <I>u</I> and &oslash;(<I>u</I>), for all <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, lie in the same strongly connected component.<P>
+<I><B>Proof</I></B>     We have <img src="491_b.gif">, by the definition of forefather, and <img src="491_c.gif"> since &oslash;(<I>u</I>) is an ancestor of <I>u</I>.      <P>
+The following theorem gives a stronger result relating forefathers to strongly connected components.<P>
+<a name="08af_1794">Theorem 23.16<a name="08af_1794"><P>
+In a directed graph <I>G</I> = (<I>V, E</I>), two vertices <I>u, v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> lie in the same strongly connected component if and only if they have the same forefather in a depth-first search of <I>G</I>.<P>
+<I><B>Proof</I></B>     <I><IMG SRC="../IMAGES/rtbigar.gif"></I>: Assume that <I>u</I> and <I>v</I> are in the same strongly connected component. Every vertex reachable from <I>u</I> is reachable from <I>v</I> and vice versa, since there are paths in both directions between <I>u</I> and <I>v</I>. By the definition of forefather, then, we conclude that <IMG SRC="../IMAGES/phicap12.gif"><I>(</I>u<I>) = <IMG SRC="../IMAGES/phicap12.gif"></I>(<I>v</I>).<P>
+<IMG SRC="../IMAGES/lftbigar.gif">: Assume that <IMG SRC="../IMAGES/phicap12.gif"><I>(</I>u<I>) = <IMG SRC="../IMAGES/phicap12.gif"></I>(<I>v</I>). By Corollary 23.15, <I>u</I> is in the same strongly connected component as <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>u</I>), and <I>v</I> is in the same strongly connected component as <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>v</I>). Therefore, <I>u</I> and <I>v</I> are in the same strongly connected component.      <P>
+With Theorem 23.16 in hand, the structure of the algorithm <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> can be more readily understood. The strongly connected components are sets of vertices with the same forefather. Moreover, by Theorem 23.14 and the parenthesis theorem (Theorem 23.6), during the depth-first search in line l of <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> a forefather is both the first vertex discovered and the last vertex finished in its strongly connected component.<P>
+To understand why we run the depth-first search in line 3 of <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> on <I>G</I><SUP>T</SUP>, consider the vertex <I>r</I> with the largest finishing time computed by the depth-first search in line 1. By the definition of forefather, vertex <I>r</I> must be a forefather, since it is its own forefather: it can reach itself, and no vertex in the graph has a higher finishing time. What are the other vertices in <I>r</I>'s strongly connected component? They are those vertices that have <I>r</I> as a forefather--those that can reach <I>r</I> but cannot reach any vertex with a finishing time greater than <I>f</I>[<I>r</I>]. But <I>r</I>'s finishing time is the maximum of any vertex in <I>G</I>; thus, <I>r</I>'s strongly connected component consists simply of those vertices that can reach <I>r</I>. Equivalently, <I>r</I>'<I></I>s strongly connected component consists of those vertices that r can reach in G<I><SUP>T</I></SUP>. Thus, the depth-first search in line 3 identifies all the vertices in <I>r</I>'s strongly connected component and blackens them. (A breadth-first search, or <I>any</I> search for reachable vertices, could identify this set just as easily.)<P>
+After the depth-first search in line 3 is done identifying <I>r</I>'s strongly connected component, it begins at the vertex <I>r</I><I>' </I>with the largest finishing time of any vertex not in <I>r</I>'s strongly connected component. Vertex <I>r</I><I>' </I>must be its own forefather, since it can't reach anything with a higher finishing time (otherwise, it would have been included in <I>r</I>'s strongly connected component). By similar reasoning, any vertex that can reach <I>r</I><I>'</I> <SUP>'</SUP>that is not already black must be in <I>r</I><I>'</I>'s strongly connected component. Thus, as the depth-first search in line 3 continues, it identifies and blackens every vertex in <I>r</I><I>'</I>'s strongly connected component by searching from <I>r</I><I>' </I>in <I>G</I><SUP>T</SUP>.<P>
+Thus, the depth-first search in line 3 &quot;peels off&quot; strongly connected components one by one. Each component is identified in line 7 of DFS by a call to DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> with the forefather of the component as an argument. Recursive calls within DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> ultimately blacken each vertex within the component. When DFS-<FONT FACE="Courier New" SIZE=2>VISIT</FONT> returns to DFS, the entire component has been blackened and &quot;peeled off.&quot; Then, DFS finds the vertex with maximum finishing time among those that have not been blackened; this vertex is the forefather of another component, and the process continues.<P>
+The following theorem formalizes this argument.<P>
+<a name="08af_1795">Theorem 23.17<a name="08af_1795"><P>
+<FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT>(<I>G</I>) correctly computes the strongly connected components of a directed graph <I>G</I>.<P>
+<I><B>Proof</I></B><I>     </I>We argue by induction on the number of depth-first trees found in the depth-first search of <I>G</I><SUP>T </SUP>that the vertices of each tree form a strongly connected component. Each step of the inductive argument proves that a tree formed in the depth-first search of <I>G</I><SUP>T </SUP>is a strongly connected component, assuming that all previous trees produced are strongly connected components. The basis for the induction is trivial, since for the first tree produced there are no previous trees, and hence this assumption is trivially true.<P>
+Consider a depth-first tree <I>T </I>with root <I>r</I> produced in the depth-first search of <I>G</I><SUP>T</SUP>. Let <I>C</I>(<I>r</I>) denote the set of vertices with forefather <I>r</I>:<P>
+<pre><I>C</I>(<I>r</I>) = {<I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>: <IMG SRC="../IMAGES/phicap12.gif">(<I>v</I>) = <I>r</I>}.</sub></sup></pre><P>
+We now prove that a vertex <I>u </I>is placed in <I>T </I>if and only if <I>u </I><IMG SRC="../IMAGES/memof12.gif"> <I>C</I>(<I>r</I>).<P>
+<IMG SRC="../IMAGES/lftbigar.gif">: Theorem 23.13 implies that every vertex in <I>C</I>(<I>r</I>) ends up in the same depth-first tree. Since r <IMG SRC="../IMAGES/memof12.gif"> <I>C</I>(<I>r</I>) and <I>r </I>is the root of <I>T</I>, every element of <I>C</I>(<I>r</I>) ends up in <I>T</I>.<P>
+<IMG SRC="../IMAGES/rtbigar.gif">: We show that any vertex <I>w</I> such that <I>&acirc;</I>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] &gt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>] or <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] &lt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>] is not placed in <I>T</I>, by considering these two cases separately. By induction on the number of trees found, any vertex <I>w</I> such that <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] &gt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>] is not placed in tree <I>T</I>, since at the time <I>r</I> is selected <I>w</I> will have already been placed in the tree with root <IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>). Any vertex <I>w</I> such that <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] &lt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>] cannot be placed in <I>T</I>, since such a placement would imply <img src="493_a.gif">; thus, by formula (23.3) and the property that <I>r </I>= <IMG SRC="../IMAGES/phicap12.gif">(<I>r</I>), we obtain <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] <IMG SRC="../IMAGES/gteq.gif"> <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>r</I>)] = <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>], which contradicts <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<IMG SRC="../IMAGES/phicap12.gif">(<I>w</I>)] &lt; <I><FONT FACE="CG Times (W1)" SIZE=2>&acirc;</I></FONT>[<I>r</I>].<P>
+Therefore, <I>T </I>contains just those vertices <I>u</I> for which <IMG SRC="../IMAGES/phicap12.gif">(<I>u</I>) = <I>r</I>. That is, <I>T </I>is exactly equal to the strongly connected component <I>C</I>(<I>r</I>), which completes the inductive proof.      <P>
+
+
+
+
+
+<h2><a name="08b0_1790">Exercises<a name="08b0_1790"></h2><P>
+<a name="08b0_1791">23.5-1<a name="08b0_1791"><P>
+How can the number of strongly connected components of a graph change if a new edge is added?<P>
+<a name="08b0_1792">23.5-2<a name="08b0_1792"><P>
+Show how the procedure <FONT FACE="Courier New" SIZE=2>STRONGLY</FONT>-<FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> works on the graph of Figure 23.6. Specifically, show the finishing times computed in line 1 and the forest produced in line 3. Assume that the loop of lines 5-7 of DFS considers vertices in alphabetical order and that the adjacency lists are in alphabetical order.<P>
+<a name="08b0_1793">23.5-3<a name="08b0_1793"><P>
+Professor Deaver claims that the algorithm for strongly connected components can be simplified by using the original (instead of the transpose) graph in the second depth-first search and scanning the vertices in order of <I>increasing</I> finishing times. Is the professor correct?<P>
+<a name="08b0_1794">23.5-4<a name="08b0_1794"><P>
+<a name="08b0_178c"><a name="08b0_178d">We denote the <I><B>component</I> </B><I><B>graph</I> </B>of <I>G</I> = (<I>V</I>, <I>E</I>) by <I>G</I><SUP>SCC </SUP>= (<I>V</I><SUP>SCC</SUP>, <I>E</I><SUP>SCC</SUP>), where <I>V</I><SUP>SCC </SUP>contains one vertex for each strongly connected component of <I>G</I> and <I>E</I><SUP>SCC </SUP>contains the edge (<I>u</I>, <I>v</I>) if there is a directed edge from a vertex in the strongly connected component of <I>G </I>corresponding to <I>u</I> to a vertex in the strongly connected component of <I>G</I> corresponding to <I>v</I>. Figure 23.9(c) shows an example. Prove that <I>G</I><SUP>SCC </SUP>is a dag.<P>
+<a name="08b0_1795">23.5-5<a name="08b0_1795"><P>
+Give an <I>O</I>(<I>V</I> + <I>E</I>)-time algorithm to compute the component graph of a directed graph <I>G</I> = (<I>V</I>,<I>E</I>). Make sure that there is at most one edge between two vertices in the component graph your algorithm produces.<P>
+<a name="08b0_1796">23.5-6<a name="08b0_1796"><P>
+Given a directed graph <I>G</I> = (<I>V</I>, <I>E</I>), explain how to create another graph <I>G</I>' = (<I>V</I>, <I>E</I>') such that (a) <I>G</I>' has the same strongly connected components as <I>G</I>, (b) <I>G</I>' has the same component graph as <I>G</I>, and (c) <I>E</I>' is as small as possible. Describe a fast algorithm to compute <I>G</I>'.<P>
+<a name="08b0_1797">23.5-7<a name="08b0_1797"><P>
+<a name="08b0_178e"><a name="08b0_178f">A directed graph <I>G</I> = (<I>V</I>, <I>E</I>) is said to be <I><B>semiconnected</I></B> if, for any two vertices <I>u</I>, <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, we have <img src="494_a.gif">. Give an efficient algorithm to determine whether or not <I>G </I>is semiconnected. Prove that your algorithm is correct, and analyze its running time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08b1_179e">Problems<a name="08b1_179e"></h1><P>
+<a name="08b1_179f">23-1     Classifying edges by breadth-first search<a name="08b1_179f"><P>
+<a name="08b1_1790"><a name="08b1_1791">A depth-first forest classifies the edges of a graph into tree, back, forward, and cross edges. A breadth-first tree can also be used to classify the edges reachable from the source of the search into the same four categories.<P>
+<I><B>a</I>.</B>     Prove that in a breadth-first search of an undirected graph, the following properties hold:<P>
+1.     There are no back edges and no forward edges.<P>
+2.     For each tree edge (<I>u</I>,<I>v</I>), we have <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>] + 1.<P>
+3.     For each cross edge (<I>u</I>,<I>v</I>), we have <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>] or <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>]<I> </I>+ 1.<P>
+<I><B>b</I>.</B>     Prove that in a breadth-first search of a directed graph, the following properties hold:<P>
+1.     There are no forward edges.<P>
+2.     For each tree edge (<I>u</I>,<I>v</I>), we have <I>d</I>[<I>v</I>] = <I>d</I>[<I>u</I>] + 1.<P>
+3.     For each cross edge (<I>u</I>,<I>v</I>), we have <I>d</I>[<I>v</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>u</I>] + 1.<P>
+4.     For each back edge (<I>u</I>,<I>v</I>), we have 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>d</I>[<I>v</I>] &lt; <I>d</I>[<I>u</I>].<P>
+<a name="08b1_17a0">23-2     Articulation points, bridges, and biconnected components<a name="08b1_17a0"><P>
+<a name="08b1_1792"><a name="08b1_1793"><a name="08b1_1794"><a name="08b1_1795"><a name="08b1_1796"><a name="08b1_1797"><a name="08b1_1798"><a name="08b1_1799"><a name="08b1_179a"><a name="08b1_179b">Let <I>G</I> = (<I>V</I>, <I>E</I>) be a connected, undirected graph. An <I><B>articulation point </I></B>of<I> G </I>is a vertex whose removal disconnects <I>G</I>. A <I><B>bridge</I></B> of <I>G</I> is an edge whose removal disconnects <I>G</I>. A <I><B>biconnected component</I></B> of <I>G</I> is a maximal set of edges such that any two edges in the set lie on a common simple cycle. Figure 23.10 illustrates these definitions. We can determine articulation points, bridges, and biconnected components using depth-first search. Let <I>G</I><IMG SRC="../IMAGES/piuc.gif"> <SUB>= (<I>V</I>,<I>E</I></SUB><FONT FACE="Courier New" SIZE=2><SUB><IMG SRC="../IMAGES/piuc.gif"></FONT></SUB>) be a depth-first tree of <I>G</I>.<P>
+<img src="495_a.gif"><P>
+<h4><a name="08b1_17a1">Figure 23.10 The articulation points, bridges, and biconnected components of a connected, undirected graph for use in Problem 23-2. The articulation points are the heavily shaded vertices, the bridges are the heavily shaded edges, and the biconnected components are the edges in the shaded regions, with a bcc numbering shown.<a name="08b1_17a1"></sub></sup></h4><P>
+<I><B>a</I>.</B>     Prove that the root of <I>G</I><IMG SRC="../IMAGES/piuc.gif"> <SUB></SUB>is an articulation point of <I>G</I> if and only if it has at least two children in <I>G</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif">.</FONT><P>
+<I><B>b</I>.</B>     Let <I>v</I> be a nonroot vertex in <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB></SUB>. Prove that <I>v</I> is an articulation point of <I>G </I>if and only if there is no back edge (<I>u</I>, <I>w</I>) such that in <I>G</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif"></FONT><SUB></SUB>, <I>u</I> is a descendant of <IMG SRC="../IMAGES/upsil12.gif"> and <I>w </I>is a proper ancestor of <I>v</I>.<P>
+<I><B>c</I>.</B>     Let<P>
+<img src="496_a.gif"><P>
+Show how to compute <I>low</I>[<IMG SRC="../IMAGES/upsil12.gif">] for all vertices <IMG SRC="../IMAGES/upsil12.gif"> <IMG SRC="../IMAGES/memof12.gif"> <I>V </I>in <I>O</I>(<I>E</I>) time.<P>
+<I><B>d</I>.</B>     Show how to compute all articulation points in <I>O</I>(<I>E</I>) time.<P>
+<I><B>e</I>.     </B>Prove that an edge of <I>G</I> is a bridge if and only if it does not lie on any simple cycle of <I>G</I>.<P>
+<I><B>f</I>.</B>     Show how to compute all the bridges of <I>G</I> in <I>O</I>(<I>E</I>) time.<P>
+<I><B>g</I>.</B>     Prove that the biconnected components of <I>G</I> partition the nonbridge edges of<I> G</I>.<P>
+<I><B>h</I>.</B>     Give an <I>O</I>(<I>E</I>)-time algorithm to label each edge <I>e</I> of <I>G</I> with a positive integer <I>bcc</I>[<I>e</I>] such that <I>bcc</I>[<I>e</I>] = <I>bcc</I>[<I>e</I>'] if and only if <I>e</I> and <I>e</I>' are in the same biconnected component.<P>
+<a name="08b1_17a2">23-3     Euler tour<a name="08b1_17a2"><P>
+<a name="08b1_179c"><a name="08b1_179d">An <I><B>Euler tour</I></B> of a connected, directed graph <I>G</I> = (<I>V</I>, <I>E</I>) is a cycle that traverses each edge of <I>G</I> exactly once, although it may visit a vertex more than once.<P>
+<I><B>a</I>.</B>     Show that <I>G</I> has an Euler tour if and only if<P>
+in-degree(<I>v</I>) = out-degree(<I>v</I>)<P>
+for each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>.<P>
+<I><B>b</I>.</B>     Describe an <I>O</I>(<I>E</I>)-time algorithm to find an Euler tour of <I>G</I> if one exists. (<I>Hint</I>: Merge edge-disjoint cycles.)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes<U></U></h1><P>
+Even [65] and Tarjan [188] are excellent references for graph algorithms.<P>
+Breadth-first search was discovered by Moore [150] in the context of finding paths through mazes. Lee [134] independently discovered the same algorithm in the context of routing wires on circuit boards.<P>
+Hopcroft and Tarjan [102] advocated the use of the adjacency-list representation over the adjacency-matrix representation for sparse graphs and were the first to recognize the algorithmic importance of depth-first search. Depth-first search has been widely used since the late 1950's, especially in artificial intelligence programs.<P>
+Tarjan [185] gave a linear-time algorithm for finding strongly connected components. The algorithm for strongly connected components in Section 23.5 is adapted from Aho, Hopcroft, and Ullman [5], who credit it to S. R. Kosaraju and M. Sharir. Knuth [121] was the first to give a linear-time algorithm for topological sorting.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap24.htm">Chapter 24</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

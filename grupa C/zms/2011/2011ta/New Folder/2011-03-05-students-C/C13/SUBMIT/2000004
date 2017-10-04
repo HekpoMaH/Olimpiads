@@ -1,0 +1,47 @@
+#include <cstdio>
+#include <iostream>
+using namespace std;
+int zamuk[1024][1024],n,k,tek,xv=-1,mi;
+void binary_search(int y,int ch){
+    int l=0,r=n-1,t;
+    while (r-l>1){
+        t=(r+l)/2;
+        if (zamuk[t][y]>ch){r=t;}
+        if (zamuk[t][y]<ch){l=t;}
+        if (zamuk[t][y]==ch){
+            xv=t;
+            while (zamuk[xv+1][y]==ch){
+                ++xv;
+            }
+            return;
+        }
+    }
+    if (zamuk[r][y]==ch){xv=r;return;}
+    else{
+        if (zamuk[l][y]==ch){xv=l;return;}
+    }
+}
+int main(){
+    scanf("%d",&n);
+    mi=2*n+1;
+    for (int y=0;y<n;++y){
+        for (int x=0;x<n;++x){
+            scanf("%d",&zamuk[x][y]);
+        }
+    }
+    scanf("%d",&k);
+    for (int i=0;i<k;++i){
+            scanf("%d",&tek);
+            for (int y=0;y<n;++y){
+                xv=-1;
+                mi=2*n+1;
+                binary_search(y,tek);
+                if (xv!=-1){
+                    if (mi>((n-1)-xv+y)){mi=((n-1)-xv+y);}
+                }
+            }
+            if (mi==2*n+1){cout<<"No Solution\n";}
+            else{cout<<mi<<endl;}
+    }
+return 0;
+}

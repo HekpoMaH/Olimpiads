@@ -1,0 +1,44 @@
+
+#include<iostream>
+
+using namespace std;
+
+int n;char ch[200001];
+int main()
+{
+    int x,i=0,j;
+    while (ch[i-1]!='=')
+    {
+        i++;
+        cin>>ch[i];
+
+    }
+    if (ch[i-3]=='*')
+    x=(ch[i]-'0')/(ch[i-2]-'0');
+    else if (ch[i-3]=='+')
+    x=(ch[i]-'0')-(ch[i-2]-'0');
+    else if (ch[i-3]=='-')
+    x=(ch[i]-'0')+(ch[i-2]-'0');
+    for (j=i-2;j>0;j-=2)
+    {
+
+        if (ch[j-1]=='+')
+        x-=(ch[j]-'0');
+        else if (ch[j-1]=='-')
+        x+=(ch[j]-'0');
+        else if (ch[j-1]=='*')
+        x/=(ch[j]-'0');
+    }
+    cout<<x<<endl;
+    return 0;
+}
+/*
++
+21
+-
+3
+*
+4
+=
+124
+*/

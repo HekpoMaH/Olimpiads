@@ -1,0 +1,22 @@
+
+#include <iostream>
+using namespace std;
+int main ()
+{
+    int br=-1, a, b, n, j, i,s;
+    cin >> n;
+    for (i=1; i<=n; i++)
+      {cin >> a;
+       for (j=1; j<=n; j++)
+        {
+         cin >> b;
+        }
+       if(a != b)
+         br++;
+      }
+      if  (s=0)
+      {cout<<"0"<<endl;}
+      if (br!=0) {cout << br<< endl;}
+    return 0;
+}
+

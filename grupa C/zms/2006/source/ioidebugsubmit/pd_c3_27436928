@@ -1,0 +1,64 @@
+/*
+TASK: PHONE
+LANG: C++
+*/
+#include <iostream.h>
+#include <stdio.h>
+#include <string.h>
+char a[102][10];     // tel. nomera
+char b[101][10];     // raboteshti butoni
+double c[101];       // sumi za razgovor
+int n;               // broi priqtelq
+double sum=0.00;           // tekushta suma
+double best=1000000.00;    // nai-eftina suma
+int called[102];           // nabrani nomera
+
+void phone (int start, int last)
+{
+  if(start==n+1)
+  {
+    if(sum<best)
+    {
+      best=sum;
+    }
+    return;
+  }
+
+  for(int i=1; i<=n+1; i++)
+    {
+       if(called[i]==1) continue;
+       for(int j=0; j<strlen(a[i]); j++)
+       {
+	  if(strchr(b[start], a[i][j])!=0) continue;
+	  else goto end;
+       }
+
+       called[start]=1;
+       sum+=c[last];
+       phone(i, start);
+       sum-=c[last];
+       called[start]=0;
+       end:
+    }
+    return;
+}
+
+int main()
+{
+  int l;
+  cin >> n;
+  for(int i=0; i<=n; i++)
+  {
+    cin >> a[i];
+    cin >> c[i];
+    cin >> l;
+    for(int j=0; j<l; j++)
+    {
+      cin >> b[i][j];
+    }
+  }
+  cin >> a[i+1];
+  phone(1, 0);
+  cout << best;
+  return 0;
+}

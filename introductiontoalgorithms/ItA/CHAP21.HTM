@@ -1,0 +1,422 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 21: FIBONACCI HEAPS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap22.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap20.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+
+<h1><a name="0874_1692">CHAPTER 21: FIBONACCI HEAPS<a name="0874_1692"></h1><P>
+<a name="0874_168f"><a name="0874_1690"><a name="0874_1691">In Chapter 20, we saw how binomial heaps support in <I>O</I>(lg <I>n</I>) worst-case time the mergeable-heap operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT>, plus the operations <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT>. In this chapter, we shall examine Fibonacci heaps, which support the same operations but have the advantage that operations that do not involve deleting an element run in <I>O</I>(1) amortized time.<P>
+From a theoretical standpoint, Fibonacci heaps are especially desirable when the number of <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> operations is small relative to the number of other operations performed. This situation arises in many applications. For example, some algorithms for graph problems may call <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> once per edge. For dense graphs, which have many edges, the <I>O</I>(1) amortized time of each call of <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> adds up to a big improvement over the<IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) worst-case time of binary or binomial heaps. The asymptotically fastest algorithms to date for problems such as computing minimum spanning trees (Chapter 24) and finding single-source shortest paths (Chapter 25) make essential use of Fibonacci heaps.<P>
+From a practical point of view, however, the constant factors and programming comple<I>x</I>ity of Fibonacci heaps make them less desirable than ordinary binary (or <I>k</I>-ary) heaps for most applications. Thus, Fibonacci heaps are predominantly of theoretical interest. If a much simpler data structure with the same amortized time bounds as Fibonacci heaps were developed, it would be of great practical use as well.<P>
+Like a binomial heap, a Fibonacci heap is a collection of trees. Fibonacci heaps, in fact, are loosely based on binomial heaps. If neither <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> nor <FONT FACE="Courier New" SIZE=2>DELETE</FONT> is ever invoked on a Fibonacci heap, each tree in the heap is like a binomial tree. Fibonacci heaps differ from binomial heaps, however, in that they have a more rela<I>x</I>ed structure, allowing for improved asymptotic time bounds. Work that maintains the structure can be delayed until it is convenient to perform.<P>
+Like the dynamic tables of Section 18.4, Fibonacci heaps offer a good example of a data structure designed with amortized analysis in mind. The intuition and analyses of Fibonacci heap operations in the remainder of this chapter rely heavily on the potential method of Section 18.3.<P>
+The exposition in this chapter assumes that you have read Chapter 20 on binomial heaps. The specifications for the operations appear in that chapter, as does the table in Figure 20.1, which summarizes the time bounds for operations on binary heaps, binomial heaps, and Fibonacci heaps. Our presentation of the structure of Fibonacci heaps relies on that of binomial heap structure. You will also find that some of the operations performed on Fibonacci heaps are similar to those performed on binomial heaps.<P>
+Like binomial heaps, Fibonacci heaps are not designed to give efficient support to the operation <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>; operations that refer to a given node therefore require a pointer to that node as part of their input.<P>
+Section 21.1 defines Fibonacci heaps, discusses their representation, and presents the potential function used for their amortized analysis.  Section 21.2 shows how to implement the mergeable-heap operations and achieve the amortized time bounds shown in Figure 20.1. The remaining two operations, <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, are presented in Section 21.3. Finally, Section 21.4 finishes off a key part of the analysis.<P>
+
+
+
+
+
+<h1><a name="0876_1696">21.1 Structure of Fibonacci heaps<a name="0876_1696"></h1><P>
+Like a binomial heap, a <I><B>Fibonacci heap</I></B> is a collection of heap-ordered trees. The trees in a Fibonacci heap are not constrained to be binomial trees, however. Figure 21.1 (a) shows an example of a Fibonacci heap.<P>
+<a name="0876_1692">Unlike trees within binomial heaps, which are ordered, trees within Fibonacci heaps are rooted but unordered. As Figure 21.1(b) shows, each node <I>x</I> contains a pointer <I>p</I>[<I>x</I>] to its parent and a pointer <I>child</I>[<I>x</I>] to any one of its children. The children of <I>x</I> are linked together in a circular, doubly linked list , which we call the <I><B>child list</I></B><I> </I>of <I>x</I>. Each child <I>y</I> in a child list has pointers <I>left</I>[<I>y</I>] and <I>right</I>[<I>y</I>] that point to <I>y</I>'s left and right siblings, respectively. If node <I>y</I> is an only child, then <I>left</I>[<I>y</I>] = <I>right</I>[<I>y</I>] = <I>y</I>. The order in which siblings appear in a child list is arbitrary.<P>
+Circular, doubly linked lists (see Section 11.2) have two advantages for use in Fibonacci heaps. First, we can remove a node from a circular, doubly linked list in <I>O</I>(1) time. Second, given two such lists, we can concatenate them (or &quot;splice&quot; them together) into one circular, doubly linked list in <I>O</I>(1) time. In the descriptions of Fibonacci heap operations, we shall refer to these operations informally, letting the reader fill in the details of their implementations.<P>
+<a name="0876_1693">Two other fields in each node will be of use. The number of children in the child list of node <I>x</I> is stored in <I>degree</I>[<I>x</I>]. The boolean-valued field <I>mark</I>[<I>x</I>] indicates whether node <I>x h</I>as lost a child since the last time <I>x</I> was made the child of another node. We won't worry about the details of marking nodes until Section 21.3. Newly created nodes are unmarked, and a node <I>x</I> becomes unmarked whenever it is made the child of another node.<P>
+<img src="422_a.gif"><P>
+<h4><a name="0876_1697">Figure 21.1 (a) A Fibonacci heap consisting of five heap-ordered trees and 14 nodes. The dashed line indicates the root list. The minimum node of the heap is the node containing the key 3. The three marked nodes are blackened. The potential of this particular Fibonacci heap is 5 + 2 <IMG SRC="../IMAGES/dot10.gif"> 3 = 11. (b) A more complete representation showing pointers p (up arrows), child (down arrows), and left and right (sideways arrows). These details are omitted in the remaining figures in this chapter, since all the information shown here can be determined from what appears in part (a).<a name="0876_1697"></sub></sup></h4><P>
+<a name="0876_1694">A given Fibonacci heap <I>H</I> is accessed by a pointer <I>min</I>[<I>H</I>] to the root of the tree containing a minimum key; this node is called the <I><B>minimum node</I></B> of the Fibonacci heap. If a Fibonacci heap <I>H</I> his empty, then <I>min</I>[<I>H</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+<a name="0876_1695">The roots of all the trees in a Fibonacci heap are linked together using their <I>left</I> and <I>right</I> pointers into a circular, doubly linked list called the <I><B>root</I></B><I> <B>list</I></B> of the Fibonacci heap. The pointer <I>min</I>[<I>H</I>] thus points to the node in the root list whose key is minimum. The order of the trees within a root list is arbitrary.<P>
+We rely on one other attribute for a Fibonacci heap <I>H</I>: the number of nodes currently in <I>H</I> is kept in <I>n</I>[<I>H</I>].<P>
+
+
+
+
+
+<h2>Potential function</h2><P>
+<a name="0877_1696"><a name="0877_1697"><a name="0877_1698">As mentioned, we shall use the potential method of Section 18.3 to analyze the performance of Fibonacci heap operations. For a given Fibonacci heap <I>H</I>, we indicate by <I>t</I>(<I>H</I>) the number of trees in the root list of <I>H</I> and by <I>m </I>(<I>H</I>) the number of marked nodes in <I>H</I>. The potential of Fibonacci heap <I>H</I> is then defined by<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>H</I>) = <I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>) .</sub></sup></pre><P>
+<h4><a name="0877_1699">(21.1)<a name="0877_1699"></sub></sup></h4><P>
+For example, the potential of the Fibonacci heap shown in Figure 21.1 is 5 + 2 <IMG SRC="../IMAGES/dot10.gif"> 3 = 11. The potential of a set of Fibonacci heaps is the sum of the potentials of its constituent Fibonacci heaps. We shall assume that a unit of potential can pay for a constant amount of work, where the constant is sufficiently large to cover the cost of any of the specific constant-time pieces of work that we might encounter.<P>
+We assume that a Fibonacci heap application begins with no heaps. The initial potential, therefore, is 0, and by equation (21.1), the potential is nonnegative at all subsequent times. From equation (18.2), an upper bound on the total amortized cost is thus an upper bound on the total actual cost for the sequence of operations.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Maximum degree</h2><P>
+<a name="0878_1699"><a name="0878_169a"><a name="0878_169b">The amortized analyses we shall perform in the remaining sections of this chapter assume that there is a known upper bound <I>D</I>(<I>n</I>) on the maximum degree of any code in an <I>n-</I>node Fibonacci heap. Exercise 21.2-3 shows that when only the mergeable-heap operations are supported, <I>D</I>(<I>n</I>) = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"><I>.</I></FONT> In Section 21.3, we shall show that when we support <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> as well, <I>D</I>(<I>n</I>) = <I>O</I>(lg <I>n</I>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0879_169f">21.2 Mergeable-heap operations<a name="0879_169f"></h1><P>
+<a name="0879_169c"><a name="0879_169d"><a name="0879_169e">In this section, we describe and analyze the mergeable-heap operations as implemented for Fibonacci heaps. If only these operations--<FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>, <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT>--are to be supported, each Fibonacci heap is simply a collection of &quot;unordered&quot; binomial trees. An <I><B>unordered binomial tree</I></B><I> </I>is like a binomial tree, and it, too, is defined recursively. The unordered binomial tree <I>U</I><SUB>0</SUB> consists of a single node, and an unordered binomial tree <I>U<SUB>k</I></SUB> consists of two unordered binomial trees <I>U<SUB>k</I>-1</SUB> for which the root of one is made into <I>any</I> child of the root of the other. Lemma 20.1, which gives properties of binomial trees, holds for unordered binomial trees as well, but with the following variation on property 4 (see Exercise 21.2-2):<P>
+4'     For the unordered binomial tree <I>U<SUB>k</I></SUB>.The root has degree <I>k</I>, which is greater than that of any other node. The children of the root are roots of subtrees <I>U<SUB>0</I></SUB>, <I>U</I><SUB>1</SUB>, . . . , <I>U<SUB>k-</I>1</SUB> in some order.<P>
+Thus, if an <I>n</I>-node Fibonacci in heap is a collection of unordered binomial trees, then <I>D</I>(<I>n</I>) = lg <I>n</I>.<P>
+The key idea in the mergeable-heap operations on Fibonacci heaps is to delay work as long as possible. There is a performance trade-off among implementations of the various operations. If the number of trees in a Fibonacci heap is small, then we can quickly determine the new minimum node during an <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> operation. However, as we saw with binomial heaps in Exercise 20.2-10, we pay a price for ensuring that the number of trees is small: it can take up to <IMG SRC="../IMAGES/omega12.gif">(1g <I>n</I>) time to insert a node into a binomial heap or to unite two binomial heaps. As we shall see, we do not attempt to consolidate trees in a Fibonacci heap when we insert a new node or unite two heaps. We save the consolidation for the <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> operation, which is when we really need to find the new minimum node.<P>
+
+
+
+
+
+<h2>Creating a new Fibonacci heap</h2><P>
+<a name="087a_169f">To make an empty Fibonacci heap, the <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure allocates and returns the Fibonacci heap object <I>H</I>, where <I>n</I>[<I>H</I>] = 0 and <I>min</I>[<I>H</I>] = NIL; there are no trees in <I>H.</I> Because <I>t </I>(<I>H</I>) = 0 and <I>m</I>(<I>H</I>) = 0, the potential of the empty Fibonacci heap is <IMG SRC="../IMAGES/phicap12.gif">(<I>H</I>) = 0. The amortized cost of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> is thus equal to its <I>O</I>(1) actual cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Inserting a node</h2><P>
+<a name="087b_16a0"><a name="087b_16a1">The following procedure inserts node <I>x</I> into Fibonacci heap <I>H</I>, assuming of course that the node has already been allocated and that <I>key</I>[<I>x</I>] has already been filled in.<P>
+<pre><a name="087b_16a2">FIB-HEAP-INSERT(<I>H</I>, <I>x</I>)</sub></sup></pre><P>
+<pre>1<I>  degree</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2  <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>3  <I>child</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>4  <I>left</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>5  <I>right</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>6  <I>mark</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> FALSE</sub></sup></pre><P>
+<pre>7  concatenate the root list containing <I>x</I> with root list <I>H</I> </sub></sup></pre><P>
+<pre>8  <B>if</B> min[<I>H</I>] = NIL or <I>key</I>[<I>x</I>] &lt; <I>key</I>[<I>min</I>[<I>H</I>]]</sub></sup></pre><P>
+<pre>9     <B>then</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>10  <I>n</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>n</I>[<I>H</I>] + 1</sub></sup></pre><P>
+After lines 1-6 initialize the structural fields of node <I>x</I>, making it its own circular, doubly linked list , line 7 adds <I>x</I> to the root list of <I>H</I> in <I>O</I>(1) actual time. Thus, node <I>x</I> becomes a single-node heap-ordered tree, and thus an unordered binomial tree, in the Fibonacci heap. It has no children and is unmarked. Lines 8-9 then update the pointer to the minimum node of Fibonacci heap <I>H</I> if necessary. Finally, line 10 increments <I>n</I>[<I>H</I>] to reflect the addition of the new node. Figure 21.2 shows a node with key 21 inserted into the Fibonacci heap of Figure 21.1.<P>
+Unlike the <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure, <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> makes no attempt to consolidate the trees within the Fibonacci heap. If <I>k</I> consecutive <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations occur, then <I>k</I> single-node trees are added to the root list.<P>
+<img src="425_a.gif"><P>
+<h4><a name="087b_16a3">Figure 21.2 Inserting a node into a Fibonacci heap. (a) A Fibonacci heap H. (b) Fibonacci heap H after the node with key 21 has been inserted. The node becomes its own heap-ordered tree and is then added to the root list, becoming the left sibling of the root.<a name="087b_16a3"></sub></sup></h4><P>
+To determine the amortized cost of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT>, let <I>H</I> be the input Fibonacci heap and <I>H'</I> be the resulting Fibonacci heap. Then, <I>t</I>(<I>H</I>') = <I>t</I>(<I>H</I>) + 1 and <I>m</I>(<I>H</I>') = <I>m</I>(<I>H</I>), and the increase in potential is<P>
+<pre>((<I>t</I>(<I>H</I>) + 1) + 2<I>m</I>(<I>H</I>)) - (<I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>)) = 1 .</sub></sup></pre><P>
+Since the actual cost is <I>O</I>(1), the amortized cost is <I>O</I>(1) + 1 = <I>O</I>(1).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Finding the minimum node</h2><P>
+<a name="087c_16a3"><a name="087c_16a4">The minimum node of a Fibonacci heap <I>H</I> is given by the pointer <I>min</I>[<I>H</I>], so we can find the minimum node in <I>O</I>(1) actual time. Because the potential of <I>H</I> does not change, the amortized cost of this operation is equal to its <I>O</I>(1) actual cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Uniting two Fibonacci heaps</h2><P>
+<a name="087d_16a5"><a name="087d_16a6">The following procedure unites Fibonacci heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB>, destroying <I>H</I><SUB>1 </SUB>and <I>H</I><SUB>2</SUB> in the process.<P>
+<pre><a name="087d_16a7">FIB-HEAP-UNION(<I>H</I><SUB>1,</SUB><I>H</I><SUB>2</SUB>)</sub></sup></pre><P>
+<pre>1   <I>H</I> <IMG SRC="../IMAGES/arrlt12.gif"> MAKE-FIB-HEAP()</sub></sup></pre><P>
+<pre>2   <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>min</I>[<I>H</I><SUB>1</SUB>]</sub></sup></pre><P>
+<pre>3   concatenate the root list of <I>H</I><SUB>2</SUB> with the root list of <I>H</I></sub></sup></pre><P>
+<pre>4   <B>if</B> (<I>min</I>[<I>H</I><SUB>1</SUB>] = NIL) or (<I>min</I>[<I>H</I><SUB>2</SUB>] <IMG SRC="../IMAGES/noteq.gif"> NIL and <I>min</I>[<I>H</I><SUB>2</SUB>] &lt; <I>min</I>[<I>H</I><SUB>1</SUB>])</sub></sup></pre><P>
+<pre>5   <B>then</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>min</I>[<I>H</I><SUB>2</SUB>]</sub></sup></pre><P>
+<pre>6   <I>n</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>n</I>[<I>H</I><SUB>1</SUB>] + <I>n</I>[<I>H</I><SUB>2</SUB>]</sub></sup></pre><P>
+<pre>7   free the objects <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</sub></sup></pre><P>
+<pre>8   <B>return</B> <I>H</I></sub></sup></pre><P>
+Lines 1-3 concatenate the root lists of <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> into a new root list <I>H</I>. Lines 2, 4, and 5 set the minimum node of <I>H</I>, and line 6 sets <I>n</I>[<I>H</I>] to the total number of nodes. The Fibonacci heap objects <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> are freed in line 7, and line 8 returns the resulting Fibonacci heap <I>H</I>. As in the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure, no consolidation of trees occurs.<P>
+The change in potential is<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>H</I>) - (<IMG SRC="../IMAGES/phicap12.gif">(<I>H</I><SUB>1</SUB>) + <IMG SRC="../IMAGES/phicap12.gif">(<I>H</I><SUB>2</SUB>))</sub></sup></pre><P>
+<pre>=  (<I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>)) - ((<I>t</I>(<I>H</I><SUB>1</SUB>) + 2 <I>m</I>(<I>H</I><SUB>1</SUB>)) + (<I>t</I>(<I>H</I><SUB>2</SUB>) + 2<I>m</I>(<I>H</I><SUB>2</SUB>)))</sub></sup></pre><P>
+<pre>=  0,</sub></sup></pre><P>
+because <I>t</I>(<I>H</I>) = <I>t</I>(<I>H</I><SUB>1</SUB>) + <I>t</I>(<I>H</I><SUB>2</SUB>) and <I>m</I>(<I>H</I>) = <I>m</I>(<I>H</I><SUB>1</SUB>) + <I>m</I>(<I>H</I><SUB>2</SUB>). The amortized cost of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> is therefore equal to its <I>O</I>(1) actual cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Extracting the minimum node</h2><P>
+<a name="087e_16a8"><a name="087e_16a9">The process of extracting the minimum node is the most complicated of the operations presented in this section. It is also where the delayed work of consolidating trees in the root list finally occurs. The following pseudocode extracts the minimum node. The code assumes for convenience that when a node is removed from a linked list, pointers remaining in the list are updated, but pointers in the extracted node are left unchanged. It also uses the auxiliary procedure <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT>, which will be presented shortly.<P>
+<pre><a name="087e_16aa">FIB-HEAP-EXTRACT-MIN(<I>H</I>)</sub></sup></pre><P>
+<pre>1  <I>z</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>min</I>[<I>H</I>]</sub></sup></pre><P>
+<pre>2  <B>if</B> <I>z</I> <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>3      <B>then for</B> each child <I>x</I> of <I>z</I></sub></sup></pre><P>
+<pre>4               <B>do</B> add <I>x</I> to the root list of <I>H</I></sub></sup></pre><P>
+<pre>5                  <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>6           remove <I>z</I> from the root list of <I>H</I></sub></sup></pre><P>
+<pre>7           <B>if</B> <I>z</I> = <I>right</I>[<I>z</I>]</sub></sup></pre><P>
+<pre>8              <B>then</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>9<B>              else</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>right</I>[<I>z</I>]</sub></sup></pre><P>
+<pre>10                   CONSOLIDATE(<I>H</I>)</sub></sup></pre><P>
+<pre>11           <I>n</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>n</I>[<I>H</I>] - 1</sub></sup></pre><P>
+<pre>12  <B>return </B><I>z</I></sub></sup></pre><P>
+As shown in Figure 21.3, <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MIN</FONT> works by first making a root out of each of the minimum node's children and removing the minimum node from the root list. It then consolidates the root list by linking roots of equal degree until at most one root remains of each degree.<P>
+We start in line 1 by saving a pointer <I>z</I> to the minimum node; this pointer is returned at the end. If <I>z</I> = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, then Fibonacci heap <I>H</I> is already empty and we are done. Otherwise, as in the <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> procedure, we delete node <I>z</I> from <I>H</I> by making all of <I>z</I>'s children roots of <I>H</I> in lines 3-5 (putting them into the root list) and removing <I>z </I>from the root list in line 6. If <I>z</I> = <I>right</I>[<I>z</I>] after line 6, then <I>z</I> was the only node on the root list and it had no children, so all that remains is to make the Fibonacci heap empty in line 8 before returning <I>z.</I> Otherwise, we set the pointer <I>min</I>[<I>H</I>] into the root list to point to a node other than <I>z</I> (in this case, <I>right</I>[<I>z</I>]). Figure 21.3(b) shows the Fibonacci heap of Figure 21.3(a) after line 9 has been performed.<P>
+<a name="087e_16ab">The next step, in which we reduce the number of trees in the Fibonacci heap, is <I><B>consolidating</I></B> the root list of <I>H</I>; this is performed by the call <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT>(<I>H</I>). Consolidating the root list consists of repeatedly executing the following steps until every root in the root list has a distinct <I>degree</I> value.<P>
+1.     Find two roots <I>x</I> and <I>y</I> in the root list with the same degree, where <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>key</I>[<I>y</I>].<P>
+<a name="087e_16ac">2.     <I><B>Link</I></B> <I>y</I> to <I>x</I>: remove <I>y</I> from the root list, and make <I>y</I> a child of <I>x</I>. This operation is performed by the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT> procedure. The field <I>degree</I>[<I>x</I>] is incremented, and the mark on <I>y</I>, if any, is cleared.<P>
+<a name="087e_16ad">The procedure <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT> uses an auxiliary array <I>A</I>[0 . . <I>D</I>(<I>n</I>[<I>H</I>])]; if <I>A</I>[<I>i</I>] = <I>y</I>, then <I>y</I> is currently a root with <I>degree</I>[<I>y</I>] = <I>i</I>.<P>
+<pre>CONSOLIDATE(<I>H</I>)</sub></sup></pre><P>
+<pre>1 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>D</I>(<I>n</I>[<I>H</I>])</sub></sup></pre><P>
+<pre>2      <B>do</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>3 <B>for</B> each node <I>w </I>in the root list of <I>H</I></sub></sup></pre><P>
+<pre>4      <B>do</B> <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I></sub></sup></pre><P>
+<pre>5         <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>degree</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>6         <B>while</B> <I>A</I>[<I>d</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>7            <B>do</B> <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>d</I>]</sub></sup></pre><P>
+<pre>8               <B>if</B> <I>key</I>[<I>x</I>] &gt; <I>key</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>9                  <B>then</B> exchange <I>x</I> <IMG SRC="../IMAGES/dblarr12.gif"> <I>y</I></sub></sup></pre><P>
+<pre>10                FIB-HEAP-LINK(<I>H</I>,<I>y</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>11                <I>A</I>[<I>d</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>12                <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>d </I>+ 1</sub></sup></pre><P>
+<pre>13         <I>A</I>[<I>d</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>14 <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>15 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>D</I>(<I>n</I>[<I>H</I>])</sub></sup></pre><P>
+<pre>16      <B>do if</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>17            <B>then</B> add <I>A</I>[<I>i</I>] to the root list of <I>H</I></sub></sup></pre><P>
+<pre>18                 <B>if</B> <I>min</I>[<I>H</I>] = NIL or <I>key</I>[<I>A</I>[<I>i</I>]] &lt; <I>key</I>[<I>min</I>[<I>H</I>]]</sub></sup></pre><P>
+<pre>19                    <B>then</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="087e_16ae">FIB-HEAP-LINK(<I>H, y, x</I>)</sub></sup></pre><P>
+<pre>1  remove <I>y</I> from the root list of <I>H</I></sub></sup></pre><P>
+<pre>2  make <I>y</I> a child of <I>x</I>, incrementing <I>degree</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>3  <I>mark</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> FALSE</sub></sup></pre><P>
+In detail, the <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT> procedure works as follows. In lines 1-2, we initialize <I>A</I> by making each entry <FONT FACE="Courier New" SIZE=2>NIL</FONT>. When we are done processing each root <I>w</I>, it ends up in a tree rooted at some node <I>x</I>, which may or may not be identical to <I>w</I>. Array entry <I>A</I>[<I>degree</I>[<I>x</I>]] will then be set to point to <I>x</I>. In the <B>for</B> loop of lines 3-13, we examine each root <I>w</I> in the root list. The invariant maintained during each iteration of the <B>for</B> loop is that node <I>x</I> is the root of the tree containing node <I>w</I>. The <B>while</B> loop of lines 6-12 maintains the invariant that <I>d</I> = <I>degree</I>[<I>x</I>] (except in line 11, as we shall see in a moment). In each iteration of the <B>while</B> loop, <I>A</I>[<I>d</I>] points to some root <I>y</I>. Because <I>d</I> = <I>degree</I>[<I>x</I>] = <I>degree</I>[<I>y</I>], we want to link <I>x</I> and <I>y</I>. Whichever of <I>x</I> and <I>y</I> has the smaller key becomes the parent of the other as a result of the link operation, and so lines 8-9 exchange the pointers to <I>x</I> and <I>y</I> if necessary. Next, we link <I>y</I> to <I>x</I> by the call <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT>(<I>H,y,x</I>) in line 10. This call increments <I>degree</I>[<I>x</I>] but leaves <I>degree</I>[<I>y</I>] as <I>d</I>. Because node <I>y</I> is no longer a root, the pointer to it in array <I>A</I> is removed in line 11. Because the value of <I>degree</I>[<I>x</I>] is incremented by the call of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT>, line 12 restores the invariant that <I>d</I> = <I>degree</I>[<I>x</I>]. We repeat the <B>while</B> loop until <I>A</I>[<I>d</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, in which case there is no other root with the same degree as <I>x</I>. We set <I>A</I>[<I>d</I>] to <I>x</I> in line 13 and perform the next iteration of the <B>for</B> loop. Figures 21.3(c)-(e) show the array <I>A</I> and the resulting trees after the first three iterations of the <B>for</B> loop of lines 3-13. In the next iteration of the <B>for</B> loop, three links occur; their results are shown in Figures 21.3(f)-(h). Figures 21.3(i)-(1) show the result of the next four iterations of the <B>for</B> loop.<P>
+<img src="428_a.gif"><P>
+<h4><a name="087e_16b1">Figure 21.3 The action of <FONT FACE="Courier New" SIZE=2>FIB<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>EXTRACT<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>MIN</FONT></FONT></FONT></FONT></FONT></FONT></FONT>. (a) A Fibonacci heap H. (b) The situation after the minimum node z is removed from the root list and its children are added to the root list. (c)-(e) The array A and the trees after each of the first three iterations of the for loop of lines 3-13 of the procedure <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT>. The root list is processed by starting at the minimum node and following right pointers. Each part shows the values of w and x at the end of an iteration. (f)-(h) The next iteration of the for loop, with the values of w and x shown at the end of each iteration of the while loop of lines 6-12. Part (f) shows the situation after the first time through the while loop. The node with key 23 has been linked to the node with key 7, which is now pointed to by x. In part (g), the node with key 17 has been linked to the node with key 7, which is still pointed to by x. In part (h), the node with key 24 has been linked to the node with key 7. Since no node was previously pointed to by A[3], at the end of the for loop iteration, A[3] is set to point to the root of the resulting tree. (i)-(l) The situation after each of the next four iterations of the while loop. (m) Fibonacci heap H after reconstruction of the root list from the array A and determination of the new min[H] pointer.<a name="087e_16b1"></sub></sup></h4><P>
+<img src="429_a.gif"><P>
+All that remains is to clean up. Once the <B>for</B> loop of lines 3-13 completes, line 14 empties the root list, and lines 15-19 reconstruct it. The resulting Fibonacci heap is shown in Figure 21.3(m). After consolidating the root list, <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> finishes up by decrementing <I>n</I>[<I>H</I>] in line 11 and returning a pointer to the deleted node <I>z</I> in line 12.<P>
+Observe that if all trees in the Fibonacci heap are unordered binomial trees before <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> is executed, then they are all unordered binomial trees afterward. There are two ways in which trees are changed. First, in lines 3-5 of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, each child <I>x</I> of root <I>z</I> becomes a root. By Exercise 21.2-2, each new tree is itself an unordered binomial tree. Second, trees are linked by <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT> only if they have the same degree. Since all trees are unordered binomial trees before the link occurs, two trees whose roots each have <I>k</I> children must have the structure of <I>U<SUB>k</I></SUB>. The resulting tree therefore has the structure of <I>U<SUB>k</I>+1</SUB>.<P>
+<a name="087e_16af">We are now ready to show that the amortized cost of extracting the minimum node of an <I>n</I>-node Fibonacci heap is <I>O</I>(<I>D</I>(<I>n</I>)). Let <I>H</I> denote the Fibonacci heap just prior to the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> operation.<P>
+The actual cost of extracting the minimum node can be accounted for as follows. An <I>O(D(n))</I> contribution comes from there being at most <I>D</I>(<I>n</I>) children of the minimum node that are processed in <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and from the work in lines 1-2 and 14-19 of <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT>. It remains to analyze the contribution from the <B>for</B> loop of lines 3-13. The size of the root list upon calling <FONT FACE="Courier New" SIZE=2>CONSOLIDATE</FONT> is at most <I>D</I>(<I>n</I>) + <I>t</I>(<I>H</I>) - 1, since it consists of the original <I>t</I>(<I>H</I>) root-list nodes, minus the extracted root node, plus the children of the extracted node, which number at most <I>D</I>(<I>n</I>). Every time through the <B>while</B> loop of lines 6-12, one of the roots is linked to another, and thus the total amount of work performed in the <B>for </B>loop is at most proportional to <I>D</I>(<I>n</I>) + <I>t</I>(<I>H</I>). Thus, the total actual work is <I>O</I>(<I>D</I>(<I>n</I>) <I>+ t</I>(<I>H</I>)).<P>
+<a name="087e_16b0">The potential before extracting the minimum node is <I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>), and the potential afterward is at most (<I>D</I>(<I>n</I>) + 1) + 2<I>m</I>(<I>H</I>), since at most <I>D</I>(<I>n</I>) + 1 roots remain and no nodes become marked during the operation. The amortized cost is thus at most<P>
+<pre><I>O</I>(<I>D</I>(<I>n</I>) + <I>t</I>(<I>H</I>)) + ((<I>D</I>(<I>n</I>) + 1) + 2<I>m</I>(<I>H</I>)) - (<I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>))</sub></sup></pre><P>
+<pre>= <I>O</I>(<I>D</I>(<I>n</I>)) + <I>O</I>(<I>t</I>(<I>H</I>)) - <I>t</I>(<I>H</I>)</sub></sup></pre><P>
+<pre>= <I>O</I>(<I>D</I>(<I>n</I>)),</sub></sup></pre><P>
+since we can scale up the units of potential to dominate the constant hidden in <I>O</I>(<I>t</I>(<I>H</I>)). Intuitively, the cost of performing each link is paid for by the reduction in potential due to the link reducing the number of roots by one.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="087f_16b5">Exercises<a name="087f_16b5"></h2><P>
+<a name="087f_16b6">21.2-1<a name="087f_16b6"><P>
+Show the Fibonacci heap that results from calling <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> on the Fibonacci heap shown in Figure 21.3(m).<P>
+<a name="087f_16b7">21.2-2<a name="087f_16b7"><P>
+Prove that Lemma 20.1 holds for unordered binomial trees, but with property 4' in place of property 4.<P>
+<a name="087f_16b8">21.2-3<a name="087f_16b8"><P>
+<a name="087f_16b1"><a name="087f_16b2">Show that if only the mergeable-heap operations are supported, the maximum degree <I>D(n)</I> in an <I>n</I>-node Fibonacci heap is at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>.<P>
+<a name="087f_16b9">21.2-4<a name="087f_16b9"><P>
+<a name="087f_16b3">Professor McGee has devised a new data structure based on Fibonacci heaps. A McGee heap has the same structure as a Fibonacci heap and supports the mergeable-heap operations. The implementations of the operations are the same as for Fibonacci heaps, except that insertion and union perform consolidation as their last step. What are the worst-case running time of operations on McGee heaps? How novel is the professor's data structure?<P>
+<a name="087f_16ba">21.2-5<a name="087f_16ba"><P>
+<a name="087f_16b4">Argue that when the only operations on keys are comparing two keys (as is the case for all the implementations in this chapter), not all of the mergeable-heap operations can run in <I>O</I>(1) amortized time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0880_16b7">21.3 Decreasing a key and deleting a node<a name="0880_16b7"></h1><P>
+<a name="0880_16b5"><a name="0880_16b6">In this section, we show how to decrease the key of a node in a Fibonacci heap in <I>O</I>(1) amortized time and how to delete any node from an <I>n</I>-node Fibonacci heap in <I>O</I>(<I>D</I>(<I>n</I>)) amortized time. These operations do not preserve the property that all trees in the Fibonacci heap are unordered binomial trees. They are close enough, however, that we can bound the maximum degree <I>D</I>(<I>n</I>) by <I>O</I>(1g <I>n</I>). Proving this bound will imply that <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> run in <I>O</I>(1g <I>n</I>) amortized time.<P>
+
+
+
+
+
+<h2>Decreasing a key</h2><P>
+In the following pseudocode for the operation <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, we assume as before that removing a node from a linked list does not change any of the structural fields in the removed node.<P>
+<pre><a name="0881_16b7">FIB-HEAP-DECREASE-KEY(<I>H</I>,<I>x</I>,<I>k</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>k</I> &gt; <I>key</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>2     <B>then error</B> &quot;new key is greater than current key&quot;</sub></sup></pre><P>
+<pre>3  <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I></sub></sup></pre><P>
+<pre>4  <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>5  <B>if</B> <I>y</I> <IMG SRC="../IMAGES/noteq.gif"> NIL and <I>key</I>[<I>x</I>] &lt; <I>key</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>6     <B>then</B> CUT(<I>H</I>,<I>x</I>,<I>y</I>)</sub></sup></pre><P>
+<pre>7           CASCADING-CUT(<I>H</I>,<I>y</I>)</sub></sup></pre><P>
+<pre>8  <B>if</B> <I>key</I>[<I>x</I>] &lt; <I>key</I>[<I>min</I>[<I>H</I>]]</sub></sup></pre><P>
+<pre>9     <B>then</B> <I>min</I>[<I>H</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="0881_16b8">CUT(<I>H</I>,<I>x</I>,<I>y</I>)</sub></sup></pre><P>
+<pre>1  remove <I>x</I> from the child list of <I>y</I>, decrementing <I>degree</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>2  add <I>x</I> to the root list of <I>H</I></sub></sup></pre><P>
+<pre>3  <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>4  <I>mark</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> FALSE</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="0881_16b9">CASCADING-CUT(<I>H</I>,<I>y</I>)</sub></sup></pre><P>
+<pre>1  <I>z</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>2  <B>if</B> <I>z</I> <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>3     <B>then if</B> <I>mark</I>[<I>y</I>] = FALSE</sub></sup></pre><P>
+<pre>4             <B>then</B> <I>mark</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> TRUE</sub></sup></pre><P>
+<pre>5             <B>else</B> CUT(<I>H</I>,<I>y</I>,<I>z</I>)</sub></sup></pre><P>
+<pre>6                  CASCADING-CUT(<I>H</I>,<I>z</I>)</sub></sup></pre><P>
+The <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> procedure works as follows. Lines 1-3 ensure that the new key is no greater than the current key of <I>x</I> and then assign the new key to <I>x</I>. If <I>x</I> is a root or if <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>key</I>[<I>y</I>], where <I>y</I> is <I>x</I>'s parent, then no structural changes need occur, since heap order has not been violated. Lines 4-5 test for this condition.<P>
+<a name="0881_16ba">If heap order has been violated, many changes may occur. We start by <I><B>cutting</I></B> <I>x</I> in line 6. The <FONT FACE="Courier New" SIZE=2>CUT</FONT> procedure "cuts" the link between <I>x</I> and its parent <I>y</I>, making <I>x</I> a root.<P>
+<a name="0881_16bb">We use the <I>mark</I> fields to obtain the desired time bounds. They help to produce the following effect. Suppose that <I>x</I> is a node that has undergone the following history:<P>
+1.     at some time, <I>x</I> was a root,<P>
+2.     then <I>x</I> was linked to another node,<P>
+3.     then two children of <I>x</I> were removed by cuts.<P>
+As soon as the second child has been lost, <I>x</I> is cut from its parent, making it a new root. The field <I>mark</I>[<I>x</I>] is <FONT FACE="Courier New" SIZE=2>TRUE</FONT> if steps 1 and 2 have occurred and one child of <I>x</I> has been cut. The <FONT FACE="Courier New" SIZE=2>CUT</FONT> procedure, therefore, clears <I>mark</I>[<I>x</I>] in line 4, since it performs step 1. (We can now see why line 3 of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT> clears <I>mark</I>[<I>y</I>]: node <I>y</I> is being linked to another node, and so step 2 is being performed. The next time a child of <I>y</I> is cut, <I>mark</I>[<I>y</I>] will be set to <FONT FACE="Courier New" SIZE=2>TRUE</FONT>.)<P>
+<a name="0881_16bc"><a name="0881_16bd">We are not yet done, because <I>x</I> might be the second child cut from its parent <I>y</I> since the time that <I>y</I> was linked to another node. Therefore, line 7 of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> performs a <I><B>cascading-cut</I></B> operation on <I>y</I>. If <I>y</I> is a root, then the test in line 2 of <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> causes the procedure to just return. If <I>y</I> is unmarked, the procedure marks it in line 4, since its first child has just been cut, and returns. If <I>y</I> is marked, however, it has just lost its second child; <I>y</I> is cut in line 5, and <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> calls itself recursively in line 6 on y's parent <I>z</I>. The <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> procedure recurses its way up the tree until either a root or an unmarked node is found.<P>
+Once all the cascading cuts have occurred, lines 8-9 of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> finish up by updating <I>min</I>[<I>H</I>] if necessary.<P>
+Figure 21.4 shows the execution of two calls of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, starting with the Fibonacci heap shown in Figure 21.4(a). The first call, shown in Figure 21.4(b), involves no cascading cuts. The second call, shown in Figures 21.4(c)-(e), invokes two cascading cuts.<P>
+<a name="0881_16be">We shall now show that the amortized cost of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> is only <I>O</I>(1). We start by determining its actual cost. The <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> procedure takes <I>O</I>(1) time, plus the time to perform the cascading cuts. Suppose that <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> is recursively called <I>c</I> times from a given invocation of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>. Each call of <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> takes <I>O</I>(1) time exclusive of recursive calls. Thus, the actual cost of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY,</FONT> including all recursive calls, is <I>O</I>(<I>c</I>).<P>
+<a name="0881_16bf">We next compute the change in potential. Let <I>H</I> denote the Fibonacci heap just prior to the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> operation. Each recursive call of <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT>, except for the last one, cuts a marked node and clears the mark bit. Afterward, there are <I>t</I>(<I>H</I>) + <I>c</I> trees (the original <I>t</I>(<I>H</I>) trees, <I>c</I>- 1 trees produced by cascading cuts, and the tree rooted at <I>x</I>) and at most <I>m</I>(<I>H</I>) - <I>c</I> + 2 marked nodes (<I>c</I> - 1 were unmarked by cascading cuts and the last call of <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> may have marked a node). The change in potential is therefore at most<P>
+<pre>((<I>t</I>(<I>H</I>) + <I>c</I>) + 2(<I>m</I>(<I>H</I>) - <I>c</I> + 2)) - (<I>t</I>(<I>H</I>) + 2<I>m</I>(<I>H</I>)) = 4 - <I>c</I> .</sub></sup></pre><P>
+Thus, the amortized cost of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> is at most<P>
+<pre><I>O</I>(<I>c</I>) + 4 - <I>c</I> = <I>O</I>(1) ,</sub></sup></pre><P>
+since we can scale up the units of potential to dominate the constant hidden in <I>O</I>(<I>c</I>).<P>
+You can now see why the potential function was defined to include a term that is twice the number of marked nodes. When a marked node <I>y</I> is cut by a cascading cut, its mark bit is cleared, so the potential is reduced by 2. One unit of potential pays for the cut and the clearing of the mark bit, and the other unit compensates for the unit increase in potential due to node <I>y</I> becoming a root.<P>
+<img src="434_a.gif"><P>
+<h4><a name="0881_16c0">Figure 21.4 Two calls of <FONT FACE="Courier New" SIZE=2>FIB<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DECREASE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>KEY</FONT></FONT></FONT></FONT></FONT></FONT></FONT>. (a) The initial Fibonacci heap. (b) The node with key 46 has its key decreased to 15. The node becomes a root, and its parent (with key 24), which had previously been unmarked, becomes marked. (c)-(e) The node with key 35 has its key decreased to 5. In part (c), the node, now with key 5, becomes a root. Its parent, with key 26, is marked, so a cascading cut occurs. The node with key 26 is cut from its parent and made an unmarked root in (d). Another cascading cut occurs, since the node with key 24 is marked as well. This node is cut from its parent and made an unmarked root in part (e). The cascading cuts stop at this point, since the node with key 7 is a root. (Even if this node were not a root, the cascading cuts would stop, since it is unmarked.) The result of the <FONT FACE="Courier New" SIZE=2>FIB<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DECREASE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>KEY</FONT></FONT></FONT></FONT></FONT></FONT></FONT> operation is shown in part (e), with min[H] pointing to the new minimum node.<a name="0881_16c0"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Deleting a node</h2><P>
+<a name="0882_16c0"><a name="0882_16c1">It is easy to delete a node from an <I>n</I>-node Fibonacci heap in <I>O</I>(<I>D</I>(<I>n</I>)) amortized time, as is done by the following pseudocode. We assume that there is no key value of -<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT> currently in the Fibonacci heap.<P>
+<pre><a name="0882_16c2">FIB-HEAP-DELETE(<I>H, x</I>)</sub></sup></pre><P>
+<pre>1  FIB-HEAP-DECREASE-KEY(<I>H</I>,<I> x</I>, -<IMG SRC="../IMAGES/infin.gif">)</sub></sup></pre><P>
+<pre>2  FIB-HEAP-EXTRACT-MIN(<I>H</I>)</sub></sup></pre><P>
+<FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> is analogous to <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>. It makes <I>x </I>become the minimum node in the Fibonacci heap by giving it a uniquely small key of -<IMG SRC="../IMAGES/infin.gif">. Node <I>x</I> is then removed from the Fibonacci heap by the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> procedure. The amortized time of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> is the sum of the <I>O</I>(1) amortized time of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> and the <I>O</I>(<I>D</I>(<I>n</I>)) amortized time of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0883_16c6">Exercises<a name="0883_16c6"></h2><P>
+<a name="0883_16c7">21.3-1<a name="0883_16c7"><P>
+<a name="0883_16c3"><a name="0883_16c4">Suppose that a root <I>x</I> in a Fibonacci heap is marked. Explain how <I>x</I> came to be a marked root. Argue that it doesn't matter to the analysis that <I>x</I> is marked, even though it is not a root that was first linked to another node and then lost one child.<P>
+<a name="0883_16c8">21.3-2<a name="0883_16c8"><P>
+<a name="0883_16c5">Justify the <I>O</I>(1) amortized time of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> using the aggregate method of Section 18.1.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0884_16cb">21.4 Bounding the maximum degree<a name="0884_16cb"></h1><P>
+<a name="0884_16c6"><a name="0884_16c7"><a name="0884_16c8">To prove that the amortized time of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> is <I>O</I>(l<I>g n</I>), we must show that the upper bound <I>D</I>(<I>n</I>) on the degree of any node of an <I>n</I>-node Fibonacci heap is <I>O</I>(lg <I>n</I>). By Exercise 21.2-3, when all trees in the Fibonacci heap are unordered binomial trees, <I>D(n)</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif">. The cuts that occur in <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, however, may cause trees within the Fibonacci heap to violate the unordered binomial tree properties. In this section, we shall show that because we cut a node from its parent as soon as it loses two children, <I>D</I>(<I>n</I>) is <I>O</I>(lg <I>n</I>). In particular, we shall show that <I>D</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>log<IMG SRC="../IMAGES/phicap12.gif"><SUB> <I>n</SUB></I><IMG SRC="../IMAGES/hfbrdr12.gif">, where <img src="435_a.gif">.<P>
+The key to the analysis is as follows. For each node <I>x</I> within a Fibonacci heap, define size(<I>x</I>) to be the number of nodes, including <I>x</I> itself, in the subtree rooted at <I>x</I>. (Note that <I>x</I> need not be in the root list--it can be any node at all.) We shall show that size(<I>x</I>) is exponential in <I>degree</I>[<I>x</I>]. Bear in mind that <I>degree</I>[<I>x</I>] is always maintained as an accurate count of the degree of <I>x</I>.<P>
+<a name="0884_16cc">Lemma 21.1<a name="0884_16cc"><P>
+Let <I>x</I> be any node in a Fibonacci heap, and suppose that <I>degree</I>[<I>x</I>]<I> = k. </I>Let <I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, ..., <I>y<SUB>k</I></SUB> denote the children of <I>x</I> in the order in which they were linked to <I>x</I>, from the earliest to the latest. Then, <I>degree</I> [<I>y</I><SUB>1</SUB>] <IMG SRC="../IMAGES/gteq.gif"> 0 and <I>degree</I>[<I>y<SUB>i</I></SUB>] <IMG SRC="../IMAGES/gteq.gif"> <I>i</I> - 2 for <I>i</I> = 2, 3, . . . , <I>k</I>.<P>
+<I><B>Proof     </I></B>Obviously, <I>degree</I>[<I>y</I><SUB>1</SUB>] <IMG SRC="../IMAGES/gteq.gif"> 0.<P>
+For <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 2, we note that when <I>y<SUB>i</I></SUB> was linked to <I>x</I>, all of <I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . , <I>y<SUB>i</I></SUB>-<I>1</I><SUB> </SUB>were children of <I>x</I>, so we must have had <I>degree</I>[<I>x</I>] <IMG SRC="../IMAGES/gteq.gif"> i - 1. Node <I>y<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> is linked to <I>x</I> only if <I>degree</I>[<I>x</I>] = <I>degree</I>[<I>y<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>], so we must have also had <I>degree</I>[<I>y<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>] <IMG SRC="../IMAGES/gteq.gif"> <I>i</I> - 1 at that time. Since then, node <I>y<SUB>i</I></SUB> has lost at most one child, since it would have been cut from <I>x</I> if it had lost two children. We conclude that <I>degree</I> [<I>y<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> ] <IMG SRC="../IMAGES/gteq.gif"> <I>i</I> - 2.      <P>
+<a name="0884_16ca">We finally come to the part of the analysis that explains the name &quot;Fibonacci heaps.&quot; Recall from Section 2.2 that for <I>k</I> = 0, 1, 2, . . . , the <I>k</I>th Fibonacci number is defined by the recurrence<P>
+<img src="436_a.gif"><P>
+The following lemma gives another way to express <I>F<SUB>k</I></SUB>.<P>
+<a name="0884_16cd">Lemma 21.2<a name="0884_16cd"><P>
+For all integers <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0,<P>
+<img src="436_b.gif"><P>
+<I><B>Proof     </I></B>The proof is by induction on <I>k</I>. When <I>k</I> = 0,<P>
+<img src="436_c.gif"><P>
+We now assume the inductive hypothesis that <img src="436_d.gif">, and we have<P>
+<img src="436_e.gif"><P>
+The following lemma and its corollary complete the analysis. It uses the inequality (proved in Exercise 2.2-8)<P>
+<pre><I>F<SUB>k</I>+2</SUB> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>k <I></SUP>,</I></sub></sup></pre><P>
+where <IMG SRC="../IMAGES/phicap12.gif"><I></I> is the golden ratio defined in equation (2.14) as <img src="436_f.gif">.<P>
+<a name="0884_16ce">Lemma 21.3<a name="0884_16ce"><P>
+Let <I>x </I>be any node in a Fibonacci heap, and let <I>k</I> = <I>degree</I>[<I>x</I>]. Then, size (<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I>+2</SUB> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>k<I></SUP>, where <IMG SRC="../IMAGES/phicap12.gif"></I> = <img src="437_a.gif">.<P>
+<I><B>Proof     </I></B>Let <I>s<SUB>k</I></SUB> denote the minimum possible value of size(<I>z</I>) over all nodes <I>z</I> such that <I>degree</I>[<I>z</I>] = <I>k</I>. Trivially, <I>s</I><SUB>0</SUB> = 1, <I>s</I><SUB>1</SUB> = 2, and <I>s</I><SUB>2</SUB> = 3. The number <I>s<SUB>k</I></SUB> is at most size(<I>x</I>). As in Lemma 21.1, let <I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . , <I>y<SUB>k</I></SUB> denote the children of<I> x</I> in the order in which they were linked to <I>x</I>. To compute a lower bound on size(<I>x</I>), we count one for <I>x</I> itself and one for the first child <I>y</I><SUB>1</SUB> (for which size(<I>y</I><SUB>1</SUB>) <IMG SRC="../IMAGES/gteq.gif"> 1 ) and then apply Lemma 21.1 for the other children. We thus have<P>
+<img src="437_b.gif"><P>
+We now show by induction on <I>k</I> that <I>s<SUB>k</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I>+2</SUB> for all nonnegative integer <I>k</I>. The bases, for <I>k</I> = 0 and <I>k</I> = 1, are trivial. For the inductive step, we assume that <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 2 and that <I>s<SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>i </I>+ 2</SUB> for <I>i</I> = 0, 1, . . . , <I>k</I> - 1. We have<P>
+<img src="437_c.gif"><P>
+The last equality follows from Lemma 21.2.<P>
+Thus, we have shown that size(<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>s<SUB>k </I>+ 2</SUB> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>k<I></SUP>.      </I><P>
+<a name="0884_16cf">Corollary 21.4<a name="0884_16cf"><P>
+The maximum degree <I>D</I>(<I>n</I>) of any node in an <I>n</I>-node Fibonacci heap is <I>O</I>(lg <I>n</I>).<P>
+<I><B>Proof     </I></B>Let <I>x</I> be any node in an <I>n</I>-node Fibonacci heap, and let <I>k</I> =<I> degree</I>[<I>x</I>]. By Lemma 21.3, we have <I>n</I> <IMG SRC="../IMAGES/gteq.gif"><I> size(</I>x<I>) <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>k</I></SUP>. Taking base-<IMG SRC="../IMAGES/phicap12.gif"><I></I> logarithms yields <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> log<IMG SRC="../IMAGES/phicap12.gif"><I><SUB> </I>n<I></SUB>. (In fact, because </I>k<I> is an integer, </I>k<I> <IMG SRC="../IMAGES/lteq12.gif"></I> <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>log<I><SUB><FONT FACE="Courier New" SIZE=2></I></SUB><IMG SRC="../IMAGES/phicap12.gif"><I></I></FONT><SUB> <I>n<FONT FACE="Times New Roman" SIZE=2></SUB></I><IMG SRC="../IMAGES/hfbrdr12.gif"><I>.</I></FONT>) The maximum degree <I>D</I>(<I>n</I>) of any node is thus <I>O</I>(lg <I>n</I>).      <P>
+
+
+
+
+
+<h2><a name="0885_16cd">Exercises<a name="0885_16cd"></h2><P>
+<a name="0885_16ce">21.4-1<a name="0885_16ce"><P>
+<a name="0885_16cb">Professor Pinocchio claims that the height of an <I>n</I>-node Fibonacci heap is <I>O</I>(lg <I>n</I>). Show that the professor is mistaken by exhibiting, for any positive integer <I>n</I>, a sequence of Fibonacci-heap operations that creates a Fibonacci heap consisting of just one tree that is a linear chain of <I>n</I> nodes.<P>
+<a name="0885_16cf">21.4-2<a name="0885_16cf"><P>
+<a name="0885_16cc">Suppose we generalize the cascading-cut rule to cut a node <I>x</I> from its parent as soon as it loses its <I>k</I>th child, for some integer constant <I>k</I>. (The rule in Section 21.3 uses <I>k</I> = 2.) For what values of <I>k</I> is <I>D</I>(<I>n</I>) = <I>O</I>(lg <I>n</I>)?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0886_16d6">Problems<a name="0886_16d6"></h1><P>
+<a name="0886_16d7">21-1 Alternative implementation of deletion<a name="0886_16d7"><P>
+<a name="0886_16cd"><a name="0886_16ce"><a name="0886_16cf">Professor Pisano has proposed the following variant of the <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> procedure, claiming that it runs faster when the node being deleted is not the node pointed to by <I>min</I>[<I>H</I>].<P>
+<pre>PISANO-DELETE(<I>H, x</I>)</sub></sup></pre><P>
+<pre>1<B>  if</B> <I>x</I> = <I>min</I>[<I>H</I>]</sub></sup></pre><P>
+<pre>2<B>     then</B> FIB-HEAP-EXTRACT-MIN(<I>H</I>)</sub></sup></pre><P>
+<pre>3<B>     else</B> <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>4<B>          if</B> <I>y</I> <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>5<B>             then</B> CUT(<I>H,x,y</I>)</sub></sup></pre><P>
+<pre>6                  CASCADING-CUT(<I>H,y</I>)</sub></sup></pre><P>
+<pre>7          add <I>x</I>'s child list to the root list of <I>H</I></sub></sup></pre><P>
+<pre>8          remove <I>x</I> from the root list of <I>H</I></sub></sup></pre><P>
+<I><B>a.</I></B>     The professor's claim that this procedure runs faster is based partly on the assumption that line 7 can be performed in <I>O</I>(1) actual time. What is wrong with this assumption?<P>
+<I><B>b.</I></B>     Give a good upper bound on the actual time of <FONT FACE="Courier New" SIZE=2>PISANO</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> when <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>min</I>[<I>H</I>]. Your bound should be in terms of <I>degree</I>[<I>x</I>] and the number <I>c</I> of calls to the <FONT FACE="Courier New" SIZE=2>CASCADING</FONT>-<FONT FACE="Courier New" SIZE=2>CUT</FONT> procedure.<P>
+<I><B>c.</I></B>     Let <I>H'</I> be the Fibonacci heap that results from an execution of <FONT FACE="Courier New" SIZE=2>PISANO</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>(<I>H, x</I>). Assuming that node <I>x</I> is not a root, bound the potential of <I>H'</I> in terms of <I>degree</I>[<I>x</I>], <I>c, t</I>(<I>H</I>), and <I>m</I>(<I>H</I>).<P>
+<I><B>d.</I>     </B>Conclude that the amortized time for <FONT FACE="Courier New" SIZE=2>PISANO</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> is asymptotically no better than for <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>, even when <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>min</I>[<I>H</I>].<P>
+<a name="0886_16d8">21-2 More Fibonacci-heap operations<a name="0886_16d8"><P>
+<a name="0886_16d0"><a name="0886_16d1"><a name="0886_16d2"><a name="0886_16d3"><a name="0886_16d4"><a name="0886_16d5">We wish to augment a Fibonacci heap <I>H</I> to support two new operations without changing the amortized running time of any other Fibonacci-heap operations.<P>
+<I><B>a.</I></B>     Give an efficient implementation of the operation <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>CHANGE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>(<I>H, x, k</I>), which changes the key of node <I>x</I> to the value <I>k</I>. Analyze the amortized running time of your implementation for the cases in which <I>k</I> is greater than, less than, or equal to <I>key</I>[<I>x</I>].<P>
+<I><B>b.</I>     </B>Give an efficient implementation of <FONT FACE="Courier New" SIZE=2>FIB</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>PRUNE</FONT>(<I>H, r</I>), which deletes min(<I>r, n</I>[<I>H</I>]) nodes from <I>H</I>. Which nodes are deleted should be arbitrary. Analyze the amortized running time of your implementation. (<I>Hint:</I> You may need to modify the data structure and potential function.)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+<a name="0887_16d6"><a name="0887_16d7"><a name="0887_16d8">Fibonacci heaps were introduced by Fredman and Tarjan [75]. Their paper also describes the application of Fibonacci heaps to the problems of single-source shortest paths, all-pairs shortest pairs, weighted bipartite matching, and the minimum-spanning-tree problem.<P>
+<a name="0887_16d9"><a name="0887_16da"><a name="0887_16db"><a name="0887_16dc"><a name="0887_16dd">Subsequently, Driscoll, Sarnak, Sleator, and Tarjan [58] developed &quot;relaxed heaps&quot; as an alternative to Fibonacci heaps. There are two varieties of relaxed heaps. One gives the same amortized time bounds as Fibonacci heaps. The other allows <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> to run in <I>O</I>(1) worst-case (not amortized) time and <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> to run in <I>O</I>(lg <I>n</I>) worst-case time. Relaxed heaps also have some advantages over Fibonacci heaps in parallel algorithms.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap22.htm">Chapter 22</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,109 @@
+#include <cstdio>
+#include <queue>
+int Path[7][7]; //EPPPPPX
+bool Type[50][50];
+char Read;
+int Height, Width, i, j;
+int PrCoords[5][2], PrCount=0, BeginCoords[2], EndCoords[2];
+int GetCellType(int Y, int X){
+    int i;
+    if(Y==BeginCoords[0]&&X==BeginCoords[1]) return 0;
+    for(i=0;i<PrCount;i++) if(Y==PrCoords[i][0]&&X==PrCoords[i][1]) return i+1;
+    if(Y==EndCoords[0]&&X==EndCoords[1]) return 6;
+    return 7;
+}
+int GetCellType(int a){
+    return GetCellType(a/50, a%50);
+}
+int GetCoords(int Y, int X, int AddY, int AddX){
+    Y+=AddY;
+    Y%=Height;
+    if(Y<0) Y+=Height;
+    X+=AddX;
+    X%=Width;
+    if(X<0) X+=Width;
+    return Y*50+X;
+}
+int GetCoords(int a, int AddY, int AddX){
+    return GetCoords(a/50, a%50, AddY, AddX);
+}
+std::queue<int> Queue;
+int PathL[2500];
+void BFS(int Y, int X){
+    int a;
+    for(j=0;j<2500;j++) PathL[j]=-1;
+    Queue.push(Y*50+X);
+    PathL[Y*50+X]=0;
+    while(Queue.size()){
+        a=Queue.front();
+        if(GetCellType(a)!=7) Path[GetCellType(Y, X)][GetCellType(a)]=PathL[a];
+        if(PathL[GetCoords(a, 0, -1)]==-1&&Type[GetCoords(a, 0, -1)/50][GetCoords(a, 0, -1)%50]){
+            PathL[GetCoords(a, 0, -1)]=PathL[a]+1;
+            Queue.push(GetCoords(a, 0, -1));
+        }
+        if(PathL[GetCoords(a, 0, 1)]==-1&&Type[GetCoords(a, 0, 1)/50][GetCoords(a, 0, 1)%50]){
+            PathL[GetCoords(a, 0, 1)]=PathL[a]+1;
+            Queue.push(GetCoords(a, 0, 1));
+        }
+
+        if(PathL[GetCoords(a, -1, 0)]==-1&&Type[GetCoords(a, -1, 0)/50][GetCoords(a, -1, 0)%50]){
+            PathL[GetCoords(a, -1, 0)]=PathL[a]+1;
+            Queue.push(GetCoords(a, -1, 0));
+        }
+        if(PathL[GetCoords(a, 1, 0)]==-1&&Type[GetCoords(a, 1, 0)/50][GetCoords(a, 1, 0)%50]){
+            PathL[GetCoords(a, 1, 0)]=PathL[a]+1;
+            Queue.push(GetCoords(a, 1, 0));
+        }
+        Queue.pop();
+    }
+    return;
+}
+bool VisPr[5];
+int ShortestPath(int Y, int X, int Depth){
+    if(Depth==PrCount){
+        if(Path[GetCellType(Y, X)][6]==-1) return -1;
+        return Path[GetCellType(Y, X)][6];
+    }
+    int Min=1000000000, Curr, i;
+    for(i=0;i<PrCount;i++){
+        if(!VisPr[i]){
+            VisPr[i]=1;
+            Curr=ShortestPath(PrCoords[i][0], PrCoords[i][1], Depth+1)+Path[GetCellType(Y, X)][i+1];
+            if(Path[GetCellType(Y, X)][i+1]==-1||Curr-Path[GetCellType(Y, X)][i+1]==-1) return -1;
+            if(Curr<Min) Min=Curr;
+            VisPr[i]=0;
+        }
+    }
+    if(Min==1000000000) return -1;
+    return Min;
+}
+int main(){
+    scanf("%d %d", &Height, &Width);
+    for(i=0;i<Height;i++){
+        for(j=0;j<Width;j++){
+            Read=getchar();
+            while(Read!='E'&&Read!='X'&&Read!='P'&&Read!='.'&&Read!='#') Read=getchar();
+            Type[i][j]=Read!='#';
+            if(Read=='P'){
+                PrCoords[PrCount][0]=i;
+                PrCoords[PrCount][1]=j;
+                VisPr[PrCount]=0;
+                PrCount++;
+            }else if(Read=='E'){
+                BeginCoords[0]=i;
+                BeginCoords[1]=j;
+            }else if(Read=='X'){
+                EndCoords[0]=i;
+                EndCoords[1]=j;
+            }
+        }
+    }
+    for(i=0;i<7;i++) for(j=0;j<7;j++) Path[i][j]=-1;
+    BFS(BeginCoords[0], BeginCoords[1]);
+    for(i=0;i<PrCount;i++){
+        BFS(PrCoords[i][0], PrCoords[i][1]);
+    }
+    BFS(EndCoords[0], EndCoords[1]);
+    printf("%d\n", ShortestPath(BeginCoords[0], BeginCoords[1], 0));
+    return 0;
+}

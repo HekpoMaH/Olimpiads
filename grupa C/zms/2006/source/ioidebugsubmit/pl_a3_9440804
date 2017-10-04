@@ -1,0 +1,71 @@
+{
+TASK: cars
+LANG: PASCAL
+}
+const
+ maxn = 10001;
+ maxm = 100001;
+type
+ cell = record v , ptr : longint; end;
+var
+ a : array[0..maxm] of cell;
+ abr : longint;
+ b   : array[0..maxn] of longint;
+ used : array[0..maxn] of boolean;
+ nasl : array[0..maxn] of boolean;
+ i,j,n,br,ans,l,v ,fi: longint;
+procedure init;
+ var
+  f : text;
+begin
+   assign(f,'');
+   reset(f);
+   readln(f,n);
+   for i:=1 to n do
+   begin
+      read(f,br);
+      if br=0 then fi:=i;
+      for j:=1 to br do
+      begin
+         read(f,v);
+         nasl[v]:=true;
+         inc(abr);
+         a[abr].v:=v;
+         a[abr].ptr:=b[i];
+         b[i]:=abr;
+      end;
+      readln(f);
+   end;
+end;
+procedure dfs(i : longint);
+var
+ cr :  longint;
+begin
+   inc(l);
+   used[i]:=true;
+   if i=fi then
+   begin
+      inc(ans);
+   end
+   else
+   begin
+      cr:=b[i];
+      while cr>0 do
+      begin
+         if not used[a[cr].v] then dfs(a[cr].v);
+         cr:=a[cr].ptr;
+      end;
+   end;
+   used[i]:=false;
+   dec(l);
+end;
+procedure out;
+begin
+   writeln(ans);
+end;
+begin
+   init;
+   for i:=1 to n do
+   if not nasl[i] then begin  dfs(i); break; end;
+   out;
+end.

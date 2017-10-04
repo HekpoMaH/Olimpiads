@@ -1,0 +1,129 @@
+{
+TASK:hlinks
+LANG:PASCAL
+}
+
+const dop:set of char=['A'..'Z','a'..'z','.','/'];
+const dop2:set of char=['A'..'Z','a'..'z','.','/',':',' ','-',','];
+var inp:string;
+    ch:char;
+    a:array[1..100]of string;
+    inda:integer;
+    last:string;
+    posit,i:integer;
+
+function make(link:string):String;
+ begin
+  make:='<a href="'+link+'">'+link+'</a>';
+ end;
+
+
+function get2(inp:string):string;
+var pt,i:integer;
+    try,new,old:string;
+
+ begin
+  i:=0;
+  if inp='' then begin get2:='';exit;end;
+  try:='';
+  new:=inp;
+  old:='';
+
+  while pos('.',new)>0 do
+   begin
+    pt:=pos('.',new);
+    old:=old+copy(new,1,pt);
+    delete(new,1,pt);
+    if pos('.',new)=0 then break;
+   end;
+
+   repeat
+    inc(i);
+    if(new[i] in ['a'..'z','A'..'Z'])and(i<=length(new))then try:=try+new[i]
+    else break;
+   until i>=length(inp);
+
+   if pos('/',new)>0 then get2:=old+try
+   else
+   if(length(try)>1)and(length(try)<5) then
+    get2:=old+try
+   else
+    get2:='';
+
+end;
+
+function get(inp:string):string;
+var pt,ind,opt:integer;
+    str:string;
+    ready:string;
+
+ begin
+   if pos('.',inp)<=0 then begin get:='';exit;end;
+   ready:='';
+
+   while(length(inp)>0)do
+    begin
+     str:='';
+     pt:=pos('.',inp);
+
+     if pt<=0 then
+      begin
+       ready:=ready+copy(inp,1,length(inp));
+       get:=ready;
+       exit;
+      end;
+
+     if inp[pt+1]='.' then exit;
+     if pt=1 then exit;
+     opt:=pt;
+
+     while not (inp[pt]in['/',' ',',',':'])and(pt>0)do
+      begin
+       str:=inp[pt]+str;
+       dec(pt);
+      end;
+
+     if inp[pt]='/' then
+      if copy(inp,pt-6,7)='http://' then
+       str:=copy(inp,pt-6,7)+str;
+
+     ready:=ready+str;
+     delete(inp,1,opt);
+    end;
+
+   get:=ready;
+
+ end;
+
+
+
+
+begin
+{ writeln(make('zigi.com'));}
+ inda:=0;
+ read(ch);
+ while(ch<>#26)do
+  begin
+   inp:='';
+   while(ch<>#13)and(ch<>#26)do
+    begin
+     if ch in dop2 then inp:=inp+ch;
+     read(ch);
+    end;
+   if ch=#26 then break;
+    inc(inda);
+    last:=get(inp);
+    last:=get2(last);
+    posit:=pos(last,inp);
+    if last>'' then
+    a[inda]:=copy(inp,1,posit-1)+make(last)+copy(inp,posit+length(last),255)
+    else a[inda]:=inp;
+   read(ch);
+
+  end;
+
+ for i:=1 to inda-1 do
+  writeln(a[i]);
+ write(a[inda]);
+
+end.

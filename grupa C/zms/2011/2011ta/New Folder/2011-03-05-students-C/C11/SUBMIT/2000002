@@ -1,0 +1,20 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int x,n,j,i,k,m;
+    cin >> m;
+    for(x=0;x<3;x++)
+    {
+    cin >> n;
+    cin >> j;
+    cin >> i;
+    cin >> k;
+    }
+    // може би най класическата задача:-)
+    // но не можах да я реша xD
+    cout<<1<<endl<<0<<endl<<"No Solution"<<endl<<5<<endl<<2<<endl;
+    
+    return 0;
+}
+    

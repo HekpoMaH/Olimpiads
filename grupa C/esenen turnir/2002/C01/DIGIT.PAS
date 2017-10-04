@@ -1,0 +1,81 @@
+var
+ i:longint;
+ j:byte;
+ c:char;
+ k:longint;
+ s:string;
+
+ procedure Inp;
+  var
+   t:text;
+  begin
+    assign (t,'');
+    reset (t);
+    readln (t,k);
+    close (t);
+  end;
+
+ procedure Out;
+  var
+   t:text;
+  begin
+    assign (t,'');
+    rewrite (t);
+    writeln (t,c);
+    close (t);
+  end;
+
+ function IncS(s:string):string;
+  var
+   i,j,l,n,u:integer;
+   q:string;
+   c:string[1];
+  begin
+    j:=0;
+    q:='';
+    for i:=length(s) downto 1 do
+     begin
+       val(s[i],n,l);
+       if i<length(s) then u:=n+j
+       else u:=n+j+1;
+       if u=10 then
+        begin
+          u:=0;
+          j:=1;
+        end
+       else
+        j:=0;
+       str(u,c);
+       insert(c,q,1);
+     end;
+    if j=1 then insert('1',q,1);
+    IncS:=q;
+  end;
+
+  begin
+    Inp;
+    i:=0;
+    if k<{720000000+63000000+5400000+450000+36000+2700+180+9+2}100000001 then s:='100000000';
+    if k<63000000+5400000+450000+36000+2700+180+9+2 then s:='1000000';
+    if k<5400000+450000+36000+2700+180+9+2 then s:='100000';
+    if k<450000+36000+2700+180+9+2 then s:='10000';
+    if k<36000+2700+180+9+2 then s:='1000';
+    if k<2700+180+9+2 then s:='100';
+    if k<180+9+2 then s:='10';
+    if k<9+2 then s:='0';
+    if k<{720000000+63000000+5400000+450000+36000+2700+180+9+2}100000001 then i:=63000000+5400000+450000+36000+2700+180+9+2;
+    if k<63000000+5400000+450000+36000+2700+180+9+2 then i:=450000+36000+2700+180+9+2;
+    if k<450000+36000+2700+180+9+2 then i:=2700+180+9+2;
+    if k<2700+180+9+2 then i:=9+2;
+    if k<9+2 then i:=0;
+    repeat
+      s:=IncS(s);
+      j:=0;
+      repeat
+        i:=i+1;
+        j:=j+1;
+        c:=s[j];
+      until (j=length(s))or(i=k);
+    until i=k;
+    Out;
+  end.

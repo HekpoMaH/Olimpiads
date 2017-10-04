@@ -1,0 +1,25 @@
+/*
+TASK:number
+LANG:C++
+*/
+
+
+# include <iostream.h>
+
+int main()
+{int n;
+ int k;
+ int d1,d2;
+ int d3;
+ cin>>n;
+ cin>>d1;
+ cin>>d2;
+ cin>>d3;
+ if (n<20) {k=d2-d1;
+	    cout<<k;
+	    }
+ if (n>20) {k=d2-d1+d3%5;
+	    }
+ cout<<endl;
+ return 0;
+}

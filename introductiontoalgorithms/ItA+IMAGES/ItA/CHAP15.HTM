@@ -1,0 +1,329 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 15: AUGMENTING DATA STRUCTURES</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="partiv.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap14.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="07f4_14fb">CHAPTER 15: AUGMENTING DATA STRUCTURES<a name="07f4_14fb"></h1><P>
+<a name="07f4_14f4"><a name="07f4_14f5">There are some engineering situations that require no more than a &quot;textbook&quot; data structure--such as a doubly linked list, a hash table, or a binary search tree--but many others require a dash of creativity. Only in rare situations will you need to create an entirely new type of data structure, though. More often, it will suffice to augment a textbook data structure by storing additional information in it. You can then program new operations for the data structure to support the desired application. Augmenting a data structure is not always straightforward, however, since the added information must be updated and maintained by the ordinary operations on the data structure.<P>
+<a name="07f4_14f6"><a name="07f4_14f7"><a name="07f4_14f8"><a name="07f4_14f9"><a name="07f4_14fa">This chapter discusses two data structures that are constructed by augmenting red-black trees. Section 15.1 describes a data structure that supports general order-statistic operations on a dynamic set. We can then quickly find the <I>i</I>th smallest number in a set or the rank of a given element in the total ordering of the set. Section 15.2 abstracts the process of augmenting a data structure and provides a theorem that can simplify the augmentation of red-lack trees. Section 15.3 uses this theorem to help design a data structure for maintaining a dynamic set of intervals, such as time intervals. Given a query interval, we can then quickly find an interval in the set that overlaps it.<P>
+
+
+
+
+
+<h1><a name="07f6_14fd">15.1 Dynamic order statistics<a name="07f6_14fd"></h1><P>
+Chapter 10 introduced the notion of an order statistic. Specifically, the <I>i</I>th order statistic of a set of<I> n </I>elements, where <I>i</I> <IMG SRC="../IMAGES/memof12.gif">{ 1, 2, . . ., <I>n</I>}, is simply the element in the set with the <I>i</I>th smallest key. We saw that any order statistic could be retrieved in <I>O(n) </I>time from an unordered set. In this section, we shall see how red-black trees can be modified so that any order statistic can be determined in <I>O</I>(lg<I> n</I>) time. We shall also see how the<B> </B><I><B>rank</I></B> of an element--its position in the linear order of the set--can likewise be determined in <I>O</I>(lg <I>n</I>) time.<P>
+<img src="282_a.gif"><P>
+<h4><a name="07f6_14fe">Figure 15.1 An order-statistic tree, which is an augmented red-black tree. Shaded nodes are red, and darkened nodes are black. In addition to its usual fields, each node x has a field size[x], which is the number of nodes in the subtree rooted at x.<a name="07f6_14fe"></sub></sup></h4><P>
+<a name="07f6_14fb">A data structure that can support fast order-statistic operations is shown in Figure 15.1. An<I><B> order-statistic tree</I></B> <I>T</I> is simply a red-black tree with additional information stored in each node. Besides the usual red-black tree fields <I>key</I>[<I>x</I>],<B> </B><I>color</I>[<I>x</I>]<I>, p</I>[<I>x</I>]<I>, left</I>[<I>x</I>]<I>, </I>and<I> right</I>[<I>x</I>] in a node <I>x</I>, we have another field <I>size</I>[<I>x</I>]. This field contains the number of (internal) nodes in the subtree rooted at<I> x </I>(including <I>x</I> itself), that is, the size of the subtree. If we define <I>size</I>[<FONT FACE="Courier New" SIZE=2>NIL</FONT>] to be 0, then we have the identity<P>
+<pre>size[x] = size[left[x]] + size[right[x]] + 1 .</sub></sup></pre><P>
+<a name="07f6_14fc">(To handle the boundary condition for <FONT FACE="Courier New" SIZE=2>NIL</FONT> properly, an actual implementation might test explicitly for <FONT FACE="Courier New" SIZE=2>NIL</FONT> each time the <I>size</I> field is accessed or, more simply, as in Section 14.4, use a sentinel <I>nil</I>[<I>T</I>] to represent <FONT FACE="Courier New" SIZE=2>NIL</FONT>, where <I>size</I>[<I>nil</I>[<I>T</I>]]<I> = </I>0.)<P>
+
+
+
+
+
+<h2>Retrieving an element with a given rank</h2><P>
+<a name="07f7_14fd"><a name="07f7_14fe">Before we show how to maintain this size information during insertion and deletion, let us examine the implementation of two order-statistic queries that use this additional information. We begin with an operation that retrieves an element with a given rank. The procedure OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>(<I>x, i</I>) returns a pointer to the node containing the <I>i</I>th smallest key in the subtree rooted at <I>x</I>. To find the <I>i</I>th smallest key in an order-statistic tree <I>T</I>, we call OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>(<I>root</I>[<I>T</I>]<I>, i</I>).<P>
+<pre>OS-SELECT(<I>x,i</I>)</sub></sup></pre><P>
+<pre>1  <I>r </I><IMG SRC="../IMAGES/arrlt12.gif"> size<I>[</I>left<I>[</I>x<I>]] + 1</I></sub></sup></pre><P>
+<pre>2  <B>if</B> <I>i = r</I></sub></sup></pre><P>
+<pre>3     <B>then return</B> <I>x</I></sub></sup></pre><P>
+<pre>4  <B>elseif</B> <I>i </I>&lt; <I>r</I></sub></sup></pre><P>
+<pre>5     <B>then return</B> OS-SELECT(<I>left</I>[<I>x</I>],<I>i</I>)</sub></sup></pre><P>
+<pre>6  <B>else return</B> OS-SELECT(<I>right</I>[<I>x</I>],<I>i</I> - <I>r</I>)</sub></sup></pre><P>
+<a name="07f7_14ff">The idea behind OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is similar to that of the selection algorithms in Chapter 10. The value of <I>size</I>[<I>left</I>[<I>x</I>]] is the number of nodes that come before <I>x</I> in an inorder tree walk of the subtree rooted at <I>x.</I> Thus, <I>size</I>[<I>left</I>[<I>x</I>]] + 1 is the rank of<I> x</I> within the subtree rooted at <I>x</I>.<P>
+In line 1 of OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>, we compute<I> r,</I> the rank of node <I>x</I> within the subtree rooted at <I>x.</I> If <I>i </I>= <I>r</I>, then node <I>x</I> is the<I> i</I>th smallest element, so we return <I>x</I> in line 3. If <I>i</I> &lt; <I>r</I>, then the <I>i</I>th smallest element is in <I>x'</I>s left subtree, so we recurse on <I>left</I>[<I>x</I>] in line 5. If <I>i &gt; r,</I> then the <I>i</I>th smallest element is in <I>x'</I>s right subtree. Since there are <I>r</I> elements in the subtree rooted at <I>x </I>that come before <I>x</I>'s<I> </I>right subtree in an inorder tree walk, the<I> i</I>th smallest element in the subtree rooted at <I>x</I> is the <I>(i - r)</I>th smallest element in the subtree rooted at <I>right</I>[<I>x</I>]. This element is determined recursively in line 6.<P>
+To see how OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> operates, consider a search for the 17th smallest element in the order-statistic tree of Figure 15.1. We begin with <I>x</I> as the root, whose key is 26, and with <I>i</I> = 17. Since the size of 26's left subtree is 12, its rank is 13. Thus, we know that the node with rank 17 is the 17 - 13 = 4th smallest element in 26's right subtree. After the recursive call, <I>x</I> is the node with key 41, and <I>i</I> = 4. Since the size of 41's left subtree is 5, its rank within its subtree is 6. Thus, we know that the node with rank 4 is in the 4th smallest element in 41's left subtree. After the recursive call, <I>x</I> is the node with key 30, and its rank within its subtree is 2. Thus, we recurse once again to find the 4 - 2 = 2nd smallest element in the subtree rooted at the node with key 38. We now find that its left subtree has size 1, which means it is the second smallest element. Thus, a pointer to the node with key 38 is returned by the procedure.<P>
+Because each recursive call goes down one level in the order-statistic tree, the total time for OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is at worst proportional to the height of the tree. Since the tree is a red-black tree, its height is <I>O</I>(lg<I> n</I>), where <I>n</I> is the number of nodes. Thus, the running time of OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is <I>O</I>(lg<I> n</I>) for a dynamic set of <I>n</I> elements.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Determining the rank of an element</h2><P>
+<a name="07f8_1500">Given a pointer to a node <I>x</I> in an order-statistic tree <I>T</I>, the procedure OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> returns the position of <I>x</I> in the linear order determined by an inorder tree walk of <I>T.</I><P>
+<pre>OS-RANK(<I>T,x</I>)</sub></sup></pre><P>
+<pre>1  <I>r</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>size</I>[<I>left</I>[<I>x</I>]] + 1</sub></sup></pre><P>
+<pre>2  <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>3  <B>while</B> <I>y </I><IMG SRC="../IMAGES/noteq.gif"> <I>root</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>4      <B>do if </B><I>y</I> = <I>right</I>[<I>p</I>[<I>y</I>]]</sub></sup></pre><P>
+<pre>5            <B>then</B> <I>r</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>r</I> + <I>size</I>[<I>left</I>[<I>p</I>[<I>y</I>]]] + 1</sub></sup></pre><P>
+<pre>6         <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>7  <B>return </B><I>r</I></sub></sup></pre><P>
+<a name="07f8_1501"><a name="07f8_1502"><a name="07f8_1503">The procedure works as follows. The rank of <I>x </I>can be viewed as the number of nodes preceding <I>x</I> in an inorder tree walk, plus 1 for <I>x</I> itself. The following invariant is maintained: at the top of the <B>while</B> loop of lines 3-6, <I>r</I> is the rank of <I>key</I>[<I>x</I>] in the subtree rooted at node <I>y</I>. We maintain this invariant as follows. In line 1, we set <I>r</I> to be the rank of <I>key</I>[<I>x</I>]<I> </I>within the subtree rooted at<I> x</I>. Setting <I>y </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>x </I>in line 2 makes the invariant true the first time the test in line 3 executes. In each iteration of the <B>while</B> loop, we consider the subtree rooted at <I>p</I>[<I>y</I>]. We have already counted the number of nodes in the subtree rooted at node <I>y</I> that precede <I>x</I> in an inorder walk, so we must add the nodes in the subtree rooted at <I>y</I>'s sibling that precede <I>x</I> in an inorder walk, plus 1 for<I> p</I>[<I>y</I>] if it, too, precedes <I>x</I>. If <I>y</I> is a left child, then neither <I>p</I>[<I>y</I>] nor any node in<I> p</I>[<I>y</I>]'s right subtree precedes<I> x,</I> so we leave <I>r</I> alone. Otherwise, <I>y</I> is a right child and all the nodes in<I> p</I>[<I>y</I>]'s left subtree precede <I>x,</I> as does <I>p</I>[<I>y</I>] itself. Thus, in line 5, we add size[<I>left</I>[<I>y</I>]] + 1 to the current value of <I>r</I> Setting<I> y </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>y</I>] makes the invariant true for the next iteration. When<I> y = root</I>[<I>T</I>], the procedure returns the value of <I>r</I>, which is now the rank of<I> key</I>[<I>x</I>]. <P>
+As an example, when we run OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> on the order-statistic tree of Figure 15.1 to find the rank of the node with key 38, we get the following sequence of values of <I>key</I>[<I>y</I>] and <I>r</I> at the top of the <B>while</B> loop:<P>
+<pre>iteration  <B><I>key</I></B>[<B><I>y</I></B>]  <B><I>r</B></I></sub></sup></pre><P>
+<pre>--------------------</sub></sup></pre><P>
+<pre>    1        38    2</sub></sup></pre><P>
+<pre>    2        30    4</sub></sup></pre><P>
+<pre>    3        41    4</sub></sup></pre><P>
+<pre>    4        26   17</sub></sup></pre><P>
+The rank 17 is returned.<P>
+Since each iteration of the <B>while</B> loop takes <I>O</I>(1) time, and<I> y</I> goes up one level in the tree with each iteration, the running time of OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> is at worst proportional to the height of the tree:<I> O</I>(lg<I> n</I>) on an <I>n</I>-node order-statistic tree.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Maintaining subtree sizes</h2><P>
+<a name="07f9_1504"><a name="07f9_1505">Given the <I>size</I> field in each node, OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> and OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> can quickly compute order-statistic information. But unless these fields can be efficiently maintained by the basic modifying operations on red-black trees, our work will have been for naught. We shall now show that subtree sizes can be maintained for both insertion and deletion without affecting the asymptotic running times of either operation. <P>
+We noted in Section 14.3 that insertion into a red-black tree consists of two phases. The first phase goes down the tree from the root, inserting the new node as a child of an existing node. The second phase goes up the tree, changing colors and ultimately performing rotations to maintain the red-black properties.<P>
+<img src="285_a.gif"><P>
+<h4><a name="07f9_1507">Figure 15.2 Updating subtree sizes during rotations. The two size fields that need to be updated are the ones incident on the link around which the rotation is performed. The updates are local, requiring only the size information stored in x, y, and the roots of the subtrees shown as triangles.<a name="07f9_1507"></sub></sup></h4><P>
+To maintain the subtree sizes in the first phase, we simply increment <I>size</I>[<I>x</I>] for each node <I>x</I> on the path traversed from the root down toward the leaves. The new node added gets a <I>size</I> of 1. Since there are <I>O</I>(lg <I>n</I>) nodes on the traversed path, the additional cost of maintaining the <I>size </I>fields is <I>O</I>(lg <I>n</I>).<P>
+In the second phase, the only structural changes to the underlying red-black tree are caused by rotations, of which there are at most two. Moreover, a rotation is a local operation: it invalidates only the two <I>size</I> fields in the nodes incident on the link around which the rotation is performed. Referring to the code for <FONT FACE="Courier New" SIZE=2>LEFT</FONT>-<FONT FACE="Courier New" SIZE=2>ROTATE</FONT>(<I>T,x</I>) in Section 14.2, we add the following lines:<P>
+<pre>13  <I>size</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>size</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>14  <I>size</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>size</I>[<I>left</I>[<I>x</I>]] + <I>size</I>[<I>right</I>[<I>x</I>]] + 1</sub></sup></pre><P>
+Figure 15.2 illustrates how the fields are updated. The change to <FONT FACE="Courier New" SIZE=2>RIGHT</FONT>-<FONT FACE="Courier New" SIZE=2>ROTATE</FONT> is symmetric.<P>
+Since at most two rotations are performed during insertion into a red-black tree, only <I>O</I>(1) additional time is spent updating <I>size</I> fields in the second phase. Thus, the total time for insertion into an <I>n</I>-node order-statistic tree is <I>O</I>(lg <I>n</I>)--asymptotically the same as for an ordinary red-black tree.<P>
+<a name="07f9_1506">Deletion from a red-black tree also consists of two phases: the first operates on the underlying search tree, and the second causes at most three rotations and otherwise performs no structural changes. (See Section 14.4.) The first phase splices out one node <I>y</I>. To update the subtree sizes, we simply traverse a path from node <I>y</I> up to the root, decrementing the <I>size</I> field of each node on the path. Since this path has length <I>O</I>(lg <I>n</I>) in an <I>n</I>-node red-black tree, the additional time spent maintaining <I>size</I> fields in the first phase is <I>O</I>(lg <I>n</I>). The <I>O</I>(1) rotations in the second phase of deletion can be handled in the same manner as for insertion. Thus, both insertion and deletion, including the maintenance of the <I>size</I> fields, take <I>O</I>(lg <I>n</I>) time for an <I>n</I>-node order-statistic tree.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07fa_150c">Exercises<a name="07fa_150c"></h2><P>
+<a name="07fa_150d">15.1-1<a name="07fa_150d"><P>
+<a name="07fa_1507">Show how OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>(<I>T,</I> 10) operates on the red-black tree <I>T</I> of Figure 15.2.<P>
+<a name="07fa_150e">15.1-2<a name="07fa_150e"><P>
+Show how OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT>(<I>T,x</I>) operates on the red-black tree <I>T</I> of Figure 15.2 and the node <I>x</I> with <I>key</I>[<I>x</I>] = 35.<P>
+<a name="07fa_150f">15.1-3<a name="07fa_150f"><P>
+Write a nonrecursive version of OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>.<P>
+<a name="07fa_1510">15.1-4<a name="07fa_1510"><P>
+<a name="07fa_1508"><a name="07fa_1509">Write a recursive procedure OS-<FONT FACE="Courier New" SIZE=2>KEY</FONT>-<FONT FACE="Courier New" SIZE=2>RANK</FONT>(<I>T,k</I>) that takes as input an order-statistic tree <I>T</I> and a key <I>k</I> and returns the rank of <I>k</I> in the dynamic set represented by <I>T</I>. Assume that the keys of <I>T</I> are distinct.<P>
+<a name="07fa_1511">15.1-5<a name="07fa_1511"><P>
+<a name="07fa_150a">Given an element <I>x</I> in an <I>n</I>-node order-statistic tree and a natural number<I> i,</I> how can the <I>i</I>th successor of <I>x</I> in the linear order of the tree be determined in <I>O</I>(lg <I>n</I>) time?<P>
+<a name="07fa_1512">15.1-6<a name="07fa_1512"><P>
+Observe that whenever the <I>size</I> field is referenced in either OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> or OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT>, it is only used to compute the rank of <I>x</I> in the subtree rooted at <I>x</I>. Accordingly, suppose we store in each node its rank in the subtree of which it is the root. Show how this information can be maintained during insertion and deletion. (Remember that these two operations can cause rotations.)<P>
+<a name="07fa_1513">15.1-7<a name="07fa_1513"><P>
+Show how to use an order-statistic tree to to count the number of inversions (see Problem 1-3) in an array of size <I>n</I> in time <I>O</I>(<I>n</I> lg <I>n</I>).<P>
+<a name="07fa_1514">15.1-8<a name="07fa_1514"><P>
+<a name="07fa_150b">Consider <I>n</I> chords on a circle, each defined by its endpoints. Describe an <I>O</I>(<I>n </I>lg <I>n</I>)-time algorithm for determining the number of pairs of chords that intersect inside the circle. (For example, if the <I>n</I> chords are all diameters that meet at the center, then the correct answer is <img src="286_a.gif">.) Assume that no two chords share an endpoint.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07fb_0001">15.2 How to augment a data structure<a name="07fb_0001"></h1><P>
+The process of augmenting a basic data structure to support additional functionality occurs quite frequently in algorithm design. It will be used again in the next section to design a data structure that supports operations on intervals. In this section, we shall examine the steps involved in such augmentation. We shall also prove a theorem that allows us to augment red-black trees easily in many cases.<P>
+Augmenting a data structure can be broken into four steps:<P>
+1.     choosing an underlying data structure,<P>
+2.     determining additional information to be maintained in the underlying data structure,<P>
+3.     verifying that the additional information can be maintained for the basic modifying operations on the underlying data structure, and<P>
+4.     developing new operations.<P>
+As with any prescriptive design method, you should not blindly follow the steps in the order given. Most design work contains an element of trial and error, and progress on all steps usually proceeds in parallel. There is no point, for example, in determining additional information and developing new operations (steps 2 and 4) if we will not be able to maintain the additional information efficiently. Nevertheless, this four-step method provides a good focus for your efforts in augmenting a data structure, and it is also a good way to organize the documentation of an augmented data structure.<P>
+We followed these steps in Section 15.1 to design our order-statistic trees. For step 1, we chose red-black trees as the underlying data structure. A clue to the suitability of red-black trees comes from their efficient support of other dynamic-set operations on a total order, such as <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>SUCCESSOR</FONT>, and <FONT FACE="Courier New" SIZE=2>PREDECESSOR</FONT>.<P>
+For step 2, we provided the <I>size</I> fields, which in each node<I> x</I> stores the size of the subtree rooted at <I>x. </I>Generally, the additional information makes operations more efficient. For example, we could have implemented OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> and OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> using just the keys stored in the tree, but they would not have run in <I>O</I>(lg <I>n</I>) time. Sometimes, the additional information is pointer information rather than data, as in Exercise 15.2-1.<P>
+For step 3, we ensured that insertion and deletion could maintain the <I>size </I>fields while still running in <I>O</I>(lg <I>n</I>) time. Ideally, a small number of changes to the data structure should suffice to maintain the additional information. For example, if we simply stored in each node its rank in the tree, the OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> and OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT> procedures would run quickly, but inserting a new minimum element would cause a change to this information in every node of the tree. When we store subtree sizes instead, inserting a new element causes information to change in only <I>O</I>(lg <I>n</I>) nodes.<P>
+For step 4, we developed the operations OS-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> and OS-<FONT FACE="Courier New" SIZE=2>RANK</FONT>. After all, the need for new operations is why we bother to augment a data structure in the first place. Occasionally, rather than developing new operations, we use the additional information to expedite existing ones, as in Exercise 15.2-1.<P>
+
+
+
+
+
+<h2>Augmenting red-black trees</h2><P>
+<a name="07fc_150c">When red-black trees underlie an augmented data structure, we can prove that certain kinds of additional information can always be efficiently maintained by insertion and deletion, thereby making step 3 very easy. The proof of the following theorem is similar to the argument from Section 15.1 that the <I>size</I> field can be maintained for order-statistic trees.<P>
+<a name="07fc_150d">Theorem 15.1<a name="07fc_150d"><P>
+Let &acirc; be a field that augments a red-black tree <I>T</I> of <I>n</I> nodes, and suppose that the contents of &acirc; for a node<I> x </I>can be computed using only the information in nodes <I>x</I>, <I>left</I>[<I>x</I>], and <I>right</I>[<I>x</I>], including &acirc;[<I>left</I>[<I>x</I>]] and &acirc;[<I>right</I>[<I>x</I>]]. Then, we can maintain the values of <I>f </I>in all nodes of <I>T</I> during insertion and deletion without asymptotically affecting the <I>O</I>(lg <I>n</I>) performance of these operations.<P>
+<I><B>Proof     </I></B>The main idea of the proof is that a change to an &acirc; field in a node <I>x</I> propagates only to ancestors of <I>x</I> in the tree. That is, changing &acirc;[<I>x</I>] may require &acirc;[<I>p</I>[<I>x</I>]] to be updated, but nothing else; updating &acirc;[<I>p</I>[<I>x</I>]] may require &acirc;[<I>p</I>[<I>p</I>[<I>x</I>]]] to be updated, but nothing else; and so on up the tree. When &acirc;[<I>root</I>[<I>T</I>]] is updated, no other node depends on the new value, so the process terminates. Since the height of a red-black tree is <I>O</I>(lg <I>n</I>), changing an <I>f</I> field in a node costs <I>O</I>(lg <I>n</I>) time in updating nodes dependent on the change.<P>
+Insertion of a node <I>x</I> into <I>T</I> consists of two phases. (See Section 14.3.) During the first phase, <I>x</I> is inserted as a child of an existing node <I>p</I>[<I>x</I>]. The value for <I>f</I>[<I>x</I>] can be computed in <I>O</I>(1) time since, by supposition, it depends only on information in the other fields of <I>x</I> itself and the information in <I>x</I>'s children, but <I>x</I>'s children are both <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Once &acirc;[<I>x</I>] is computed, the change propagates up the tree. Thus, the total time for the first phase of insertion is <I>O</I>(lg <I>n</I>). During the second phase, the only structural changes to the tree come from rotations. Since only two nodes change in a rotation, the total time for updating the&acirc; fields is <I>O</I>(lg<I> n</I>) per rotation. Since the number of rotations during insertion is at most two, the total time for insertion is <I>O</I>(lg <I>n</I>).<P>
+Like insertion, deletion has two phases. (See Section 14.4.) In the first phase, changes to the tree occur if the deleted node is replaced by its successor, and then again when either the deleted node or its successor is spliced out. Propagating the updates to <I>f</I> caused by these changes costs at most <I>O</I>(lg <I>n</I>) since the changes modify the tree locally. Fixing up the red-black tree during the second phase requires at most three rotations, and each rotation requires at most <I>O</I>(lg <I>n</I>) time to propagate the updates to <I>f</I>. Thus, like insertion, the total time for deletion is <I>O</I>(lg <I>n</I>).      <P>
+In many cases, such as maintenance of the <I>size</I> fields in order-statistic trees, the cost of updating after a rotation is <I>O</I>(1), rather than the <I>O</I>(lg <I>n</I>) derived in the proof of Theorem 15.1. Exercise 15.2-4 gives an example.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07fd_1515">Exercises<a name="07fd_1515"></h2><P>
+<a name="07fd_1516">15.2-1<a name="07fd_1516"><P>
+<a name="07fd_150d"><a name="07fd_150e"><a name="07fd_150f"><a name="07fd_1510"><a name="07fd_1511">Show how the dynamic-set queries <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>SUCCESSOR</FONT>, and <FONT FACE="Courier New" SIZE=2>PREDECESSOR</FONT> can each be supported in <I>O</I>(1) worst-case time on an augmented order-statistic tree. The asymptotic performance of other operations on order-statistic trees should not be affected.<P>
+<a name="07fd_1517">15.2-2<a name="07fd_1517"><P>
+Can the black-heights of nodes in a red-black tree be maintained as fields in the nodes of the tree without affecting the asymptotic performance of any of the red-black tree operations? Show how, or argue why not.<P>
+<a name="07fd_1518">15.2-3<a name="07fd_1518"><P>
+<a name="07fd_1512">Can the depths of nodes in a red-black tree be efficiently maintained as fields in the nodes of the tree? Show how, or argue why not.<P>
+<a name="07fd_1519">15.2-4<a name="07fd_1519"><P>
+Let <IMG SRC="../IMAGES/circx.gif"> be an associative binary operator, and let <I>a</I> be a field maintained in each node of a red-black tree. Suppose that we want to include in each node <I>x</I> an additional field <IMG SRC="../IMAGES/scrptf12.gif"> such that <IMG SRC="../IMAGES/scrptf12.gif">[<I>x</I>] = <I>a</I>[<I>x</I><SUB>1</SUB>] <IMG SRC="../IMAGES/circx.gif"> <I>a</I>[<I>x</I><SUB>2</SUB>], <IMG SRC="../IMAGES/circx.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/circx.gif"> <I>a</I>[<I>x<SUB>m</I></SUB>], where <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>m</I></SUB> is the inorder listing of nodes in the subtree rooted at <I>x</I>. Show that the <IMG SRC="../IMAGES/scrptf12.gif"> fields can be properly updated in <I>O</I>(1) time after a rotation. Modify your argument slightly to show that the<I> size</I> fields in order-statistic trees can be maintained in <I>O</I>(1) time per rotation.<P>
+<a name="07fd_151a">15.2-5<a name="07fd_151a"><P>
+<a name="07fd_1513"><a name="07fd_1514">We wish to augment red-black trees with an operation RB-<FONT FACE="Courier New" SIZE=2>ENUMERATE</FONT>(<I>x, a,b</I>) that outputs all the keys <I>k</I> such that <I>a&lt; k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>b </I>in a red-black tree rooted at<I> x</I>. Describe how RB-<FONT FACE="Courier New" SIZE=2>ENUMERATE</FONT> can be implemented in <IMG SRC="../IMAGES/bound.gif">(<I>m</I> + lg <I>n</I>) time, where <I>m</I> is the number of keys that are output and <I>n</I> is the number of internal nodes in the tree. (<I>Hint</I>: There is no need to add new fields to the red-black tree.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07fe_1521">15.3 Interval trees<a name="07fe_1521"></h1><P>
+<a name="07fe_1515"><a name="07fe_1516"><a name="07fe_1517"><a name="07fe_1518"><a name="07fe_1519"><a name="07fe_151a">In this section, we shall augment red-black trees to support operations on dynamic sets of intervals. A <I><B>closed interval</I></B> is an ordered pair of real numbers [<I>t</I><SUB>1</SUB>, <I>t</I><SUB>2</SUB>], with <I>t</I><SUB>1</SUB><I> </I><IMG SRC="../IMAGES/lteq12.gif"><I> t</I><SUB>2</SUB>. The interval [<I>t</I><SUB>1</SUB>, <I>t</I><SUB>2</SUB>] represents the set {<I>t </I><IMG SRC="../IMAGES/memof12.gif"><I></I> <B>R</B>: <I>t</I><SUB>1</SUB><I> </I><IMG SRC="../IMAGES/lteq12.gif"><I> t </I><IMG SRC="../IMAGES/lteq12.gif"><I> t</I><SUB>2</SUB>}. <I><B>Open</I></B> and <I><B>half-open</I></B> intervals omit both or one of the endpoints from the set, respectively. In this section, we shall assume that intervals are closed; extending the results to open and half-open intervals is conceptually straightforward.<P>
+<a name="07fe_151b">Intervals are convenient for representing events that each occupy a continuous period of time. We might, for example, wish to query a database of time intervals to find out what events occurred during a given interval. The data structure in this section provides an efficient means for maintaining such an interval database.<P>
+<a name="07fe_151c"><a name="07fe_151d"><a name="07fe_151e">We can represent an interval [<I>t</I><SUB>1</SUB>,<I> t</I><SUB>2</SUB>] as an object <I>i, </I>with fields<I> low</I>[<I>i</I>] = <I>t</I><SUB>1 </SUB>(<I>the <B>low endpoint</I></B>)<I> </I>and<I> high</I>[<I>i</I>] = <I>t</I><SUB>2</SUB><I> </I>(<I>the <B>high endpoint</I></B>)<I>. </I>We say that intervals<I> i</I> and <I>i</I>' <I><B>overlap</I></B> if <img src="290_a.gif">, that is, if <I>low</I>[<I>i</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>high</I>[<I>i</I><I>'</I>] and <I>low</I>[<I>i</I>'] <IMG SRC="../IMAGES/lteq12.gif"> <I>high</I>[<I>i</I>]. Any two intervals <I>i</I> and <I>i</I><I>'</I> satisfy the <I><B>interval trichotomy</I></B>; that is, exactly one of the following three properties holds:<P>
+a.     <I>i</I> and <I>i</I>' overlap,<P>
+b.     <I>high</I>[<I>i</I>] &lt; <I>low</I>[<I>i</I>'],<P>
+c.     <I>high</I>[<I>i</I>'] &lt; <I>low</I>[<I>i</I>].<P>
+Figure 15.3 shows the three possibilities.<P>
+An <I><B>interval tree</I></B> is a red-black tree that maintains a dynamic set of elements, with each element <I>x</I> containing an interval <I>int</I>[<I>x</I>]. Interval trees support the following operations.<P>
+<a name="07fe_151f"><FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT>(<I>T,x</I>) adds the element <I>x</I>, whose <I>int</I> field is assumed to contain an interval, to the interval tree <I>T</I>.<P>
+<img src="290_b.gif"><P>
+<h4><a name="07fe_1522">Figure 15.3 The interval trichotomy for two closed intervals i and i'. (a) If i and i'overlap, there are four situations; in each, low[i] <IMG SRC="../IMAGES/lteq12.gif"> high[i'] and low[i'] <IMG SRC="../IMAGES/lteq12.gif"> high[i]. (b) high[i] &lt; low[i']. (c) high[i'] &lt; low[i].<a name="07fe_1522"></sub></sup></h4><P>
+<img src="291_a.gif"><P>
+<h4><a name="07fe_1523">Figure 15.4 An interval tree. (a) A set of 10 intervals, shown sorted bottom to top by left endpoint. (b) The interval tree that represents them. An inorder tree walk of the tree lists the nodes in sorted order by left endpoint.<a name="07fe_1523"></sub></sup></h4><P>
+<a name="07fe_1520"><FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>(<I>T,x</I>) removes the element <I>x</I> from the interval tree <I>T</I>.<P>
+<FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>T,i</I>) returns a pointer to an element <I>x</I> in the interval tree T such that <I>int</I>[<I>x</I>] overlaps interval <I>i</I>, or <FONT FACE="Courier New" SIZE=2>NIL</FONT> if no such element is in the set.<P>
+Figure 15.4 shows how an interval tree represents a set of intervals. We shall track the four-step method from Section 15.2 as we review the design of an interval tree and the operations that run on it.<P>
+
+
+
+
+
+<h2>Step 1:     Underlying data structure</h2><P>
+We choose a red-black tree in which each node <I>x</I> contains an interval <I>int</I>[<I>x</I>] and the key of <I>x</I> is the low endpoint, <I>low</I>[<I>int</I>[<I>x</I>]], of the interval. Thus, an inorder tree walk of the data structure lists the intervals in sorted order by low endpoint.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Step 2:     Additional information</h2><P>
+In addition to the intervals themselves, each node <I>x</I> contains a value <I>max</I>[<I>x</I>], which is the maximum value of any interval endpoint stored in the subtree rooted at <I>x</I>. Since any interval's high endpoint is at least as large as its low endpoint, <I>max</I>[<I>x</I>] is the maximum value of all right endpoints in the subtree rooted at <I>x</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Step 3:     Maintaining the information</h2><P>
+<a name="0801_1521"><a name="0801_1522">We must verify that insertion and deletion can be performed in <I>O</I>(lg <I>n</I>) time on an interval tree of <I>n</I> nodes. We can determine <I>max</I>[<I>x</I>] given interval <I>int</I>[<I>x</I>] and the <I>max</I> values of node <I>x</I>'s children:<P>
+<pre>max[x] = max(high[int[x]], max[left[x]], max[right[x]]).</sub></sup></pre><P>
+Thus, by Theorem 15.1, insertion and deletion run in <I>O</I>(lg <I>n</I>) time. In fact, updating the <I>max</I> fields after a rotation can be accomplished in <I>O</I>(1) time, as is shown in Exercises 15.2-4 and 15.3-1.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Step 4:     Developing new operations</h2><P>
+<a name="0802_1523"><a name="0802_1524">The only new operation we need is <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>T, i</I>), which finds an interval in tree <I>T</I> that overlaps interval <I>i</I>. If there is no interval that overlaps <I>i</I> in the tree, <FONT FACE="Courier New" SIZE=2>NIL</FONT> is returned.<P>
+<pre>INTERVAL-SEARCH(<I>T,i</I>)</sub></sup></pre><P>
+<pre>1  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>root</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>2  <B>while</B> <I>x </I><IMG SRC="../IMAGES/noteq.gif"> <I>NIL and </I>i<I> does not overlap </I>int<I>[</I>x<I>]</I></sub></sup></pre><P>
+<pre>3      <B>do if</B> <I>left</I>[<I>x</I>]<IMG SRC="../IMAGES/noteq.gif"><I> NIL and </I>max<I>[</I>left<I>[</I>x<I>]] <IMG SRC="../IMAGES/gteq.gif"> </I>low<I>[</I>i<I>]</I></sub></sup></pre><P>
+<pre>4            <B>then </B><I>x </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>left</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>5            <B>else </B><I>x </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>right</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>6  <B>return </B><I>x</I></sub></sup></pre><P>
+The search for an interval that overlaps <I>i</I> starts with <I>x</I> at the root of the tree and proceeds downward. It terminates when either an overlapping interval is found or <I>x</I> becomes <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Since each iteration of the basic loop takes <I>O</I>(1) time, and since the height of an <I>n</I>-node red-black tree is <I>O</I>(lg <I>n</I>), the <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> procedure takes <I>O</I>(lg <I>n</I>) time.<P>
+Before we see why <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> is correct, let's examine how it works on the interval tree in Figure 15.4. Suppose we wish to find an interval that overlaps the interval <I>i</I> = [22, 25]. We begin with <I>x</I> as the root, which contains [16,21] and does not overlap <I>i</I>. Since <I>max</I>[<I>left</I>[<I>x</I>]] = 23 is greater than <I>low</I>[<I>i</I>] = 22, the loop continues with <I>x</I> as the left child of the root--the node containing [8, 9], which also does not overlap <I>i</I>. This time, <I>max</I>[<I>left</I>[<I>x</I>]] = 10 is less than <I>low</I>[<I>i</I>] = 22, so the loop continues with the right child of <I>x </I>as the new<I> x. </I>The interval [15, 23] stored in this node overlaps <I>i</I>, so the procedure returns this node.<P>
+As an example of an unsuccessful search, suppose we wish to find an interval that overlaps <I>i</I> = [11, 14] in the interval tree of Figure 15.4. We once again begin with <I>x</I> as the root. Since the root's interval [16, 21] does not overlap <I>i</I>, and since <I>max</I>[<I>left</I>[<I>x</I>]] = 23 is greater than <I>low</I>[<I>i</I>] = 11, we go left to the node containing [8, 9]. (Note that no interval in the right subtree overlaps <I>i</I>--we shall see why later.) Interval [8, 9] does not overlap <I>i</I>, and <I>max</I>[<I>left</I>[<I>x</I>]] = 10 is less than <I>low</I>[<I>i</I>] = 11, so we go right. (Note that no interval in the left subtree overlaps <I>i</I>.) Interval [15, 23] does not overlap <I>i</I>, and its left child is <FONT FACE="Courier New" SIZE=2>NIL</FONT>, so we go right, the loop terminates, and <FONT FACE="Courier New" SIZE=2>NIL</FONT> is returned.<P>
+To see why <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> is correct, we must understand why it suffices to examine a single path from the root. The basic idea is that at any node <I>x</I>, if <I>int</I>[<I>x</I>] does not overlap <I>i</I>, the search always proceeds in a safe direction: an overlapping interval will definitely be found if there is one in the tree. The following theorem states this property more precisely.<P>
+<a name="0802_1525">Theorem 15.2<a name="0802_1525"><P>
+Consider any iteration of the <B>while</B> loop during the execution of <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>T, i</I>).<P>
+1.     f line 4 is executed (the search goes left), then <I>x</I>'s left subtree contains an interval that overlaps <I>i</I> or no interval in <I>x</I>'s right subtree overlaps <I>i</I>.<P>
+2.     If line 5 is executed (the search goes right), then <I>x</I>'s left subtree contains no interval that overlaps <I>i</I>.<P>
+<I><B>Proof     </I></B>The proof of both cases depend on the interval trichotomy. We prove case 2 first, since it is simpler. Observe that if line 5 is executed, then because of the branch condition in line 3, we have <I>left</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, or <I>max</I>[<I>left</I>[<I>x</I>]] &lt; <I>low</I>[<I>i</I>]<I>x</I>. If <I>left</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, the subtree rooted at <I>left</I>[<I>x</I>] clearly contains no interval that overlaps <I>i,</I> because it contains no intervals at all. Suppose, therefore, that <I>left</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <FONT FACE="Courier New" SIZE=2>NIL</FONT> and <I>max</I>[<I>left</I>]<I>x</I>]] &lt; <I>low</I>[<I>i</I>]. Let <I>i</I><I>' </I>be an interval in <I>x</I>'s left subtree. (See Figure 15.5(a).) Since <I>max</I>[<I>left</I>[<I>x</I>]] is the largest endpoint in <I>x</I>'s left subtree, we have<P>
+<pre><I>high</I>[<I>i</I>'<I>]  <IMG SRC="../IMAGES/lteq12.gif">  </I>max<I>[</I>left<I>[</I>x<I>]]</I></sub></sup></pre><P>
+<pre>&lt;  <I>low</I>[<I>i</I>] ,</sub></sup></pre><P>
+and thus, by the interval trichotomy, <I>i</I><I>'</I> and <I>i</I> do not overlap, which completes the proof of case 2.<P>
+To prove case 1, we may assume that no intervals in <I>x</I>'s left subtree overlap <I>i</I> (since if any do, we are done), and thus we need only prove that no intervals in <I>x</I>'s right subtree overlap <I>i</I> under this assumption. Observe that if line 4 is executed, then because of the branch condition in line 3, we have <I>max</I>[<I>left</I>[<I>x</I>]] <IMG SRC="../IMAGES/gteq.gif"> <I>low</I>[<I>i</I>]. Moreover, by definition of the <I>max</I> field,<P>
+<img src="294_a.gif"><P>
+<h4><a name="0802_1526">Figure 15.5 Intervals in the proof of Theorem 15.2. The value of max[left[x]] is shown in each case as a dashed line. (a) Case 2: the search goes right. No interval i' can overlap i. (b) Case 1: the search goes left. The left subtree of x contains an interval that overlaps i (situation not shown), or there is an interval i' in x's left subtree such that high[i'] = max[left[x]]. Since i does not overlap i', neither does it overlap any interval i\" in x' s right subtree, since low[i'] <IMG SRC="../IMAGES/lteq12.gif"> low[i\"].<a name="0802_1526"></sub></sup></h4><P>
+there must be some interval <I>i</I><I>'</I> in <I>x</I>'s left subtree such that<P>
+<pre>high[i'] = max[left[x]]</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif"> low[i].</sub></sup></pre><P>
+(Figure 15.5(b) illustrates the situation.) Since <I>i</I> and <I>i</I><I>'</I> do not overlap, and since it is not true that <I>high</I>[<I>i</I><I>'</I>] &lt; <I>low</I>[<I>i</I>], it follows by the interval trichotomy that <I>high</I>[<I>i</I>] &lt; <I>low</I>[<I>i</I><I>'</I>]. Interval trees are keyed on the low endpoints of intervals, and thus the search-tree property implies that for any interval <I>i&quot;</I> in <I>x</I>'s right subtree,<P>
+<pre>high[i] &lt; low[i']</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> low[i&quot;].</sub></sup></pre><P>
+By the interval trichotomy,<I> i</I> and <I>i&quot;</I> do not overlap.      <P>
+Theorem 15.2 guarantees that if <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> continues with one of <I>x</I>'s children and no overlapping interval is found, a search starting with <I>x</I>'s other child would have been equally fruitless.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0803_152d">Exercises<a name="0803_152d"></h2><P>
+<a name="0803_152e">15.3-1<a name="0803_152e"><P>
+<a name="0803_1525">Write pseudocode for <FONT FACE="Courier New" SIZE=2>LEFT</FONT>-<FONT FACE="Courier New" SIZE=2>ROTATE</FONT> that operates on nodes in an interval tree and updates the <I>max</I> fields in <I>O</I>(1) time.<P>
+<a name="0803_152f">15.3-2<a name="0803_152f"><P>
+<a name="0803_1526">Rewrite the code for <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> so that it works properly when all intervals are assumed to be open.<P>
+<a name="0803_1530">15.3-3<a name="0803_1530"><P>
+<a name="0803_1527"><a name="0803_1528">Describe an efficient algorithm that, given an interval <I>i,</I> returns an interval overlapping <I>i</I> that has the minimum low endpoint, or <FONT FACE="Courier New" SIZE=2>NIL</FONT> if no such interval exists.<P>
+<a name="0803_1531">15.3-4<a name="0803_1531"><P>
+Given an interval tree <I>T</I> and an interval <I>i,</I> describe how all intervals in <I>T </I>that overlap <I>i</I> can be listed in <I>O</I>(min(<I>n, k</I> 1g <I>n</I>)) time, where <I>k</I> is the number of intervals in the output list. (<I>Optional:</I> Find a solution that does not modify the tree.)<P>
+<a name="0803_1532">15.3-5<a name="0803_1532"><P>
+<a name="0803_1529"><a name="0803_152a">Suggest modifications to the interval-tree procedures to support the operation <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>-<FONT FACE="Courier New" SIZE=2>EXACTLY</FONT>(<I>T, i</I>), which returns a pointer to a node <I>x </I>in interval tree <I>T </I>such that <I>low</I>[<I>int</I>]<I>x</I>]] = <I>low</I>[<I>i</I>] and <I>high</I>[<I>int</I>[<I>x</I>]] = <I>high</I>[<I>i</I>], or <FONT FACE="Courier New" SIZE=2>NIL</FONT> if <I>T </I>contains no such node. All operations, including <FONT FACE="Courier New" SIZE=2>INTERVAL</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>-<FONT FACE="Courier New" SIZE=2>EXACTLY</FONT>, should run in <I>O</I>(1g <I>n</I>) time on an <I>n</I>-node tree.<P>
+<a name="0803_1533">15.3-6<a name="0803_1533"><P>
+<a name="0803_152b">Show how to maintain a dynamic set <I>Q</I> of numbers that supports the operation <FONT FACE="Courier New" SIZE=2>MIN</FONT>-<FONT FACE="Courier New" SIZE=2>GAP</FONT>, which gives the magnitude of the difference of the two closest numbers in <I>Q.</I> For example, if <I>Q</I> = {1, 5, 9, 15, 18, 22}, then <FONT FACE="Courier New" SIZE=2>MIN</FONT>-<FONT FACE="Courier New" SIZE=2>GAP</FONT>(<I>Q</I>) returns 18 - 15 = 3, since 15 and 18 are the two closest numbers in <I>Q</I>. Make the operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>, and <FONT FACE="Courier New" SIZE=2>MIN</FONT>-<FONT FACE="Courier New" SIZE=2>GAP</FONT> as efficient as possible, and analyze their running times.<P>
+<a name="0803_1534">15.3-7<a name="0803_1534"><P>
+<a name="0803_152c">VLSI databases commonly represent an integrated circuit as a list of rectangles. Assume that each rectangle is rectilinearly oriented (sides parallel to the <I>x</I>- and <I>y</I>-axis), so that a representation of a rectangle consists of its minimum and maximum <I>x</I>- and <I>y</I>-coordinates. Give an <I>O</I>(<I>n</I> 1g <I>n</I>)-time algorithm to decide whether or not a set of rectangles so represented contains two rectangles that overlap. Your algorithm need not report all intersecting pairs, but it must report that an overlap exists if one rectangle entirely covers another, even if the boundary lines do not intersect. (<I>Hint:</I> Move a &quot;sweep&quot; line across the set of rectangles.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0804_152f">Problems<a name="0804_152f"></h1><P>
+<a name="0804_1530">15-1     Point of maximum overlap<a name="0804_1530"><P>
+Suppose that we wish to keep track of a <I><B>point of maximum overlap</I></B> in a set of intervals--a point that has the largest number of intervals in the database overlapping it. Show how the point of maximum overlap can be maintained efficiently while intervals are inserted and deleted.<P>
+<a name="0804_1531">15-2     Josephus permutation<a name="0804_1531"><P>
+<a name="0804_152d"><a name="0804_152e">The <I><B>Josephus problem</I></B> is defined as follows. Suppose that <I>n</I> people are arranged in a circle and that we are given a positive integer <I>m</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>. Beginning with a designated first person, we proceed around the circle, removing every <I>m</I>th person. After each person is removed, counting continues around the circle that remains. This process continues until all <I>n</I> people have been removed. The order in which the people are removed from the circle defines the (<I><B>n, m)-Josephus permutation </I></B>of the integers 1, 2, . . . , n. For example, the (7, 3)-Josephus permutation is &lt; 3, 6, 2, 7, 5, 1, 4 &gt; .<P>
+<I><B>a.     </I></B>Suppose that <I>m</I> is a constant. Describe an <I>O</I>(<I>n</I>)-time algorithm that, given an integer <I>n</I>, outputs the (<I>n, m</I>)-Josephus permutation.<P>
+<I><B>b.     </I></B>Suppose that <I>m</I> is not a constant. Describe an <I>O</I>(<I>n</I> 1g <I>n</I>)-time algorithm that, given integers <I>n</I> and <I>m</I>, outputs the (<I>n</I>, <I>m</I>)-Josephus permutation.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Preparata and Shamos [160] describe several of the interval trees that appear in the literature. Among the more important theoretically are those due independently to H. Edelsbrunner (1980) and E. M. McCreight (1981), which, in a database of <I>n</I> intervals, allow all <I>k</I> intervals that overlap a given query interval to be enumerated in <I>O</I>(<I>k</I> + 1g <I>n</I>) time.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="partiv.htm">Part IV</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

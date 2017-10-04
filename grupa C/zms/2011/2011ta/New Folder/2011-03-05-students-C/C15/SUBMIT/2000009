@@ -1,0 +1,57 @@
+#include <iostream>
+using namespace std;
+int zamyk[1005][1005], n, k, i, j, stai, red, maxi = 0;
+int bqgstvo[10005];
+
+bool na_reda(int s, int red, int n){
+for (int c = 1; c <= n; c++)
+{
+if (s==zamyk[red][c]){
+return true;
+}
+}
+return false;
+}
+
+int main(){
+cin >> n;
+for (i = 1; i <= n; i++){
+for (j = 1; j <= n; j++){
+    cin >> zamyk[i][j];
+if (zamyk[i][j]>maxi) maxi = zamyk[i][j];
+}
+}
+cin >> k;
+
+for (i = 1; i <= k; i++){
+cin >> bqgstvo[i];
+}
+
+for (i = 1; i <= k; i++){
+if (n==1 && bqgstvo[1]==zamyk[1][1]){
+cout << 0 << endl;
+}else if(n==1 && bqgstvo[1] != zamyk[1][1]){
+cout << "No Solution" << endl;
+}else{
+    if (bqgstvo[i]>=maxi) cout << "No Solution" << endl;
+stai = 0;
+red = 1;
+while(na_reda(bqgstvo[i], red, n)==false){
+stai++;
+red++;
+if (red>=n) break;
+}
+for (int r = n; r > 0; r--){
+if (bqgstvo[i]==zamyk[red][r]){
+cout << stai << endl;
+}else{
+stai++;
+}
+
+}
+
+}
+}
+//system("PAUSE");
+return 0;
+}

@@ -1,0 +1,78 @@
+/*
+TASK: MORSE
+LANG: C++
+*/
+#include <stdio.h>
+#include <string.h>
+char masivec1[25][8],masivec2[10][8],ss[255],n,i,sflag,masivec[3][8];
+unsigned int ssi;
+void tova_e_edna_bezsmislena_funkciq_koqto_povecheto_lameri_q_pravqt(){
+        strcpy(masivec1[0],".-");
+        strcpy(masivec1[1],"-...");
+        strcpy(masivec1[2],"-.-.");
+        strcpy(masivec1[3],"-..");
+        strcpy(masivec1[4],".");
+        strcpy(masivec1[5],"..-.");
+        strcpy(masivec1[6],"--.");
+        strcpy(masivec1[7],"....");
+        strcpy(masivec1[8],"..");
+        strcpy(masivec1[9],".---");
+        strcpy(masivec1[10],"-.-");
+        strcpy(masivec1[11],".-..");
+        strcpy(masivec1[12],"--");
+        strcpy(masivec1[13],"-.");
+        strcpy(masivec1[14],"---");
+        strcpy(masivec1[15],".--.");
+        strcpy(masivec1[16],"--.-");
+        strcpy(masivec1[17],".-.");
+        strcpy(masivec1[18],"...");
+        strcpy(masivec1[19],"-");
+        strcpy(masivec1[20],"..-");
+        strcpy(masivec1[21],"...-");
+        strcpy(masivec1[22],".--");
+        strcpy(masivec1[23],"-..-");
+        strcpy(masivec1[24],"-.--");
+        strcpy(masivec1[25],"--..");
+        strcpy(masivec2[0],"-----");
+        strcpy(masivec2[1],".----");
+        strcpy(masivec2[2],"..---");
+        strcpy(masivec2[3],"...--");
+        strcpy(masivec2[4],"....-");
+        strcpy(masivec2[5],".....");
+        strcpy(masivec2[6],"-....");
+        strcpy(masivec2[7],"--...");
+        strcpy(masivec2[8],"---..");
+        strcpy(masivec2[9],"----.");
+        strcpy(masivec[0],"--..--");
+        strcpy(masivec[1],"-..-.");
+        strcpy(masivec[2],".-.-.-");
+        scanf("%s",ss);
+        n=strlen(ss);
+        for(i=0;i<n;i++){
+                ssi=ss[i];
+                ssi&=128;
+                if(ssi==32&&!sflag){
+                        printf(".-.-. ");
+                        sflag=1;
+                }else if(ssi==63){
+                        printf("..--.. ");
+                        sflag=0;
+                }else if(ssi>=44&&ssi<=46){
+                        printf("%s ",masivec[ssi-44]);
+                        sflag=0;
+                }else if(ssi>=65&&ssi<=122){
+                        ssi=ssi>=69?ssi-32:ssi;
+                        printf("%s ",masivec1[ssi-65]);
+                        sflag=0;
+                }else if(ssi>=48&&ssi<=57){
+                        printf("%s ",masivec2[ssi-48]);
+                        sflag=0;
+                }
+        }
+        printf("..-.-");
+}
+        
+int main(){
+        tova_e_edna_bezsmislena_funkciq_koqto_povecheto_lameri_q_pravqt();
+        return 0;
+}

@@ -1,0 +1,569 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 16: DYNAMIC PROGRAMMING</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+
+<a href="chap17.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="partiv.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0809_1533">CHAPTER 16: DYNAMIC PROGRAMMING<a name="0809_1533"></h1><P>
+<a name="0809_152f"><a name="0809_1530">Dynamic programming, like the divide-and-conquer method, solves problems by combining the solutions to subproblems. (&quot;Programming&quot; in this context refers to a tabular method, not to writing computer code.) As we saw in Chapter 1, divide-and-conquer algorithms partition the problem into independent subproblems, solve the subproblems recursively, and then combine their solutions to solve the original problem. In contrast, dynamic programming is applicable when the subproblems are not independent, that is, when subproblems share subsubproblems. In this context, a divide-and-conquer algorithm does more work than necessary, repeatedly solving the common subsubproblems. A dynamic-programming algorithm solves every subsubproblem just once and then saves its answer in a table, thereby avoiding the work of recomputing the answer every time the subsubproblem is encountered.<P>
+<a name="0809_1531"><a name="0809_1532">Dynamic programming is typically applied to <I><B>optimization problems</I></B><I>. </I>In such problems there can be many possible solutions. Each solution has a value, and we wish to find a solution with the optimal (minimum or maximum) value. We call such a solution <I>an</I> optimal solution to the problem, as opposed to <I>the</I> optimal solution, since there may be several solutions that achieve the optimal value.<P>
+The development of a dynamic-programming algorithm can be broken into a sequence of four steps.<P>
+1.     Characterize the structure of an optimal solution.<P>
+2.     Recursively define the value of an optimal solution.<P>
+3.     Compute the value of an optimal solution in a bottom-up fashion.<P>
+4.     Construct an optimal solution from computed information.<P>
+Steps 1-3 form the basis of a dynamic-programming solution to a problem. Step 4 can be omitted if only the value of an optimal solution is required. When we do perform step 4, we sometimes maintain additional information during the computation in step 3 to ease the construction of an optimal solution.<P>
+The sections that follow use the dynamic-programming method to solve some optimization problems. Section 16.1 asks how we can multiply a chain of matrices so that the fewest total scalar multiplications are performed. Given this example of dynamic programming, Section 16.2 discusses two key characteristics that a problem must have for dynamic programming to be a viable solution technique. Section 16.3 then shows how to find the longest common subsequence of two sequences. Finally, Section 16.4 uses dynamic programming to find an optimal triangulation of a convex polygon, a problem that is surprisingly similar to matrix-chain multiplication.<P>
+
+
+
+
+
+<h1><a name="080b_1538">16.1 Matrix-chain multiplication<a name="080b_1538"></h1><P>
+<a name="080b_1533"><a name="080b_1534">Our first example of dynamic programming is an algorithm that solves the problem of matrix-chain multiplication. We are given a sequence (chain) <IMG SRC="../IMAGES/lftwdchv.gif"><I>A<SUB>1</SUB>, A<SUB>2</SUB>, . . ., A<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of <I>n</I> matrices to be multiplied, and we wish to compute the product<P>
+<pre><I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB><SUP> </SUP><IMG SRC="../IMAGES/dot10.gif"> <SUP><IMG SRC="../IMAGES/dot10.gif"> </SUP><IMG SRC="../IMAGES/dot10.gif"><SUP><I>A<SUB>n </SUB>.</I></sub></sup></pre><P>
+<h4><a name="080b_1539">(16.1)<a name="080b_1539"></sub></sup></h4><P>
+<a name="080b_1535"><a name="080b_1536">We can evaluate the expression (16.1) using the standard algorithm for multiplying pairs of matrices as a subroutine once we have parenthesized it to resolve all ambiguities in how the matrices are multiplied together. A product of matrices is <I><B>fully parenthesized </I></B>if it is either a single matrix or the product of two fully parenthesized matrix products, surrounded by parentheses. Matrix multiplication is associative, and so all parenthesizations yield the same product. For example, if the chain of matrices is <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, <I>A</I><SUB>3</SUB>, <I>A</I><SUB>4</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, the product <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB><I>A</I><SUB>4</SUB> can be fully parenthesized in five distinct ways:<P>
+<pre>(<I>A</I><SUB>1</SUB>(<I>A</I><SUB>2</SUB>(<I>A</I><SUB>3</SUB><I>A</I><SUB>4</SUB>))) ,</sub></sup></pre><P>
+<pre>(<I>A</I><SUB>1</SUB>((<I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>)<I>A</I><SUB>4</SUB>)) ,</sub></sup></pre><P>
+<pre>((<I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB>)(<I>A</I><SUB>3</SUB><I>A</I><SUB>4</SUB>)) ,</sub></sup></pre><P>
+<pre>((<I>A</I><SUB>1</SUB>(<I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>))<I>A</I><SUB>4</SUB>) ,</sub></sup></pre><P>
+<pre>(((<I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB>)<I>A</I><SUB>3</SUB>)<I>A</I><SUB>4</SUB>) .</sub></sup></pre><P>
+The way we parenthesize a chain of matrices can have a dramatic impact on the cost of evaluating the product. Consider first the cost of multiplying two matrices. The standard algorithm is given by the following pseudocode. The attributes <I>rows</I> and <I>columns</I> are the numbers of rows and columns in a matrix.<P>
+<pre><a name="080b_1537">MATRIX-MULTIPLY(<I>A</I>,<I>B</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B> <I>columns </I>[<I>A</I>] <IMG SRC="../IMAGES/noteq.gif"> rows <I>[</I>B<I>]</I></sub></sup></pre><P>
+<pre>2    <B>then error</B> "incompatible dimensions"</sub></sup></pre><P>
+<pre>3    <B>else for </B><I>i </I><IMG SRC="../IMAGES/arrlt12.gif">1 <I><B>to</B></I> rows <I>[</I>A<I>]</I></sub></sup></pre><P>
+<pre>4             <B>do for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif">1 <B>to</B> <I>columns</I>[<I>B</I>]</sub></sup></pre><P>
+<pre>5                    <B>do</B> <I>C</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6                       <B>for</B><I> k </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>1</I> <I><B>to</B></I> columns <I>[</I>A<I>]</I></sub></sup></pre><P>
+<pre><I>7                           </I><B>do</B><I> C</I>[<I>i ,j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> C<I>[</I>i ,j<I>]</I> + A <I>[</I>i, k<I>] </I>B<I>[</I>k, j<I>]</I></sub></sup></pre><P>
+<pre>8         <B>return</B><I> C</I></sub></sup></pre><P>
+We can multiply two matrices <I>A</I> and <I>B</I> only if the number of columns of <I>A </I>is equal to the number of rows of <I>B</I>. If <I>A</I> is a <I>p</I> X <I>q</I> matrix and <I>B</I> is a <I>q</I> X <I>r</I> matrix, the resulting matrix <I>C</I> is a <I>p</I> X <I>r</I> matrix. The time to compute <I>C</I> is dominated by the number of scalar multiplications in line 7, which is <I>pqr</I>. In what follows, we shall express running times in terms of the number of scalar multiplications.<P>
+To illustrate the different costs incurred by different parenthesizations of a matrix product, consider the problem of a chain <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, <I>A</I><SUB>3</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of three matrices. Suppose that the dimensions of the matrices are 10 X 100,100 <IMG SRC="../IMAGES/mult.gif"> 5, and 5 <IMG SRC="../IMAGES/mult.gif"> 50, respectively. If we multiply according to the parenthesization ((<I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB>)<I>A</I><SUB>3</SUB>), we perform 10 <IMG SRC="../IMAGES/dot10.gif"> 100 <IMG SRC="../IMAGES/dot10.gif"> 5 = 5000 scalar multiplications to compute the 10 X 5 matrix product <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB>, plus another 10 <IMG SRC="../IMAGES/dot10.gif"> 5 <IMG SRC="../IMAGES/dot10.gif"> 50 = 2500 scalar multiplications to multiply this matrix by <I>A</I><SUB>3</SUB>, for a total of 7500 scalar multiplications. If instead we multiply according to the parenthesization (<I>A</I><SUB>1</SUB>(<I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>)), we perform 100 <IMG SRC="../IMAGES/dot10.gif"> 5 <IMG SRC="../IMAGES/dot10.gif"> 50 = 25,000 scalar multiplications to compute the 100 X 50 matrix product <I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>, plus another 10 <IMG SRC="../IMAGES/dot10.gif"> 100 <IMG SRC="../IMAGES/dot10.gif"> 50 = 50,000 scalar multiplications to multiply <I>A</I><SUB>1</SUB> by this matrix, for a total of 75,000 scalar multiplications. Thus, computing the product according to the first parenthesization is 10 times faster.<P>
+The <I><B>matrix-chain multiplication problem</I></B> can be stated as follows: given a chain <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, . . . , <I>A</I><SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of <I>n</I> matrices, where for <I>i</I> = 1, 2, . . . , <I>n</I> , matrix <I>A<SUB>i </I></SUB>has dimension <I>p<SUB>i </I></SUB>- <SUB>1</SUB> X <I>p<SUB>i</I></SUB>, fully parenthesize the product <I>A</I><SUB>1</SUB> <I>A</I><SUB>2</SUB>...<I>A<SUB>n</I></SUB> in a way that minimizes the number of scalar multiplications.<P>
+
+
+
+
+
+<h2>Counting the number of parenthesizations</h2><P>
+Before solving the matrix-chain multiplication problem by dynamic programming, we should convince ourselves that exhaustively checking all possible parenthesizations does not yield an efficient algorithm. Denote the number of alternative parenthesizations of a sequence of <I>n</I> matrices by <I>P</I>(<I>n</I>). Since we can split a sequence of <I>n</I> matrices between the <I>k</I>th and (<I>k</I> + 1)st matrices for any <I>k</I> = 1, 2, . . . , <I>n</I> -1 and then parenthesize the two resulting subsequences independently, we obtain the recurrence<P>
+<img src="304_a.gif"><P>
+<a name="080c_1538">Problem 13-4 asked you to show that the solution to this recurrence is the sequence of <I><B>Catalan numbers</I></B>:<P>
+<pre><I>P</I>(<I>n</I>) = <I>C</I> (<I>n</I> - 1),</sub></sup></pre><P>
+where<P>
+<img src="304_b.gif"><P>
+The number of solutions is thus exponential in <I>n</I>, and the brute-force method of exhaustive search is therefore a poor strategy for determining the optimal parenthesization of a matrix chain.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The structure of an optimal parenthesization </h2><P>
+<a name="080d_1539">The first step of the dynamic-programming paradigm is to characterize the structure of an optimal solution. For the matrix-chain multiplication problem, we can perform this step as follows. For convenience, let us adopt the notation <I>A<SUB>i</I>..<I>j</I></SUB> for the matrix that results from evaluating the product <I>A<SUB>i</SUB>A<SUB>i </I>+ 1</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>j</I></SUB>. An optimal parenthesization of the product <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n </I></SUB>splits the product between <I>A<SUB>k</I></SUB> and <I>A<SUB>k </I>+ 1</SUB> for some integer <I>k</I> in the range 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>n</I> . That is, for some value of <I>k</I>, we first compute the matrices <I>A</I><SUB>1..<I>k</I></SUB> and <I>A<SUB>k </I>+ 1..<I>n</I></SUB> and then multiply them together to produce the final product <I>A</I><SUB>1..<I>n</I></SUB>. The cost of this optimal parenthesization is thus the cost of computing the matrix <I>A</I><SUB>1..<I>k</I></SUB>, plus the cost of computing <I>A<SUB>k </I>+ 1..<I>n</I></SUB>, plus the cost of multiplying them together.<P>
+The key observation is that the parenthesization of the "prefix" subchain <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>k</I></SUB> within this optimal parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB> must be an <I>optimal</I> parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>k</I></SUB>. Why? If there were a less costly way to parenthesize <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>k</I></SUB>, substituting that parenthesization in the optimal parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB> would produce another parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> A<I><SUB>n</I></SUB> whose cost was lower than the optimum: a contradiction. A similar observation holds for the the parenthesization of the subchain <I>A<SUB>k</I>+1</SUB><I>A<SUB>k</I>+2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB> in the optimal parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB>: it must be an optimal parenthesization of <I>A<SUB>k</I>+1</SUB><I>A<SUB>k</I>+2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB>.<P>
+Thus, an optimal solution to an instance of the matrix-chain multiplication problem contains within it optimal solutions to subproblem instances. Optimal substructure within an optimal solution is one of the hallmarks of the applicability of dynamic programming, as we shall see in Section 16.2.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A recursive solution</h2><P>
+The second step of the dynamic-programming paradigm is to define the value of an optimal solution recursively in terms of the optimal solutions to subproblems. For the matrix-chain multiplication problem, we pick as our subproblems the problems of determining the minimum cost of a parenthesization of <I>A<SUB>i</SUB>A<SUB>i+</I>1</SUB><I>. . . A<SUB>j</I></SUB> for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>. Let <I>m</I>[<I>i, j</I>] be the minimum number of scalar multiplications needed to compute the matrix <I>A<SUB>i..j</SUB>;</I> the cost of a cheapest way to compute <I>A</I><SUB>1<I>..n</I></SUB> would thus be <I>m</I>[1<I>, n</I>]<I>.</I><P>
+We can define <I>m</I>[<I>i, j</I>] recursively as follows. If <I>i = j,</I> the chain consists of just one matrix <I>Ai..i = A<SUB>i</SUB>,</I> so no scalar multiplications are necessary to compute the product. Thus, <I>m</I>[<I>i,i</I>]<I> = </I>0 for <I>i = </I>1, 2<I>, . . . , n.</I> To compute <I>m</I>[<I>i, j</I>]<I> when i &lt; j,</I> we take advantage of the structure of an optimal solution from step 1. Let us assume that the optimal parenthesization splits the product <I>A<SUB>i</SUB>A<SUB>i</I>+l</SUB><FONT FACE="Times New Roman" SIZE=2> . . . <I>A<SUB>j</I></FONT></SUB> between <I>A<SUB>k</I></SUB> and <I>A<SUB>k</I>+1</SUB>, where <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> &lt; <I>j</I>. Then, <I>m</I>[<I>i, j</I>]<I> </I>is equal to the minimum cost for computing the subproducts <I>A<SUB>i..k </I></SUB>and <I>A<SUB>k+</I>1<I>..j,</I></SUB> plus the cost of multiplying these two matrices together. Since computing the matrix product <I>A<SUB>i..k</SUB>A<SUB>k+</I>1<I>..j</I></SUB> takes <I>p<SUB>i-</I>1</SUB><I>p<SUB>k</SUB>p<SUB>j</I></SUB> scalar multiplications, we obtain<P>
+<pre>m[i, j] = m[i, k] + m[k + 1, j] + p<SUB>i-1</SUB>p<SUB>k</SUB>p<SUB>j </SUB>.</sub></sup></pre><P>
+This recursive equation assumes that we know the value of <I>k</I>, which we don't. There are only <I>j - i</I> possible values for <I>k</I>, however, namely <I>k = i, i + 1, . . . , j -</I> 1. Since the optimal parenthesization must use one of these values for <I>k</I>, we need only check them all to find the best. Thus, our recursive definition for the minimum cost of parenthesizing the product <I>A<SUB>i</SUB>A<SUB>i+</I>1</SUB> . . . <I>A<SUB>j</I></SUB> becomes<P>
+<img src="305_a.gif"><P>
+<h4><a name="080e_0001">(16.2)<a name="080e_0001"></sub></sup></h4><P>
+The <I>m</I>[<I>i, j</I>] values give the costs of optimal solutions to subproblems. To help us keep track of how to construct an optimal solution, let us define <I>s</I>[<I>i, j</I>] to be a value of <I>k</I> at which we can split the product <I>A<SUB>i</SUB>A<SUB>i</I>+1</SUB><I> . . . A<SUB>j</I></SUB> to obtain an optimal parenthesization. That is,<I> s</I>[<I>i, j</I>] equals a value <I>k</I> such that<I> m</I>[<I>i, j</I>]<I> = m</I>[<I>i, k</I>]<I> + m</I>[<I>k + 1, j</I>] + <I>p<SUB>i - </I>1</SUB><I>p<SUB>k</SUB>p<SUB>j </I></SUB>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing the optimal costs</h2><P>
+At this point, it is a simple matter to write a recursive algorithm based on recurrence (16.2) to compute the minimum cost <I>m</I>[<I>1, n</I>] for multiplying <I>A</I><SUB>1</SUB><I>A</I><SUB>2 . . . </SUB><I>A<SUB>n</I></SUB>. As we shall see in Section 16.2, however, this algorithm takes exponential time--no better than the brute-force method of checking each way of parenthesizing the product.<P>
+The important observation that we can make at this point is that we have relatively few subproblems: one problem for each choice of <I>i</I> and <I>j</I> satisfying 1 <IMG SRC="../IMAGES/lteq12.gif"><I> i </I><IMG SRC="../IMAGES/lteq12.gif"><I> j </I><IMG SRC="../IMAGES/lteq12.gif"><I> n, </I>or<I> </I><img src="306_a.gif"><I> + n = </I><IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>2</I></SUP>) total. A recursive algorithm may encounter each subproblem many times in different branches of its recursion tree. This property of overlapping subproblems is the second hallmark of the applicability of dynamic programming.<P>
+Instead of computing the solution to recurrence (16.2) recursively, we perform the third step of the dynamic-programming paradigm and compute the optimal cost by using a bottom-up approach. The following pseudocode assumes that matrix <I>A<SUB>i</I></SUB> has dimensions <I>p<SUB>i - 1</SUB> </I>X<I> p<SUB>i</SUB> </I>for<I> i</I> = 1, 2, . . . ,<I> n.</I> The input is a sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, . . . , <I>p<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, here <I>length</I>[<I>p</I>]<I> = n</I> + 1. The procedure uses an auxiliary table <I>m</I>[<I>1 . . n,1 . . n</I>] for storing the <I>m</I>[<I>i, j</I>] costs and an auxiliary table <I>s</I>[1 <I>. . n, </I>1 <I>. . n</I>] that records which index of <I>k</I> achieved the optimal cost in computing <I>m</I>[<I>i, j</I>]<I>.</I><P>
+<pre><a name="080f_153a">MATRIX-CHAIN-ORDER(<I>p</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>p</I>] - 1</sub></sup></pre><P>
+<pre>2 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>3      <B>do</B> <I>m</I>[<I>i, i</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"><I> </I>0</sub></sup></pre><P>
+<pre>4 <B>for</B> <I>l </I><IMG SRC="../IMAGES/arrlt12.gif"><I> </I>2 <B>to</B><I> n</I></sub></sup></pre><P>
+<pre>5      <B>do for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n - l + </I>1</sub></sup></pre><P>
+<pre>6             <B>do</B> <I>j </I><IMG SRC="../IMAGES/arrlt12.gif"><I> i + l-</I>1</sub></sup></pre><P>
+<pre>7                <I>m</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>8                <B>for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> <B>to</B> <I>j</I> - 1</sub></sup></pre><P>
+<pre>9                    <B>do</B> <I>q </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>m</I>[<I>i, k</I>]<I> + m</I>[<I>k + </I>1,<I> j</I>] +<I>p<SUB>i</I> - 1</SUB><I>p<SUB>k</SUB>p<SUB>j</I></sub></sup></pre><P>
+<pre>10                       <B>if</B> <I>q</I> &lt; <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+<pre>11                          <B>then</B><I> m</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I></sub></sup></pre><P>
+<pre>12                               <I>s</I>[<I>i, j</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"><I> k</I></sub></sup></pre><P>
+<pre>13 <B>return</B><I> m </I>and<I> s</I></sub></sup></pre><P>
+The algorithm fills in the table <I>m</I> in a manner that corresponds to solving the parenthesization problem on matrix chains of increasing length. Equation (16.2)shows that the cost <I>m</I>[<I>i, j</I>] of computing a matrix-chain product of <I>j - i</I> + 1 matrices depends only on the costs of computing matrix-chain products of fewer than <I>j - i</I> + 1 matrices. That is, for <I>k = i, i + </I>1<I>, . . . ,j - </I>1, the matrix <I>A<SUB>i..k</I></SUB> is a product of <I>k - i</I> + 1 &lt;<I> j</I> -<I> i</I> + 1 matrices and the matrix <I>A<SUB>k+</I>1 <I>. . j</I></SUB> a product of <I>j</I> -<I> k </I>&lt; <I>j </I>-<I> i </I>+ 1 matrices.<P>
+The algorithm first computes <I>m</I>[<I>i, i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0 for <I>i</I> = 1, 2, . . . , <I>n</I> (the minimum costs for chains of length 1) in lines 2-3. It then uses recurrence (16.2) to compute <I>m</I>[<I>i, i+ </I>1] for <I>i </I>= 1, 2, . . . <I>, n - </I>1 (the minimum costs for chains of length<I> l </I>= 2) during the first execution of the loop in lines 4-12. The second time through the loop, it computes <I>m</I>[<I>i, i</I> + <I>2</I>] for <I>i</I> = 1, 2, . . . ,<I> n</I> - 2 (the minimum costs for chains of length <I>l</I> = 3), and so forth. At each step, the <I>m</I>[<I>i, j</I>] cost computed in lines 9-12 depends only on table entries <I>m</I>[<I>i, k</I>]<I> </I>and <I>m</I>[<I>k + </I>1<I> ,j</I>] already computed.<P>
+Figure 16.1 illustrates this procedure on a chain of <I>n </I>= 6 matrices. Since we have defined <I>m</I>[<I>i, j</I>] only for <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"><I> j</I>, only the portion of the table<I> m</I> strictly above the main diagonal is used. The figure shows the table rotated to make the main diagonal run horizontally. The matrix chain is listed along the bottom. Using this layout, the minimum cost <I>m</I>[<I>i, j</I>] for multiplying a subchain <I>A<SUB>i</SUB>A<SUB>i+</I>1</SUB><I>. . . A<SUB>j</I></SUB> of matrices can be found at the intersection of lines running northeast from <I>A<SUB>i</I></SUB> and northwest from <I>A<SUB>j</I></SUB>. Each horizontal row in the table contains the entries for matrix chains of the same length. <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> computes the rows from bottom to top and from left to right within each row. An entry <I>m</I>[<I>i, j</I>] is computed using the products <I>p<SUB>i - </I>1</SUB><I>p<SUB>k</SUB>p<SUB>j</SUB> for k = i, i </I>+ 1, . . . <I>, j - </I>1 and all entries southwest and southeast from <I>m</I>[<I>i, j</I>].<P>
+<img src="307_a.gif"><P>
+<h4><a name="080f_153b">Figure 16.1 The m and s tables computed by <FONT FACE="Courier New" SIZE=2>MATRIX<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>CHAIN<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>ORDER<FONT FACE="Times New Roman" SIZE=2> for n = 6 and the following matrix dimensions:<a name="080f_153b"></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<pre>matrix  dimension</sub></sup></pre><P>
+<pre>-----------------</sub></sup></pre><P>
+<pre><I>  A</I><SUB>1     </SUB>30 X 35 </sub></sup></pre><P>
+<pre><I>  A</I><SUB>2     </SUB>35 X 15 </sub></sup></pre><P>
+<pre><I>  A</I><SUB>3     </SUB>15 X 5 </sub></sup></pre><P>
+<pre><I>  A</I><SUB>4     </SUB>5 X 10 </sub></sup></pre><P>
+<pre><I>  A</I><SUB>5     </SUB>10 X 20 </sub></sup></pre><P>
+<pre><I>  A</I><SUB>6     </SUB>20 X 25 </sub></sup></pre><P>
+The tables are rotated so that the main diagonal runs horizontally. Only the main diagonal and upper triangle are used in the<I> m</I> table, and only the upper triangle is used in the <I>s</I> table. The minimum number of scalar multiplications to multiply the 6 matrices is <I>m</I>[1, 6] = 15,125. Of the lightly shaded entries, the pairs that have the same shading are taken together in line 9 when computing<P>
+<img src="307_b.gif"><P>
+A simple inspection of the nested loop structure of <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> yields a running time of <I>O</I>(<I>n</I><SUP>3</SUP>) for the algorithm. The loops are nested three deep, and each loop index (<I>l, i, </I>and<I> k</I>) takes on at most <I>n</I> values. Exercise 16.1-3 asks you to show that the running time of this algorithm is in fact also <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>3</SUP>). The algorithm requires <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) space to store the <I>m</I> and <I>s</I> tables. Thus, <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> is much more efficient than the exponential-time method of enumerating all possible parenthesizations and checking each one.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Constructing an optimal solution</h2><P>
+<a name="0810_153b">Although <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> determines the optimal number of scalar multiplications needed to compute a matrix-chain product, it does not directly show how to multiply the matrices. Step 4 of the dynamic-programming paradigm is to construct an optimal solution from computed information.<P>
+In our case, we use the table <I>s</I>[1 . <I>. n, </I>1 . <I>. n</I>] to determine the best way to multiply the matrices. Each entry <I>s</I>[<I>i, j</I>] records the value of <I>k</I> such that the optimal parenthesization of <I>A<SUB>i</SUB>A<SUB>i </I>+ 1</SUB><I> </I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>j</I></SUB> splits the product between <I>A<SUB>k</I></SUB> and <I>A<SUB>k </I>+ 1</SUB>. Thus, we know that the final matrix multiplication in computing <I>A</I><SUB>1..<I>n</I></SUB> optimally is <I>A</I><SUB>1..<I>s</I>[1<I>,</I>n]</SUB><I>A<SUB>s</I>[1,<I>n</I>]+1.<I>.n</SUB>.</I> The earlier matrix multiplications can be computed recursively, since <I>s</I>[l,<I>s</I>[1,<I>n</I>]] determines the last matrix multiplication in computing <I>A</I><SUB>1..<I>s</I>[1,<I>n</I>]</SUB>, and <I>s</I>[<I>s</I>[1,<I>n</I>] + 1, <I>n</I>] determines the last matrix multiplication in computing <I>A<SUB>s</I>[1,<I>n</I>]+..<I>n</SUB>.</I> The following recursive procedure computes the matrix-chain product <I>A<SUB>i..j</I></SUB> given the matrices <I>A = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>A<SUB>1</SUB>, A<SUB>2</SUB>, . . . , A<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, the <I>s</I> table computed by <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT>, and the indices <I>i</I> and <I>j</I>. The initial call is <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>MULTIPLY</FONT>(<I>A, s,</I> 1,<I> n</I>).<P>
+<pre>MATRIX-CHAIN-MULTIPLY(<I>A, s, i, ,j</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B><I> j &gt;i</I></sub></sup></pre><P>
+<pre>2     <B>then</B> <I>X </I><IMG SRC="../IMAGES/arrlt12.gif"> MATRIX-CHAIN-MULTIPLY(<I>A, s, i, s</I>[<I>i, j</I>])</sub></sup></pre><P>
+<pre>3          <I>Y </I><IMG SRC="../IMAGES/arrlt12.gif"> MATRIX-CHAIN-MULTIPLY(<I>A, s, s</I>[<I>i, j</I>] + 1,<I> j</I>)</sub></sup></pre><P>
+<pre>4          <B>return</B> MATRIX-MULTIPLY(<I>X, Y</I>)</sub></sup></pre><P>
+<pre>5     <B>else return</B> <I>A<SUB>i</I></sub></sup></pre><P>
+In the example of Figure 16.1, the call <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>MULTIPLY<I>(A, s, </I></FONT>1, 6) computes the matrix-chain product according to the parenthesization<P>
+<pre>((<I>A</I><SUB>1</SUB>(<I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>))((<I>A</I><SUB>4</SUB><I>A</I><SUB>5</SUB>)<I>A</I><SUB>6</SUB>)) .</sub></sup></pre><P>
+<h4><a name="0810_153c">(16.3)<a name="0810_153c"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0811_153d">Exercises<a name="0811_153d"></h2><P>
+<a name="0811_153e">16.1-1<a name="0811_153e"><P>
+Find an optimal parenthesization of a matrix-chain product whose sequence of dimensions is <IMG SRC="../IMAGES/lftwdchv.gif">5, 10, 3, 12, 5, 50, 6<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0811_153f">16.1-2<a name="0811_153f"><P>
+<a name="0811_153c">Give an efficient algorithm <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>OPTIMAL</FONT>-<FONT FACE="Courier New" SIZE=2>PARENS</FONT> to print the optimal parenthesization of a matrix chain given the table <I>s</I> computed by <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT>. Analyze your algorithm.<P>
+<a name="0811_1540">16.1-3<a name="0811_1540"><P>
+Let <I>R</I>(<I>i, j</I>) be the number of times that table entry <I>m</I>[<I>i, j</I>] is referenced by <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> in computing other table entries. Show that the total number of references for the entire table is<P>
+<img src="309_a.gif"><P>
+(<I>Hint</I>: You may find the identity <img src="309_b.gif"><P>
+<a name="0811_1541">16.1-4<a name="0811_1541"><P>
+Show that a full parenthesization of an <I>n</I>-element expression has exactly <I>n</I> - 1 pairs of parentheses.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0812_153e">16.2 Elements of dynamic programming<a name="0812_153e"></h1><P>
+<a name="0812_153d">Although we have just worked through an example of the dynamic-programming method, you might still be wondering just when the method applies. From an engineering perspective, when should we look for a dynamic-programming solution to a problem? In this section, we examine the two key ingredients that an optimization problem must have for dynamic programming to be applicable: optimal substructure and overlapping subproblems. We also look at a variant method, called memoization, for taking advantage of the overlapping-subproblems property.<P>
+
+
+
+
+
+<h2>Optimal substructure</h2><P>
+<a name="0813_153e"><a name="0813_153f">The first step in solving an optimization problem by dynamic programming is to characterize the structure of an optimal solution. We say that a problem exhibits <I><B>optimal substructure</I></B><I> </I>if an optimal solution to the problem contains within it optimal solutions to subproblems. Whenever a problem exhibits optimal substructure, it is a good clue that dynamic programming might apply. (It also might mean that a greedy strategy applies, however. See Chapter 17.)<P>
+In Section 16.1, we discovered that the problem of matrix-chain multiplication exhibits optimal substructure. We observed that an optimal parenthesization of <I>A</I><SUB>1<I> </SUB>A</I><SUB>2 </SUB><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"><SUB> </SUB><I>A<SUB>n</SUB> </I>that splits the product between <I>A<SUB>k</SUB> </I>and <I>A<SUB>k </I>+ 1 </SUB>contains within it optimal solutions to the problems of parenthesizing <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>A <SUB>k</SUB> and A<SUB>k + </I>1</SUB><I>A<SUB>k +</I> 2</SUB><I>. . . A<SUB>n</I>. </SUB>The technique that we used to show that subproblems have optimal solutions is typical. We assume that there is a better solution to the subproblem and show how this assumption contradicts the optimality of the solution to the original problem.<P>
+The optimal substructure of a problem often suggests a suitable space of subproblems to which dynamic programming can be applied. Typically, there are several classes of subproblems that might be considered "natural" for a problem. For example, the space of subproblems that we considered for matrix-chain multiplication contained all subchains of the input chain. We could equally well have chosen as our space of subproblems arbitrary sequences of matrices from the input chain, but this space of subproblems is unnecessarily large. A dynamic-programming algorithm based on this space of subproblems solves many more problems than it has to.<P>
+Investigating the optimal substructure of a problem by iterating on subproblem instances is a good way to infer a suitable space of subproblems for dynamic programming. For example, after looking at the structure of an optimal solution to a matrix-chain problem, we might iterate and look at the structure of optimal solutions to subproblems, subsubproblems, and so forth. We discover that all subproblems consist of subchains of <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I><SUB>l</SUB>, <I>A</I><SUB>2</SUB>, . . . , <I>A<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Thus, the set of chains of the form <IMG SRC="../IMAGES/lftwdchv.gif"><I>A<SUB>i</I></SUB>, <I>A<SUB>j</I>+l</SUB>, . . . , <I>A<SUB>j</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> makes a natural and reasonable space of subproblems to use.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Overlapping subproblems</h2><P>
+<a name="0814_1540"><a name="0814_1541">The second ingredient that an optimization problem must have for dynamic programming to be applicable is that the space of subproblems must be &quot;small&quot; in the sense that a recursive algorithm for the problem solves the same subproblems over and over, rather than always generating new subproblems. Typically, the total number of distinct subproblems is a polynomial in the input size. When a recursive algorithm revisits the same problem over and over again, we say that the optimization problem has <I><B>overlapping subproblems</I></B>. In contrast, a problem for which a divide-and-conquer approach is suitable usually generates brand-new problems at each step of the recursion. Dynamic-programming algorithms typically take advantage of overlapping subproblems by solving each subproblem once and then storing the solution in a table where it can be looked up when needed, using constant time per lookup.<P>
+To illustrate the overlapping-subproblems property, let us reexamine the matrix-chain multiplication problem. Referring back to Figure 16.1, observe that <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> repeatedly looks up the solution to subproblems in lower rows when solving subproblems in higher rows. For example, entry <I>m</I>[3, 4] is referenced 4 times: during the computations of <I>m</I>[2, 4], <I>m</I>[1, 4], <I>m</I>[3, 5], and <I>m</I>[3, 6]. If <I>m</I>[3, 4] were recomputed each time, rather than just being looked up, the increase in running time would be dramatic. To see this, consider the following (inefficient) recursive procedure that determines <I>m</I>[<I>i, j</I>], the minimum number of scalar multiplications needed to compute the matrix-chain product <I>A<SUB>i..j</I></SUB> = <I>A<SUB>i</SUB>A<SUB>i </I>+ 1</SUB>, . . . <I>A<SUB>j</I></SUB>. The procedure is based directly on the recurrence (16.2).<P>
+<img src="311_a.gif"><P>
+<h4><a name="0814_1543">Figure 16.2 The recursion tree for the computation of <FONT FACE="Courier New" SIZE=2>RECURSIVE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>MATRIX<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT></FONT></FONT></FONT></FONT>(p, 1, 4). Each node contains the parameters i and j. The computations performed in a shaded subtree are replaced by a single table lookup in <FONT FACE="Courier New" SIZE=2>MEMOIZED<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>MATRIX<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT></FONT></FONT></FONT></FONT>(p, 1, 4).<a name="0814_1543"></sub></sup></h4><P>
+<pre><a name="0814_1542">RECURSIVE-MATRIX-CHAIN(<I>p, i, j</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B> <I>i</I> =<I> j</I></sub></sup></pre><P>
+<pre>2     <B>then return</B> 0</sub></sup></pre><P>
+<pre>3 <I>m</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>4 <B>for</B> <I>k </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> <B>to</B> <I>j</I> - 1</sub></sup></pre><P>
+<pre>5      <B>do</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> RECURSIVE-MATRIX-CHAIN(<I>p, i, k</I>)</sub></sup></pre><P>
+<pre>+ RECURSIVE-MATRIX-CHAIN(<I>p, k + </I>1<I>, j</I>) + <I>p<SUB>i-</I>1</SUB><I>p<SUB>k</SUB>p<SUB>j</I></sub></sup></pre><P>
+<pre>6         <B>if</B> <I>q</I> &lt; <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+<pre>7            <B>then</B> <I>m</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I></sub></sup></pre><P>
+<pre>8 <B>return</B> <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+Figure 16.2 shows the recursion tree produced by the call <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>(<I>p</I>, 1, 4). Each node is labeled by the values of the parameters <I>i</I> and <I>j</I>. Observe that some pairs of values occur many times.<P>
+In fact, we can show that the running time <I>T</I>(<I>n</I>) to compute <I>m</I>[1<I>, n</I>] by this recursive procedure is at least exponential in <I>n</I>. Let us assume that the execution of lines 1-2 and of lines 6-7 each take at least unit time. Inspection of the procedure yields the recurrence<P>
+<img src="311_b.gif"><P>
+Noting that for <I>i</I> = 1, 2, . . . , <I>n</I> - 1, each term <I>T</I>(<I>i</I>) appears once as <I>T</I>(<I>k</I>) and once as <I>T</I>(<I>n - k</I>), and collecting the <I>n</I> - 1 1's in the summation together with the 1 out front, we can rewrite the recurrence as<P>
+<img src="311_c.gif"><P>
+<h4><a name="0814_1544">(16.4)<a name="0814_1544"></sub></sup></h4><P>
+We shall prove that <I>T</I>(<I>n</I>) =<I> </I><IMG SRC="../IMAGES/omega12.gif">(2<I><SUP>n</I></SUP>) using the substitution method. Specifically, we shall show that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/gteq.gif"> 2<I><SUP>n</I>-1</SUP> for all <I>n</I> &gt; 1. The basis is easy, since <I>T</I>(1) &gt; 1 = 2<IMG SRC="../IMAGES/degree.gif">. Inductively, for <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 2 we have<P>
+<img src="312_a.gif"><P>
+which completes the proof. Thus, the total amount of work performed by the call <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>(<I>p, </I>1, <I>n</I>) is at least exponential in <I>n</I>.<P>
+Compare this top-down, recursive algorithm with the bottom-up, dynamic-programming algorithm. The latter is more efficient because it takes advantage of the overlapping-subproblems property. There are only <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>)<I> </I>different subproblems, and the dynamic-programming algorithm solves each exactly once. The recursive algorithm, on the other hand, must repeatedly resolve each subproblem each time it reappears in the recursion tree. Whenever a recursion tree for the natural recursive solution to a problem contains the same subproblem repeatedly, and the total number of different subproblems is small, it is a good idea to see if dynamic programming can be made to work.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Memoization</h2><P>
+<a name="0815_1543"><a name="0815_1544">There is a variation of dynamic programming that often offers the efficiency of the usual dynamic-programming approach while maintaining a top-down strategy. The idea is to <I><B>memoize</I></B> the natural, but inefficient, recursive algorithm. As in ordinary dynamic programming, we maintain a table with subproblem solutions, but the control structure for filling in the table is more like the recursive algorithm.<P>
+A memoized recursive algorithm maintains an entry in a table for the solution to each subproblem. Each table entry initially contains a special value to indicate that the entry has yet to be filled in. When the subproblem is first encountered during the execution of the recursive algorithm, its solution is computed and then stored in the table. Each subsequent time that the subproblem is encountered, the value stored in the table is simply looked up and returned.<SUP>1<P>
+<SUP>1</SUP>This approach presupposes that the set of all possible subproblem parameters is known and that the relation between table positions and subproblems is established. Another approach is to memoize by using hashing with the subproblem parameters as keys.<P>
+The following procedure is a memoized version of <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>.<P>
+<pre><a name="0815_1545">MEMOIZED-MATRIX-CHAIN(<I>p</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>p</I>] - 1</sub></sup></pre><P>
+<pre>2 <B>for</B> <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>3      <B>do for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4             <B>do</B> <I>m</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>5 <B>return</B> LOOKUP-CHAIN(<I>p</I>, 1, <I>n</I>)</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="0815_1546">LOOKUP-CHAIN(<I>p, i, j</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B> <I>m</I>[<I>i,j</I>] &lt; <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>2    <B>then return</B> <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+<pre>3 <B>if</B> <I>i = j</I></sub></sup></pre><P>
+<pre>4    <B>then</B> <I>m</I>[<I>i, j</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5    <B>else for </B><I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> <B>to</B> <I>j</I> - 1</sub></sup></pre><P>
+<pre>6             <B>do</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> LOOKUP-CHAIN(<I>p, i, k</I>)</sub></sup></pre><P>
+<pre>+ LOOKUP-CHAIN(<I>p, k</I> + 1, <I>j</I>) + <I>p<SUB>i</I> </SUB>- 1<I>pkpj</I></sub></sup></pre><P>
+<pre>7                <B>if</B> <I>q </I>&lt; <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+<pre>8                   <B>then </B><I>m</I>[<I>i, j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I></sub></sup></pre><P>
+<pre>9 <B>return</B> <I>m</I>[<I>i, j</I>]</sub></sup></pre><P>
+<FONT FACE="Courier New" SIZE=2>MEMOIZED</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN,</FONT> like <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT>, maintains a table <I>m</I>[1 . . <I>n</I>, 1 . . <I>n</I>] of computed values of <I>m</I>[<I>i, j</I>], the minimum number of scalar multiplications needed to compute the matrix <I>A<SUB>i</I>..<I>j</I></SUB>. Each table entry initially contains the value <IMG SRC="../IMAGES/infin.gif"> to indicate that the entry has yet to be filled in. When the call <FONT FACE="Courier New" SIZE=2>LOOKUP</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>(<I>p, i, j</I>) is executed, if <I>m</I>[<I>i, j</I>] &lt; <IMG SRC="../IMAGES/infin.gif"> in line 1, the procedure simply returns the previously computed cost <I>m[i, j</I>] (line 2). Otherwise, the cost is computed as in <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>, stored in <I>m</I>[<I>i, j</I>], and returned. (The value <IMG SRC="../IMAGES/infin.gif"> is convenient to use for an unfilled table entry since it is the value used to initialize <I>m</I>[<I>i, j</I>] in line 3 of <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>.) Thus, <FONT FACE="Courier New" SIZE=2>LOOKUP</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>(<I>p, i, j</I>) always returns the value of <I>m</I>[<I>i, j</I>], but it only computes it if this is the first time that <FONT FACE="Courier New" SIZE=2>LOOKUP</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT> has been called with the parameters <I>i</I> and <I>j</I>.<P>
+Figure 16.2 illustrates how <FONT FACE="Courier New" SIZE=2>MEMOIZED</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT> saves time over <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>. Shaded subtrees represent values that are looked up rather than computed.<P>
+Like the dynamic-programming algorithm <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER,</FONT> the procedure <FONT FACE="Courier New" SIZE=2>MEMOIZED</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT> runs in <I>O</I>(<I>n</I><SUP>3</SUP> time. Each of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) table entries is initialized once in line 4 of <FONT FACE="Courier New" SIZE=2>MEMOIZED</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT> and filled in for good by just one call of <FONT FACE="Courier New" SIZE=2>LOOKUP</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>. Each of these <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) calls to <FONT FACE="Times New Roman" SIZE=2>LOOKUP</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT> takes <I>O</I>(<I>n</I>) time, excluding the time spent in computing other table entries, so a total of <I>O</I>(<I>n</I><SUP>3</SUP>) is spent altogether. Memoization thus turns an <IMG SRC="../IMAGES/omega12.gif">(2<I><SUP>n</I></SUP>) algorithm into an <I>O</I>(<I>n</I><SUP>3</SUP>) algorithm.<P>
+In summary, the matrix-chain multiplication problem can be solved in <I>O(n</I><SUP>3</SUP>) time by either a top-down, memoized algorithm or a bottom-up, dynamic-programming algorithm. Both methods take advantage of the overlapping-subproblems property. There are only <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) different subproblems in total, and either of these methods computes the solution to each subproblem once. Without memoization, the natural recursive algorithm runs in exponential time, since solved subproblems are repeatedly solved.<P>
+In general practice, if all subproblems must be solved at least once, a bottom-up dynamic-programming algorithm usually outperforms a top-down memoized algorithm by a constant factor, because there is no overhead for recursion and less overhead for maintaining the table. Moreover, there are some problems for which the regular pattern of table accesses in the dynamic-programming algorithm can be exploited to reduce time or space requirements even further. Alternatively, if some subproblems in the subproblem space need not be solved at all, the memoized solution has the advantage of only solving those subproblems that are definitely required.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0816_1549">Exercises<a name="0816_1549"></h2><P>
+<a name="0816_154a">16.2-1<a name="0816_154a"><P>
+Compare the recurrence (16.4) with the recurrence (8.4) that arose in the analysis of the average-case running time of quicksort. Explain intuitively why the solutions to the two recurrences should be so dramatically different.<P>
+<a name="0816_154b">16.2-2<a name="0816_154b"><P>
+Which is a more efficient way to determine the optimal number of multiplications in a chain-matrix multiplication problem: enumerating all the ways of parenthesizing the product and computing the number of multiplications for each, or running <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-<FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>? Justify your answer.<P>
+<a name="0816_154c">16.2-3<a name="0816_154c"><P>
+<a name="0816_1547"><a name="0816_1548">Draw the recursion tree for the <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure from Section 1.3.1 on an array of 16 elements. Explain why memoization is ineffective in speeding up a good divide-and-conquer algorithm such as <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0817_154f">16.3 Longest common subsequence<a name="0817_154f"></h1><P>
+<a name="0817_1549"><a name="0817_154a"><a name="0817_154b"><a name="0817_154c"><a name="0817_154d">The next problem we shall consider is the longest-common-subsequence problem. A subsequence of a given sequence is just the given sequence with some elements (possibly none) left out. Formally, given a sequence <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>,<I> x</I><SUB>2</SUB>, . . . , <I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, another sequence <I>Z</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>z</I><SUB>1</SUB>, <I>z</I><SUB>2</SUB>, . . . , <I>z<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is a <I><B>subsequence</I></B> of <I>X</I> if there exists a strictly increasing sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>i</I><SUB>1</SUB>, <I>i</I><SUB>2</SUB>, . . . , <I>i<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of indices of <I>X</I> such that for all <I>j</I> = 1, 2, . . . , <I>k</I>, we have <I>x<SUB>ij</I></SUB> = <I>z<SUB>j</I></SUB>. For example, <I>Z = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>B, C, D, B</I><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>is a subsequence of<I> X = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>A, B, C, B, D, A, B</I><IMG SRC="../IMAGES/wdrtchv.gif"> with corresponding index sequence <IMG SRC="../IMAGES/lftwdchv.gif">2, 3, 5, 7<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0817_154e">Given two sequences <I>X</I> and <I>Y</I>, we say that a sequence <I>Z</I> is a <I><B>common subsequence</I></B> of <I>X</I> and <I>Y</I> if <I>Z</I> is a subsequence of both <I>X</I> and <I>Y</I>. For example, if <I>X = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>A, B, C, B, D, A, B</I><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>B, D, C, A, B, A</I><IMG SRC="../IMAGES/wdrtchv.gif">, the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, C, A</I><IMG SRC="../IMAGES/wdrtchv.gif"> is a common subsequence of both <I>X</I> and <I>Y</I>. The sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, C, A</I><IMG SRC="../IMAGES/wdrtchv.gif"> is not a <I>longest</I> common subsequence <IMG SRC="../IMAGES/lftwdchv.gif">LCS<IMG SRC="../IMAGES/wdrtchv.gif"> of <I>X</I> and <I>Y</I>, however, since it has length 3 and the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, C, B, A</I><IMG SRC="../IMAGES/wdrtchv.gif">, which is also common to both <I>X</I> and <I>Y</I>, has length 4. The sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, C, B, A</I><IMG SRC="../IMAGES/wdrtchv.gif"> is an LCS of <I>X</I> and <I>Y,</I> as is the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, D, A, B</I><IMG SRC="../IMAGES/wdrtchv.gif">, since there is no common subsequence of length 5 or greater.<P>
+In the <I><B>longest-common-subsequence problem</I></B>, we are given two sequences <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1,</SUB> <I>y</I><SUB>2</SUB>, . . . , <I>y</I><SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and wish to find a maximum-length common subsequence of <I>X</I> and <I>Y</I>. This section shows that the LCS problem can be solved efficiently using dynamic programming.<P>
+
+
+
+
+
+<h2>Characterizing a longest common subsequence</h2><P>
+A brute-force approach to solving the LCS problem is to enumerate all subsequences of <I>X</I> and check each subsequence to see if it is also a subsequence of <I>Y</I>, keeping track of the longest subsequence found. Each subsequence of <I>X</I> corresponds to a subset of the indices { 1, 2, . . . , <I>m</I>} of <I>X</I>. There are 2<I><SUP>m</I></SUP> subsequences of <I>X</I>, so this approach requires exponential time, making it impractical for long sequences.<P>
+<a name="0818_154f"><a name="0818_1550">The LCS problem has an optimal-substructure property, however, as the following theorem shows. As we shall see, the natural class of subproblems correspond to pairs of "prefixes" of the two input sequences. To be precise, given a sequence <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . ,<I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, we define the <I>i</I>th <I><B>prefix</I></B> of <I>X</I>, for <I>i</I> = 0, 1,...,<I>m</I>, as <I>X<SUB>i</I></SUB> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I>. </I>For example, if <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I>, <I>B</I>, <I>C</I>, <I>B</I>, <I>D</I>, <I>A</I>, <I>B</I><IMG SRC="../IMAGES/wdrtchv.gif">, then <I>X</I><SUB>4</SUB> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>A, B, C, B</I><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>X</I><SUB>0</SUB> is the empty sequence.<P>
+<a name="0818_1551">Theorem 16.1<a name="0818_1551"><P>
+Let <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . , <I>y<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> be sequences, and let <I>Z = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>z</I><SUB>1</SUB>, <I>z</I><SUB>2</SUB>, . . . , <I>z<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> be any LCS of <I>X</I> and <I>Y</I>.<P>
+1.     If <I>x<SUB>m</I></SUB> = <I>y<SUB>n</I></SUB>, then <I>z<SUB>k</I></SUB> = <I>x<SUB>m</I></SUB> = <I>y<SUB>n</I></SUB> and <I>Z<SUB>k</I>-l </SUB>is an LCS of <I>X<SUB>m</I>-l</SUB> and <I>Y<SUB>n</I>-l</SUB>.<P>
+2.     If <I>x<SUB>m</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>y<SUB>n</I></SUB>, then <I>z<SUB>k</I></SUB> <IMG SRC="../IMAGES/noteq.gif"><I> </I>x<SUB>m<I></SUB> implies that </I>Z<I> is an LCS of </I>X<SUB>m<I></SUB>-<SUB>1</SUB> and </I>Y<I>.</I><P>
+3.     If <I>x<SUB>m</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>y<SUB>n</I></SUB>, then z<I><SUB>k</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>y<SUB>n</I></SUB> implies that <I>Z</I> is an LCS of <I>X</I> and <I>Y<SUB>n</I>-l</SUB>.<P>
+<I><B>Proof     </I></B>(1) If <I>z<SUB>k</SUB> </I><IMG SRC="../IMAGES/noteq.gif"><I> x<SUB>m</I></SUB>, then we could append x<I><SUB>m</I></SUB> = <I>y<SUB>n</I></SUB> to <I>Z</I> to obtain a common subsequence of <I>X</I> and <I>Y</I> of length <I>k</I> + 1, contradicting the supposition that <I>Z</I> is a <I>longest</I> common subsequence of <I>X</I> and <I>Y</I>. Thus, we must have <I>z<SUB>k</I></SUB> = <I>x<SUB>m</I></SUB> = <I>y<SUB>n</I></SUB>. Now, the prefix <I>Z<SUB>k</I>-l</SUB> is a length-(<I>k</I> - 1)common subsequence of <I>X<SUB>m</I>-1</SUB> and <I>Y<SUB>n-</I>l</SUB>. We wish to show that it is an LCS. Suppose for the purpose of contradiction that there is a common subsequence <I>W</I> of <I>X<SUB>m</I>-l</SUB> and <I>Y<SUB>n</I>-l</SUB> with length greater than <I>k</I> - 1. Then, appending <I>x<SUB>m</I></SUB> = <I>y<SUB>n</I></SUB> to <I>W</I> produces a common subsequence of <I>X</I> and <I>Y</I> whose length is greater than <I>k</I>, which is a contradiction.<P>
+(2) If <I>z<SUB>k</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>x<SUB>m</I></SUB>, then <I>Z</I> is a common subsequence of <I>X<SUB>m</I>-1</SUB> and <I>Y</I>. If there were a common subsequence <I>W</I> of <I>X<SUB>m</I>-l</SUB> and <I>Y</I> with length greater than <I>k</I>, then <I>W</I> would also be a common subsequence of <I>X<SUB>m</I></SUB> and <I>Y</I>, contradicting the assumption that <I>Z</I> is an LCS of <I>X</I> and <I>Y</I>.<P>
+(3) The proof is symmetric to (2).      <P>
+The characterization of Theorem 16.1 shows that an LCS of two sequences contains within it an LCS of prefixes of the two sequences. Thus, the LCS problem has an optimal-substructure property. A recursive solution also has the overlapping-subproblems property, as we shall see in a moment.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A recursive solution to subproblems</h2><P>
+Theorem 16.1 implies that there are either one or two subproblems to examine when finding an LCS of <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . , <I>y<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. If <I>x<SUB>m</I></SUB> = <I>y<SUB>n</I></SUB> we must find an LCS of <I>X<SUB>m</I>-l</SUB> and <I>Y<SUB>n</I>-l</SUB>. Appending <I>x<SUB>m</I></SUB> = <I>y<SUB>n,</I></SUB> to this LCS yields an LCS of <I>X</I> and <I>Y</I>. If <I>x<SUB>m</I></SUB> <IMG SRC="../IMAGES/noteq.gif"> <I>y<SUB>n</I></SUB>, then we must solve two subproblems: finding an LCS of <I>X<SUB>m</I>-l</SUB> and <I>Y</I> and finding an LCS of <I>X</I> and <I>Y<SUB>n</I>-1</SUB>. Whichever of these two LCS's is longer is an LCS of <I>X</I> and <I>Y</I>.<P>
+We can readily see the overlapping-subproblems property in the LCS problem. To find an LCS of <I>X</I> and <I>Y</I>, we may need to find the LCS's of <I>X</I> and <I>Y<SUB>n</I>-l</SUB> and of <I>X<SUB>m</I>-l</SUB> and <I>Y</I>. But each of these subproblems has the subsubproblem of finding the LCS of <I>X<SUB>m</I>-l</SUB> and <I>Y<SUB>n-</I>1</SUB>. Many other subproblems share subsubproblems.<P>
+Like the matrix-chain multiplication problem, our recursive solution to the LCS problem involves establishing a recurrence for the cost of an optimal solution. Let us define <I>c</I>[<I>i, j</I>] to be the length of an LCS of the sequences <I>X<SUB>i</I></SUB> and <I>Y<SUB>j</I></SUB>. If either <I>i</I> = 0 or <I>j</I> = 0, one of the sequences has length 0, so the LCS has length 0. The optimal substructure of the LCS problem gives the recursive formula<P>
+<img src="316_a.gif"><P>
+<h4><a name="0819_0001">(16.5)<a name="0819_0001"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing the length of an LCS</h2><P>
+Based on equation (16.5), we could easily write an exponential-time recursive algorithm to compute the length of an LCS of two sequences. Since there are only <IMG SRC="../IMAGES/bound.gif">(<I>mn</I>) distinct subproblems, however, we can use dynamic programming to compute the solutions bottom up.<P>
+<a name="081a_1551">Procedure LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT> takes two sequences <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>,<I>x</I><SUB>2</SUB>,<I>...</I>,<I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>,<I>y</I><SUB>2</SUB>,<I>...</I>,<I>y<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> as inputs. It stores the <I>c</I>[<I>i, j</I>] values in a table <I>c</I>[0 . . <I>m,</I> 0 . . <I>n</I>] whose entries are computed in row-major order. (That is, the first row of <I>c</I> is filled in from left to right, then the second row, and so on.) It also maintains the table <I>b</I>[1 . .<I> m</I>, 1 . . <I>n</I>] to simplify construction of an optimal solution. Intuitively, <I>b</I>[<I>i, j</I>] points to the table entry corresponding to the optimal subproblem solution chosen when computing <I>c</I>[<I>i, j</I>]. The procedure returns the <I>b</I> and <I>c</I> tables; <I>c</I>[<I>m, n</I>] contains the length of an LCS of <I>X</I> and Y.<P>
+<pre>LCS-LENGTH(<I>X,Y</I>)</sub></sup></pre><P>
+<pre>1 <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>X</I>]</sub></sup></pre><P>
+<pre>2 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>Y</I>]</sub></sup></pre><P>
+<pre>3 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>4      <B>do</B> <I>c</I>[<I>i</I>,0] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>5 <B>for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>6      <B>do</B> <I>c</I>[0, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>7 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>8      <B>do for </B><I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>9             <B>do if</B> <I>x<SUB>i</I></SUB> = <I>y<SUB>j</I></sub></sup></pre><P>
+<pre>10                   <B>then</B> <I>c</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>c</I>[<I>i</I> - 1, <I>j</I> -1] + 1</sub></sup></pre><P>
+<pre>11                        <I>b</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> &quot;<IMG SRC="../IMAGES/uplftar.gif">&quot;</sub></sup></pre><P>
+<pre>12                   <B>else if</B> <I>c</I>[<I>i</I> - 1, <I>j</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>c</I>[<I>i</I>, <I>j</I> - 1]</sub></sup></pre><P>
+<pre>13                           <B>then</B> <I>c</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>c</I>[<I>i</I> - 1, <I>j</I>]</sub></sup></pre><P>
+<pre>14                                <I>b</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> &quot;<IMG SRC="../IMAGES/arrup.gif">&quot;</sub></sup></pre><P>
+<pre>15                           <B>else</B> <I>c</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>c</I>[<I>i</I>, <I>j</I> -1]</sub></sup></pre><P>
+<pre>16                                <I>b</I>[<I>i</I>, <I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> &quot;<IMG SRC="../IMAGES/arrlt12.gif">&quot;</sub></sup></pre><P>
+<pre>17 <B>return</B> <I>c</I> and <I>b</I></sub></sup></pre><P>
+Figure 16.3 shows the tables produced by LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT> on the sequences <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>A, B, C, B, D, A, B</I><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>B, D, C, A, B, A</I><IMG SRC="../IMAGES/wdrtchv.gif">. The running time of the procedure is <I>O</I>(<I>mn</I>), since each table entry takes <I>O</I>(1) time to compute.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Constructing an LCS</h2><P>
+The <I>b</I> table returned by LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT> can be used to quickly construct an LCS of <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>,<I>x</I><SUB>2</SUB>,<I>...</I>,<I>x<SUB>m</I></SUB>) and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>,<I>y</I><SUB>2</SUB>,...,<I>y<SUB>n</I></SUB>). We simply begin at <I>b</I>[<I>m, n</I>] and trace through the table following the arrows. Whenever we encounter a "<IMG SRC="../IMAGES/uplftar.gif"> in entry <I>b</I>[<I>i,j</I>], it implies that<I> x<SUB>i</SUB> = y<SUB>j</I></SUB> is an element of the LCS. The elements of the LCS are encountered in reverse order by this method. The following recursive procedure prints out an LCS of <I>X</I> and <I>Y </I>in the proper, forward order. The initial invocation is <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-LCS(<I>b, X</I>, <I>length</I>[<I>X</I>], <I>length</I>[<I>Y</I>]).<P>
+<img src="318_a.gif"><P>
+<h4><a name="081b_1553">Figure 16.3 The c and b tables computed by LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT> on the sequences X = <IMG SRC="../IMAGES/lftwdchv.gif">A, B, C, B, D, A, B<IMG SRC="../IMAGES/wdrtchv.gif"> and Y = <IMG SRC="../IMAGES/lftwdchv.gif">B, D, C, A, B, A<IMG SRC="../IMAGES/wdrtchv.gif">. The square in row i and column j contains the value of c[i, j] and the appropriate arrow for the value of b[i, j]. The entry 4 in c[7, 6]--the lower right-hand corner of the table--is the length of an LCS <IMG SRC="../IMAGES/lftwdchv.gif">B, C, B, A<IMG SRC="../IMAGES/wdrtchv.gif"> of X and Y. For i, j &gt; 0, entry c[i, j] depends only on whether x<SUB>i</SUB> = y<SUB>j</SUB> and the values in entries c[i -1, j], c[i, j - 1], and c[i - 1, j - 1], which are computed before c[i, j]. To reconstruct the elements of an LCS, follow the b[i, j] arrows from the lower right-hand corner; the path is shaded. Each "<IMG SRC="../IMAGES/uplftar.gif"> on the path corresponds to an entry (highlighted) for which x<SUB>i</SUB> = y<SUB>j</SUB> is a member of an LCS.<a name="081b_1553"></sub></sup></h4><P>
+<pre><a name="081b_1552">PRINT-LCS(<I>b,X,i,j</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B> <I>i</I> = 0 or <I>j</I> = 0</sub></sup></pre><P>
+<pre>2     <B>then return</B></sub></sup></pre><P>
+<pre>3 <B>if</B> <I>b</I>[<I>i</I>, <I>j</I>] = &quot;<IMG SRC="../IMAGES/uplftar.gif">&quot;</sub></sup></pre><P>
+<pre>4     <B>then</B> PRINT-LCS(<I>b,X,i</I> - 1, <I>j - </I>1)</sub></sup></pre><P>
+<pre>5          print <I>x<SUB>i</I></sub></sup></pre><P>
+<pre>6 <B>elseif</B> <I>b</I>[<I>i,j</I>] = &quot;<IMG SRC="../IMAGES/arrup.gif">&quot;</sub></sup></pre><P>
+<pre>7     <B>then</B> PRINT-LCS(<I>b,X,i</I> - 1,<I>j</I>)</sub></sup></pre><P>
+<pre>8 <B>else</B> PRINT-LCS(<I>b,X,i, j</I> - 1)</sub></sup></pre><P>
+For the <I>b</I> table in Figure 16.3, this procedure prints &quot;<I>BCBA</I>&quot; The procedure takes time <I>O</I>(<I>m + n</I>), since at least one of <I>i</I> and <I>j</I> is decremented in each stage of the recursion.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Improving the code</h2><P>
+Once you have developed an algorithm, you will often find that you can improve on the time or space it uses. This is especially true of straightforward dynamic-programming algorithms. Some changes can simplify the code and improve constant factors but otherwise yield no asymptotic improvement in performance. Others can yield substantial asymptotic savings in time and space.<P>
+For example, we can eliminate the <I>b</I> table altogether. Each <I>c</I>[<I>i, j</I>] entry depends on only three other <I>c</I> table entries: <I>c</I>[<I>i</I> - 1,<I>j</I> - 1], <I>c</I>[<I>i </I>- 1,<I>j</I>], and <I>c</I>[<I>i,j</I> - 1]. Given the value of <I>c</I>[<I>i,j</I>], we can determine in <I>O</I>(1) time which of these three values was used to compute <I>c</I>[<I>i,j</I>], without inspecting table <I>b</I>. Thus, we can reconstruct an LCS in <I>O</I>(<I>m + n</I>) time using a procedure similar to <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-LCS. (Exercise 16.3-2 asks you to give the pseudocode.) Although we save <IMG SRC="../IMAGES/bound.gif">(<I>mn</I>) space by this method, the auxiliary space requirement for computing an LCS does not asymptotically decrease, since we need <IMG SRC="../IMAGES/bound.gif">(<I>mn</I>) space for the <I>c</I> table anyway.<P>
+We can, however, reduce the asymptotic space requirements for LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT>, since it needs only two rows of table <I>c</I> at a time: the row being computed and the previous row. (In fact, we can use only slightly more than the space for one row of <I>c</I> to compute the length of an LCS. See Exercise 16.3-4.) This improvement works if we only need the length of an LCS; if we need to reconstruct the elements of an LCS, the smaller table does not keep enough information to retrace our steps in <I>O</I>(<I>m</I> + <I>n</I>) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="081d_1554">Exercises<a name="081d_1554"></h2><P>
+<a name="081d_1555">16.3-1<a name="081d_1555"><P>
+Determine an LCS of <IMG SRC="../IMAGES/lftwdchv.gif">1,0,0,1,0,1,0,1<IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">0,1,0,1,1,0,1,1,0<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="081d_1556">16.3-2<a name="081d_1556"><P>
+Show how to reconstruct an LCS from the completed <I>c</I> table and the original sequences <I>X</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>,<I>x</I><SUB>2</SUB>,<I>...</I>,<I>x<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>Y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>,<I>y</I><SUB>2</SUB>,...,<I>y<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> in <I>O</I>(<I>m + n</I>) time, without using the <I>b</I> table.<P>
+<a name="081d_1557">16.3-3<a name="081d_1557"><P>
+<a name="081d_1553">Give a memoized version of LCS-<FONT FACE="Courier New" SIZE=2>LENGTH</FONT> that runs in <I>O</I>(<I>mn</I>)<I> </I>time<I>.</I><P>
+<a name="081d_1558">16.3-4<a name="081d_1558"><P>
+Show how to compute the length of an LCS using only 2 min(<I>m, n</I>) entries in the <I>c</I> table plus <I>O</I>(1) additional space. Then, show how to do this using min(<I>m,n</I>) entries plus <I>O</I>(1) additional space.<P>
+<a name="081d_1559">16.3-5<a name="081d_1559"><P>
+Give an <I>O</I>(<I>n</I><SUP>2</SUP>)-time algorithm to find the longest monotonically increasing subsequence of a sequence of <I>n</I> numbers.<P>
+<a name="081d_155a">16.3-6<a name="081d_155a"><P>
+Give an <I>O</I>(<I>n</I> 1g <I>n</I>)-time algorithm to find the longest monotonically increasing subsequence of a sequence of <I>n</I> numbers. (<I>Hint</I>: Observe that the last element of a candidate subsequence of length <I>i</I> is at least as large as the last element of a candidate subsequence of length <I>i</I> - 1. Maintain candidate subsequences by linking them through the input sequence.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="081e_1563">16.4 Optimal polygon triangulation<a name="081e_1563"></h1><P>
+<a name="081e_1554"><a name="081e_1555"><a name="081e_1556">In this section, we investigate the problem of optimally triangulating a convex polygon. Despite its outward appearance, we shall see that this geometric problem has a strong similarity to matrix-chain multiplication.<P>
+<a name="081e_1557"><a name="081e_1558"><a name="081e_1559"><a name="081e_155a"><a name="081e_155b"><a name="081e_155c"><a name="081e_155d"><a name="081e_155e">A <I><B>polygon</I> </B>is a piecewise-linear, closed curve in the plane. That is, it is a curve ending on itself that is formed by a sequence of straight-line segments, called the <I><B>sides</I></B> of the polygon. A point joining two consecutive sides is called a <I><B>vertex</I></B> of the polygon. If the polygon is <I><B>simple</I>,</B> as we shall generally assume, it does not cross itself. The set of points in the plane enclosed by a simple polygon forms the <I><B>interio</I></B><I>r</I> of the polygon, the set of points on the polygon itself forms its <I><B>boundary</I>,</B> and the set of points surrounding the polygon forms its <I><B>exterior</I>.</B> A simple polygon is <I><B>convex</I> </B>if, given any two points on its boundary or in its interior, all points on the line segment drawn between them are contained in the polygon's boundary or interior.<P>
+We can represent a convex polygon by listing its vertices in counterclockwise order. That is, if <I>P</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>,<I>v</I><SUB>1</SUB>,<I>...,v<SUB>n</I></SUB>-<SUB>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is a convex polygon, it has <I>n</I> sides <img src="320_a.gif">, where we interpret <I>v<SUB>n</I> </SUB>as<SUB> </SUB><I>v</I><SUB>0</SUB>. (In general, we shall implicitly assume arithmetic on vertex indices is taken modulo the number of vertices.)<P>
+<a name="081e_155f"><a name="081e_1560"><a name="081e_1561">Given two nonadjacent vertices <I>v<SUB>i</I></SUB> and <I>v<SUB>j</I></SUB>, the segment <img src="320_b.gif"> is a <I><B>chord</I></B> of the polygon. A chord <img src="320_c.gif"> divides the polygon into two polygons: <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>i</I></SUB>,<I>v<SUB>i</I></SUB>+1,...,<I>v<SUB>j</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>j</SUB>,v<SUB>j+</I>1</SUB>,<I>...,v<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. A <I><B>triangulation</I></B> of a polygon is a set <I>T</I> of chords of the polygon that divide the polygon into disjoint <I><B>triangles</I></B> (polygons with 3 sides). Figure 16.4 shows two ways of triangulating a 7-sided polygon. In a triangulation, no chords intersect (except at endpoints) and the set <I>T</I> of chords is maximal: every chord not in <I>T</I> intersects some chord in <I>T</I>. The sides of triangles produced by the triangulation are either chords in the triangulation or sides of the polygon. Every triangulation of an <I>n</I>-vertex convex polygon has <I>n</I> - 3 chords and divides the polygon into <I>n</I> - 2 triangles.<P>
+<a name="081e_1562">In the <I><B>optimal (polygon) triangulation problem</I></B>, we are given a convex polygon <I>P</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>,<I> v</I><SUB>1</SUB>,<I>...,v<SUB>n-</I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and a weight function <I>w</I> defined on triangles formed by sides and chords of<I> P</I>. The problem is to find a triangulation that minimizes the sum of the weights of the triangles in the triangulation. One weight function on triangles that comes to mind naturally is<P>
+<img src="320_d.gif"><P>
+where <IMG SRC="../IMAGES/sglvrt.gif"><I>v<SUB>i</SUB>v<SUB>j</I></SUB><IMG SRC="../IMAGES/sglvrt.gif"> is the euclidean distance from <I>v<SUB>i</I></SUB> to <I>v<SUB>j</SUB>.</I> The algorithm we shall develop works for an arbitrary choice of weight function.<P>
+<img src="321_a.gif"><P>
+<h4><a name="081e_1564">Figure 16.4 Two ways of triangulating a convex polygon. Every triangulation of this 7-sided polygon has 7 - 3 = 4 chords and divides the polygon into 7 - 2 = 5 triangles.<a name="081e_1564"></sub></sup></h4><P>
+
+
+
+
+
+<h2>Correspondence to parenthesization</h2><P>
+<a name="081f_1563"><a name="081f_1564">There is a surprising correspondence between the triangulation of a polygon and the parenthesization of an expression such as a matrix-chain product. This correspondence is best explained using trees.<P>
+<a name="081f_1565"><a name="081f_1566">A full parenthesization of an expression corresponds to a full binary tree, sometimes called the <I><B>parse tree</I></B> of the expression. Figure 16.5(a) shows a parse tree for the parenthesized matrix-chain product<P>
+<pre>((<I>A</I><SUB>1</SUB>(<I>A</I><SUB>2</SUB><I>A</I><SUB>3</SUB>))(<I>A</I><SUB>4</SUB>(<I>A</I><SUB>5</SUB><I>A</I><SUB>6</SUB>))) .</sub></sup></pre><P>
+<h4><a name="081f_1567">(16.6)<a name="081f_1567"></sub></sup></h4><P>
+Each leaf of a parse tree is labeled by one of the atomic elements (matrices) in the expression. If the root of a subtree of the parse tree has a left subtree representing an expression <I>E<SUB>l</I></SUB> and a right subtree representing an expression <I>E<SUB>r</I></SUB>, then the subtree itself represents the expression (<I>E<SUB>l</SUB>E<SUB>r</I></SUB>). There is a one-to-one correspondence between parse trees and fully parenthesized expressions on <I>n</I> atomic elements.<P>
+A triangulation of a convex polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v<SUB>n - </I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> can also be represented by a parse tree. Figure 16.5(b) shows the parse tree for the triangulation of the polygon from Figure 16.4(a). The internal nodes of the parse tree are the chords of the triangulation plus the side <img src="321_b.gif">, which is the root. The leaves are the other sides of the polygon. The root <img src="321_c.gif"> is one side of the triangle <img src="321_d.gif">. This triangle determines the children of the root: one is the chord <img src="321_e.gif">, and the other is the chord <img src="321_f.gif">. Notice that this triangle divides the original polygon into three parts: the triangle <img src="321_g.gif"> itself, the polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>,<I><SUB> </SUB>v</I><SUB>1</SUB>, . . . ,<I><SUB> </SUB>v</I><SUB>3</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, and the polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>3</SUB>,<I><SUB> </SUB>v</I><SUB>4</SUB>, . . . ,<I><SUB> </SUB>v</I><SUB>6</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Moreover, the two subpolygons are formed entirely by sides of the original polygon, except for their roots, which are the chords <img src="321_h.gif"> and <img src="321_i.gif">.<P>
+<img src="322_a.gif"><P>
+<h4><a name="081f_1568">Figure 16.5 Parse trees. (a) The parse tree for the parenthesized product ((A<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2>(A<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>A<SUB>3</SUB><FONT FACE="Times New Roman" SIZE=2>))(A<SUB>4</SUB><FONT FACE="Times New Roman" SIZE=2>(A<SUB>5</SUB><FONT FACE="Times New Roman" SIZE=2>A<SUB>6</SUB><FONT FACE="Times New Roman" SIZE=2>))) </FONT></FONT></FONT></FONT></FONT></FONT>and for the triangulation of the 7-sided polygon from Figure 16.4(a). (b) The triangulation of the polygon with the parse tree overlaid. Each matrix A<SUB>i</SUB> corresponds to the side <img src="322_b.gif"> for i = 1, 2, . . . , 6.<a name="081f_1568"></sub></sup></h4><P>
+In recursive fashion, the polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v</I><SUB>3</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> contains the left subtree of the root of the parse tree, and the polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>3</SUB>,<I><SUB> </SUB>v</I><SUB>4</SUB>, . . . , <I>v</I><SUB>6</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> contains the right subtree.<P>
+In general, therefore, a triangulation of an <I>n</I>-sided polygon corresponds to a parse tree with <I>n</I> - 1 leaves. By an inverse process, one can produce a triangulation from a given parse tree. There is a one-to-one correspondence between parse trees and triangulations.<P>
+Since a fully parenthesized product of <I>n</I> matrices corresponds to a parse tree with <I>n</I> leaves, it therefore also corresponds to a triangulation of an (<I>n</I> + 1)-vertex polygon. Figures 16.5(a) and (b) illustrate this correspondence. Each matrix <I>A<SUB>i</I></SUB> in a product <I>A</I><SUB>1</SUB><I>A</I><SUB>2<I> </SUB></I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"><SUB> <I></SUB>A<SUB>n</I></SUB> corresponds to a side <img src="322_c.gif"> of an (<I>n</I> + 1)-vertex polygon. A chord <img src="322_d.gif">, where <I>i</I> &lt; <I>j</I>, corresponds to a matrix <I>A<SUB>i+</I>1<I>..j</I></SUB> computed during the evaluation of the product.<P>
+In fact, the matrix-chain multiplication problem is a special case of the optimal triangulation problem. That is, every instance of matrix-chain multiplication can be cast as an optimal triangulation problem. Given a matrix-chain product <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB><I> </I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</I></SUB>, we define an (<I>n</I> + 1)-vertex convex polygon <I>P</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. If matrix <I>A<SUB>i</I></SUB> has dimensions <I>p<SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/mult.gif"><I> p<SUB>i</I></SUB> for <I>i</I> = 1, 2, . . . , <I>n</I>, we define the weight function for the triangulation as<P>
+<img src="322_e.gif"><P>
+An optimal triangulation of <I>P</I> with respect to this weight function gives the parse tree for an optimal parenthesization of <I>A</I><SUB>1</SUB><I>A</I><SUB>2</SUB><I> </I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>n</SUB>.</I><P>
+Although the reverse is not true--the optimal triangulation problem is <I>not</I> a special case of the matrix-chain multiplication problem--it turns out that our code <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> from Section 16.1, with minor modifications, solves the optimal triangulation problem on an (<I>n</I> + 1)- vertex polygon. We simply replace the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, . . . , <I>p<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of matrix dimensions with the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>,<I><SUB> </SUB>v</I><SUB>1</SUB>, . . . , <I>v<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of vertices, change references to <I>p</I> to references to <I>v</I>, and change line 9 to read:<P>
+<img src="323_a.gif"><P>
+After running the algorithm, the element <I>m</I>[1,<I> n</I>] contains the weight of an optimal triangulation. Let us see why this is so.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The substructure of an optimal triangulation</h2><P>
+<a name="0820_1567">Consider an optimal triangulation <I>T</I> of an (<I>n</I> + 1)-vertex polygon <I>P</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> that includes the triangle <img src="323_b.gif"> for some <I>k</I>, where 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> <I>- </I>1. The weight of <I>T</I> is just the sum of the weights of <img src="323_c.gif"> and triangles in the triangulation of the two subpolygons <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>k</I></SUB>, <I>v<SUB>k+</I>1</SUB>, . . . ,<I><SUB> </SUB>v<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. The triangulations of the subpolygons determined by <I>T</I> must therefore be optimal, since a lesser-weight triangulation of either subpolygon would contradict the minimality of the weight of <I>T</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A recursive solution</h2><P>
+Just as we defined <I>m</I>[<I>i, j</I>] to be the minimum cost of computing the matrix-chain subproduct <I>A<SUB>i</SUB>A<SUB>i+</I>1</SUB><I> </I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>j</I></SUB>, let us define <I>t</I>[<I>i, j</I>], for 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> &lt; <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, to be the weight of an optimal triangulation of the polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>i - </I>1</SUB>, <I>v</I><SUB>1</SUB> . . . ,<I> v<SUB>j</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. For convenience, we consider a degenerate polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>i - </I>1</SUB>, <I>v<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> to have weight 0. The weight of an optimal triangulation of polygon <I>P</I> is given by <I>t</I>[1, <I>n</I>].<P>
+Our next step is to define <I>t</I>[<I>i, j</I>] recursively. The basis is the degenerate case of a 2-vertex polygon: <I>t</I>[<I>i, i</I>] = 0 for <I>i</I> = 1, 2, . . . , <I>n</I>. When <I>j</I> - <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 1, we have a polygon <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>i - </I>1</SUB>, <I>v<SUB>i</I></SUB>, . . . , <I>v<SUB>j</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> with at least 3 vertices. We wish to minimize over all vertices <I>v<SUB>k</I></SUB>, for <I>k</I> = <I>i, i</I> + 1, . . . , <I>j</I> - 1, the weight of <img src="323_d.gif"> plus the weights of the optimal triangulations of the polygons <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>i - </I>1</SUB>, <I>v<SUB>i</I></SUB>, . . . , <I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>k</I></SUB>, <I>v<SUB>k+</I>1</SUB>, . . . , <I>v<SUB>j</I></SUB><I><IMG SRC="../IMAGES/wdrtchv.gif"></I>. The recursive formulation is thus<P>
+<img src="323_e.gif"><P>
+<h4><a name="0821_0001">(16.7)<a name="0821_0001"></sub></sup></h4><P>
+Compare this recurrence with the recurrence (16.2) that we developed for the minimum number <I>m</I>[<I>i, j</I>] of scalar multiplications needed to compute <I>A<SUB>i</SUB>A<SUB>i+</I>1</SUB><I> </I><IMG SRC="../IMAGES/dot10.gif"> <I><IMG SRC="../IMAGES/dot10.gif"> </I><IMG SRC="../IMAGES/dot10.gif"> <I>A<SUB>j</I></SUB>. Except for the weight function, the recurrences are identical, and thus, with the minor changes to the code mentioned above, the procedure <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT> can compute the weight of an optimal triangulation. Like <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>CHAIN</FONT>-<FONT FACE="Courier New" SIZE=2>ORDER</FONT>, the optimal triangulation procedure runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) and uses <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) space.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0822_0001">Exercises<a name="0822_0001"></h2><P>
+<a name="0822_0002">16.4-1<a name="0822_0002"><P>
+Prove that every triangulation of an <I>n</I>-vertex convex polygon has <I>n</I> - 3 chords and divides the polygon into <I>n</I> - 2 triangles.<P>
+<a name="0822_0003">16.4-2<a name="0822_0003"><P>
+Professor Guinevere suggests that a faster algorithm to solve the optimal triangulation problem might exist for the special case in which the weight of a triangle is its area. Is the professor's intuition accurate?<P>
+<a name="0822_0004">16.4-3<a name="0822_0004"><P>
+Suppose that a weight function <I>w</I> is defined on the chords of a triangulation instead of on the triangles. The weight of a triangulation with respect to <I>w</I> is then the sum of the weights of the chords in the triangulation. Show that the optimal triangulation problem with weighted chords is just a special case of the optimal triangulation problem with weighted triangles.<P>
+<a name="0822_0005">16.4-4<a name="0822_0005"><P>
+Find an optimal triangulation of a regular octagon with unit-length sides. Use the weight function<P>
+<img src="324_a.gif"><P>
+where |<I>v<SUB>i</SUB>v<SUB>j</SUB>|</I> is the euclidean distance from <I>v<SUB>i</I></SUB> to <I>v<SUB>j</I></SUB>. (A regular polygon is one with equal sides and equal interior angles.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0823_1573">Problems<a name="0823_1573"></h1><P>
+<a name="0823_1574">16-1     Bitonic euclidean traveling-salesman problem<a name="0823_1574"><P>
+<a name="0823_1568"><a name="0823_1569"><a name="0823_156a">The <I><B>euclidean traveling-salesman problem</I></B> is the problem of determining the shortest closed tour that connects a given set of <I>n</I> points in the plane. Figure 16.6(a) shows the solution to a 7-point problem. The general problem is NP-complete, and its solution is therefore believed to require more than polynomial time (see Chapter 36).<P>
+<a name="0823_156b"><a name="0823_156c">J. L. Bentley has suggested that we simplify the problem by restricting our attention to <I><B>bitonic tours</I></B>, that is, tours that start at the leftmost point, go strictly left to right to the rightmost point, and then go strictly right to left back to the starting point. Figure 16.6(b) shows the shortest bitonic tour of the same 7 points. In this case, a polynomial-time algorithm is possible.<P>
+Describe an <I>O</I>(<I>n</I><SUP>2</SUP>)-time algorithm for determining an optimal bitonic tour. You may assume that no two points have the same <I>x</I>-coordinate. (<I>Hint:</I> Scan left to right, maintaining optimal possibilities for the two parts of the tour.)<P>
+<img src="325_a.gif"><P>
+<h4><a name="0823_1575">Figure 16.6 Seven points in the plane, shown on a unit grid. (a) The shortest closed tour, with length 24.88 . . .. This tour is not bitonic. (b) The shortest bitonic tour for the same set of points. Its length is 25.58 . . ..<a name="0823_1575"></sub></sup></h4><P>
+<a name="0823_1576">16-2     Printing neatly<a name="0823_1576"><P>
+<a name="0823_156d">Consider the problem of neatly printing a paragraph on a printer. The input text is a sequence of <I>n</I> words of lengths <I>l</I><SUB>1</SUB>,<I>l</I><SUB>2</SUB>,...,<I>l</I><SUB>n</SUB>, measured in characters. We want to print this paragraph neatly on a number of lines that hold a maximum of <I>M</I> characters each. Our criterion of &quot;neatness&quot; is as follows. If a given line contains words <I>i</I> through <I>j</I> and we leave exactly one space between words, the number of extra space characters at the end of the line is <img src="325_b.gif"> We wish to minimize the sum, over all lines except the last, of the cubes of the numbers of extra space characters at the ends of lines. Give a dynamic-programming algorithm to print a paragraph of <I>n</I> words neatly on a printer. Analyze the running time and space requirements of your algorithm.<P>
+<a name="0823_1577">16-3     Edit distance<a name="0823_1577"><P>
+<a name="0823_156e"><a name="0823_156f"><a name="0823_1570">When a &quot;smart&quot; terminal updates a line of text, replacing an existing &quot;source&quot; string <I>x</I>[1..<I>m</I>] with a new &quot;target&quot; string <I>y</I>[1..<I>n</I>], there are several ways in which the changes can be made. A single character of the source string can be deleted, replaced by another character, or copied to the target string; characters can be inserted; or two adjacent characters of the source string can be interchanged (&quot;twiddled&quot;) while being copied to the target string. After all the other operations have occurred, an entire suffix of the source string can be deleted, an operation known as &quot;kill to end of line.&quot;<P>
+As an example, one way to transform the source string <FONT FACE="Courier New" SIZE=2>algorithm</FONT> to the target string <FONT FACE="Courier New" SIZE=2>altruistic</FONT> is to use the following sequence of operations.<P>
+<pre>Operation           Target string  Source string</sub></sup></pre><P>
+<pre>------------------------------------------------</sub></sup></pre><P>
+<pre>copy a              a                   lgorithm</sub></sup></pre><P>
+<pre>copy l              al                   gorithm</sub></sup></pre><P>
+<pre>replace g by t      alt                   orithm</sub></sup></pre><P>
+<pre>delete o            alt                    rithm</sub></sup></pre><P>
+<pre>copy r              altr                    ithm</sub></sup></pre><P>
+<pre>insert u            altru                   ithm</sub></sup></pre><P>
+<pre>insert i            altrui                  ithm</sub></sup></pre><P>
+<pre>insert s            altruis                 ithm</sub></sup></pre><P>
+<pre>twiddle it into ti  altruisti                 hm</sub></sup></pre><P>
+<pre>insert c            altruistic                hm</sub></sup></pre><P>
+<pre>kill hm             altruistic</sub></sup></pre><P>
+There are many other sequences of operations that accomplish the same result.<P>
+Each of the operations delete, replace, copy, insert, twiddle, and kill has an associated cost. (Presumably, the cost of replacing a character is less than the combined costs of deletion and insertion; otherwise, the replace operation would not be used.) The cost of a given sequence of transformation operations is the sum of the costs of the individual operations in the sequence. For the sequence above, the cost of converting <FONT FACE="Courier New" SIZE=2>algorithm</FONT> to <FONT FACE="Courier New" SIZE=2>altruistic</FONT> is<P>
+<pre>(3 cost(copy)) + cost(replace) + cost(delete) + (3 cost(insert))</sub></sup></pre><P>
+<pre>+ cost(twiddle) + cost(kill) .</sub></sup></pre><P>
+Given two sequences <I>x</I>[1..<I>m</I>] and <I>y</I>[1..<I>n</I>] and a given set of operation costs, the <I><B>edit distance</I></B> from <I>x</I> to <I>y</I> is the cost of the least expensive transformation sequence that converts <I>x</I> to <I>y</I>. Describe a dynamic-programming algorithm to find the edit distance from <I>x</I>[l..<I>m</I>] to <I>y</I>[1..<I>n</I>] and print an optimal transformation sequence. Analyze the running time and space requirements of your algorithm.<P>
+<a name="0823_1578">16-4     Planning a company party<a name="0823_1578"><P>
+Professor McKenzie is consulting for the president of A.-B. Corporation, which is planning a company party. The company has a hierarchical structure; that is, the supervisor relation forms a tree rooted at the president. The personnel office has ranked each employee with a conviviality rating, which is a real number. In order to make the party fun for all attendees, the president does not want both an employee and his or her immediate supervisor to attend.<P>
+<I><B>a.     </I></B>Describe an algorithm to make up the guest list. The goal should be to maximize the sum of the conviviality ratings of the guests. Analyze the running time of your algorithm.<P>
+<I><B>b.     </I></B>How can the professor ensure that the president gets invited to his own party?<P>
+<a name="0823_1579">16-5     Viterbi algorithm<a name="0823_1579"><P>
+<a name="0823_1571"><a name="0823_1572">We can use dynamic programming on a directed graph <I>G</I> = (<I>V,E</I>) for speech recognition. Each edge (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> is labeled with a sound <IMG SRC="../IMAGES/sum14.gif">(<I>u,v</I>) from a finite set <IMG SRC="../IMAGES/sum14.gif"> of sounds. The labeled graph is a formal model of a person speaking a restricted language. Each path in the graph starting from a distinguished vertex <I>v</I><SUB>0</SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> corresponds to a possible sequence of sounds produced by the model. The label of a directed path is defined to be the concatenation of the labels of the edges on that path.<P>
+<I><B>a.     </I></B>Describe an efficient algorithm that, given an edge-labeled graph <I>G</I> with distinguished vertex <I>v</I><SUB>0</SUB> and a sequence <I>s</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><IMG SRC="../IMAGES/sum14.gif"><SUB>1</SUB>,<IMG SRC="../IMAGES/sum14.gif"><SUB>2</SUB>,...,<IMG SRC="../IMAGES/sum14.gif"><I><SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of characters from <IMG SRC="../IMAGES/sum14.gif">, returns a path in <I>G</I> that begins at <I>v</I><SUB>0</SUB> and has <I>s</I> as its label, if any such path exists. Otherwise, the algorithm should return <FONT FACE="Courier New" SIZE=2>NO-SUCH-PATH</FONT>. Analyze the running time of your algorithm. (<I>Hint:</I> You may find concepts from Chapter 23 useful.)<P>
+Now, suppose that every edge (<I>u,v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> has also been given an associated nonnegative probability <I>p</I>(<I>u, v</I>) of traversing the edge (<I>u, v</I>) from vertex <I>u </I>and producing the corresponding sound. The sum of the probabilities of the edges leaving any vertex equals 1. The probability of a path is defined to be the product of the probabilities of its edges. We can view the probability of a path beginning at <I>v</I><SUB>0</SUB> as the probability that a &quot;random walk&quot; beginning at <I>v</I><SUB>0</SUB> will follow the specified path, where the choice of which edge to take at a vertex <I>u</I> is made probabilistically according to the probabilities of the available edges leaving <I>u</I>.<P>
+<I><B>b.     </I></B>Extend your answer to part (a) so that if a path is returned, it is a <I>most probable</I> path starting at <I>v</I><SUB>0</SUB> and having label <I>s</I>. Analyze the running time of your algorithm.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+R. Bellman began the systematic study of dynamic programming in 1955. The word &quot;programming,&quot; both here and in linear programming, refers to the use of a tabular solution method. Although optimization techniques incorporating elements of dynamic programming were known earlier, Bellman provided the area with a solid mathematical basis [21].<P>
+Hu and Shing [106] give an <I>O</I>(<I>n </I>1<I>g n</I>)-time algorithm for the matrix-chain multiplication problem. They also demonstrate the correspondence between the optimal polygon triangulation problem and the matrix-chain multiplication problem.<P>
+<a name="0824_1573">The <I>O</I>(<I>mn</I>)-time algorithm for the longest-common-subsequence problem seems to be a folk algorithm. Knuth [43] posed the question of whether subquadratic algorithms for the LCS problem exist. Masek and Paterson [143] answered this question in the affirmative by giving an algorithm that runs in <I>O</I>(<I>mn</I>/l<I>g n</I>) time, where <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> and the sequences are drawn from a set of bounded size. For the special case in which no element appears more than once in an input sequence, Szymanski [184] shows that the problem can be solved in <I>O</I>((<I>n+m</I>) l<I>g</I>(<I>n</I>+<I>m</I>)) time. Many of these results extend to the problem of computing string edit distances (Problem 16-3).<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap17.htm">Chapter 17</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

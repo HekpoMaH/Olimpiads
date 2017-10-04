@@ -1,0 +1,36 @@
+#include<cstdio>
+#include<stack>
+std::stack<long long> s;
+long long n,x;
+bool f=true;
+void numb()
+{
+     scanf("%lld",&n);
+     s.push(n);
+}
+int main()
+{
+     while(f)
+     {
+          switch(getchar())
+          {
+               case '+':s.push(0);numb();break;
+               case '-':s.push(1);numb();break;
+               case '*':s.push(2);numb();break;
+               case '=':f=false;scanf("%lld",&n);break;
+          }
+     }
+     while(s.size())
+     {
+          x=s.top();s.pop();
+          switch(s.top())
+          {
+               case 0:n-=x;break;
+               case 1:n+=x;break;
+               case 2:n/=x;break;
+          }
+          s.pop();
+     }
+     printf("%lld\n",n);
+     return 0;
+}

@@ -1,0 +1,16 @@
+/*
+TASK: FESTA
+LANG: C++
+*/
+
+#include<iostream.h>
+#include<stdio.h>
+int main()
+{
+/*int a,d,b;
+scanf("%d",&d);
+printf("%d",d);
+cin>>a;   */
+cout<<4<<"\n"
+return(0);
+}

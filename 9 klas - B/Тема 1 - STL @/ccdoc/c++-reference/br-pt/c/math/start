@@ -1,0 +1,129 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="br-pt"
+ lang="br-pt" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>br-pt:c:math:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-09-06T12:22:58-0700" />
+<meta name="keywords" content="br-pt,c,math,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/br-pt/c/math/start?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=br-pt:c:math" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/br-pt/c/math/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/br-pt/c/math/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='br-pt:c:math';var JSINFO = {"id":"br-pt:c:math:start","namespace":"br-pt:c:math"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h1><a name="biblioteca_matematica_padrao_em_c" id="biblioteca_matematica_padrao_em_c">Biblioteca Matemática Padrão em C</a></h1>
+<div class="level1">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/abs" class="wikilink2" title="br-pt:c:math:abs" rel="nofollow">abs</a> </td><td class="col1"> valor absoluto </td>
+	</tr>
+	<tr class="row1">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/acos" class="wikilink2" title="br-pt:c:math:acos" rel="nofollow">acos</a> </td><td class="col1"> arco cosseno </td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/asin" class="wikilink2" title="br-pt:c:math:asin" rel="nofollow">asin</a> </td><td class="col1"> arco seno </td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/atan" class="wikilink2" title="br-pt:c:math:atan" rel="nofollow">atan</a> </td><td class="col1"> arco tangente </td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/atan2" class="wikilink2" title="br-pt:c:math:atan2" rel="nofollow">atan2</a> </td><td class="col1"> arco tangente, usando sinais para determinar os quadrantes </td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/ceil" class="wikilink2" title="br-pt:c:math:ceil" rel="nofollow">ceil</a> </td><td class="col1"> o menor inteiro maior que o valor determinado </td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/cos" class="wikilink2" title="br-pt:c:math:cos" rel="nofollow">cos</a> </td><td class="col1"> cosseno </td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/cosh" class="wikilink2" title="br-pt:c:math:cosh" rel="nofollow">cosh</a> </td><td class="col1"> cosseno hiperbólico </td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/div" class="wikilink2" title="br-pt:c:math:div" rel="nofollow">div</a> </td><td class="col1"> retorna o quociente e o resto de uma divisão </td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/exp" class="wikilink2" title="br-pt:c:math:exp" rel="nofollow">exp</a> </td><td class="col1"> retorna “e” elevado à uma determinada potência </td>
+	</tr>
+	<tr class="row10">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/fabs" class="wikilink2" title="br-pt:c:math:fabs" rel="nofollow">fabs</a> </td><td class="col1"> valor absoluto para números em ponto flutuante </td>
+	</tr>
+	<tr class="row11">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/floor" class="wikilink2" title="br-pt:c:math:floor" rel="nofollow">floor</a> </td><td class="col1"> retorna o maior inteiro meior que o valor determinado </td>
+	</tr>
+	<tr class="row12">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/fmod" class="wikilink2" title="br-pt:c:math:fmod" rel="nofollow">fmod</a> </td><td class="col1"> retorna o resto de uma divisão </td>
+	</tr>
+	<tr class="row13">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/frexp" class="wikilink2" title="br-pt:c:math:frexp" rel="nofollow">frexp</a> </td><td class="col1"> decompõe o número em notação científica </td>
+	</tr>
+	<tr class="row14">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/labs" class="wikilink2" title="br-pt:c:math:labs" rel="nofollow">labs</a> </td><td class="col1"> valor absoluto para inteiros longos </td>
+	</tr>
+	<tr class="row15">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/ldexp" class="wikilink2" title="br-pt:c:math:ldexp" rel="nofollow">ldexp</a> </td><td class="col1"> computa um número em notação científica </td>
+	</tr>
+	<tr class="row16">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/ldiv" class="wikilink2" title="br-pt:c:math:ldiv" rel="nofollow">ldiv</a> </td><td class="col1"> retorna o quociente e resto de uma divisão, na forma de inteiros longos </td>
+	</tr>
+	<tr class="row17">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/log" class="wikilink2" title="br-pt:c:math:log" rel="nofollow">log</a> </td><td class="col1"> logaritmo natural (base e) </td>
+	</tr>
+	<tr class="row18">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/log10" class="wikilink2" title="br-pt:c:math:log10" rel="nofollow">log10</a> </td><td class="col1"> logaritmo comum (base 10) </td>
+	</tr>
+	<tr class="row19">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/modf" class="wikilink2" title="br-pt:c:math:modf" rel="nofollow">modf</a> </td><td class="col1"> decompões o número em uma parte inteira e fracional </td>
+	</tr>
+	<tr class="row20">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/pow" class="wikilink2" title="br-pt:c:math:pow" rel="nofollow">pow</a> </td><td class="col1"> retorna o número dado elevado a outro número </td>
+	</tr>
+	<tr class="row21">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/sin" class="wikilink2" title="br-pt:c:math:sin" rel="nofollow">sin</a> </td><td class="col1"> seno </td>
+	</tr>
+	<tr class="row22">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/sinh" class="wikilink2" title="br-pt:c:math:sinh" rel="nofollow">sinh</a> </td><td class="col1"> seno hiperbólico </td>
+	</tr>
+	<tr class="row23">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/sqrt" class="wikilink2" title="br-pt:c:math:sqrt" rel="nofollow">sqrt</a> </td><td class="col1"> raiz quadrada </td>
+	</tr>
+	<tr class="row24">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/tan" class="wikilink2" title="br-pt:c:math:tan" rel="nofollow">tan</a> </td><td class="col1"> tangente </td>
+	</tr>
+	<tr class="row25">
+		<td class="col0"> <a href="http://www.cppreference.com/wiki/br-pt/c/math/tanh" class="wikilink2" title="br-pt:c:math:tanh" rel="nofollow">tanh</a> </td><td class="col1"> tangente hiperbólica </td>
+	</tr>
+</table>
+
+</div>
+
+<h5><a name="compilando_com_gcc" id="compilando_com_gcc">Compilando com gcc</a></h5>
+<div class="level5">
+
+<p>
+
+Para usar algumas das funções acima, é necessário linkar explicitamente a biblioteca matemática em certas versões do compilador gcc, usando a opção <code>-lm</code> da linha de comando.
+</p>
+
+</div>
+</div>
+</body>
+</html>

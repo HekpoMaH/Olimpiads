@@ -1,0 +1,57 @@
+#include<iostream>
+using namespace std;
+long a[1000][1000],b[10000],c[10000];
+long n,k,maxn,i;
+int main()
+{
+cin>>n;
+for(i=0;i<n;i++)
+for(int j=0;j<n;j++)
+{cin>>a[i][j];
+if(a[i][j]>maxn)maxn=a[i][j];
+}
+
+cin>>k;
+for(i=0;i<k;i++)
+cin>>b[i];
+
+
+
+int br,g,h,end;
+for(i=0;i<k;i++)
+{
+    br=0;
+    g=0;
+    h=n-1;
+    end=b[i];
+    if(end<=maxn){
+
+                while(a[g][h]!=end)
+                    {
+                    if(a[g][h]>end){h--;br++;}
+                    else { g++;br++;}
+                    }
+                    c[i]=br;
+                }
+    if(end>maxn)c[i]=-1;
+}
+
+
+for(i=0;i<k;i++)
+{
+    if(c[i]!=-1)cout<<c[i]<<endl;
+    if(c[i]==-1)cout<<"No Solution"<<endl;
+}
+return 0;
+}
+
+
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

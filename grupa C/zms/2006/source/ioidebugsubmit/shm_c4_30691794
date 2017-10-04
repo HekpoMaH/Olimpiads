@@ -1,0 +1,102 @@
+#include<iostream.h>
+#include<string.h>
+#include<stdio.h>
+float max=9999;
+long tel[10][13],friends,moje[10][13],v[10];float tarifa[10],m[10][10],d[10];
+int find()
+{long p=0,br=0;float min=9999;
+int i;
+for(i=0;i<=friends+1;i++)
+if(v[i]==0)
+     {br++;
+     if(d[i]<min){min=d[i];p=i;}
+     }
+
+if(br==0)return 0;
+return p;
+}
+void dexter()
+{int i;
+v[0]=1;
+for(i=1;i<=friends+1;i++)
+{if(m[0][i]==max)d[i]=max;
+else
+d[i]=m[0][i];
+}
+while(1)
+{
+int y=find();
+if(y==0)break;
+v[y]=1;
+for(i=1;i<=friends+1;i++)
+if(d[y]+m[y][i]<d[i])d[i]=d[y]+m[y][i];
+
+}
+
+printf("%0.2f\n",d[friends+1]);
+}
+
+int check(int i,int j)
+{   int o;
+for(o=0;o<10;o++)
+if(tel[i][o]==1&&moje[j][o]==0)return 0;
+return 1;
+}
+int main()
+{
+cin>>friends;
+int i,j;
+for(i=0;i<friends+3;i++)
+for(j=0;j<friends+3;j++)
+m[i][j]=max;
+
+char z[13];
+cin>>z;
+long t=strlen(z);
+for(i=0;i<t;i++)
+	 tel[0][z[i]-'0']=1;
+cin>>tarifa[0];
+long h;
+cin>>h;
+long k;
+for(i=0;i<h;i++)
+{
+
+cin>>k;
+moje[i][k]=1;
+}
+for(i=1;i<=friends;i++)
+	  {
+	  cin>>z;
+	  int j;
+	     t=strlen(z);
+	  for(j=0;j<j;j++)
+	       tel[i][z[j]-'0']=1;
+	   cin>>tarifa[i];
+	   cin>>h;
+	  long k;
+	  for(j=0;j<h;j++)
+	      {
+
+	       cin>>k;
+	       moje[j][k]=1;
+	      }
+
+	  for(j=0;j<i;j++)
+	  {
+	  if(!check(i,j)) m[j][i]=tarifa[j];
+	  //4ekvame dali j moje da nabere i;
+	  }
+	  }
+cin>>z;
+	  t=strlen(z);
+	  for(i=0;i<t;i++)
+	       tel[friends+1][z[i]-'0']=1;
+	  for(j=0;j<i;j++)
+	  {
+	  if(check(i,j)) m[j][i]=tarifa[j];
+	  //4ekvame dali j moje da nabere i;
+	  }
+dexter();
+return 0;
+}

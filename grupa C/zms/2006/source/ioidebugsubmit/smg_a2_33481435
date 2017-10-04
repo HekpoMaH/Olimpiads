@@ -1,0 +1,86 @@
+/*
+TASK: cars
+LANG: C++
+*/		 
+
+#include <cstdio>
+
+
+const int MAXN = 1 << 19;//500 000
+const int MOD = 987654321;
+//const int MAXM = 1 << 23;//5 000 000
+			 									
+int N;
+
+int *vec[MAXN];
+int sz[MAXN];
+		
+int inp[MAXN];  		
+int bucket[MAXN];  
+			
+int start, dest;
+
+int bfs () {
+	int p1 =0, p2 =1, p3 =0;
+	static int queue[MAXN];
+	queue[p3++] = start;
+	bucket[start] = 1;
+	
+	int i, j, v, vb;
+	while (p1 != p2) {
+		for (i = p1; i < p2; ++i) {
+			v = queue[i];			 
+			vb = bucket[v];
+			for (j = 0; j < sz[v]; ++j) {
+				bucket[vec[v][j]] += vb;
+				bucket[vec[v][j]] %= MOD;
+				if ((--inp[vec[v][j]]) == 0)
+					queue[p3++] = vec[v][j];
+			}					
+		}
+		p1 = p2;
+		p2 = p3;
+	}					
+
+	return bucket[dest];
+}
+
+int main () {
+	scanf ("%d", &N);
+				
+	int i, j;
+	int a;
+	for (i = 0; i < N; ++i) {
+		scanf ("%d", sz + i);
+//		printf ("sz[%d] = %d\n", i, sz[i]);
+		if (sz[i] == 0) dest = i;
+			  
+		vec[i] = new int [sz[i]];
+		for (j = 0; j < sz[i]; ++j) {
+			scanf ("%d", &a);
+			--a;
+			++inp[a];
+			vec[i][j] = a;			 
+//			printf ("*%d*", a);
+		}						
+	}							
+/*						
+	for (i = 0; i < N; ++i) {
+		for (j = 0; j < sz[i]; ++j)
+			printf ("%d ", vec[i][j]);
+		printf ("\n");		 
+	}
+*/	
+	for (i = 0; i < N; ++i)
+		if (!inp[i]) {
+			start = i;
+			break;	  
+		}
+				
+//	printf ("%d %d\n", start, dest);
+
+	printf ("%d\n", bfs ());
+
+	return 0;
+}
+

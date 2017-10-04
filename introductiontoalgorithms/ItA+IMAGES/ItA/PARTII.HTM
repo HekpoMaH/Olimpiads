@@ -1,0 +1,76 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: PART II: Sorting and Order Statistics</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap07.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap06.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="075d_0001"><a name="075d_0002">PART II: Sorting and Order Statistics<a name="075d_0002"></h1><P>
+
+
+
+
+
+<h1>Introduction</h1><P>
+<a name="075f_1302"><a name="075f_1303">This part presents several algorithms that solve the following <I><B>sorting problem:</I></B><P>
+<B>Input:</B> A sequence of <I>n</I> numbers &lt;<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>&gt;.<P>
+<B>Output:</B> A permutation (reordering) &lt;<I>a</I>'<SUB>1</SUB>, <I>a</I>'<SUB>2</SUB>, . . . , <I>a</I>'<I><SUB>n</I></SUB>&gt; of the input sequence such that <I>a</I>'<SUB>1</SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a</I>'<SUB>2</SUB> <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/lteq12.gif"><I>a</I>'<I><SUB>n</I></SUB>.<P>
+The input sequence is usually an <I>n</I>-element array, although it may be represented in some other fashion, such as a linked list.<P>
+
+
+
+
+
+<h2>The structure of the data</h2><P>
+<a name="0760_1304"><a name="0760_1305"><a name="0760_1306">In practice, the numbers to be sorted are rarely isolated values. Each is usually part of a collection of data called a <I><B>record</I></B>. Each record contains a <I><B>key</I></B><I>,</I> which is the value to be sorted, and the remainder of the record consists of <I><B>satellite data</I></B>, which are usually carried around with the key. In practice, when a sorting algorithm permutes the keys, it must permute the satellite data as well. If each record includes a large amount of satellite data, we often permute an array of pointers to the records rather than the records themselves in order to minimize data movement.<P>
+In a sense, it is these implementation details that distinguish an algorithm from a full-blown program. Whether we sort individual numbers or large records that contain numbers is irrelevant to the <I>method</I> by which a sorting procedure determines the sorted order. Thus, when focusing on the problem of sorting, we typically assume that the input consists only of numbers. The translation of an algorithm for sorting numbers into a program for sorting records is conceptually straightforward, although in a given engineering situation there may be other subtleties that make the actual programming task a challenge.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Sorting algorithms</h2><P>
+<a name="0761_1307">We introduced two algorithms that sort <I>n</I> real numbers in Chapter 1. Insertion sort takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time in the worst case. Because its inner loops are tight, however, it is a fast in-place sorting algorithm for small input sizes. (Recall that a sorting algorithm sorts <I><B>in place</I></B> if only a constant number of elements of the input array are ever stored outside the array.) Merge sort has a better asymptotic running time, <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>), but the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure it uses does not operate in place.<P>
+In this part, we shall introduce two more algorithms that sort arbitrary real numbers. Heapsort, presented in Chapter 7, sorts <I>n</I> numbers in place in <I>O</I>(<I>n </I>lg <I>n</I>) time. It uses an important data structure, called a heap, to implement a priority queue.<P>
+Quicksort, in Chapter 8, also sorts <I>n</I> numbers in place, but its worst-case running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Its average-case running time is <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>), though, and it generally outperforms heapsort in practice. Like insertion sort, quicksort has tight code, so the hidden constant factor in its running time is small. It is a popular algorithm for sorting large input arrays.<P>
+Insertion sort, merge sort, heapsort, and quicksort are all comparison sorts: they determine the sorted order of an input array by comparing elements. Chapter 9 begins by introducing the decision-tree model in order to study the performance limitations of comparison sorts. Using this model, we prove a lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) on the worst-case running time of any comparison sort on <I>n</I> inputs, thus showing that heapsort and merge sort are asymptotically optimal comparison sorts.<P>
+Chapter 9 then goes on to show that we can beat this lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) if we can gather information about the sorted order of the input by means other than comparing elements. The counting sort algorithm, for example, assumes that the input numbers are in the set {l, 2, . . . , <I>k</I>}. By using array indexing as a tool for determining relative order, counting sort can sort <I>n</I> numbers in <I>O</I>(<I>k</I> + <I>n</I>) time. Thus, when <I>k</I> = <I>O</I>(<I>n</I>), counting sort runs in time that is linear in the size of the input array. A related algorithm, radix sort, can be used to extend the range of counting sort. If there are <I>n</I> integers to sort, each integer has <I>d</I> digits, and each digit is in the set {1,2, . . . , <I>k</I>}, radix sort can sort the numbers in <I>O</I>(<I>d</I> (<I>n</I> + <I>k</I>)) time. When <I>d</I> is a constant and <I>k</I> is <I>O</I>(<I>n</I>), radix sort runs in linear time. A third algorithm, bucket sort, requires knowledge of the probabilistic distribution of numbers in the input array. It can sort <I>n</I> real numbers uniformly distributed in the half-open interval [0, 1) in average-case <I>O</I>(<I>n</I>) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Order statistics</h2><P>
+The <I>i</I>th order statistic of a set of <I>n</I> numbers is the <I>i</I>th smallest number in the set. One can, of course, select the <I>i</I>th order statistic by sorting the input and indexing the <I>i</I>th element of the output. With no assumptions about the input distribution, this method runs in <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>) time, as the lower bound proved in Chapter 9 shows.<P>
+In Chapter 10, we show that we can find the <I>i</I>th smallest element in <I>O</I>(<I>n</I>) time, even when the elements are arbitrary real numbers. We present an algorithm with tight pseudocode that runs in <I>O</I>(<I>n</I><SUP>2</SUP>) time in the worst case, but linear time on average. We also give a more complicated algorithm that runs in <I>O</I>(<I>n</I>) worst-case time.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Background</h2><P>
+Although most of this part does not rely on difficult mathematics, some sections do require mathematical sophistication. In particular, the average-case analyses of quicksort, bucket sort, and the order-statistic algorithm use probability, which is reviewed in Chapter 6. The analysis of the worst-case linear-time algorithm for the order statistic involves somewhat more sophisticated mathematics than the other worst-case analyses in this part.<P>
+<P>
+
+
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap07.htm">Chapter 7</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,12 @@
+TD {
+	FONT-WEIGHT: 400; FONT-SIZE: 13px; COLOR: #000000; FONT-STYLE: normal; FONT-FAMILY: Arial, Helvetica, sans-serif; TEXT-DECORATION: none
+}
+A {
+	COLOR: #000000; FONT-STYLE: italic; TEXT-DECORATION: none
+}
+A:hover {
+	TEXT-DECORATION: underline
+}
+A.current {
+	COLOR: #ff0000
+}

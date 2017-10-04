@@ -1,0 +1,124 @@
+/*
+TASK: castle
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <queue>
+
+#define pb push_back
+#define mp make_pair
+#define x first
+#define y second
+
+using namespace std;
+
+typedef pair<int,int> pii;
+
+int n,m,p;
+char s[64][64];
+
+int g[8][8];
+vector< pii > v;
+
+int dx[]={0,0,1,-1};
+int dy[]={1,-1,0,0};
+int level[64][64];
+
+void init()
+{
+    scanf("%d %d",&n,&m);
+    for(int i=0;i<n;i++) scanf("%s",&s[i]);
+    
+    for(int i=0;i<n;i++)
+     for(int j=0;j<m;j++)
+      if(s[i][j]=='P')
+      {
+            p++;
+            v.pb( mp(i,j) );
+      }
+    for(int i=0;i<n;i++)
+     for(int j=0;j<m;j++)
+      if(s[i][j]=='E')
+       v.pb( mp(i,j) );
+    for(int i=0;i<n;i++)
+     for(int j=0;j<m;j++)
+      if(s[i][j]=='X')
+       v.pb( mp(i,j) );
+}
+
+int bfs(int sx , int sy , int fx , int fy)
+{
+    memset(level,0,sizeof(level));
+    queue< pii > q;
+    
+    level[sx][sy]=1;
+    q.push( mp(sx,sy) );
+    
+    while(!q.empty())
+    {
+        pii tmp=q.front(); q.pop();
+        if(tmp.x==fx && tmp.y==fy) return level[tmp.x][tmp.y]-1;
+        
+        for(int i=0;i<4;i++)
+        {
+            pii next;
+            next.x=tmp.x+dx[i]; next.y=tmp.y+dy[i];
+            
+            if(next.x==n) next.x=0;
+            if(next.x==-1) next.x=n-1;
+            if(next.y==m) next.y=0;
+            if(next.y==-1) next.y=m-1;
+            
+            if(s[next.x][next.y]=='#' || level[next.x][next.y]) continue;
+            
+            level[next.x][next.y]=level[tmp.x][tmp.y]+1;
+            q.push(next);
+        }
+    }
+    return -1;
+}
+
+void build()
+{
+    for(int i=0;i<v.size()-1;i++)
+     for(int j=i+1;j<v.size();j++)
+      g[i][j]=g[j][i]=bfs(v[i].x , v[i].y , v[j].x , v[j].y);
+}
+
+void solve()
+{
+    if(p==0) { printf("%d\n",g[0][1]); return; }
+      
+    bool fl=false;
+    int sol=10000;
+    
+    int set[8];
+    for(int i=0;i<p;i++) set[i]=i;
+    
+    do
+    {
+        if(g[p][0]==-1 || g[p-1][p+1]==-1) continue;
+        
+        fl=true;
+        int tmp=g[p][ set[0] ]+g[ set[p-1] ][p+1];
+        for(int i=0;i<p-1;i++)
+         tmp+=g[ set[i] ][ set[i+1] ];
+        if(tmp<sol) sol=tmp;
+    }
+    while(next_permutation(set,set+p));
+    
+    if(fl) printf("%d\n",sol);
+    else printf("-1\n");
+}
+
+int main()
+{
+    init();
+    build();
+    solve();
+
+    return 0;
+}

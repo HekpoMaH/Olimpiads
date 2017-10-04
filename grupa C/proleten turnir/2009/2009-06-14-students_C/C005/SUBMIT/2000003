@@ -1,0 +1,96 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+
+
+int m,n,a,b;
+int s1,e1,s2,e2;
+vector<int> graph[256];
+bool  dist[256][256];
+bool  dist2[256][256];
+bool used[256];
+
+
+bool dfs(int num,int kms)
+{
+    
+    used[num]=1;
+    bool ok=0,check=0;
+    if(num==e1){dist[num][kms]=1; used[num]=0; return 1;}
+    
+    int q;
+    for(q=0;q<graph[num].size();q++)
+    if(used[ graph[num][q] ]==0)
+    {
+     check=dfs( graph[num][q],kms+1 );
+     if(check==1){dist[num][kms]=1; ok=1; }
+    }
+    
+    
+    
+    used[num]=0;
+    return ok;
+}
+
+
+bool dfs2(int num,int kms)
+{
+    
+    used[num]=1;
+    bool ok=0,check=0;
+    if(num==e2){dist2[num][kms]=1; used[num]=0; return 1;}
+    
+    int q;
+    for(q=0;q<graph[num].size();q++)
+    if(used[ graph[num][q] ]==0)
+    {
+     check=dfs2( graph[num][q],kms+1 );
+     if(check==1){dist2[num][kms]=1; ok=1; }
+    }
+    
+    
+    
+    used[num]=0;
+    return ok;
+}
+
+
+
+int main()
+{
+    int i;
+    
+    cin>>n>>m;
+    for(i=0;i<m;i++)
+    {
+      scanf("%d",&a);
+      scanf("%d",&b);
+      graph[a+1].push_back(b+1);
+      graph[b+1].push_back(a+1);
+    }
+    cin>>s1>>e1>>s2>>e2;
+    s1++; e1++; s2++; e2++;
+    
+    bool zzz;
+    zzz=dfs(s1,0);
+    zzz=dfs2(s2,0);
+   
+    
+    
+    
+    
+    int br=0,j=0;
+    for(i=0;i<256;i++)
+    {
+        for(j=0;j<256;j++)
+        if(dist[i][j]==1 && dist2[i][j]==1){br++; break;}
+    }
+    
+    cout<<br;
+    cout<<endl;
+    
+    
+    cin>>i;
+    return 0;
+}
+

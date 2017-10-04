@@ -1,0 +1,146 @@
+#include <cstdio>
+#include <iostream>
+#define maxn 55
+using namespace std;
+
+struct point{
+  int x, y;
+  point(){};
+  point(int _x, int _y){
+    x = _x;
+    y = _y;
+  }
+};
+
+struct move{
+  int x;
+  int y;
+  move(){x = 0; y = 0;};
+  move(int _x, int _y){
+    x = _x;
+    y = _y;
+  }
+};
+
+move mov[6] = {move( 1, 0), move( 0, 1), move(-1, 0), move( 0, -1)};
+
+char a[maxn][maxn];
+point que[maxn];
+int
+front, end,
+used[maxn][maxn][6],
+n, m,
+px, py, pxn, pyn,
+br, brP;
+
+
+
+void read_data(){
+  scanf("%d %d", &n, &m);
+  //printf(" %d %d", n, m);
+  for(int i = 0; i<n; ++i){
+      scanf("%s", a[i]);
+
+      for(int j = 0; j<m; ++j){
+        //printf("%d %d: %c\n", i+1, j+1,a[i][j]);
+      if(a[i][j] == 'E'){
+        px = i;
+        py = j;
+      }
+      if( a[i][j] == 'P'){
+        brP++;
+        //printf("%d", brP);
+      }
+    }
+
+  }
+/*  for(int i = 0; i<m; ++i){
+    a[n][i] = '#';
+  }
+  for(int i = 0; i<n; ++i){
+    a[m][i] = '#';
+  }*/
+}
+
+
+int bfs(int x, int y, int q, int &nx, int &ny, char z){//printf("\n////////////////// %c\n", z);
+  int
+  next = 1, p,
+  tx, ty,
+  br = 0;
+  end = front = 0;
+  que[end++] = point(x, y);
+  used[x][y][q] = 1;
+  while(end - front){
+    p = next;
+    next = 0;
+    br++;//printf("!*!*!*!*%d\n", br);
+    for(int i = 0; i<p; ++i){
+     // printf("%d %d %c -->\n", que[front].x+1, que[front].y+1, a[que[front].x][ que[front].y]);
+       if(a[que[front].x][ que[front].y] == z && (que[front].x!=x || que[front].y!=y)){
+          nx = que[front].x;
+          ny = que[front].y;
+          return br-1;
+        }//printf("! %d %d\n", tx, ty);
+
+
+      for(int j = 0; j<4; ++j){
+        tx = que[front].x+mov[j].x;
+        ty = que[front].y+mov[j].y;
+        if(tx == n) tx = 0;
+        if(tx == -1) tx = n-1;
+        if(ty == m) ty = 0;
+        if(ty == -1) ty = m-1;
+
+
+        //printf(" %d %d %c ||", tx+1, ty+1, a[tx][ty]);
+
+        if(a[tx][ty] != '#' && !used[tx][ty][q]){//printf("+");
+
+
+          que[end++] = point(tx, ty);
+          used[tx][ty][q] = 1;
+          next++;
+        }
+      }
+      front++;
+
+    }//printf("\n*****************\n");
+  }//printf("$$$$");
+  return -1;
+}
+
+
+
+
+
+
+int main (){
+  int t;
+  read_data();
+
+
+  //printf("brP %d\n", brP);
+  for(int i = 0; i<brP; ++i){//printf("!!! %d", brP);
+    t = bfs(px, py, i, px, py, 'P');
+    if(t == -1){
+      printf("-1\n");
+      return 0;
+    }
+    br += t;
+    //printf("Ps: %d %d BR: %d \n", px, py, br);
+  }
+
+
+  t = bfs(px, py, 5, px, py, 'X');
+  if(t == -1){
+      //printf("-1\n");
+      return 0;
+  }
+  br += t;
+
+  printf("%d\n", br);
+
+
+  return 0;
+}

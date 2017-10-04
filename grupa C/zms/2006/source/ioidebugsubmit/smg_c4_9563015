@@ -1,0 +1,55 @@
+/*
+TASK: REBUS
+LANG: C++
+*/
+#include <iostream>
+#include <cstring>
+#include <cmath>
+
+#define isLetter(i) {rebus[i]!='+' && rebus[i]!='-' && rebus[i]!='='}
+
+using namespace std;
+
+char val[10];
+char rebus[3000];
+char letters[10];
+int uniques=0;
+int len;
+
+int leftSide() {
+    int result=0, current=0, numseg=0, reached=0;
+    while(current!='=') {
+        for(int i=reached; isLetter(i); i++) current+=rebus[i]*pow10(i-reached);
+        reached=i;
+    }
+}
+
+int rightSide() {
+    return 0;
+}
+
+bool works() {
+    return leftSide()==rightSide();
+}
+
+void guess(num, depth) {
+     val[depth]=num;
+     if(depth==uniques && works()) return;
+     guess(num, depth+1);
+     else guess(num+1,depth);
+}
+
+int main() {
+    cin.getline(rebus, 3000);
+    len=strlen(rebus);
+    for(int i=0; i<=len; i++) {
+        if(!isLetter(i)) continue;
+        if(!index(letters, rebus[i])) {
+            letters[uniques]=rebus[i];
+            uniques++;
+        }
+    }
+    //guess(1,1);
+    for(int i=0; i<uniques; i++) cout<<letters[i]<<"="<<val[i]<<endl;
+    return 0;
+}

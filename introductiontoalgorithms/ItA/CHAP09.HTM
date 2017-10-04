@@ -1,0 +1,264 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 9: SORTING IN LINEAR TIME</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap10.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap08.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0789_1378">CHAPTER 9: SORTING IN LINEAR TIME<a name="0789_1378"></h1><P>
+We have now introduced several algorithms that can sort <I>n</I> numbers in <I>O</I>(<I>n </I>lg <I>n</I>) time. Merge sort and heapsort achieve this upper bound in the worst case; quicksort achieves it on average. Moreover, for each of these algorithms, we can produce a sequence of <I>n</I> input numbers that causes the algorithm to run in <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>) time.<P>
+<a name="0789_1377">These algorithms share an interesting property: <I>the sorted order they determine is based only on comparisons between the input elements</I>. We call such sorting algorithms <I><B>comparison sorts</I></B>. All the sorting algorithms introduced thus far are comparison sorts.<P>
+In Section 9.1, we shall prove that any comparison sort must make <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>) comparisons in the worst case to sort a sequence of <I>n</I> elements. Thus, merge sort and heapsort are asymptotically optimal, and no comparison sort exists that is faster by more than a constant factor.<P>
+Sections 9.2 and 9.3 examine three sorting algorithms--counting sort, radix sort, and bucket sort--that run in linear time. Needless to say, these algorithms use operations other than comparisons to determine the sorted order. Consequently, the <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) lower bound does not apply to them.<P>
+
+
+
+
+
+<h1><a name="078b_137a">9.1 Lower bounds for sorting<a name="078b_137a"></h1><P>
+<a name="078b_1378"><a name="078b_1379">In a comparison sort, we use only comparisons between elements to gain order information about an input sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . ,<I>a<SUB>n</SUB>) </I>That is, given two elements <I>a<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> and <I>a<SUB><FONT FACE="Courier New" SIZE=2>j</I></FONT></SUB>, we perform one of the tests <I>a<SUB>i</SUB> &lt; a<SUB>j</SUB>, a<SUB>i</SUB> <IMG SRC="../IMAGES/lteq12.gif"> a<SUB>j</SUB>, a<SUB>i</SUB> = a<SUB>j</SUB>, a<SUB>i</SUB> <IMG SRC="../IMAGES/gteq.gif"> a<SUB>j</SUB>, or a<SUB>i</SUB> &gt; a<SUB>j</I></SUB> to determine their relative order. We may not inspect the values of the elements or gain order information about them in any other way.<P>
+In this section, we assume without loss of generality that all of the input elements are distinct. Given this assumption, comparisons of the form <I>a<SUB>i</I></SUB> = <I>a<SUB>j</I></SUB> are useless, so we can assume that no comparisons of this form are made. We also note that the comparisons <I>a<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a<SUB>j</I></SUB>, <I>a<SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> <I>a<SUB>j</I></SUB>, <I>a<SUB>i</I></SUB> &gt; <I>a<SUB>j</I></SUB>, and <I>a<SUB>i</I></SUB> &lt; <I>a<SUB>j</I></SUB> are all equivalent in that they yield identical information about the relative order of <I>a<SUB>i</I></SUB> and <I>a<SUB>j</I></SUB>. We therefore assume that all comparisons have the form <I>a<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a<SUB>j</I></SUB>.<P>
+<img src="173_a.gif"><P>
+<h4><a name="078b_137b">Figure 9.1 The decision tree for insertion sort operating on three elements. There are 3! = 6 possible permutations of the input elements, so the decision tree must have at least 6 leaves.<a name="078b_137b"></sub></sup></h4><P>
+
+
+
+
+
+<h2>The decision-tree model</h2><P>
+<a name="078c_137a"><a name="078c_137b">Comparison sorts can be viewed abstractly in terms of <I><B>decision trees</I></B>. A decision tree represents the comparisons performed by a sorting algorithm when it operates on an input of a given size. Control, data movement, and all other aspects of the algorithm are ignored. Figure 9.1 shows the decision tree corresponding to the insertion sort algorithm from Section 1.1 operating on an input sequence of three elements.<P>
+In a decision tree, each internal node is annotated by <I>a<SUB>i</SUB> </I>:<I> a<SUB>j</I></SUB> for some <I>i</I> and <I>j</I> in the range 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I>, <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, where <I>n</I> is the number of elements in the input sequence. Each leaf is annotated by a permutation <IMG SRC="../IMAGES/lftwdchv.gif"><IMG SRC="../IMAGES/piuc.gif">(1),<IMG SRC="../IMAGES/piuc.gif">(2), . . . ,<IMG SRC="../IMAGES/piuc.gif">(<I>n</I>)<IMG SRC="../IMAGES/wdrtchv.gif">. (See Section 6.1 for background on permutations.) The execution of the sorting algorithm corresponds to tracing a path from the root of the decision tree to a leaf. At each internal node, a comparison <I>a<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a<SUB>j</I></SUB> is made. The left subtree then dictates subsequent comparisons for <I>a<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a<SUB>j</I></SUB>, and the right subtree dictates subsequent comparisons for <I>a<SUB>i</I></SUB> &gt; <I>a<SUB>j</I></SUB>. When we come to a leaf, the sorting algorithm has established the ordering <I>a</I><IMG SRC="../IMAGES/piuc.gif"><I>(1)<SUB><IMG SRC="../IMAGES/lteq12.gif"> </SUB></I>a<I><IMG SRC="../IMAGES/piuc.gif">(2)<SUB> <IMG SRC="../IMAGES/lteq12.gif"> . . . <IMG SRC="../IMAGES/lteq12.gif"> </I>a</SUB><FONT FACE="Courier New" SIZE=2><I><SUB><IMG SRC="../IMAGES/piuc.gif"></I>(<I>n</I>).</FONT></SUB> Each of the <I>n</I>! permutations on <I>n</I> elements must appear as one of the leaves of the decision tree for the sorting algorithm to sort properly.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A lower bound for the worst case</h2><P>
+The length of the longest path from the root of a decision tree to any of its leaves represents the worst-case number of comparisons the sorting algorithm performs. Consequently, the worst-case number of comparisons for a comparison sort corresponds to the height of its decision tree. A lower bound on the heights of decision trees is therefore a lower bound on the running time of any comparison sort algorithm. The following theorem establishes such a lower bound.<P>
+<a name="078d_137d">Theorem 9.1<a name="078d_137d"><P>
+<a name="078d_137c">Any decision tree that sorts <I>n</I> elements has height <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>).<P>
+<I><B>Proof     </I></B>Consider a decision tree of height <I>h</I> that sorts <I>n</I> elements. Since there are <I>n</I>! permutations of <I>n</I> elements, each permutation representing a distinct sorted order, the tree must have at least <I>n</I>! leaves. Since a binary tree of height <I>h</I> has no more than 2<I><SUP>h</I></SUP> leaves, we have<P>
+<pre><I>n</I>! <IMG SRC="../IMAGES/lteq12.gif"> 2<I><SUP>h</I></SUP> ,</sub></sup></pre><P>
+which, by taking logarithms, implies<P>
+<pre><I>h</I> <IMG SRC="../IMAGES/gteq.gif"> lg(<I>n</I>!) ,</sub></sup></pre><P>
+since the lg function is monotonically increasing. From Stirling's approximation (2.11), we have<P>
+<img src="174_a.gif"><P>
+where <I>e</I> = 2.71828 . . . is the base of natural logarithms; thus<P>
+<img src="174_b.gif"><P>
+<a name="078d_137e">Corollary 9.2<a name="078d_137e"><P>
+Heapsort and merge sort are asymptotically optimal comparison sorts.<P>
+<I><B>Proof     </I></B>The <I>O</I>(<I>n </I>lg <I>n</I>) upper bounds on the running times for heapsort and merge sort match the <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>) worst-case lower bound from Theorem 9.1.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="078e_1380">Exercises<a name="078e_1380"></h2><P>
+<a name="078e_1381">9.1-1<a name="078e_1381"><P>
+<a name="078e_137d"><a name="078e_137e"><a name="078e_137f">What is the smallest possible depth of a leaf in a decision tree for a sorting algorithm?<P>
+<a name="078e_1382">9.1-2<a name="078e_1382"><P>
+Obtain asymptotically tight bounds on lg(<I>n</I>!) without using Stirling's approximation. Instead, evaluate the summation <img src="174_c.gif"> using techniques from Section 3.2.<P>
+<a name="078e_1383">9.1-3<a name="078e_1383"><P>
+Show that there is no comparison sort whose running time is linear for at least half of the <I>n</I>! inputs of length <I>n</I>. What about a fraction of 1/<I>n</I> of the inputs of length <I>n</I>? What about a fraction 1/2<I><SUP>n</I></SUP>?<P>
+<a name="078e_1384">9.1-4<a name="078e_1384"><P>
+Professor Solomon claims that the <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>) lower bound for sorting <I>n</I> numbers does not apply to his computer environment, in which the control flow of a program can split three ways after a single comparison <I>a<SUB>i </I></SUB>:<I><SUB> </SUB>a<SUB>j</I>, according to whether </SUB><I>a<SUB>i</I></SUB> &lt; <I>a<SUB>j</I></SUB>, <I>a<SUB>i</I></SUB> = <I>a<SUB>j</I></SUB>, or <I>a<SUB>i</I></SUB> &gt; <I>a<SUB>j</I></SUB>. Show that the professor is wrong by proving that the number of three-way comparisons required to sort <I>n</I> elements is still <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>).<P>
+<a name="078e_1385">9.1-5<a name="078e_1385"><P>
+Prove that 2<I>n</I> - 1 comparisons are necessary in the worst case to merge two sorted lists containing <I>n</I> elements each.<P>
+<a name="078e_1386">9.1-6<a name="078e_1386"><P>
+You are given a sequence of<I> n</I> elements to sort. The input sequence consists of <I>n</I>/<I>k</I> subsequences, each containing <I>k</I> elements. The elements in a given subsequence are all smaller than the elements in the succeeding subsequence and larger than the elements in the preceding subsequence. Thus, all that is needed to sort the whole sequence of length <I>n</I> is to sort the <I>k</I> elements in each of the <I>n</I>/<I>k</I> subsequences. Show an <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>k</I>) lower bound on the number of comparisons needed to solve this variant of the sorting problem. (<I>Hint</I>: It is not rigorous to simply combine the lower bounds for the individual subsequences.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="078f_1386">9.2 Counting sort<a name="078f_1386"></h1><P>
+<a name="078f_1380"><a name="078f_1381"><a name="078f_1382"><a name="078f_1383"><I><B>Counting sort</I></B> assumes that each of the <I>n</I> input elements is an integer in the range 1 to <I>k</I>, for some integer <I>k</I>. When <I>k</I> = <I>O</I>(<I>n</I>), the sort runs in <I>O</I>(<I>n</I>) time.<P>
+The basic idea of counting sort is to determine, for each input element <I>x</I>, the number of elements less than <I>x</I>. This information can be used to place element <I>x</I> directly into its position in the output array. For example, if there are 17 elements less than <I>x</I>, then <I>x</I> belongs in output position 18. This scheme must be modified slightly to handle the situation in which several elements have the same value, since we don't want to put them all in the same position.<P>
+In the code for counting sort, we assume that the input is an array <I>A</I>[1 . . <I>n</I>], and thus <I>length</I>[<I>A</I>] = <I>n</I>. We require two other arrays: the array <I>B</I>[1 . . <I>n</I>] holds the sorted output, and the array <I>C</I>[1 . . <I>k</I>] provides temporary working storage.<P>
+<img src="176_a.gif"><P>
+<h4><a name="078f_1387">Figure 9.2 The operation of <FONT FACE="Courier New" SIZE=2>COUNTING<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SORT</FONT></FONT></FONT> on an input array A[1 . . 8], where each element ofA is a positive integer no larger than k = 6. (a) The array A and the auxiliary array C after line 4. (b) The array C after line 7. (c)-(e) The output array B and the auxiliary array C after one, two, and three iterations of the loop in lines 9-11, respectively. Only the lightly shaded elements of array B have been filled in. (f) The final sorted output array B.<a name="078f_1387"></sub></sup></h4><P>
+<img src="176_b.gif"><P>
+<a name="078f_1384">Counting sort is illustrated in Figure 9.2. After the initialization in lines 1-2, we inspect each input element in lines 3-4. If the value of an input element is <I>i</I>, we increment <I>C</I>[<I>i</I>]. Thus, after lines 3-4, <I>C</I>[<I>i</I>] holds the number of input elements equal to <I>i</I> for each integer <I>i</I> = 1, 2, . . . , <I>k</I>. In lines 6-7, we determine for each <I>i </I>= 1, 2, . . . , <I>k</I>, how many input elements are less than or equal to <I>i</I>; this is done by keeping a running sum of the array <I>C</I>.<P>
+Finally, in lines 9-11, we place each element <I>A</I>[<I>j</I>] in its correct sorted position in the output array <I>B</I>. If all <I>n</I> elements are distinct, then when we first enter line 9, for each <I>A</I>[<I>j</I>], the value <I>C</I>[<I>A</I>[<I>j</I>]] is the correct final position of <I>A</I>[<I>j</I>] in the output array, since there are <I>C</I>[<I>A</I>[<I>j</I>]] elements less than or equal to <I>A</I>[<I>j</I>]. Because the elements might not be distinct, we decrement <I>C</I>[<I>A</I>[<I>j</I>]] each time we place a value<I> A</I>[<I>j</I>]<I> </I>into the B array; this<I> </I>causes the next input element with a value equal to<I> A</I>[<I>j</I>], if one exists, to<I> </I>go to the position immediately before<I> A</I>[<I>j</I>] in the output array.<P>
+How much time does counting sort require? The <B>for</B> loop of lines 1-2 takes time<I> O</I>(<I>k</I>), the <B>for</B> loop of lines 3-4 takes time <I>O</I>(<I>n</I>), the <B>for</B> loop of lines 6-7 takes time<I> O</I>(<I>k</I>), and the <B>for</B> loop of lines 9-11 takes time <I>O</I>(<I>n</I>). Thus, the overall time is <I>O</I>(<I>k + n</I>). In practice, we usually use counting sort when we have <I>k = O</I>(<I>n</I>), in which case the running time is <I>O</I>(<I>n</I>).<P>
+Counting sort beats the lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>1g <I>n</I>) proved in Section 9.1 because it is not a comparison sort. In fact, no comparisons between input elements occur anywhere in the code. Instead, counting sort uses the actual values of the elements to index into an array. The <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) lower bound for sorting does not apply when we depart from the comparison-sort model.<P>
+<a name="078f_1385">An important property of counting sort is that it is <I><B>stable:</I></B> numbers with the same value appear in the output array in the same order as they do in the input array. That is, ties between two numbers are broken by the rule that whichever number appears first in the input array appears first in the output array. Of course, the property of stability is important only when satellite data are carried around with the element being sorted. We shall see why stability is important in the next section.<P>
+
+
+
+
+
+<h2><a name="0790_1387">Exercises<a name="0790_1387"></h2><P>
+<a name="0790_1388">9.2-1<a name="0790_1388"><P>
+Using Figure 9.2 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>COUNTING</FONT>-<FONT FACE="Courier New" SIZE=2>SORT </FONT>on the array A = <IMG SRC="../IMAGES/lftwdchv.gif">7, 1, 3, 1, 2, 4, 5, 7, 2, 4, 3<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0790_1389">9.2-2<a name="0790_1389"><P>
+<a name="0790_1386">Prove that <FONT FACE="Courier New" SIZE=2>COUNTING</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> is stable.<P>
+<a name="0790_138a">9.2-3<a name="0790_138a"><P>
+Suppose that the <B>for</B> loop in line 9 of the <FONT FACE="Courier New" SIZE=2>COUNTING</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure is rewritten:<P>
+<pre>9 <B>for</B><I> j </I><IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>length</I>[<I>A</I>]</sub></sup></pre><P>
+Show that the algorithm still works properly. Is the modified algorithm stable?<P>
+<a name="0790_138b">9.2-4<a name="0790_138b"><P>
+Suppose that the output of the sorting algorithm is a data stream such as a graphics display. Modify <FONT FACE="Courier New" SIZE=2>COUNTING</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> to produce the output in sorted order without using any substantial additional storage besides that in <I>A</I> and <I>C. </I>(<I>Hint:</I> Link elements of <I>A</I> that have the same key into lists. Where is a &quot;free&quot; place to keep the pointers for the linked list?)<P>
+<a name="0790_138c">9.2-5<a name="0790_138c"><P>
+Describe an algorithm that, given<I> n</I> integers in the range 1 to <I>k,</I> preprocesses its input and then answers any query about how many of the <I>n </I>integers fall into a range [<I>a</I> . . <I>b</I>] in <I>O</I>(1) time. Your algorithm should use <I>O</I>(<I>n </I>+ <I>k</I>) preprocessing time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0791_138b">9.3 Radix sort<a name="0791_138b"></h1><P>
+<a name="0791_1387"><a name="0791_1388"><a name="0791_1389"><I><B>Radix sort</I></B> is the algorithm used by the card-sorting machines you now find only in computer museums. The cards are organized into 80 columns, and in each column a hole can be punched in one of 12 places. The sorter can be mechanically &quot;programmed&quot; to examine a given column of each card in a deck and distribute the card into one of 12 bins depending on which place has been punched. An operator can then gather the cards bin by bin, so that cards with the first place punched are on top of cards with the second place punched, and so on.<P>
+For decimal digits, only 10 places are used in each column. (The other two places are used for encoding nonnumeric characters.) A <I>d</I>-digit number would then occupy a field of <I>d</I> columns. Since the card sorter can look at only one column at a time, the problem of sorting <I>n</I> cards on a <I>d</I>-digit number requires a sorting algorithm.<P>
+Intuitively, one might want to sort numbers on their <I>most significant </I>digit, sort each of the resulting bins recursively, and then combine the decks in order. Unfortunately, since the cards in 9 of the 10 bins must be put aside to sort each of the bins, this procedure generates many intermediate piles of cards that must be kept track of. (See Exercise 9.3-5.)<P>
+Radix sort solves the problem of card sorting counterintuitively by sorting on the <I>least significant</I> digit first. The cards are then combined into a single deck, with the cards in the 0 bin preceding the cards in the 1 bin preceding the cards in the 2 bin, and so on. Then the entire deck is sorted again on the second least-significant digit and recombined in a like manner. The process continues until the cards have been sorted on all <I>d</I> digits. Remarkably, at that point the cards are fully sorted on the <I>d</I>-digit number. Thus, only <I>d</I> passes through the deck are required to sort. Figure 9.3 shows how radix sort operates on a &quot;deck&quot; of seven 3-digit numbers.<P>
+It is essential that the digit sorts in this algorithm be stable. The sort performed by a card sorter is stable, but the operator has to be wary about not changing the order of the cards as they come out of a bin, even though all the cards in a bin have the same digit in the chosen column.<P>
+In a typical computer, which is a sequential random-access machine, radix sort is sometimes used to sort records of information that are keyed by multiple fields. For example, we might wish to sort dates by three keys: year, month, and day. We could run a sorting algorithm with a comparison function that, given two dates, compares years, and if there is a tie, compares months, and if another tie occurs, compares days. Alternatively, we could sort the information three times with a stable sort: first on day, next on month, and finally on year.<P>
+<pre>329      720     720      329</sub></sup></pre><P>
+<pre>457      355     329      355</sub></sup></pre><P>
+<pre>657      436     436      436</sub></sup></pre><P>
+<pre>839  <IMG SRC="../IMAGES/rtbigar.gif">  457  <IMG SRC="../IMAGES/rtbigar.gif">  839  <IMG SRC="../IMAGES/rtbigar.gif">  457</sub></sup></pre><P>
+<pre>436      657     355      657</sub></sup></pre><P>
+<pre>720      329     457      720</sub></sup></pre><P>
+<pre>355      839     657      839</sub></sup></pre><P>
+<pre>           <IMG SRC="../IMAGES/arrup.gif">      <IMG SRC="../IMAGES/arrup.gif">       <IMG SRC="../IMAGES/arrup.gif"></sub></sup></pre><P>
+<h4><a name="0791_138c">Figure 9.3 The operation of radix sort on a list of seven 3-digit numbers. The first column is the input. The remaining columns show the list after successive sorts on increasingly significant digit positions. The vertical arrows indicate the digit position sorted on to produce each list from the previous one.<a name="0791_138c"></sub></sup></h4><P>
+<a name="0791_138a">The code for radix sort is straightforward. The following procedure assumes that each element in the <I>n</I>-element array <I>A</I> has <I>d </I>digits, where digit 1 is the lowest-order digit and digit <I>d</I> is the highest-order digit.<P>
+<pre>RADIX-SORT(<I>A, d</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> 1 to <I>d</I></sub></sup></pre><P>
+<pre>2       <B>do</B> use a stable sort to sort array <I>A</I> on digit <I>i</I></sub></sup></pre><P>
+The correctness of radix sort follows by induction on the column being sorted (see Exercise 9.3-3). The analysis of the running time depends on the stable sort used as the intermediate sorting algorithm. When each digit is in the range <I>1</I> to <I>k</I>, and <I>k</I> is not too large, counting sort is the obvious choice. Each pass over<I> n</I> <I>d</I>-digit numbers then takes time <IMG SRC="../IMAGES/bound.gif">(<I>n + k</I>)<I>.</I> There are <I>d</I> passes, so the total time for radix sort is <IMG SRC="../IMAGES/bound.gif">(<I>dn + kd</I>)<I>.</I> When <I>d</I> is constant and <I>k = O</I>(<I>n</I>)<I>,</I> radix sort runs in linear time.<P>
+Some computer scientists like to think of the number of bits in a computer word as being <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>). For concreteness, let's say that <I>d</I> lg <I>n</I> is the number of bits, where <I>d</I> is a positive constant. Then, if each number to be sorted fits in one computer word, we can treat it as a <I>d</I>-digit number in radix-<I>n</I> notation. As a concrete example, consider sorting 1 million 64-bit numbers. By treating these numbers as four-digit, radix-2<SUP>l6</SUP> numbers, we can sort them in just four passes using radix sort. This compares favorably with a typical <IMG SRC="../IMAGES/bound.gif">(<I>n</I> 1g <I>n</I>) comparison sort, which requires approximately 1g <I>n</I> = 20 operations per number to be sorted. Unfortunately, the version of radix sort that uses counting sort as the intermediate stable sort does not sort in place, which many of the <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) comparison sorts do. Thus, when primary memory storage is at a premium, an algorithm such as quicksort may be preferable.<P>
+
+
+
+
+
+<h2><a name="0792_1390">Exercises<a name="0792_1390"></h2><P>
+<a name="0792_1391">9.3-1<a name="0792_1391"><P>
+Using Figure 9.3 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>RADIX</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> on the following list of English words: COW, DOG, SEA, RUG, ROW, MOB, BOX, TAB, BAR, EAR, TAR, DIG, BIG, TEA, NOW, FOX.<P>
+<a name="0792_1392">9.3-2<a name="0792_1392"><P>
+<a name="0792_138b"><a name="0792_138c"><a name="0792_138d"><a name="0792_138e"><a name="0792_138f">Which of the following sorting algorithms are stable: insertion sort, merge sort, heapsort, and quicksort? Give a simple scheme that makes any sorting algorithm stable. How much additional time and space does your scheme entail?<P>
+<a name="0792_1393">9.3-3<a name="0792_1393"><P>
+Use induction to prove that radix sort works. Where does your proof need the assumption that the intermediate sort is stable?<P>
+<a name="0792_1394">9.3-4<a name="0792_1394"><P>
+Show how to sort<I> n</I> integers in the range 1 to <I>n</I><SUP>2</SUP> in <I>O</I>(<I>n</I>) time.<P>
+<a name="0792_1395">9.3-5<a name="0792_1395"><P>
+In the first card-sorting algorithm in this section, exactly how many sorting passes are needed to sort <I>d</I>-digit decimal numbers in the worst case? How many piles of cards would an operator need to keep track of in the worst case?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0793_1396">9.4 Bucket sort<a name="0793_1396"></h1><P>
+<a name="0793_1390"><a name="0793_1391"><I><B>Bucket sort</I></B> runs in linear time on the average. Like counting sort, bucket sort is fast because it assumes something about the input. Whereas counting sort assumes that the input consists of integers in a small range, bucket sort assumes that the input is generated by a random process that distributes elements uniformly over the interval [0,1). (See Section 6.2 for a definition of uniform distribution.)<P>
+<a name="0793_1392">The idea of bucket sort is to divide the interval [0, 1) into<I> n</I> equal-sized subintervals, or <I><B>buckets,</I></B> and then distribute the<I> n</I> input numbers into the buckets. Since the inputs are uniformly distributed over [0, 1), we don't expect many numbers to fall into each bucket. To produce the output, we simply sort the numbers in each bucket and then go through the buckets in order, listing the elements in each.<P>
+Our code for bucket sort assumes that the input is an <I>n</I>-element array <I>A</I> and that each element <I>A</I>[<I>i</I>] in the array satisfies 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>A</I>[<I>i</I>] &lt; 1. The code requires an auxiliary array <I>B</I>[0<I>..n</I> - 1] of linked lists (buckets) and assumes that there is a mechanism for maintaining such lists. (Section 11.2 describes how to implement basic operations on linked lists.)<P>
+<img src="181_a.gif"><P>
+<h4><a name="0793_1397">Figure 9.4 The operation of <FONT FACE="Courier New" SIZE=2>BUCKET<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SORT</FONT></FONT></FONT>. (a) The input array A[1 . .10]. (b) The array B[0 . . 9] of sorted lists (buckets) after line 5 of the algorithm. Bucket i holds values in the interval [i/10,(i + 1)/10). The sorted output consists of a concatenation in order of the lists B[0], B[1], . . . , B[9].<a name="0793_1397"></sub></sup></h4><P>
+<pre><a name="0793_1393">BUCKET-SORT(<I>A</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I> [<I>A</I>]</sub></sup></pre><P>
+<pre>2  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>3       <B>do</B> insert <I>A</I>[ <I>i</I>] into list <I>B</I> [<IMG SRC="../IMAGES/hfbrdl12.gif"><I>nA</I>[<I>i</I>]<IMG SRC="../IMAGES/hfbrdr12.gif">]</sub></sup></pre><P>
+<pre>4  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> -1</sub></sup></pre><P>
+<pre>5       <B>do</B> sort list <I>B</I>[<I>i</I>] with insertion sort</sub></sup></pre><P>
+<pre>6  concatenate the lists <I>B</I>[0], <I>B</I>[1], . . . , <I>B</I>[<I>n</I> - 1] together in order</sub></sup></pre><P>
+<a name="0793_1394">Figure 9.4 shows the operation of bucket sort on an input array of 10 numbers.<P>
+<a name="0793_1395">To see that this algorithm works, consider two elements <I>A</I>[<I>i</I>] and <I>A</I>[<I>j</I>]. If these elements fall in the same bucket, they appear in the proper relative order in the output sequence because their bucket is sorted by insertion sort. Suppose they fall into different buckets, however. Let these buckets be <I>B</I>[<I>i</I>'] and <I>B</I>[<I>j</I><I>'</I>], respectively, and assume without loss of generality that <I>i</I>' &lt; <I>j</I>'. When the lists of <I>B</I> are concatenated in line 6, elements of bucket <I>B</I>[<I>i</I>'] come before elements of <I>B</I>[<I>j</I>'], and thus <I>A</I>[<I>i</I>] precedes <I>A</I>[<I>j</I>] in the output sequence. Hence, we must show that <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>A</I>[<I>j</I>]. Assuming the contrary, we have<P>
+<pre><I>i</I>'  =  <IMG SRC="../IMAGES/hfbrdl12.gif"><I>nA</I>[<I>i</I>]<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  <IMG SRC="../IMAGES/hfbrdl12.gif"><I>nA</I>[<I>j</I>]<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>=  <I>j</I>',</sub></sup></pre><P>
+which is a contradiction, since i' &lt; j'. Thus, bucket sort works.<P>
+To analyze the running time, observe that all lines except line 5 take <I>O</I>(<I>n</I>) time in the worst case. The total time to examine all buckets in line 5 is <I>O</I>(<I>n</I>), and so the only interesting part of the analysis is the time taken by the insertion sorts in line 5.<P>
+To analyze the cost of the insertion sorts, let <I>n<SUB>i</I></SUB> be the random variable denoting the number of elements placed in bucket <I>B</I>[<I>i</I>]. Since insertion sort runs in quadratic time (see Section 1.2), the expected time to sort the elements in bucket <img src="182_a.gif">. The total expected time to sort all the elements in all the buckets is therefore<P>
+<img src="182_b.gif"><P>
+<h4><a name="0793_1398">(9.1)<a name="0793_1398"></sub></sup></h4><P>
+In order to evaluate this summation, we must determine the distribution of each random variable <I>n<SUB>i</I></SUB>. We have <I>n</I> elements and <I>n</I> buckets. The probability that a given element falls into bucket <I>B</I>[<I>i</I>] is 1/<I>n</I>, since each bucket is responsible for 1/<I>n</I> of the interval [0,1). Thus, the situation is analogous to the ball-tossing example of Section 6.6.2: we have <I>n</I> balls (elements) and <I>n</I> bins (buckets), and each ball is thrown independently with probability <I>p</I> = 1 /<I>n</I> of falling into any particular bucket. Thus, the probability that <I>n<SUB>i</I></SUB> = <I>k</I> follows the binomial distribution <I>b</I>(<I>k; n, p</I>), which has mean E[<I>n<SUB>i</I></SUB>]<I> = np</I> = 1 and variance Var[<I>n<SUB>i</I></SUB>]<I> = np</I>(1 - <I>p</I>) = 1- 1/<I>n</I>. For any random variable <I>X</I>, equation (6.30) gives<P>
+<img src="182_c.gif"><P>
+Using this bound in equation (9.1), we conclude that the expected time for insertion sorting is <I>O</I>(<I>n</I>). Thus, the entire bucket sort algorithm runs in linear expected time.<P>
+
+
+
+
+
+<h2><a name="0794_1399">Exercises<a name="0794_1399"></h2><P>
+<a name="0794_139a">9.4-1<a name="0794_139a"><P>
+Using Figure 9.4 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>BUCKET</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> on the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">.79, .13, .16, .64, .39, .20, .89, .53, .71, .42<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0794_139b">9.4-2<a name="0794_139b"><P>
+What is the worst-case running time for the bucket-sort algorithm? What simple change to the algorithm preserves its linear expected running time and makes its worst-case running time <I>O</I>(<I>n </I>lg <I>n</I>)?<P>
+<a name="0794_139c">9.4-3<a name="0794_139c"><P>
+<a name="0794_1396"><a name="0794_1397">We are given <I>n</I> points in the unit circle, <I>p<SUB>i</I></SUB> = (<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>), such that <img src="183_a.gif">. Suppose that the points are uniformly distributed; that is, the probability of finding a point in any region of the circle is proportional to the area of that region. Design a <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) expected-time algorithm to sort the <I>n</I> points by their distances <img src="183_b.gif"> from the origin. (<I>Hint:</I> Design the bucket sizes in <FONT FACE="Courier New" SIZE=2>BUCKET</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> to reflect the uniform distribution of the points in the unit circle.)<P>
+<a name="0794_139d">9.4-4<a name="0794_139d"><P>
+<a name="0794_1398">A<I><B> probability distribution function P</I></B>(<I>x</I>) for a random variable <I>X</I> is defined by <I>P</I>(<I>x</I>) = Pr{<I>X</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I>}. Suppose a list of <I>n</I> numbers has a continuous probability distribution function <I>P</I> that is computable in <I>O</I>(1) time. Show how to sort the numbers in linear expected time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0795_139c">Problems<a name="0795_139c"></h1><P>
+<a name="0795_139d">9-1     Average-case lower bounds on comparison sorting<a name="0795_139d"><P>
+<a name="0795_1399"><a name="0795_139a">In this problem, we prove an <IMG SRC="../IMAGES/omega12.gif"> (<I>n</I> lg <I>n</I>) lower bound on the expected running time of any deterministic or randomized comparison sort on <I>n</I> inputs. We begin by examining a deterministic comparison sort <I>A</I> with decision tree <I>T<SUB>A</I></SUB>. We assume that every permutation of <I>A</I>'s inputs is equally likely.<P>
+<I><B>a.     </I></B>Suppose that each leaf of <I>T<SUB>A</I></SUB> is labeled with the probability that it is reached given a random input. Prove that exactly <I>n</I>! leaves are labeled 1/<I>n</I>! and that the rest are labeled 0.<P>
+<I><B>b.</I></B>     Let <I>D</I>(<I>T)</I> denote the external path length of a tree <I>T</I>; that is, <I>D(T)</I> is the sum of the depths of all the leaves of <I>T</I>. Let <I>T</I> be a tree with <I>k</I> &gt; 1 leaves, and let <I>RT</I> and <I>LT</I> be the right and left subtr&eacute;es of <I>T</I>. Show that <I>D</I>(<I>T</I>) = <I>D</I>(<I>RT</I>) + <I>D</I>(<I>LT</I>) + <I>k.</I><P>
+<I><B>c.     </I></B>Let <I>d</I>(<I>m</I>) be the minimum value of <I>D</I>(<I>T</I>) over all trees <I>T</I> with <I>m</I> leaves. Show that <I>d</I>(<I>k</I>) = min<SUB>1</SUB><IMG SRC="../IMAGES/lteq12.gif"><I>i</I><SUB><IMG SRC="../IMAGES/lteq12.gif"><I>k</I> </SUB>{<I>d</I> (<I>i</I>)+<I>d</I>(<I>k </I>- <I>i</I>)+<I>k</I>}. (<I>Hint:</I> Consider a tree <I>T</I> with <I>k</I> leaves that achieves the minimum. Let <I>i</I> be the number of leaves in <I>RT</I> and <I>k</I> - <I>i</I> the number of leaves in <I>LT.</I>)<P>
+<I><B>d.</I></B>     Prove that for a given value of <I>k</I>, the function <I>i</I> lg <I>i</I> + (<I>k</I> - <I>i</I>) lg(<I>k</I> - <I>i</I>) is minimized at <I>i</I> = <I>k</I>/2. Conclude that <I>d</I>(<I>k</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>k </I>lg <I>k</I>).<P>
+<I><B>e.</I></B>     Prove that <I>D</I>(<I>T<SUB>A</I></SUB>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>! lg(<I>n</I>!)) for <I>T<SUB>A,</I></SUB> and conclude that the expected time to sort <I>n</I> elements is <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg <I>n</I>).<P>
+Now, consider a <I>randomized</I> comparison sort <I>B</I>. We can extend the decision-tree model to handle randomization by incorporating two kinds of nodes: ordinary comparison nodes and "randomization" nodes. A randomization node models a random choice of the form <FONT FACE="Courier New" SIZE=2>RANDOM</FONT>( 1, <I>r</I>) made by algorithm <I>B</I>; the node has <I>r</I> children, each of which is equally likely to be chosen during an execution of the algorithm.<P>
+<I><B>f.</I></B>     Show that for any randomized comparison sort <I>B</I>, there exists a deterministic comparison sort <I>A</I> that makes no more comparisons on the average than <I>B</I> does.<P>
+<a name="0795_139e">9-2     Sorting in place in linear time<a name="0795_139e"><P>
+<a name="0795_139b"><I><B>a.     </I></B>Suppose that we have an array of <I>n</I> data records to sort and that the key of each record has the value 0 or 1. Give a simple, linear-time algorithm for sorting the <I>n</I> data records in place. Use no storage of more than constant size in addition to the storage provided by the array.<P>
+<I><B>b.</I></B>     Can your sort from part (a) be used to radix sort <I>n</I> records with <I>b</I>-bit keys in <I>O</I>(<I>bn</I>) time? Explain how or why not.<P>
+<I><B>c.     </I></B>Suppose that the<I> n</I> records have keys in the range from 1 to <I>k</I>. Show how to modify counting sort so that the records can be sorted in place in <I>O</I>(<I>n</I> + <I>k</I>) time. You may use <I>O</I>(<I>k</I>) storage outside the input array. (<I>Hint:</I> How would you do it for <I>k</I> = 3?)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The decision-tree model for studying comparison sorts was introduced by Ford and Johnson [72]. Knuth's comprehensive treatise on sorting [123] covers many variations on the sorting problem, including the information- theoretic lower bound on the complexity of sorting given here. Lower bounds for sorting using generalizations of the decision-tree model were studied comprehensively by Ben-Or [23].<P>
+Knuth credits H. H. Seward with inventing counting sort in 1954, and also with the idea of combining counting sort with radix sort. Radix sorting by the least-significant digit first appears to be a folk algorithm widely used by operators of mechanical card-sorting machines. According to Knuth, the first published reference to the method is a 1929 document by L. J. Comrie describing punched-card equipment. Bucket sorting has been in use since 1956, when the basic idea was proposed by E. J. Isaac and R. C. Singleton.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap10.htm">Chapter 10</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

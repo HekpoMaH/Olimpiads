@@ -1,0 +1,98 @@
+/*
+TASK:phone
+LANG:C++
+*/
+#include <iostream.h>
+struct P
+{
+	char phone[20];
+	double price;
+	char buts[20];
+};
+double sum=0,cheap;
+int N,g,flag,cheapest;
+P p[120];
+void tel(int u)
+{
+	sum+=p[u].price;
+	flag=0;
+	for(int i=0;p[110].phone[i]!='\0';i++)
+	{
+		flag=0;
+		for(int j=1;p[u].buts[j]!='\0';j++)
+			if(p[110].phone[i]==p[u].buts[j])
+			{
+				flag=1;
+				break;
+			}
+		if(!flag) break;
+	}
+	if(flag)
+	{
+		cout<<sum;
+		return;
+	}
+
+	cheap=20000;
+	for(int k=1;k<=N;k++)
+	{
+		for(int i=0;p[k].phone[i]!='\0';i++)
+		{
+			flag=0;
+			for(int j=1;p[u].buts[j]!='\0';j++)
+				if(p[k].phone[i]==p[u].buts[j])
+				{
+					flag=1;
+					break;
+				}
+			if(!flag) break;
+		}
+		if(flag) 
+		{
+				flag=0;
+
+				for(int i=0;p[110].phone[i]!='\0';i++)
+				{
+					flag=0;
+					for(int j=1;p[k].buts[j]!='\0';j++)
+						if(p[110].phone[i]==p[k].buts[j])
+						{
+							flag=1;
+							break;
+						}
+				if(!flag) break;
+				}
+
+				if(flag)
+				{
+					if(cheap>p[k].price)
+					{
+						cheap=p[k].price;
+						cheapest=k;
+					}
+				}
+
+		}
+
+	}
+	tel(cheapest);
+}
+
+int main()
+{
+	
+	cin>>N;
+	cin>>p[0].phone>>p[0].price>>g;
+	for(int i=1;i<=g;i++)
+		cin>>p[0].buts[i];
+
+	for(i=1;i<=N;i++)
+	{
+		cin>>p[i].phone>>p[i].price>>g;
+		for(int j=1;j<=g;j++)
+			cin>>p[i].buts[j];
+	}
+	cin>>p[110].phone;
+	tel(0);
+	return 0;
+}

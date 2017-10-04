@@ -1,0 +1,53 @@
+#include <iostream>
+using namespace std;
+int n,l,p[1024],r[128],q[1024],f[128];
+void read()
+{
+    int i;
+    cin>>n>>l;
+    for (i=1;i<=n;i++)
+    cin>>p[i]>>r[i]>>q[i]>>f[i];
+}
+int kabel()
+{
+    int i,sumf=0,summ=0,sum=0,m;
+    for (i=1;i<=n;i++)
+    sumf+=f[i];
+    if (sumf<l) cout<<"-1"<<endl;
+    else
+    {
+        for (i=1;i<=n;i++)
+        {
+            if (sum+f[i]<=l)
+            {
+                sum+=f[i];
+                summ+=(f[i]*q[i]);
+            }
+            else
+            {
+                if(sum+f[i]>l)
+                {
+                    m=l-sum;
+                    if (m<r[i])
+                    {
+                        sum+=(l-sum);
+                        summ+=(m*p[i]);
+                    }
+                    else
+                    {
+                        sum+=(l-sum);
+                        summ+=(m*q[i]);
+                    }
+                }
+            }
+        }
+        cout<<summ<<endl;
+    }
+}
+int main()
+{
+    read();
+    kabel();
+    return 0;
+}
+//BY GALEN

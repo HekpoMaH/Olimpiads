@@ -1,0 +1,61 @@
+#include <cstdio>
+int Count[10], i;
+char Read;
+unsigned long long Total=0, Factorial[32], Denum=1;
+int Used[10], TUsed, Tmp, Max;
+void Calc(int Digit){
+    if(Digit==10){
+        if(TUsed!=0){
+            TUsed=0;
+            Tmp=0;
+            for(i=0;i<10;i++){
+                TUsed+=Used[i];
+                if(Used[i]>0) Tmp++;
+            }
+            if(Used[0]>0){
+                if(Tmp==1) Total++;
+                else Total+=Factorial[TUsed]/Denum*(Tmp-1)/Tmp;
+            }else if(Tmp>0) Total+=Factorial[TUsed]/Denum;
+            Total%=1800000007;
+        }
+        return;
+    }
+    for(Used[Digit]=0;Used[Digit]<=Count[Digit];Used[Digit]++){
+        if(Used[Digit]>0)Denum*=Used[Digit];
+        Calc(Digit+1);
+        TUsed++;
+    }
+    Denum/=Factorial[Count[Digit]];
+    TUsed-=Count[Digit];
+    return;
+}
+int main(){
+    Factorial[0]=1;
+    for(i=1;i<=20;i++) Factorial[i]=Factorial[i-1]*i;
+    Read=getchar();
+    while(Read>='0'&&Read<'9'){
+        Count[Read-'0']++;
+        Read=getchar();
+    }
+    for(i=0;i<10;i++){
+        Tmp+=Count[i];
+        if(Count[i]>Max) Max=Count[i];
+    }
+    if(Max==Tmp){
+        printf("%d\n", Max);
+        return 0;
+    }
+    if(Tmp<=20){
+        Tmp=10;
+        Calc(0);
+        printf("%llu\n", Total);
+    }else{
+        Total=1;
+        for(i=0;i<10;i++){
+            Total*=Count[i]+1;
+            Total%=1800000007;
+        }
+        printf("%llu\n", Total);
+    }
+    return 0;
+}

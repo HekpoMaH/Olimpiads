@@ -1,0 +1,26 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+char c[1<<17];
+int p[1<<17], i,ans;
+int main()
+{
+while(1)
+{
+scanf("%c", &c[i]);
+if(c[i] == '=') break;
+scanf("%d", &p[i]);
+scanf("\n");
+i++;
+}
+scanf("%d", &ans);
+for(--i; i>=0; i--)
+{
+if(c[i] == '+') ans -= p[i];
+else if(c[i] == '-') ans += p[i];
+else if(c[i] == '*') ans /= p[i];
+else ans *= p[i];
+}
+printf("%d\n", ans);
+return 0;
+}

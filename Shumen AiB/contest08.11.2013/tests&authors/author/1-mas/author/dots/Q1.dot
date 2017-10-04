@@ -1,0 +1,28 @@
+graph G {
+  ordering=out
+  label="Филогенетично дърво Q"
+
+  comment="leaves"
+  node [shape=box];
+  3 [label="3: MAN"];
+  4 [label="4: PENGUIN"];
+  5 [label="5: FROG"];
+  7 [label="7: FLY"];
+  8 [label="8: MONKEY"];
+
+  comment="internal vertices"
+  node [shape=ellipse];
+  
+  { rank=min
+    1
+    2 }
+
+  2 -- 1;
+  2 -- 3;
+  2 -- 4;
+  1 -- 5;
+  1 -- 6;
+  6 -- 7;
+  6 -- 8;
+}
+

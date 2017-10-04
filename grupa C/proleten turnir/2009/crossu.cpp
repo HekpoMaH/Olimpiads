@@ -1,0 +1,61 @@
+#include<iostream>
+#include<cstdio>
+#include<vector>
+using namespace std;
+
+int n,m;
+vector<int> v[256];
+int p[210][210],g[220][220],used[256];
+int dest,d,ans;
+
+int dfs(int k,int dist)
+{
+    int i,is=0;
+    used[k]=1;
+    if(k==dest)
+    {//if(d==0)cout<<"pe6o->"<<k<<" "<<dist<<" "<<is<<endl; else cout<<"go6o->"<<k<<" "<<dist<<" "<<is<<endl;
+        if(d==1)g[k][dist]=1;
+        else p[k][dist]=1;
+        return 1;
+    }
+    for(i=0;i<v[k].size();i++)
+    {
+        if(used[v[k][i]]==0)
+        {
+            is=max(is,dfs(v[k][i],dist+1));
+            used[v[k][i]]=0;
+        }
+    }
+    if(is==1)
+    {//if(d==0)cout<<"pe6o->"<<k<<" "<<dist<<" "<<is<<"tuk"<<endl; else cout<<"go6o->"<<k<<" "<<dist<<" "<<is<<"tuk"<<endl;
+        if(d==1)g[k][dist]=1;
+        else p[k][dist]=1;
+    }
+    return is;
+}
+
+int main()
+{
+    int pesho,gosho;
+    int shkola,stadion;
+    int k1,k2,i,j;
+    scanf("%d%d",&n,&m);
+    for(i=0;i<m;i++)
+    {
+        scanf("%d%d",&k1,&k2);
+        v[k1+1].push_back(k2+1);
+        v[k2+1].push_back(k1+1);
+    }
+    scanf("%d%d%d%d",&pesho,&stadion,&gosho,&shkola);
+    gosho++;pesho++;stadion++;shkola++;
+    dest=stadion;
+    k1=dfs(pesho,0);
+    d=1;
+    memset(used,0,sizeof(used));
+    dest=shkola;
+    k1=dfs(gosho,0);
+    for(i=1;i<=n;i++)
+     for(j=0;j<=n;j++)
+      if(g[i][j]&&p[i][j]){ans++;break;}
+    printf("%d\n",ans);
+}

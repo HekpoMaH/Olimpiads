@@ -1,0 +1,139 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="cn"
+ lang="cn" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>cn:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="noindex,nofollow" />
+<meta name="date" content="2010-02-09T20:58:36-0800" />
+<meta name="keywords" content="cn,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/cn/start?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=cn" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/cn/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/cn/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='cn';var JSINFO = {"id":"cn:start","namespace":"cn"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="c_reference" id="c_reference">C++ Reference</a></h2>
+<div class="level2">
+<table class="columns-plugin" style="width:100%">
+<tr><td class="first" style="width:50%;">
+
+<p>
+<strong>General Topics</strong>  通用主题
+
+</p>
+<ul>
+<li class="level1"><div class="li"> <a href="../about/faq" class="wikilink1" title="about:faq">FAQ</a>  常见问题</div>
+</li>
+<li class="level1"><div class="li"> <a href="../preprocessor/start" class="wikilink1" title="preprocessor:start">Pre-processor commands</a>  预处理命令</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cppreference.com/wiki/cn/operator_precedence" class="wikilink2" title="cn:operator_precedence" rel="nofollow">Operator Precedence</a>  操作符</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cppreference.com/wiki/cn/escape_sequences" class="wikilink2" title="cn:escape_sequences" rel="nofollow">Escape Sequences</a>  转义序列</div>
+</li>
+<li class="level1"><div class="li"> <a href="http://www.cppreference.com/wiki/cn/ascii" class="wikilink2" title="cn:ascii" rel="nofollow">ASCII Chart</a>  ASCII图元</div>
+</li>
+<li class="level1"><div class="li"> <a href="data_types" class="wikilink1" title="cn:data_types">Data Types</a>  数据类型</div>
+</li>
+<li class="level1"><div class="li"> <a href="../keywords/start" class="wikilink1" title="keywords:start">Keywords</a>  关键字</div>
+</li>
+</ul>
+
+<p>
+
+<strong>Standard C Library</strong>  标准C运行库
+
+</p>
+<ul>
+<li class="level1"><div class="li"> <a href="../c/start" class="wikilink1" title="c:start">Overview</a>  概览</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/io/start" class="wikilink1" title="c:io:start">Standard C I/O</a>  标准C输入/输出</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/string/start" class="wikilink1" title="c:string:start">Standard C String &amp; Character</a>  标准C字符串和字符</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/math/start" class="wikilink1" title="c:math:start">Standard C Math</a>  标准C数学函数</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/date/start" class="wikilink1" title="c:date:start">Standard C Time &amp; Date</a>  标准C时间与日期</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/mem/start" class="wikilink1" title="c:mem:start">Standard C Memory</a>  标准C内存</div>
+</li>
+<li class="level1"><div class="li"> <a href="../c/other/start" class="wikilink1" title="c:other:start">Other standard C functions</a>  其它标准C函数</div>
+</li>
+</ul>
+</td><td class="last">
+
+<p>
+<strong>C++</strong>
+
+</p>
+<ul>
+<li class="level1"><div class="li"> <a href="../string/start" class="wikilink1" title="string:start">C++ Strings</a>  C++字符串</div>
+</li>
+<li class="level1"><div class="li"> <a href="../io/start" class="wikilink1" title="io:start">C++ I/O</a>  C++输入输出</div>
+<ul>
+<li class="level2"><div class="li"> <a href="../io/sstream/start" class="wikilink1" title="io:sstream:start">C++ String Streams</a>  C++字符串流</div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> <a href="../exception/start" class="wikilink1" title="exception:start">C++ Exceptions</a>  C++异常</div>
+</li>
+</ul>
+
+<p>
+
+<strong>C++ Standard Template Library (STL)</strong>  C++标准模板库
+
+</p>
+<ul>
+<li class="level1"><div class="li"> <a href="../stl/start" class="wikilink1" title="stl:start">Overview</a>  概览</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/iterators" class="wikilink1" title="stl:iterators">Iterators</a>  迭代器</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/algorithm/start" class="wikilink1" title="stl:algorithm:start">C++ Algorithms</a>  C++算法</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/vector/start" class="wikilink1" title="stl:vector:start">C++ Vectors</a>  矢量</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/deque/start" class="wikilink1" title="stl:deque:start">C++ Double-Ended Queues</a>  双端队列</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/list/start" class="wikilink1" title="stl:list:start">C++ Lists</a>  列表</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/priority_queue/start" class="wikilink1" title="stl:priority_queue:start">C++ Priority Queues</a>  优先队列</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/queue/start" class="wikilink1" title="stl:queue:start">C++ Queues</a>  队列</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/stack/start" class="wikilink1" title="stl:stack:start">C++ Stacks</a>  堆栈</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/set/start" class="wikilink1" title="stl:set:start">C++ Sets</a>  集合</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/multiset/start" class="wikilink1" title="stl:multiset:start">C++ Multisets</a>  多元集合</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/map/start" class="wikilink1" title="stl:map:start">C++ Maps</a>  映射</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/multimap/start" class="wikilink1" title="stl:multimap:start">C++ Multimaps</a>  多元映射</div>
+</li>
+<li class="level1"><div class="li"> <a href="../stl/bitset/start" class="wikilink1" title="stl:bitset:start">C++ Bitsets</a>  位域</div>
+</li>
+</ul>
+</td></tr></table>
+
+</div>
+</div>
+</body>
+</html>

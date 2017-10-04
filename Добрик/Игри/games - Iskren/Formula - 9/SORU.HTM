@@ -1,0 +1,116 @@
+<head><title> BOI'98 DAY 2 TASK 3</title></head>
+<body bgcolor="#ffffff">
+<h1> BOI'98 DAY2 TASK 3</h1><h1>
+FORMULA-9
+
+
+
+</h1><h2> PROBLEM</h2><p>
+
+The Formula-9 series consists of R car races taking place over one season (1 <= R <= 5). All D drivers competing in the series run in every race (2 <= D <= 8). In a single race, only the drivers taking the top T places (1 <= T <= min(4,D) ) gain points; the others get zeros. The driver with the maximum total points at the end of the series wins the Formula-9 trophy of that season (although in this question we are not concerned about who wins the trophy). 
+
+Given the final result (i.e. total points of all D drivers at the end of the series), your task is to determine the number of all possible ways of reaching this result. A possible way of reaching the final result can be represented by a "score table" whose columns represents the drivers and whose rows represent the races. More precisely, the d'th element of the r'th row is the points gained by the driver d in the r'th race (1 <= d <= D, 1 <= r <= R). Notice that the sum of the column d is the total points gained by the driver d by the end of the series (1 <= d <= D).  Thus your task can also be stated as one of determining the number of all score tables whose column sums are the same as the given final result. 
+
+
+<h2> INPUT</h2><p>
+
+The input file has three lines. The first line contains three integers in following order: the number of drivers (D), the number of races (R) and the number of top finishers (T), each separated by a blank (1 <= R <= 5, 2 <= D <= 8, 1 <= T <= min(4,D) ). The second line holds a sequence of T distinct positive integers 
+<= 15 in descending order, each separated by a blank. These are the points to be awarded to the top finishers, starting from the first place and ending at the T'th place. The third line contains the result of the series given as D non-negative integers, each separated by a blank. The d'th integer on the third line is the final score of the driver d.
+
+The input is a text file named f9.inp.
+
+
+<h2> OUTPUT</h2><p>
+
+The output file must contain a single line having a non-negative integer, which is the number of possible ways of reaching the given final result.
+
+The output file must be a text file named f9.out.
+
+
+<h2> EXAMPLE</h2><pre>
+
+
+f9.inp:
+4 3 3
+7 4 1
+9 9 14 4
+
+f9.out:
+6
+</pre>
+
+<p>
+The 6 possible score tables (not to appear on the output):</p>
+<table border="1">
+<tr>
+<td>
+1 7 0 4
+</td>
+<td>
+4 1 7 0
+</td>
+<td>
+4 1 7 0
+</td>
+<td>
+7 1 0 4
+</td>
+<td>
+1 4 7 0
+</td>
+<td>
+1 4 7 0
+</td>
+</tr>
+<tr>
+<td>
+4 1 7 0
+</td>
+<td>
+1 7 0 4
+</td>
+<td>
+4 1 7 0
+</td>
+<td>
+1 4 7 0
+</td>
+<td>
+7 1 0 4
+</td>
+<td>
+1 4 7 0
+</td>
+</tr>
+<tr>
+<td>
+4 1 7 0
+</td>
+<td>
+4 1 7 0
+</td>
+<td>
+1 7 0 4
+</td>
+<td>
+1 4 7 0
+</td>
+<td>
+1 4 7 0
+</td>
+<td>
+7 1 0 4
+</td>
+</tr>
+</table>
+
+
+<p>CREDITS</br>
+Idea: Halit Oðuztüzün, Hakký Toroslu</br>
+Programming: Serdar Soran</br>
+Writing: Halit Oðuztüzün</br>
+</br>
+<a href="../22/index.html">previous question</a>
+<a href="../index.html">Main Page</a>
+</body>
+

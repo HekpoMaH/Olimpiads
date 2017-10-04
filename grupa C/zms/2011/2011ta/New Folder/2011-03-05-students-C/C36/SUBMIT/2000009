@@ -1,0 +1,137 @@
+#include<cstdio>
+#include<iostream>
+#include<queue>
+using namespace std;
+struct fast
+{
+    int t,y,u;
+};
+int n,k,used[1024],a[1024][1024],c[10001],use[1024];
+queue<fast> q;
+void read()
+{
+    int i,j;
+    scanf("%d",&n);
+    for(i=1;i<=n;i++)
+    for(j=1;j<=n;j++)
+    scanf("%d",&a[i][j]);
+    scanf("%d",&k);
+    for(i=1;i<=k;i++)
+    scanf("%d",&c[i]);
+    for(i=1;i<=n;i++)
+    {
+        a[0][i]=a[n+1][0]=a[i][0]=a[i][n+1]=-1;
+    }
+}
+void bfs()
+{
+    int i,j;
+    fast p,pom;
+    p.t=a[1][n];
+    p.y=1;
+    p.u=n;
+    q.push(p);
+    used[p.t]=1;
+    while(!q.empty())
+    {
+        p=q.front();
+        q.pop();
+        i=p.y;
+        j=p.u;
+        if((!use[a[i+1][j]])&&used[a[i+1][j]]!=-1&&(i+1!=1||j!=n))
+        {
+
+
+            if(!use[a[i+1][j]])use[a[i+1][j]]=use[p.t]+1;
+            used[a[i+1][j]]=1;
+            pom.t=a[i+1][j];
+            pom.y=i+1;
+            pom.u=j;
+            q.push(pom);
+        }
+        else
+        if(use[p.t]<used[a[i+1][j]])
+        {
+
+
+            if(!use[a[i+1][j]])use[a[i+1][j]]=use[p.t]+1;
+            used[a[i+1][j]]=1;
+            pom.t=a[i+1][j];
+            pom.y=i+1;
+            pom.u=j;
+            q.push(pom);
+        }
+        if((!use[a[i-1][j]])&&used[a[i-1][j]]!=-1&&(i-1!=1||j!=n))
+        {
+
+            if(!use[a[i-1][j]])use[a[i-1][j]]=use[p.t]+1;
+            used[a[i-1][j]]=1;
+            pom.t=a[i-1][j];
+            pom.y=i-1;
+            pom.u=j;
+            q.push(pom);
+        }
+        else
+        if(use[p.t]<used[a[i-1][j]])
+         {
+
+            if(!use[a[i-1][j]])use[a[i-1][j]]=use[p.t]+1;
+            used[a[i-1][j]]=1;
+            pom.t=a[i-1][j];
+            pom.y=i-1;
+            pom.u=j;
+            q.push(pom);
+        }
+        if((!use[a[i][j+1]])&&used[a[i][j+1]]!=-1&&(i!=1||j+1!=n))
+        {
+            if(!use[a[i][j+1]])use[a[i][j+1]]=use[p.t]+1;
+            used[a[i][j+1]]=1;
+            pom.t=a[i][j+1];
+            pom.y=i;
+            pom.u=j+1;
+            q.push(pom);
+        }
+        else
+        {
+            if(!use[a[i][j+1]])use[a[i][j+1]]=use[p.t]+1;
+            used[a[i][j+1]]=1;
+            pom.t=a[i][j+1];
+            pom.y=i;
+            pom.u=j+1;
+            q.push(pom);
+        }
+        if((!use[a[i][j-1]])&&used[a[i][j-1]]!=-1&&(i!=1||j-1!=n))
+        {
+            if(!use[a[i][j-1]])use[a[i][j-1]]=use[p.t]+1;
+            used[a[i][j-1]]=1;
+            pom.t=a[i][j-1];
+            pom.y=i;
+            pom.u=j-1;
+            q.push(pom);
+        }
+        else
+        if(use[p.t]<used[a[i][j-1]])
+         {
+            if(!use[a[i][j-1]])use[a[i][j-1]]=use[p.t]+1;
+            used[a[i][j-1]]=1;
+            pom.t=a[i][j-1];
+            pom.y=i;
+            pom.u=j-1;
+            q.push(pom);
+        }
+    }
+}
+void print()
+{
+    int i,j;
+    for(i=1;i<=k;i++)
+    if(use[c[k]]||c[k]==a[1][n])printf("%d\n",use[c[k]]);
+    else printf("No Solution\n");
+}
+int main()
+{
+    read();
+    bfs();
+    print();
+}
+

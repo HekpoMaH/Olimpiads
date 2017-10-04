@@ -1,0 +1,50 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+vector<int> v[256],peshou,goshou;
+int n,m,pesho,gosho,shkola,stadion,u[256];
+void read()
+{
+	int i=0,x,y;
+	cin>>n>>m;
+	for(i=0;i<m;i++)
+	{
+		cin>>x>>y;
+		v[x].push_back(y);
+		v[y].push_back(x);
+	}
+	cin>>pesho>>stadion>>gosho>>shkola;
+}
+void dfs(int j)
+{
+	u[j]=1;
+	peshou.push_back(j);
+	if(j==stadion)return ;
+	int i,sz=v[j].size();
+	for(i=0;i<sz;i++)
+	if(u[v[j][i]]==0)dfs(v[j][i]);
+}
+void dfs2(int j)
+{
+	u[j]=1;
+	goshou.push_back(j);
+	if(j==shkola)return ;
+	int i,sz=v[j].size();
+	for(i=0;i<sz;i++)
+	if(u[v[j][i]]==0)dfs2(v[j][i]);
+}
+int main()
+{
+	int i,br=0;
+	read();
+	dfs(pesho);
+	for(i=0;i<n;i++)
+	u[i]=0;
+	dfs2(gosho);
+	int sz;
+	sz=min(goshou.size(),peshou.size());
+    for(i=0;i<sz;i++)
+	if(goshou[i]==peshou[i])br++;
+	cout<<0<<endl;
+	return 0;
+}

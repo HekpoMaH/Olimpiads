@@ -1,0 +1,69 @@
+/*
+TASK: FESTA
+LANG: C
+*/
+#include<stdio.h>
+#include<stdlib.h>
+
+#define MAXN	10000000
+#define ABS(a)		((a) < 0 ? -(a) : (a))
+
+int N;
+
+typedef struct point
+{
+	long long x;
+	long long pe;
+}point;
+
+point a[200000];
+
+long long estim(int loc)
+{
+	int i;
+	long long res=0;
+	for(i=0;i<N;i++)
+		res= res + (ABS(loc-a[i].x))*a[i].pe;
+	return res;
+}
+
+int main()
+{
+	int i,ch,A,B,pre,bfe;
+	long long res,t;
+	point fe;
+	scanf("%d%d%d",&ch,&A,&B);
+	a[N].x=A;a[N++].pe=B;
+	while(scanf("%d%d",&ch,&A)==2)
+	{
+		if(ch==1)
+		{
+			scanf("%d",&B);
+			for(i=0;a[i].x<A && i<N;i++);
+			if(i==N)
+			{a[N].x=A;a[N++].pe=B;}
+			else if(a[i].x==A)
+				a[i].pe+=B;
+			else
+			{
+				pre=i;
+				for(;i<N;i++)
+					a[i+1]=a[i];
+				a[pre].x=A;a[pre].pe=B;
+			}
+		}
+		else
+		{
+			fe.x=0;fe.pe=0;bfe=0;
+			for(i=-1000;i<1000;i++)
+			{
+				res=estim(i);
+				t=ABS(A-res);
+				if(!bfe || t<fe.pe)
+				{fe.pe=t;fe.x=i;bfe=1;}
+			}
+			printf("%lld %lld\n",fe.x,fe.pe);
+		}
+	}
+	return 0;
+}

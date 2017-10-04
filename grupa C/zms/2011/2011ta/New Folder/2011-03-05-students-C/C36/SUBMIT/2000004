@@ -1,0 +1,43 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+long long a[200001],ans,pos;
+char c[200001];
+void read()
+{
+    long long p;
+    char ch;
+    while(1)
+    {
+        cin>>ch;
+        cin>>p;
+        if(ch=='=')
+        {
+            ans=p;
+            break;
+        }
+        else
+        {
+            c[pos+1]=ch;
+            a[++pos]=p;
+        }
+    }
+}
+void solve()
+{
+    int i;
+    if(pos==0)printf("%d\n",ans);
+    for(i=pos;i>=1;i--)
+    {
+        if(c[i]=='+')ans-=a[i];
+        if(c[i]=='-')ans+=a[i];
+        if(c[i]=='*')ans/=a[i];
+    }
+    printf("%d\n",ans);
+
+}
+int main()
+{
+    read();
+    solve();
+}

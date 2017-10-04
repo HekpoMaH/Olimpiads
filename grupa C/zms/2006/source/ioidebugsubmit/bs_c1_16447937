@@ -1,0 +1,84 @@
+/*
+TASK:rebus
+LANG:C++
+*/
+#include <stdlib.h>
+#include <iostream.h>
+#include <math.h>
+char r[1000],n[1000],signs[30];
+int nums[100],cmp;
+int toInt(char a)
+{
+	switch(a)
+	{
+		case '1' :return 1;
+		case '2' :return 2;
+		case '3' :return 3;
+		case '4' :return 4;
+		case '5' :return 5;
+		case '6' :return 6;
+		case '7' :return 7;
+		case '8' :return 8;
+		case '9' :return 9;
+		case '0' :return 0;
+	}
+}
+void func(int pos)
+{
+	if(r[pos]=='\0')
+	{
+		nums[0]=1;
+		signs[0]=1;
+		for(int k=0;n[k]!='\0';k++)
+		{
+			for(int j=k;n[j]!='\0';j++);
+			for(int s=k;s<=j;s++)
+			{
+				nums[nums[0]]+=toInt(n[s])*pow(10,j-s);
+				nums[0]++;
+			}
+			signs[signs[0]]=r[j+1];
+			signs[0]++;
+			k+=j+1;
+		}
+		for(k=1;k<=nums[0];k++)
+		{
+			if(signs[k]=='+')
+				nums[k+1]+=nums[k];
+			if(signs[k]=='-')
+				nums[k+1]-=nums[k];
+			if(signs[k]=='=')
+				cmp=k;
+		}
+		if(nums[cmp]==nums[k])
+		{
+			for(int f=0;r[f]!='\0';f++)
+			{
+				if(r[k]!='+' && r[k]!='-' && r[k]!='=')
+				cout<<r[k]<<"="<<n[k]<<endl;
+			}
+		exit(0);
+		}
+
+	
+	if(n[pos]==0 && r[pos]!='+' && r[pos]!='-' && r[pos]!='=')
+	{
+		for(int i=0;i<=9;i++)
+		{
+			if(pos==0 && i==0) continue;
+			n[pos]=i;
+			for(int j=0;r[j]!='\0';j++)
+				if(r[j]==r[pos]) n[j]=i;
+			func(pos+1);
+		}
+	}
+	else func(pos+1);
+}
+}
+int main()
+{
+	nums[0]=1;
+	cin>>r;
+	func(0);
+	return 0;
+}

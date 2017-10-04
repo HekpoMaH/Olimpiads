@@ -1,0 +1,52 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+int A[1000][1000];
+bool spisuk[1000][1000];
+int br[1000];
+int D[1000];
+bool y[1000];
+int n;
+queue <int> q;
+void bfs ()
+{
+    q.push(A[n-1][n-1]);
+    D[q.front()] = 1;
+    //if(k == q.top()) return D[q.top()];
+    while(!q.empty())
+    {
+        for(int i=0; i<br[q.front()]; i++)
+        {
+            //if(A[q.top][i] == k) return D[q.top()]+1;
+            if(!y[A[q.front()][i]]) {q.push(A[q.front()][i]);
+            D[A[q.front()][i]] = D[q.front()] + 1;
+            y[A[q.front()][i]] = true;
+            }
+        }
+    }
+    return;
+}
+int main ()
+{
+    int brpov;
+    for(int i = 0; i < n; i ++)
+    for(int j = 0; j < n; j ++) cin >> A[i][j];
+    for(int i = 0; i < n - 1; i ++)
+    {
+        for(int j = 0; j < n - 1; j ++)
+        {
+            spisuk [A[i][j]][br[A[i][j]]] = A[i][j+1];
+            spisuk [A[i][j]][br[A[i][j]]] = A[i+1][j];
+        }
+    }
+    cin >> brpov;
+    int a;
+    int b;
+    for(int i = 0; i < brpov; i ++)
+    {
+        cin >> b;
+        if(D[b] == 0) cout << "No Solution" << endl;
+        cout << D[b] - 1 << endl;
+    }
+    return 0;
+}

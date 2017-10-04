@@ -1,0 +1,90 @@
+{
+TASK:HLINKS
+LANG:PASCAL
+}
+VAR
+F:TEXT;
+A:ARRAY[-1..10000] OF CHAR;
+c:char;
+s:string;
+wr,l,r,i,j,n:longint;
+b:array[1..1500000] of char;
+ima:boolean;
+{function format(C:char):char;
+begin
+if c in ['A'..'Z'] then format:=chr(ord(c)+32)
+                   else format:=c;
+end;}
+begin
+assign(f,'');
+reset(f);
+while not eof(f) do begin
+                    inc(n);
+                    read(f,c);
+                    a[n]:=c;
+                    end;
+close(f);
+i:=0;
+inc(n);
+a[n]:=' ';
+repeat
+inc(i);
+inc(wr);
+ima:=false;
+if (a[i]='.')and(a[i+1]<>'.')and(a[i-1]<>'.') then
+                begin
+                 for j:=i downto 1 do if not ((a[j] in ['A'..'Z'])or
+                                              (a[j] in ['a'..'z'])or
+                                              (a[j]='.')or(a[j]='/')) then break;
+                 l:=j+1;
+                 for j:=i to n do if not ((a[j] in ['A'..'Z'])or
+                                              (a[j] in ['a'..'z'])or
+                                              (a[j]='.')or(a[j]='/')) then break;
+                 r:=j-1;
+                 if (a[l]='/')and(a[l+1]='/') then l:=l+2;
+                 for j:=r downto l do if a[j]='.' then begin
+                                                       j:=r-j;
+                                                       break;
+                                                       end;
+                 if (j>1)and(j<5) then ima:=true;
+                 for j:=l to r-1 do if (a[j]='.')and(a[j+1]='.') then ima:=false;
+                 s:='';
+                 for j:=l-7 to l-1 do s:=s+a[j];
+                 if s='http://' then l:=l-7;
+                 if (a[l]='.') or (a[l]='/') then ima:=false;
+                 if ima then dec(wr,i-l);
+                 if ima then begin
+                        b[wr]:='<';
+                        b[wr+1]:='a';
+                        b[wr+2]:=' ';
+                        b[wr+3]:='h';
+                        b[wr+4]:='r';
+                        b[wr+5]:='e';
+                        b[wr+6]:='f';
+                        b[wr+7]:='=';
+                        b[wr+8]:='"';
+                        inc(wr,9);
+                        for j:=l to r do begin
+                                          b[wr]:=a[j];
+                                          inc(wr);
+                                          end;
+                        b[wr]:='"';
+                        b[wr+1]:='>';
+                        inc(wr,2);
+                        for j:=l to r do begin
+                                         b[wr]:=a[j];
+                                         inc(wr);
+                                         end;
+                        b[wr]:='<';
+                        b[wr+1]:='/';
+                        b[wr+2]:='a';
+                        b[wr+3]:='>';
+                        inc(wr,3);
+                        i:=r;
+                        end
+                   else b[wr]:='.';
+                end
+        else b[wr]:=a[i];
+until i=n;
+for i:=1 to wr-1 do write(b[i]);
+end.

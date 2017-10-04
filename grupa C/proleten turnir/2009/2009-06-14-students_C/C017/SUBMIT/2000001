@@ -1,0 +1,28 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+char c;
+vector <char> a;
+long n,k,i,br;
+int main()
+{
+    cin>>n>>k;
+    c='a';
+    for(i=1;i<=n;i++)
+    {
+       a.push_back(c);
+       c++;
+    }
+    while(br!=k-1)
+    {
+       next_permutation(a.begin(),a.end());
+       br++;
+    }
+    for(i=0;i<=n-1;i++)
+    {
+       cout<<a[i];
+    }
+    cout<<endl;
+    system("pause");
+    return 0;
+}

@@ -1,0 +1,49 @@
+/*
+TASK:school
+LANG:C++
+*/
+
+#include <iostream.h>
+
+int n,m,a[500][500],u[500],br;
+
+void read()
+{
+	int i,x,y;
+	cin>>n>>m;
+	for(i=0;i<m;i++)
+	{
+		cin>>x>>y;
+		a[x-1][y-1]=1;
+		a[y-1][x-1]=1;
+	}
+}
+
+void rec(int x)
+{
+	int i;
+	u[x]=1;
+	for(i=0;i<n;i++)
+	{
+		if(a[x][i]==1&&u[i]==0)
+		{
+			rec(i);
+		}
+	}
+}
+
+int main()
+{
+	int i;
+	read();
+	for(i=0;i<n;i++)
+	{
+		if(u[i]==0)
+		{
+			rec(i);
+			br++;
+		}
+	}
+	cout<<br<<endl;
+	return 0;
+}

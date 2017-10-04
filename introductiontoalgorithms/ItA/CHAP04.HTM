@@ -1,0 +1,494 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 4: RECURRENCES</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap05.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap03.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="0712_11cc">CHAPTER 4: RECURRENCES<a name="0712_11cc"></h1><P>
+<a name="0712_11cb">As noted in Chapter 1, when an algorithm contains a recursive call to itself, its running time can often be described by a recurrence. A <I><B>recurrence</I> </B>is an equation or inequality that describes a function in terms of its value on smaller inputs. For example, we saw in Chapter 1 that the worst-case running time <I>T</I>(<I>n</I>) of the <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure could be described by the recurrence<P>
+<img src="53_a.gif"><P>
+<h4><a name="0712_11cd">(4.1)<a name="0712_11cd"></sub></sup></h4><P>
+whose solution was claimed to be <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>).<P>
+This chapter offers three methods for solving recurrences--that is, for obtaining asymptotic &quot;<IMG SRC="../IMAGES/bound.gif">&quot; or &quot;<I>O</I>&quot; bounds on the solution. In the <I><B>substitution method</I></B>, we guess a bound and then use mathematical induction to prove our guess correct. The <I><B>iteration method</I></B> converts the recurrence into a summation and then relies on techniques for bounding summations to solve the recurrence. The <I><B>master method</I></B> provides bounds for recurrences of the form<P>
+<pre><I>T</I>(<I>n</I>) = <I>aT</I>(<I>n</I>/<I>b</I>) + <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>),</sub></sup></pre><P>
+where <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1, <I>b</I> &gt; 1, and <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) is a given function; it requires memorization of three cases, but once you do that, determining asymptotic bounds for many simple recurrences is easy.<P>
+
+
+
+
+
+<h2>Technicalities</h2><P>
+In practice, we neglect certain technical details when we state and solve recurrences. A good example of a detail that is often glossed over is the assumption of integer arguments to functions. Normally, the running time <I>T</I>(<I>n</I>) of an algorithm is only defined when <I>n</I> is an integer, since for most algorithms, the size of the input is always an integer. For example, the recurrence describing the worst-case running time of <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> is really<P>
+<img src="53_b.gif"><P>
+<h4><a name="0714_0001">(4.2)<a name="0714_0001"></sub></sup></h4><P>
+Boundary conditions represent another class of details that we typically ignore. Since the running time of an algorithm on a constant-sized input is a constant, the recurrences that arise from the running times of algorithms generally have <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(1) for sufficiently small <I>n</I>. Consequently, for convenience, we shall generally omit statements of the boundary conditions of recurrences and assume that <I>T</I>(<I>n</I>) is constant for small <I>n</I>. For example, we normally state recurrence (4.1) as<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>),</sub></sup></pre><P>
+<h4><a name="0714_0002">(4.3)<a name="0714_0002"></sub></sup></h4><P>
+without explicitly giving values for small <I>n</I>. The reason is that although changing the value of <I>T</I>(1) changes the solution to the recurrence, the solution typically doesn't change by more than a constant factor, so the order of growth is unchanged.<P>
+When we state and solve recurrences, we often omit floors, ceilings, and boundary conditions. We forge ahead without these details and later determine whether or not they matter. They usually don't, but it is important to know when they do. Experience helps, and so do some theorems stating that these details don't affect the asymptotic bounds of many recurrences encountered in the analysis of algorithms (see Theorem 4.1 and Problem 4-5). In this chapter, however, we shall address some of these details to show the fine points of recurrence solution methods.<P>
+<P>
+
+
+
+
+
+
+
+<h1><a name="0715_11ce">4.1 The substitution method<a name="0715_11ce"></h1><P>
+<a name="0715_11cc"><a name="0715_11cd">The substitution method for solving recurrences involves guessing the form of the solution and then using mathematical induction to find the constants and show that the solution works. The name comes from the substitution of the guessed answer for the function when the inductive hypothesis is applied to smaller values. This method is powerful, but it obviously can be applied only in cases when it is easy to guess the form of the answer.<P>
+The substitution method can be used to establish either upper or lower bounds on a recurrence. As an example, let us determine an upper bound on the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif">) + <I>n</I>,</sub></sup></pre><P>
+<h4><a name="0715_11cf">(4.4)<a name="0715_11cf"></sub></sup></h4><P>
+which is similar to recurrences (4.2) and (4.3). We guess that the solution is <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I> lg <I>n</I>). Our method is to prove that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> lg <I>n</I> for an appropriate choice of the constant <I>c</I> &gt; 0. We start by assuming that this bound holds for <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, that is, that <I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> 1g (<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>). Substituting into the recurrence yields<P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 2(<I>c </I><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"> 1g (<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif">)) + <I>n</I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn </I>lg(<I>n</I>/2) + <I>n</I></sub></sup></pre><P>
+<pre>= <I>cn </I>lg <I>n - cn</I> lg 2 +<I> n</I></sub></sup></pre><P>
+<pre>= <I>cn</I> lg <I>n - cn </I>+ <I>n</I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> lg <I>n,</I></sub></sup></pre><P>
+where the last step holds as long as <I>c</I> <IMG SRC="../IMAGES/gteq.gif"> 1.<P>
+Mathematical induction now requires us to show that our solution holds for the boundary conditions. That is, we must show that we can choose the constant <I>c</I> large enough so that the bound <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> lg <I>n</I> works for the boundary conditions as well. This requirement can sometimes lead to problems. Let us assume, for the sake of argument, that <I>T</I>(1) = 1 is the sole boundary condition of the recurrence. Then, unfortunately, we can't choose <I>c</I> large enough, since <I>T</I>(1) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>1 lg 1 = 0.<P>
+This difficulty in proving an inductive hypothesis for a specific boundary condition can be easily overcome. We take advantage of the fact that asymptotic notation only requires us to prove <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> lg <I>n</I> for <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I><SUB>0</SUB>, where <I>n</I><SUB>0</SUB> is a constant. The idea is to remove the difficult boundary condition <I>T</I>(1) = 1 from consideration in the inductive proof and to include <I>n</I> = 2 and <I>n</I> = 3 as part of the boundary conditions for the proof. We can impose <I>T</I>(2) and <I>T</I>(3) as boundary conditions for the inductive proof because for <I>n</I> &gt; 3, the recurrence does not depend directly on <I>T</I>(1). From the recurrence, we derive <I>T</I>(2) = 4 and <I>T</I>(3) = 5. The inductive proof that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> lg <I>n</I> for some constant <I>c</I> <IMG SRC="../IMAGES/gteq.gif"> 2 can now be completed by choosing <I>c</I> large enough so that <I>T</I>(2) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>2 lg 2 and <I>T</I>(3) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>3 lg 3. As it turns out, any choice of <I>c</I> <IMG SRC="../IMAGES/gteq.gif"> 2 suffices. For most of the recurrences we shall examine, it is straightforward to extend boundary conditions to make the inductive assumption work for small <I>n</I>.<P>
+
+
+
+
+
+<h2>Making a good guess</h2><P>
+Unfortunately, there is no general way to guess the correct solutions to recurrences. Guessing a solution takes experience and, occasionally, creativity. Fortunately, though, there are some heuristics that can help you become a good guesser.<P>
+If a recurrence is similar to one you have seen before, then guessing a similar solution is reasonable. As an example, consider the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"> + 17) + <I>n</I>,</sub></sup></pre><P>
+which looks difficult because of the added &quot;17&quot; in the argument to <I>T</I> on the right-hand side. Intuitively, however, this additional term cannot substantially affect the solution to the recurrence. When <I>n</I> is large, the difference between <I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) and <I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 17) is not that large: both cut <I>n</I> nearly evenly in half. Consequently, we make the guess that <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I> lg <I>n</I>), which you can verify as correct by using the substitution method (see Exercise 4.1-5).<P>
+Another way to make a good guess is to prove loose upper and lower bounds on the recurrence and then reduce the range of uncertainty. For example, we might start with a lower bound of <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>) for the recurrence (4.4), since we have the term <I>n </I>in the recurrence, and we can prove an initial upper bound of <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I><SUP>2</SUP>). Then, we can gradually lower the upper bound and raise the lower bound until we converge on the correct, asymptotically tight solution of <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Subtleties</h2><P>
+There are times when you can correctly guess at an asymptotic bound on the solution of a recurrence, but somehow the math doesn't seem to work out in the induction. Usually, the problem is that the inductive assumption isn't strong enough to prove the detailed bound. When you hit such a snag, revising the guess by subtracting a lower-order term often permits the math to go through.<P>
+Consider the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = <I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif">) + <I>T</I> (<IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrur14.gif">) + 1.</sub></sup></pre><P>
+We guess that the solution is <I>O</I>(<I>n</I>), and we try to show that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn </I>for an appropriate choice of the constant <I>c</I>. Substituting our guess in the recurrence, we obtain<P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c </I><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"> + <I>c </I><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrur14.gif"> + 1</sub></sup></pre><P>
+<pre>= <I>cn</I> + 1,</sub></sup></pre><P>
+which does not imply <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> for any choice of <I>c</I>. It's tempting to try a larger guess, say <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I><SUP>2</SUP>), which can be made to work, but in fact, our guess that the solution is <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I>) is correct. In order to show this, however, we must make a stronger inductive hypothesis.<P>
+Intuitively, our guess is nearly right: we're only off by the constant 1, a lower-order term. Nevertheless, mathematical induction doesn't work unless we prove the exact form of the inductive hypothesis. We overcome our difficulty by <I>subtracting</I> a lower-order term from our previous guess. Our new guess is <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> - <I>b</I>, where <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 0 is constant. We now have<P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> (<I>c</I><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"> - <I>b</I>) + (<I>c</I><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrur14.gif"> - <I>b</I>) + 1</sub></sup></pre><P>
+<pre>= <I>cn</I> - 2<I>b</I> + 1</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> - <I>b </I>,</sub></sup></pre><P>
+as long as <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 1. As before, the constant <I>c</I> must be chosen large enough to handle the boundary conditions.<P>
+Most people find the idea of subtracting a lower-order term counterintuitive. After all, if the math doesn't work out, shouldn't we be increasing our guess? The key to understanding this step is to remember that we are using mathematical induction: we can prove something stronger for a given value by assuming something stronger for smaller values.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Avoiding pitfalls</h2><P>
+It is easy to err in the use of asymptotic notation. For example, in the recurrence (4.4) we can falsely prove <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I>) by guessing <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn </I>and then arguing<P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 2(<I>c</I><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif">) + <I>n</I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> + <I>n</I></sub></sup></pre><P>
+<pre>= <I>O</I>(<I>n</I>),      <IMG SRC="../IMAGES/lftbigar.gif"> <I>wrong!!</I></sub></sup></pre><P>
+since <I>c</I> is a constant. The error is that we haven't proved the exact form of the inductive hypothesis, that is, that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Changing variables</h2><P>
+Sometimes, a little algebraic manipulation can make an unknown recurrence similar to one you have seen before. As an example, consider the recurrence<P>
+<img src="57_a.gif"><P>
+which looks difficult. We can simplify this recurrence, though, with a change of variables. For convenience, we shall not worry about rounding off values, such as <img src="57_b.gif">, to be integers. Renaming <I>m</I> = 1g <I>n </I>yields<P>
+<pre><I>T</I>(2<I><SUP>m</I></SUP>) = 2<I>T</I>(2<I><SUP>m</I>/2</SUP>) + <I>m.</I></sub></sup></pre><P>
+We can now rename <I>S</I>(<I>m</I>) = <I>T</I>(2<I><SUP>m</I></SUP>) to produce the new recurrence<P>
+<pre><I>S</I>(<I><SUP>m</I></SUP>) = 2<I>S</I>(<I><SUP>m</I>/2</SUP>) + <I>m,</I></sub></sup></pre><P>
+which is very much like recurrence (4.4) and has the same solution: <I>S</I>(<I>m</I>) = <I>O</I>(<I>m</I> lg <I>m</I>). Changing back from <I>S</I>(<I>m</I>) to <I>T</I>(<I>n</I>), we obtain <I>T</I>(<I>n</I>) = <I>T</I>(2<I><SUP>m</I></SUP>) = <I>S</I>(<I>m</I>) = <I>O</I>(<I>m</I> lg <I>m</I>) = <I>O</I>(lg <I>n</I> lg lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="071a_0001">Exercises<a name="071a_0001"></h2><P>
+<a name="071a_0002">4.1-1<a name="071a_0002"><P>
+Show that the solution of <I>T</I>(<I>n</I>) = <I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>) + 1 is <I>O</I>(lg <I>n</I>).<P>
+<a name="071a_0003">4.1-2<a name="071a_0003"><P>
+Show that the solution of<I> T</I>(<I>n</I>) = 2<I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) + <I>n</I> is <IMG SRC="../IMAGES/omega12.gif"><FONT FACE="Times New Roman" SIZE=4>(<I>n</I></FONT> lg <I>n</I>). Conclude that the solution is <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>).<P>
+<a name="071a_0004">4.1-3<a name="071a_0004"><P>
+Show that by making a different inductive hypothesis, we can overcome the difficulty with the boundary condition <I>T</I>(1) = 1 for the recurrence (4.4) without adjusting the boundary conditions for the inductive proof.<P>
+<a name="071a_0005">4.1-4<a name="071a_0005"><P>
+Show that <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) is the solution to the &quot;exact&quot; recurrence (4.2) for merge sort.<P>
+<a name="071a_0006">4.1-5<a name="071a_0006"><P>
+Show that the solution to <I>T</I>(<I>n</I>) = 2<I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 17) + <I>n</I> is <I>O</I>(<I>n</I> lg <I>n</I>).<P>
+<a name="071a_0007">4.1-6<a name="071a_0007"><P>
+Solve the recurrence <img src="58_a.gif"> by making a change of variables. Do not worry about whether values are integral.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="071b_11d0">4.2 The iteration method<a name="071b_11d0"></h1><P>
+<a name="071b_11ce"><a name="071b_11cf">The method of iterating a recurrence doesn't require us to guess the answer, but it may require more algebra than the substitution method. The idea is to expand (iterate) the recurrence and express it as a summation of terms dependent only on <I>n</I> and the initial conditions. Techniques for evaluating summations can then be used to provide bounds on the solution.<P>
+As an example, consider the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 3<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif">) + <I>n</I>.</sub></sup></pre><P>
+We iterate it as follows:<P>
+<pre><I>T</I>(<I>n</I>) = <I>n</I> + 3<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif">)</sub></sup></pre><P>
+<pre>= <I>n</I> + 3 (<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif"> + 3<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/16<IMG SRC="../IMAGES/hfbrdr12.gif">))</sub></sup></pre><P>
+<pre>= <I>n</I> + 3(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif"> + 3(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/16<IMG SRC="../IMAGES/hfbrdr12.gif"> + 3<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/64<IMG SRC="../IMAGES/hfbrdr12.gif">)))</sub></sup></pre><P>
+<pre>= <I>n</I> + 3 <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif"> + 9 <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/16<IMG SRC="../IMAGES/hfbrdr12.gif"> + 27<I>T</I>(<IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/64<IMG SRC="../IMAGES/hfbrdr12.gif">),</sub></sup></pre><P>
+where <IMG SRC="../IMAGES/hfbrdl12.gif"><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<IMG SRC="../IMAGES/hfbrdr12.gif">/4<IMG SRC="../IMAGES/hfbrdr12.gif"> = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/16<IMG SRC="../IMAGES/hfbrdr12.gif"> and <IMG SRC="../IMAGES/hfbrdl12.gif"><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/16<IMG SRC="../IMAGES/hfbrdr12.gif">/4<IMG SRC="../IMAGES/hfbrdr12.gif"> = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/64<IMG SRC="../IMAGES/hfbrdr12.gif"> follow from the identity (2.4).<P>
+How far must we iterate the recurrence before we reach a boundary condition? The <I>i</I>th term in the series is 3<I><SUP>i</I> </SUP><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/4<I><SUP>i</I></SUP><IMG SRC="../IMAGES/hfbrdr12.gif">. The iteration hits <I>n</I> = 1 when <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/4<I><SUP>i</I></SUP><IMG SRC="../IMAGES/hfbrdr12.gif"> = 1 or, equivalently, when <I>i</I> exceeds log<SUB>4</SUB> <I>n</I>. By continuing the iteration until this point and using the bound <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/4<I><SUP>i</I></SUP><IMG SRC="../IMAGES/hfbrdr12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>/4<I><SUP>i</I></SUP>, we discover that the summation contains a decreasing geometric series:<P>
+<img src="58_b.gif"><P>
+Here, we have used the identity (2.9) to conclude that 3<SUP>log</SUP><SUB>4</SUB> <I><SUP>n</I></SUP> = <I>n</I><SUP>log</SUP><SUB>4</SUB><SUP>3</SUP>, and we have used the fact that log<SUB>4</SUB> 3 &lt; 1 to conclude that <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><SUB>4</SUB><SUP>3</SUP>) = <I>o</I>(<I>n</I>)<I>.</I><P>
+The iteration method usually leads to lots of algebra, and keeping everything straight can be a challenge. The key is to focus on two parameters: the number of times the recurrence needs to be iterated to reach the boundary condition, and the sum of the terms arising from each level of the iteration process. Sometimes, in the process of iterating a recurrence, you can guess the solution without working out all the math. Then, the iteration can be abandoned in favor of the substitution method, which usually requires less algebra.<P>
+When a recurrence contains floor and ceiling functions, the math can become especially complicated. Often, it helps to assume that the recurrence is defined only on exact powers of a number. In our example, if we had assumed that <I>n</I> = 4<I><SUP>k</I></SUP> for some integer <I>k</I>, the floor functions could have been conveniently omitted. Unfortunately, proving the bound <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I>) solely for exact powers of 4 is technically an abuse of the <I>O</I>-notation. The definitions of asymptotic notation require that bounds be proved for <I>all</I> sufficiently large integers, not just those that are powers of 4. We shall see in Section 4.3 that for a large class of recurrences, this technicality can be overcome. Problem 4-5 also gives conditions under which an analysis for exact powers of an integer can be extended to all integers.<P>
+Recursion trees<P>
+Exercises<P>
+<P>
+
+
+
+
+
+
+
+<h1><a name="071e_11d6">4.3 The master method<a name="071e_11d6"></h1><P>
+<a name="071e_11d4"><a name="071e_11d5">The master method provides a &quot;cookbook&quot; method for solving recurrences of the form<P>
+<pre><I>T</I>(<I>n</I>) = <I>aT</I>(<I>n</I>/<I>b</I>)+&acirc;(<I>n</I>),</sub></sup></pre><P>
+<h4><a name="071e_11d7">(4.5)<a name="071e_11d7"></sub></sup></h4><P>
+where <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>b</I> &gt; 1 are constants and &acirc;(<I>n</I>) is an asymptotically positive function. The master method requires memorization of three cases, but then the solution of many recurrences can be determined quite easily, often without pencil and paper.<P>
+The recurrence (4.5) describes the running time of an algorithm that divides a problem of size <I>n</I> into <I>a</I> subproblems, each of size <I>n</I>/<I>b</I>, where <I>a</I> and <I>b</I> are positive constants. The <I>a</I> subproblems are solved recursively, each in time <I>T</I>(<I>n</I>/<I>b</I>). The cost of dividing the problem and combining the results of the subproblems is described by the function &acirc;(<I>n</I>). (That is, using the notation from Section 1.3.2, &acirc;(<I>n</I>) = <I>D</I>(<I>n</I>) + <I>C</I>(<I>n</I>).) For example, the recurrence arising from the <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure has <I>a</I> = 2, <I>b</I> = 2, and &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+As a matter of technical correctness, the recurrence isn't actually well defined because <I>n</I>/<I>b</I> might not be an integer. Replacing each of the <I>a</I> terms <I>T</I>(<I>n</I>/<I>b</I>) with either <I>T</I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/<I>b<FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT><I>) or </I>T<I>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></I>n</FONT><I>/</I>b<FONT FACE="Courier New" SIZE=2><I><IMG SRC="../IMAGES/hfbrur14.gif"></I></FONT>) doesn't affect the asymptotic behavior of the recurrence, however. (We'll prove this in the next section.) We normally find it convenient, therefore, to omit the floor and ceiling functions when writing divide-and-conquer recurrences of this form.<P>
+
+
+
+
+
+<h2>The master theorem</h2><P>
+<a name="071f_11d6">The master method depends on the following theorem.<P>
+<a name="071f_11d7">Theorem 4.1<a name="071f_11d7"><P>
+Let <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>b</I> &gt; 1 be constants, let &acirc;(<I>n</I>) be a function, and let <I>T</I>(<I>n</I>) be defined on the nonnegative integers by the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = <I>aT</I>(<I>n</I>/<I>b</I>) + &acirc;(<I>n</I>),</sub></sup></pre><P>
+where we interpret <I>n</I>/<I>b</I> to mean either <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/<I>b<FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/hfbrdr12.gif"><I></I></FONT> or <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/<I>b</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>. Then <I>T</I>(<I>n</I>) can be bounded asymptotically as follows.<P>
+1.     If &acirc;(<I>n</I>) = <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I>-</SUP><IMG SRC="../IMAGES/memof12.gif"><SUP>) for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I></SUP><FONT FACE="Courier New" SIZE=2>log<SUP><I><SUB>b</SUB></SUP>a</I></FONT><SUP>).</sup><P>
+2.     If &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>), then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>lg <I>n</I>).<P>
+3.     If &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>log<SUP><I><SUB>b</SUB></SUP>a</I>+<SUP><IMG SRC="../IMAGES/memof12.gif"></SUP>) for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, and if <I>a</I>&acirc;(<I>n</I>/<I>b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>&acirc;(<I>n</I>) for some constant <I>c</I> &lt; 1 and all sufficiently large <I>n</I>, then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)).      <P>
+Before applying the master theorem to some examples, let's spend a moment trying to understand what it says. In each of the three cases, we are comparing the function &acirc;(<I>n</I>) with the function <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a.</I></SUP> Intuitively, the solution to the recurrence is determined by the larger of the two functions. If, as in case 1, the function <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> is the<I> </I>larger, then the solution is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>). If, as in case 3, the function &acirc;(<I>n</I>) is the larger, then the solution is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)). If, as in case 2, the two functions are the same size, we multiply by a logarithmic factor, and the solution is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a </I></SUP>lg <I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)lg <I>n</I>).<P>
+Beyond this intuition, there are some technicalities that must be understood. In the first case, not only must &acirc;(<I>n</I>) be smaller than <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</SUP><FONT FACE="Times New Roman" SIZE=2>,</I> </FONT>it must be <I>polynomially</I> smaller. That is, &acirc;(<I>n</I>) must be asymptotically smaller than <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> by a factor of <I>n</I><IMG SRC="../IMAGES/memof12.gif"> for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0. In the third case, not only must &acirc;(<I>n</I>) be larger than <I>n</I><SUP><FONT FACE="Courier New" SIZE=2>log</SUP><I><SUB>b</SUB><SUP>a</I></FONT></SUP>, it must be polynomially larger and in addition satisfy the "regularity" condition that <I>a</I>&acirc;(<I>n</I>/<I>b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>&acirc;(<I>n</I>). This condition is satisfied by most of the polynomially bounded functions that we shall encounter.<P>
+It is important to realize that the three cases do not cover all the possibilities for &acirc;(<I>n</I>). There is a gap between cases 1 and 2 when &acirc;(<I>n</I>) is smaller than <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> but not polynomially smaller. Similarly, there is a gap between cases 2 and 3 when &acirc;(<I>n</I>) is larger than <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a </I></SUP>but not polynomially larger. If the function &acirc;(<I>n</I>) falls into one of these gaps, or if the regularity condition in case 3 fails to hold, the master method cannot be used to solve the recurrence.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Using the master method</h2><P>
+To use the master method, we simply determine which case (if any) of the master theorem applies and write down the answer.<P>
+As a first example, consider<P>
+<pre><I>T</I>(<I>n</I>) = 9<I>T</I>(<I>n</I>/3) + <I>n</I>.</sub></sup></pre><P>
+For this recurrence, we have <I>a</I> = 9, <I>b</I> = 3, &acirc;(<I>n</I>) = <I>n</I>, and thus <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = <I>n</I><SUP>log</SUP><SUB><FONT FACE="Times New Roman" SIZE=1>3</SUB><SUP>9</FONT></SUP> = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Since &acirc;(<I>n</I>) = <I>0</I>(<I>n</I><SUP>log</SUP><SUB><FONT FACE="Times New Roman" SIZE=1>3</SUB><SUP>9-</SUP><IMG SRC="../IMAGES/memof12.gif"></FONT><SUP>), </SUP>where <IMG SRC="../IMAGES/memof12.gif"> = 1, we can apply case 1 of the master theorem and conclude that the solution is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP><FONT FACE="Courier New" SIZE=2>2</FONT></SUP>).<P>
+Now consider<P>
+<pre><I>T</I>(<I>n</I>) = <I>T</I>(2<I>n</I>/3) + 1,</sub></sup></pre><P>
+in which <I>a</I> = 1, <I>b</I> = 3/2, &acirc;(<I>n</I>) = 1, and <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = <I>n</I><SUP>log</SUP><SUB><FONT FACE="Times New Roman" SIZE=1>3/2</SUB><SUP>1</FONT></SUP> = n<SUP>0</SUP> = 1. Case 2 applies, since &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>) = <IMG SRC="../IMAGES/bound.gif">(1), and thus the solution to the recurrence is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>).<P>
+For the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 3<I>T</I>(<I>n</I>/4) + <I>n </I>lg <I>n</I>,</sub></sup></pre><P>
+we have <I>a</I> = 3, <I>b</I> = 4, &acirc;(<I>n</I>) = <I>n </I>lg <I>n</I>, and <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = <I>n</I><SUP>log</SUP><SUB><FONT FACE="Times New Roman" SIZE=1>4</SUB><SUP>3</FONT></SUP> = <I>0</I>(<I>n</I><SUP>0.793</SUP>). Since &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>log<FONT FACE="Times New Roman" SIZE=1></SUP><SUB>4</SUB><SUP>3+</SUP><IMG SRC="../IMAGES/memof12.gif"><SUP><FONT FACE="Times New Roman" SIZE=2></SUP>), </FONT></FONT>where <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/approx18.gif"> 0.2, case 3 applies if we show that the regularity condition holds for &acirc;(<I>n</I>). For sufficiently large <I>n</I>, <I>a&acirc;</I>(<I>n</I>/<I>b</I>) = 3(<I>n</I>/4) lg(<I>n</I>/4) <IMG SRC="../IMAGES/lteq12.gif"> (3/4)<I>n</I> lg <I>n</I> = <I>c</I>&acirc;(<I>n</I>) for <I>c</I> = 3/4. Consequently, by case 3, the solution to the recurrence is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>).<P>
+The master method does not apply to the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) = + <I>n </I>1g <I>n</I>,</sub></sup></pre><P>
+even though it has the proper form: <I>a</I> = 2, <I>b</I> = 2, &acirc;(<I>n</I>) = <I>n</I>1g <I>n</I>, and <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = <I>n</I>. It seems that case 3 should apply, since &acirc;(<I>n</I>) = <I>n</I>1g <I>n</I> is asymptotically larger than <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = <I>n</I> but not polynomially larger. The ratio &acirc;(<I>n</I>)/<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> = (<I>n </I>1g <I>n</I>)/<I>n</I> = 1g <I>n</I> is asymptotically less than <I>n</I><IMG SRC="../IMAGES/memof12.gif"><I></I> for any positive constant <IMG SRC="../IMAGES/memof12.gif">. Consequently, the recurrence falls into the gap between case 2 and case 3. (See Exercise 4.4-2 for a solution.)<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0721_0001">Exercises<a name="0721_0001"></h2><P>
+<a name="0721_0002">4.3-1<a name="0721_0002"><P>
+Use the master method to give tight asymptotic bounds for the following recurrences.<P>
+<I><B>a.</I>     </B><I>T</I>(<I>n</I>) = 4<I>T</I>(<I>n</I>/2) + <I>n</I>.<P>
+<I><B>b.</I>     </B><I>T</I>(<I>n</I>) = 4<I>T</I>(<I>n</I>/2) + <I>n</I><SUP>2</SUP>.<P>
+<I><B>c.</I>     </B><I>T</I>(<I>n</I>) = 4<I>T</I>(<I>n</I>/2) + <I>n</I><SUP>3</SUP>.<P>
+<a name="0721_0003">4.3-2<a name="0721_0003"><P>
+The running time of an algorithm <I>A</I> is described by the recurrence <I>T</I>(<I>n</I>) = 7<I>T</I>(<I>n</I>/2) + <I>n</I><SUP>2</SUP>. A competing algorithm <I>A</I>' has a running time of <I>T</I>'(<I>n</I>) = <I>aT</I>'<I>(</I>n<I>/4) + </I>n<I><SUP>2</SUP>. What is the largest integer value for </I>a<I> such that </I>A<I>' is asymptotically faster than </I>A<I>?</I><P>
+<a name="0721_0004">4.3-3<a name="0721_0004"><P>
+Use the master method to show that the solution to the recurrence <I>T</I>(<I>n</I>) = <I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(1) of binary search (see Exercise 1.3-5) is <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>).<P>
+<a name="0721_0005">4.3-4<a name="0721_0005"><P>
+Consider the regularity condition <I>a&acirc;</I>(<I>n</I>/<I>b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>&acirc;(<I>n</I>) for some constant <I>c</I> &lt; 1, which is part of case 3 of the master theorem. Give an example of a simple function &acirc;(<I>n</I>) that satisfies all the conditions in case 3 of the master theorem except the regularity condition.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0722_11d8">* 4.4 Proof of the master theorem<a name="0722_11d8"></h1><P>
+<a name="0722_11d7">This section contains a proof of the master theorem (Theorem 4.1) for more advanced readers. The proof need not be understood in order to apply the theorem.<P>
+The proof is in two parts. The first part analyzes the &quot;master&quot; recurrence (4.5), under the simplifying assumption that <I>T</I>(<I>n</I>) is defined only on exact powers of <I>b</I> &gt; 1, that is, for <I>n</I> = 1, <I>b</I>, <I>b</I><SUP>2</SUP>, . . .. This part gives all the intuition needed to understand why the master theorem is true. The second part shows how the analysis can be extended to all positive integers <I>n </I>and is merely mathematical technique applied to the problem of handling floors and ceilings.<P>
+In this section, we shall sometimes abuse our asymptotic notation slightly by using it to describe the behavior of functions that are only defined over exact powers of <I>b</I>. Recall that the definitions of asymptotic notations require that bounds be proved for all sufficiently large numbers, not just those that are powers of <I>b</I>. Since we could make new asymptotic notations that apply to the set {<I>b<SUP>i</SUP> : i </I>= 0,1, . . .}, instead of the nonnegative integers, this abuse is minor.<P>
+Nevertheless, we must always be on guard when we are using asymptotic notation over a limited domain so that we do not draw improper conclusions. For example, proving that <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I>) when <I>n</I> is an exact power of 2 does not guarantee that <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I>). The function <I>T</I>(<I>n</I>) could be defined as<P>
+<img src="65_a.gif"><P>
+in which case the best upper bound that can be proved is <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I><SUP>2</SUP>). Because of this sort of drastic consequence, we shall never use asymptotic notation over a limited domain without making it absolutely clear from the context that we are doing so.<P>
+
+
+
+
+
+<h2><a name="0723_0001">4.4.1 The proof for exact powers<a name="0723_0001"></h2><P>
+The first part of the proof of the master theorem analyzes the master recurrence (4.5),<P>
+<pre><I>T</I>(<I>n</I>) = <I>aT</I>(<I>n/b</I>) + <I>&acirc;</I>(<I>n</I>),</sub></sup></pre><P>
+under the assumption that <I>n</I> is an exact power of <I>b</I> &gt; 1, where <I>b</I> need not be an integer. The analysis is broken into three lemmas. The first reduces the problem of solving the master recurrence to the problem of evaluating an expression that contains a summation. The second determines bounds on this summation. The third lemma puts the first two together to prove a version of the master theorem for the case in which <I>n</I> is an exact power of <I>b</I>.<P>
+<a name="0723_0002">Lemma 4.2<a name="0723_0002"><P>
+Let <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>b</I> &gt; 1 be constants, and let &acirc;(<I>n</I>) be a nonnegative function defined on exact powers of <I>b</I>. Define <I>T(n)</I> on exact powers of <I>b</I> by the recurrence<P>
+<img src="65_b.gif"><P>
+where <I>i</I> is a positive integer. Then<P>
+<img src="65_c.gif"><P>
+<h4><a name="0723_0003">(4.6)<a name="0723_0003"></sub></sup></h4><P>
+<I><B>Proof     </I></B>Iterating the recurrence yields<P>
+<pre><I>T</I>(<I>n</I>) = &acirc;(<I>n</I>) + <I>aT</I>(<I>n/b</I>)</sub></sup></pre><P>
+<pre>= &acirc;(<I>n</I>) + <I>a</I>&acirc;(<I>n/b</I>) + <I>a</I><SUP>2</SUP><I>T</I>(<I>n/b</I><SUP>2</SUP>)</sub></sup></pre><P>
+<pre>= &acirc;(<I>n</I>) + <I>a</I>&acirc;(<I>n/b</I>) + <I>a</I><SUP>2</SUP>&acirc;(<I>n/b</I><SUP>2</SUP>) + . . .</sub></sup></pre><P>
+<pre>+ <I>a</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</I>-1 </SUP><I>f</I>(<I>n</I>/<I>b</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</I>-1</SUP>) + <I>a</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</SUP>T</I>(1) .</sub></sup></pre><P>
+Since <I>a</I><SUP>log</SUP><I><SUB>b<FONT FACE="Times New Roman" SIZE=1> </SUB><SUP>n</SUP> </I></FONT>= <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>, the last term of this expression becomes<P>
+<pre><I>a</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</I></SUP> <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>);</sub></sup></pre><P>
+using the boundary condition <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1). The remaining terms can be expressed as the sum<P>
+<img src="66_a.gif"><P>
+thus,<P>
+<img src="66_b.gif"><P>
+which completes the proof.      <P>
+
+
+
+
+
+<h3>The recursion tree</h3><P>
+Before proceeding, let's try to develop some intuition by using a recursion tree. Figure 4.3 shows the tree corresponding to the iteration of the recurrence in Lemma 4.2. The root of the tree has cost &acirc;(<I>n</I>), and it has <I>a</I> children, each with cost &acirc;(<I>n/b</I>). (It is convenient to think of <I>a </I>as being an integer, especially when visualizing the recursion tree, but the mathematics does not require it.) Each of these children has <I>a</I> children with cost &acirc;(<I>n/b</I><SUP>2</SUP>), and thus there are <I>a</I><SUP>2</SUP> nodes that are distance 2 from the root. In general, there are <I>a</I><SUP>2</SUP> nodes that are distance <I>j</I> from the root, and each has cost &acirc;(<I>n/b<SUP>j</I></SUP>). The cost of each leaf is <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1), and each leaf is distance <I>log<SUB>b</SUB>n</I> from the root, since <I>n/b</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</I></SUP> = 1. There are <I>a</I><SUP>log</SUP><I><SUB>b</SUB><SUP>n</SUP> </I>= <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</SUP> </I>leaves in the tree. <P>
+We can obtain equation (4.6) by summing the costs of each level of the tree, as shown in the figure. The cost for a level <I>j</I> of internal nodes is <I>a<SUP>j</I></SUP>&acirc;(<I>n/b<SUP>j</I></SUP>), and so the total of all internal node levels is<P>
+<img src="66_c.gif"><P>
+In the underlying divide-and-conquer algorithm, this sum represents the costs of dividing problems into subproblems and then recombining the subproblems. The cost of all the leaves, which is the cost of doing all <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> subproblems of size 1, is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>).<P>
+<a name="0724_11d8">In terms of the recursion tree, the three cases of the master theorem correspond to cases in which the total cost of the tree is (1) dominated by the costs in the leaves, (2) evenly distributed across the levels of the tree, or (3) dominated by the cost of the root.<P>
+The summation in equation (4.6) describes the cost of the dividing and combining steps in the underlying divide-and-conquer algorithm. The next lemma provides asymptotic bounds on the summation's growth.<P>
+<img src="67_a.gif"><P>
+<h4><a name="0724_11d9">Figure 4.3 The recursion tree generated by T(n) = aT(n/b)+ f(n). The tree is a complete a-ary tree with n<SUP>log</SUP><SUB><FONT FACE="Times New Roman" SIZE=1>b</SUB><SUP>a</SUP><FONT FACE="Times New Roman" SIZE=2> leaves and height log<SUB>b</SUB><FONT FACE="Times New Roman" SIZE=2> a. The cost of each level is shown at the right, and their sum is given in equation (4.6).<a name="0724_11d9"></FONT></FONT></FONT></sub></sup></h4><P>
+<a name="0724_11da">Lemma 4.3<a name="0724_11da"><P>
+Let <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>b</I> &gt; 1 be constants, and let &acirc;(<I>n</I>) be a nonnegative function defined on exact powers of <I>b</I>. A function <I>g(n)</I> defined over exact powers of <I>b</I> by<P>
+<img src="67_b.gif"><P>
+<h4><a name="0724_11db">(4.7)<a name="0724_11db"></sub></sup></h4><P>
+can then be bounded asymptotically for exact powers of <I>b</I> as follows.<P>
+1.     If &acirc;(<I>n</I>) = <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a-</I></SUP><IMG SRC="../IMAGES/memof12.gif"><I></I>) for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, then <I>g(n)</I> = <I>O</I>(<I>n</I><SUP><FONT FACE="Courier New" SIZE=2>log</SUP><I><SUB>b</SUB><SUP>a</I></FONT></SUP>).<P>
+2.     If &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP><SUB>), </SUB>then <I>g</I>(<I>n</I>)<I> </I>= <IMG SRC="../IMAGES/bound.gif"><SUB>(</SUB><I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP><SUB> </SUB>1g <I>n</I><SUB>).<P>
+3.     If <I>a</I>&acirc;(<I>n/b</I>) <IMG SRC="../IMAGES/lteq12.gif"> c&acirc;(<I>n</I>) for some constant <I>c</I> &lt; 1 and all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>b</I>, then <I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(&acirc;(<I>n</I>)).<P>
+<I><B>Proof     </I></B>For case 1, we have &acirc;(<I>n</I>) = <I>O</I>(<I>n</I><SUP>log</SUP><I>b<SUP>a</I>-</SUP><IMG SRC="../IMAGES/memof12.gif">), implying that &acirc;(<I>n/b<SUP><FONT FACE="Courier New" SIZE=2>j</I></FONT></SUP>) = <I>O</I>((<I>n/b<SUP><FONT FACE="Courier New" SIZE=2>j</I></FONT></SUP>)<SUP><FONT FACE="Courier New" SIZE=2>log</SUP><I><SUB>b</SUB><SUP>a</I>-</SUP><IMG SRC="../IMAGES/memof12.gif"></FONT>). Substituting into equation (4.7) yields<P>
+<img src="67_c.gif"><P>
+<h4><a name="0724_11dc">(4.8)<a name="0724_11dc"></sub></sup></h4><P>
+We bound the summation within the <I>O</I>-notation by factoring out terms and simplifying, which leaves an increasing geometric series:<P>
+<img src="68_a.gif"><P>
+Since <I>b</I> and <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"> </FONT>are constants, the last expression reduces to <I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I><FONT FACE="Times New Roman" SIZE=1>-</SUP><IMG SRC="../IMAGES/memof12.gif"><SUP><I>O</I></FONT>(<I>n</I></SUP><FONT FACE="Courier New" SIZE=2><SUP><IMG SRC="../IMAGES/memof12.gif"></FONT></SUP>) = <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>). Substituting this expression for the summation in equation (4.8) yields<P>
+<pre><I>g</I>(<I>n</I>) = <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>),</sub></sup></pre><P>
+and case 1 is proved.<P>
+Under the assumption that &acirc;(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I>)<I> </I></SUP>for case 2, we have that &acirc;(<I>n/b<SUP>j</I></SUP>) = <IMG SRC="../IMAGES/bound.gif">((<I>n/b<SUP>j</I></SUP>)<SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>). Substituting into equation (4.7) yields<P>
+<img src="68_b.gif"><P>
+<h4><a name="0724_11dd">(4.9)<a name="0724_11dd"></sub></sup></h4><P>
+We bound the summation within the <IMG SRC="../IMAGES/bound.gif"><B> </B>as in case 1, but this time we do not obtain a geometric series. Instead, we discover that every term of the summation is the same:<P>
+<img src="68_c.gif"><P>
+Substituting this expression for the summation in equation (4.9) yields<P>
+<pre><I>g</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>log<I><SUB>b</SUB>n</I>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> 1g <I>n</I>),</sub></sup></pre><P>
+and case 2 is proved.<P>
+Case 3 is proved similarly. Since <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) appears in the definition (4.7) of <I>g(n)</I> and all terms of <I>g(n)</I> are nonnegative, we can conclude that <I>g(n) </I>= <IMG SRC="../IMAGES/omega12.gif">(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)) for exact powers of <I>b</I>. Under the assumption that <I>af </I>(<I>n/b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cf</I>(<I>n</I>) for some constant <I>c</I> &lt; 1 and all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <I>b</I>, we have <I>a<SUP>j</I></SUP><IMG SRC="../IMAGES/scrptf12.gif">(<I>n/b<SUP>j</I></SUP>)<SUP> </SUP><IMG SRC="../IMAGES/lteq12.gif"> <I>c<SUP>j</I></SUP> <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>). Substituting into equation (4.7) and simplifying yields a geometric series, but unlike the series in case 1, this one has decreasing terms:<P>
+<img src="69_a.gif"><P>
+since <I>c</I> is constant. Thus, we can conclude that <I>g</I>(<I>n)</I> = <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)) for exact powers of <I>b.</I> Case 3 is proved, which completes the proof of the lemma.      <P>
+We can now prove a version of the master theorem for the case in which <I>n</I> is an exact power of <I>b</I>.<P>
+<a name="0724_11de">Lemma 4.4<a name="0724_11de"><P>
+Let <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>b</I> &gt; 1 be constants, and let <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) be a nonnegative function defined on exact powers of <I>b</I>. Define <I>T</I>(<I>n</I>) on exact powers of <I>b</I> by the recurrence<P>
+<img src="69_b.gif"><P>
+where <I>i</I> is a positive integer. Then <I>T</I>(<I>n</I>) can be bounded asymptotically for exact powers of <I>b</I> as follows.<P>
+1.     If<I> </I><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a-</I></SUP><IMG SRC="../IMAGES/memof12.gif">) for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP><FONT FACE="Courier New" SIZE=2>log</SUP><I><SUB>b</SUB><SUP>a</I></FONT></SUP>).<P>
+2.     If <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>), then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> lg <I>n</I>).<P>
+3.     If <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a+</I></SUP><IMG SRC="../IMAGES/memof12.gif">) for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0, and if <I>a</I><IMG SRC="../IMAGES/scrptf12.gif">(<I>n/b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) for some constant <I>c</I> &lt; 1 and all sufficiently large <I>n</I>, then <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)).<P>
+<I><B>Proof     </I></B>We use the bounds in Lemma 4.3 to evaluate the summation (4.6) from Lemma 4.2. For case 1, we have<P>
+<pre><I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>) + <I>O</I>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>),</sub></sup></pre><P>
+and for case 2,<P>
+<pre><I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP> 1g <I>n</I>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a </I>lg<I> n</I></SUP>).</sub></sup></pre><P>
+For case 3, the condition <I>a</I><IMG SRC="../IMAGES/scrptf12.gif">(<I>n/b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I><IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) implies <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a+</I></SUP><IMG SRC="../IMAGES/memof12.gif">) (see Exercise 4.4-3). Consequently,<P>
+<pre><I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>) + <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>))</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)).      </sub></sup></pre><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0725_0001">4.4.2 Floors and ceilings<a name="0725_0001"></h2><P>
+To complete the proof of the master theorem, we must now extend our analysis to the situation in which floors and ceilings are used in the master recurrence, so that the recurrence is defined for all integers, not just exact powers of <I>b.</I> Obtaining a lower bound on<P>
+<pre><I>T</I>(<I>n</I>) = <I>aT</I>(<IMG SRC="../IMAGES/hfbrul14.gif"><I>n/b</I><IMG SRC="../IMAGES/hfbrur14.gif">) + <IMG SRC="../IMAGES/scrptf12.gif">(<I>n</I>)</sub></sup></pre><P>
+<h4><a name="0725_0002">(4.10)<a name="0725_0002"></sub></sup></h4><P>
+and an upper bound on<P>
+<pre>T(n) = aT(<IMG SRC="../IMAGES/hfbrdl12.gif">n/b<IMG SRC="../IMAGES/hfbrdr12.gif">) + <IMG SRC="../IMAGES/scrptf12.gif">(n)</sub></sup></pre><P>
+<h4><a name="0725_0003">(4.11)<a name="0725_0003"></sub></sup></h4><P>
+is routine, since the bound <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n/b</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> <IMG SRC="../IMAGES/gteq.gif"> <I>n/b</I> can be pushed through in the first case to yield the desired result, and the bound<FONT FACE="Courier New" SIZE=2> <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n/b</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> <IMG SRC="../IMAGES/lteq12.gif"> <I>n/b </I>can be pushed through in the second case. Lower bounding the recurrence (4.11) requires much the same technique as upper bounding the recurrence (4.10), so we shall only present this latter bound. <P>
+We wish to iterate the recurrence (4.10), as was done in Lemma 4.2. As we iterate the recurrence, we obtain a sequence of recursive invocations on the arguments<P>
+<pre><I>n</I>,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif"> ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/hfbrul14.gif"><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif">/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif"> ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/hfbrul14.gif"><IMG SRC="../IMAGES/hfbrul14.gif"><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif">/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif">/<I>b</I><IMG SRC="../IMAGES/hfbrur14.gif"> ,</sub></sup></pre><P>
+<img src="70_a.gif"><P>
+Let us denote the <I>i</I>th element in the sequence by <I>n<SUB>i</I></SUB>, where<P>
+<img src="70_b.gif"><P>
+<h4><a name="0725_0004">(4.12)<a name="0725_0004"></sub></sup></h4><P>
+Our first goal is to determine the number of iterations <I>k</I> such that <I>n<SUB>k</I></SUB> is a constant. Using the inequality<FONT FACE="Courier New" SIZE=2> <IMG SRC="../IMAGES/hfbrul14.gif"><I>x</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I> + 1, we obtain<P>
+<img src="70_c.gif"><P>
+<img src="71_a.gif"><P>
+In general,<P>
+<img src="71_b.gif"><P>
+and thus, when <I>i</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>log<I><SUB>b</SUB> n</I><IMG SRC="../IMAGES/hfbrdr12.gif"><I>, we obtain </I>n<SUB>i<I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> </I>b<I> + </I>b <I>/ (</I>b<I> - 1) = </I>O<I>(1).</I><P>
+We can now iterate recurrence (4.10), obtaining<P>
+<img src="71_c.gif"><P>
+<h4><a name="0725_0005">(4.13)<a name="0725_0005"></sub></sup></h4><P>
+which is much the same as equation (4.6), except that <I>n</I> is an arbitrary integer and not restricted to be an exact power of <I>b</I>.<P>
+We can now evaluate the summation<P>
+<img src="71_d.gif"><P>
+<h4><a name="0725_0006">(4.14)<a name="0725_0006"></sub></sup></h4><P>
+from (4.13) in a manner analogous to the proof of Lemma 4.3. Beginning with case 3, if <I>af</I><FONT FACE="Times New Roman" SIZE=3>(<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/<I>b</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"><FONT FACE="Times New Roman" SIZE=3>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cf</I>(<I>n</I>) for <I>n</I> &gt; <I>b</I> + <I>b</I>/(<I>b</I> - 1), where <I>c</I> &lt; 1 is a constant, then it follows that <I>a<SUP>j</I> </SUP><I>f</I></FONT>(<I>n<SUB>j</I></FONT></SUB>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c<SUP>j</SUP>f</I></FONT>(<I>n</I>). Therefore, the sum in equation (4.14) can be evaluated just as in Lemma 4.3. For case 2, we have <I>f</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif"><FONT FACE="Times New Roman" SIZE=3>(<I>n</I><SUP>log<I>ba</I></SUP><FONT FACE="Times New Roman" SIZE=3>)</FONT>. If we can show that <I>f</I>(<I>n<SUB>j</I></FONT></SUB>) = <I>O</I><FONT FACE="Times New Roman" SIZE=3>(<I>n<SUP>log</SUP><SUB>b</SUB><SUP>a</SUP>/a<SUP>j</I><FONT FACE="Times New Roman" SIZE=3>) </FONT></SUP>= <I>O</I>((<I>n</I>/<I>b<SUP>j</I></FONT></SUP>)<SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP>), then the proof for case 2 of Lemma 4.3 will go through. Observe that <I>j </I><IMG SRC="../IMAGES/lteq12.gif"> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>log<I><SUB>b</SUB>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <I>implies </I>b<SUP>j<I></SUP>/</I>n<I> <IMG SRC="../IMAGES/lteq12.gif"></I> 1. The bound <I>f</I>(<I>n</I>) = <I>O</I><FONT FACE="Times New Roman" SIZE=3>(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I></SUP><FONT FACE="Times New Roman" SIZE=3>) </FONT>implies that there exists a constant <I>c</I> &gt; 0 such that for sufficiently large <I>n<SUB>j</I></FONT></SUB>,<P>
+<img src="71_e.gif"><P>
+since <I>c</I>(1 + <I>b</I>/(<I>b</I> - 1))<SUP>log<I>ba </I></SUP>is a constant. Thus, case 2 is proved. The proof of case 1 is almost identical. The key is to prove the bound <I>f</I>(<I>n<SUB>j</I></SUB>) = <I>O</I><FONT FACE="Times New Roman" SIZE=3>(<I>n</I><SUP>log</SUP><I><SUB>b</I></SUB><SUP>a</SUP>-<SUP><IMG SRC="../IMAGES/memof12.gif"></SUP><FONT FACE="Times New Roman" SIZE=3>)</FONT>, which is similar to the corresponding proof of case 2, though the algebra is more intricate.</FONT><P>
+We have now proved the upper bounds in the master theorem for all integers <I>n</I>. The proof of the lower bounds is similar.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0726_0001">Exercises<a name="0726_0001"></h2><P>
+<a name="0726_0002">4.4-1<a name="0726_0002"><P>
+Give a simple and exact expression for <I>n<SUB>i</I></SUB> in equation (4.12) for the case in which <I>b</I> is a positive integer instead of an arbitrary real number.<P>
+<a name="0726_0003">4.4-2<a name="0726_0003"><P>
+Show that if <I>f</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</I></SUB><SUP>a </SUP>1g<I><SUP>k</I></SUP> <I>n</I>), <I>where k</I> <IMG SRC="../IMAGES/gteq.gif"> 0, then the master recurrence has solution <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>log</SUP><SUB>b</SUB><SUP>a </I></SUP>1g<I><SUP>k</I>+1 </SUP><I>n</I>). For simplicity, confine your analysis to exact powers of <I>b</I>.<P>
+<a name="0726_0004">4.4-3<a name="0726_0004"><P>
+Show that case 3 of the master theorem is overstated, in the sense that the regularity condition <I>af</I>(<I>n/b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cf</I>(<I>n</I>) for some constant <I>c</I> &lt; 1 implies that there exists a constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0 such that <I>f</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>log</SUP><I><SUB>b</SUB><SUP>a</I>+</SUP><IMG SRC="../IMAGES/memof12.gif"><SUP>)</sup>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0727_11e3">Problems<a name="0727_11e3"></h1><P>
+<a name="0727_11e4">4-1     Recurrence examples<a name="0727_11e4"><P>
+Give asymptotic upper and lower bounds for <I>T</I>(<I>n</I>) in each of the following recurrences. Assume that <I>T</I>(<I>n</I>) is constant for <I>n </I><IMG SRC="../IMAGES/lteq12.gif"> 2. Make your bounds as tight as possible, and justify your answers.<P>
+<I><B>a</I>.</B>     <I>T</I>(<I>n</I>) = 2<I>T </I><IMG SRC="../IMAGES/lteq12.gif"> (<I>n</I>/2) + <I>n</I><SUP>3</SUP>.<P>
+<I><B>b</I>.</B>     <I>T</I>(<I>n</I>) = <I>T</I>(9<I>n</I>/10) + <I>n</I>.<P>
+<I><B>c</I>.</B>     <I>T</I>(<I>n</I>) = 16<I>T</I>(<I>n</I>/4) + <I>n</I><SUP>2</SUP>.<P>
+<I><B>d</I>.</B>     <I>T</I>(<I>n</I>) = 7<I>T</I>(<I>n</I>/3) + <I>n</I><SUP>2</SUP>.<P>
+<I><B>e</I>.</B>     <I>T</I>(<I>n</I>) = 7<I>T</I>(<I>n</I>/2) + <I>n</I><SUP>2</SUP>.<P>
+<img src="72_a.gif"><P>
+<I><B>g</I>.</B>     <I>T</I>(<I>n</I>) = <I>T</I>(<I>n</I> - 1) + <I>n</I>.<P>
+<img src="72_b.gif"><P>
+<a name="0727_11e5">4-2     Finding the missing integer<a name="0727_11e5"><P>
+An array <I>A</I>[1 . . <I>n</I>] contains all the integers from 0 to <I>n</I> except one. It would be easy to determine the missing integer in <I>O</I>(<I>n</I>) time by using an auxiliary array <I>B</I>[0 . . <I>n</I>] to record which numbers appear in <I>A</I>. In this problem, however, we cannot access an entire integer in <I>A</I> with a single operation. The elements of <I>A</I> are represented in binary, and the only operation we can use to access them is "fetch the <I>j</I>th bit of <I>A</I>[<I>i</I>]," which takes constant time.<P>
+Show that if we use only this operation, we can still determine the missing integer in <I>O</I>(<I>n</I>) time.<P>
+<a name="0727_11e6">4-3     Parameter-passing costs<a name="0727_11e6"><P>
+<a name="0727_11d9">Throughout this book, we assume that parameter passing during procedure calls takes constant time, even if an <I>N</I>-element array is being passed. This assumption is valid in most systems because a pointer to the array is passed, not the array itself. This problem examines the implications of three parameter-passing strategies:<P>
+1.     An array is passed by pointer. Time = <IMG SRC="../IMAGES/bound.gif"> (1).<P>
+2.     An array is passed by copying. Time = <IMG SRC="../IMAGES/bound.gif"> (<I>N</I>), where <I>N</I> is the size of the array.<P>
+3.     An array is passed by copying only the subrange that might be accessed by the called procedure. Time = <IMG SRC="../IMAGES/bound.gif"> <B>(<I>p - q</I> + 1 ) </B>if the subarray <I>A</I>[<I>p . . q</I>] is passed.<P>
+<I><B>a.</I></B>     Consider the recursive binary search algorithm for finding a number in a sorted array (see Exercise 1.3-5). Give recurrences for the worst-case running times of binary search when arrays are passed using each of the three methods above, and give good upper bounds on the solutions of the recurrences. Let <I>N</I> be the size of the original problem and <I>n</I> be the size of a subproblem.<P>
+<I><B>b.</I></B>     Redo part (a) for the <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> algorithm from Section 1.3.1.<P>
+<a name="0727_11e7">4-4     More recurrence examples<a name="0727_11e7"><P>
+Give asymptotic upper and lower bounds for <I>T</I>(<I>n</I>) in each of the following recurrences. Assume that <I>T</I>(<I>n</I>) is constant for <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> 2. Make your bounds as tight as possible, and justify your answers.<P>
+<I><B>a.</I></B>     <I>T</I>(<I>n</I>) = 3<I>T</I>(<I>n</I>/2) + <I>n </I>1g <I>n</I>.<P>
+<I><B>b.</I></B>     <I>T</I>(<I>n</I>) = 3<I>T</I>(<I>n</I>/3 + 5) + <I>n </I>/ 2.<P>
+<I><B>c.</I></B>     <I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <I>n </I>/ lg <I>n</I>.<P>
+<I><B>d</I></B><I>.</I>     <I>T</I>(<I>n</I>) = <I>T</I>(<I>n</I> - 1) + 1 / <I>n</I>.<P>
+<I><B>e</I></B><I>.</I>     <I>T</I>(<I>n</I>) = <I>T</I>(<I>n</I> - 1) + 1g <I>n</I>.<P>
+<img src="74_a.gif"><P>
+<a name="0727_11e8">4-5     Sloppiness conditions<a name="0727_11e8"><P>
+<a name="0727_11da"><a name="0727_11db">Often, we are able to bound a recurrence <I>T</I>(<I>n</I>) at exact powers of an integral constant <I>b</I>. This problem gives sufficient conditions for us to extend the bound to all real <I>n</I> &gt; 0.<P>
+<I><B>a</I></B><I>.</I>     Let <I>T</I>(<I>n</I>) and <I>h</I>(<I>n</I>) be monotonically increasing functions, and suppose that <I>T</I>(<I>n</I>) &lt; <I>h</I>(<I>n</I>) when <I>n</I> is an exact power of a constant <I>b</I> &gt; 1. Moreover, suppose that <I>h</I>(<I>n</I>) is "slowly growing" in the sense that <I>h</I>(<I>n</I>) = <I>O</I>(<I>h</I>(<I>n</I>/<I>b</I>)). Prove that <I>T</I>(<I>n</I>) = <I>O</I>(<I>h</I>(<I>n</I>)).<P>
+<I><B>b.</I></B>     Suppose that we have the recurrence <I>T</I>(<I>n</I>) = <I>aT</I>(<I>n</I>/<I>b</I>) + <I>f</I>(<I>n</I>), where <I>a </I><IMG SRC="../IMAGES/gteq.gif"> 1, <I>b</I> &gt; 1, and <I>f</I>(<I>n</I>) is monotonically increasing. Suppose further that  the initial conditions for the recurrence are given by <I>T</I>(<I>n</I>) = <I>g</I>(<I>n</I>) for <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I><SUB>0</SUB>, where <I>g</I>(<I>n</I>) is monotonically increasing and <I>g</I>(<I>n</I><SUB>0</SUB>) &lt; <I>aT</I>(<I>n</I><SUB>0</SUB>/<I>b</I>)+ <I>f</I>(<I>n</I><SUB>0</SUB>). Prove that <I>T</I>(<I>n</I>) is monotonically increasing.<P>
+<I><B>c</I></B><I>.</I>     Simplify the proof of the master theorem for the case in which <I>f</I>(<I>n</I>) is monotonically increasing and slowly growing. Use Lemma 4.4.<P>
+<a name="0727_11e9">4-6     Fibonacci numbers<a name="0727_11e9"><P>
+<a name="0727_11dc"><a name="0727_11dd"><a name="0727_11de"><a name="0727_11df"><a name="0727_11e0"><a name="0727_11e1">This problem develops properties of the Fibonacci numbers, which are defined by recurrence (2.13). We shall use the technique of generating functions to solve the Fibonacci recurrence. Define the <I><B>generating function</I> </B>(or <I><B>formal power series</I></B>) <img src="74_b.gif"> as<P>
+<img src="74_c.gif"><P>
+<I><B>a.</I></B>     Show that <img src="74_d.gif"><P>
+<I><B>b.</I></B>     Show that<P>
+<img src="74_e.gif"><P>
+where<P>
+<img src="74_f.gif"><P>
+and<P>
+<img src="75_a.gif"><P>
+<I><B>c.</I></B>     Show that<P>
+<img src="75_b.gif"><P>
+<I><B>d.     </I></B>Prove that <img src="75_c.gif">, rounded to the nearest integer. <I>Hint</I>: <img src="75_d.gif">)<P>
+<I><B>e.</I></B>     Prove that <I>F<SUB>i</I> + 2</SUB> <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif"><SUP>i<I></SUP> for </I>i<I> <IMG SRC="../IMAGES/gteq.gif"> 0.</I><P>
+<a name="0727_11ea">4-7     VLSI chip testing<a name="0727_11ea"><P>
+Professor Diogenes has <I>n</I> supposedly identical VLSI<SUP>1 </SUP>chips that in principle are capable of testing each other. The professor's test jig accommodates two chips at a time. When the jig is loaded, each chip tests the other and reports whether it is good or bad. A good chip always reports accurately whether the other chip is good or bad, but the answer of a bad chip cannot be trusted. Thus, the four possible outcomes of a test are as follows:<P>
+<pre>Chip <B><I>A </I></B>says  Chip <B><I>B</I></B> says  Conclusion</sub></sup></pre><P>
+<pre>--------------------------------------------------------</sub></sup></pre><P>
+<pre><I>B </I>is good    <I>A</I> is good    both are good, or both are bad</sub></sup></pre><P>
+<pre><I>B </I>is good    <I>A</I> is bad     at least one is bad</sub></sup></pre><P>
+<pre><I>B </I>is bad     <I>A</I> is good    at least one is bad</sub></sup></pre><P>
+<pre><I>B </I>is bad     <I>A</I> is bad     at least one is bad</sub></sup></pre><P>
+<a name="0727_11e2"><SUP><FONT FACE="Times" SIZE=1>1</SUP><FONT FACE="Times" SIZE=2> VLSI stands for &quot;very-large-scale integration,&quot; which is the integrated-circuit chip technology used to fabricate most microprocessors today.</FONT></FONT><P>
+<I><B>a.</I>     </B>Show that if more than <I>n</I>/2 chips are bad, the professor cannot necessarily determine which chips are good using any strategy based on this kind of pairwise test. Assume that the bad chips can conspire to fool the professor.<P>
+<I><B>b</I></B><I>.     </I>Consider the problem of finding a single good chip from among <I>n</I> chips, assuming that more than <I>n</I>/2 of the chips are good. Show that<FONT FACE="Courier New" SIZE=2> <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> pairwise tests are sufficient to reduce the problem to one of nearly half the size.<P>
+<I><B>c</I></B><I>.     </I>Show that the good chips can be identified with <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) pairwise tests, assuming that more than <I>n</I>/2 of the chips are good. Give and solve the recurrence that describes the number of tests.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Recurrences were studied as early as 1202 by L. Fibonacci, for whom the Fibonacci numbers are named. A. De Moivre introduced the method of generating functions (see Problem 4-6) for solving recurrences. The master method is adapted from Bentley, Haken, and Saxe [26], which provides the extended method justified by Exercise 4.4-2. Knuth [121] and Liu [140] show how to solve linear recurrences using the method of generating functions. Purdom and Brown [164] contains an extended discussion of recurrence solving.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap05.htm">Chapter 5</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

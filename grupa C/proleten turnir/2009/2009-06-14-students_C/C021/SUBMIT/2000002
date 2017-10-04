@@ -1,0 +1,32 @@
+#include <iostream>
+#include <vector>
+using namespace std;
+int n;
+long long k, fact[32];
+vector <int> v;
+void scan(){
+     cin >> n >> k;
+}
+void solve(){
+     fact[0] = fact[1] =1;
+     for ( int i = 2; i < 22; ++i )
+         fact[i] = i * fact[i - 1];
+     for ( int i = 1; i <= n; ++i )
+         v.push_back(i);
+     int tek = n - 1;
+     string ans = "";
+     while( k > 0 ){
+           // cout << k << " " << tek << " " << fact[tek] << " "  << ans << " ";
+            int ind = k / fact[tek] + !(!(k % fact[tek]));  --ind;//cout << ind << endl;
+            ans += ( v[ind] + 'a' - 1 );
+            v.erase(v.begin() + ind);
+            k %= (fact[tek--]);
+     }
+     for ( int i = v.size() - 1; i >= 0; --i )
+     ans += ( v[i] + 'a' - 1 );
+     cout << ans << endl;
+}
+int main(){
+    scan();
+    solve();
+}

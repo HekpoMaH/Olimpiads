@@ -1,0 +1,248 @@
+/*
+TASK: FEST
+LANG: C
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#define FINP
+#define M6DEBUG
+#define MAX 10000000
+
+unsigned int homes[ MAX ];
+int lbound;
+int rbound;
+unsigned int lsum;
+unsigned int rsum;
+unsigned int asum;
+
+// Coordinate, Humans
+void addh( int c, int h );
+void prints( unsigned int s );
+unsigned int getsum( int c );
+
+int main() {
+	FILE* in;
+#ifdef FINP
+	in = fopen( "fest.inp", "r" );
+#else
+	in = stdin;
+#endif
+
+    int i;
+    for ( i = 0; i < MAX; ++i ) {
+	    homes[ i ] = 0;
+    }
+
+
+	int stop = 0;
+    rbound = 0;
+    lbound = MAX - 1;
+    char ch;
+    int c, h;
+    unsigned int s;
+    while ( !stop ) {
+    	ch = getc( in );
+        switch( ch ) {
+        	case '1':
+            fscanf( in, "%d %d", &c, &h );
+            addh( c, h );
+            //clear trailing newline
+            getc( in );
+            break;
+
+            case '2':
+            fscanf( in, "%d", &s );
+            prints( s );
+            getc( in );
+            break;
+
+            case '\n':
+            case EOF:
+            stop = 1;
+            break;
+
+            // For debugging purpouses
+            #ifdef M6DEBUG
+            case '3':
+		    for ( i = 0; i < MAX; ++i ) {
+		    	if( homes[ i ] != 0 )
+		        	printf( "%d: %u\n", i, homes[ i ] );
+		    }
+            printf( "lbound: %d\nlsum: %u\nrbound: %d\nrsum: %u\nasum: %u\n", lbound, lsum, rbound, rsum, asum);
+            getc( in );
+            break;
+
+            case '4':
+            fscanf( in, "%d", &c );
+            printf( "sum at %d = %u\n", c, getsum( c ) );
+            getc( in );
+            break;
+            #endif
+        }
+    }
+    
+
+#ifdef FINP
+	fclose( in );
+#endif
+
+	return 0;
+}
+
+void addh( int c, int h ) {
+    int oldh = homes[ c ];
+    homes[ c ] += h;
+    asum += h;
+    if ( homes[ c ] == 0 ) {
+    	if ( c == lbound ) {
+            int i;
+            for(i = lbound + 1; i < MAX && homes[i] == 0; ++i);
+            if ( i == MAX ) {
+            	lbound = MAX - 1;
+                lsum = 0;
+            }
+            else {
+            	lbound = i;
+                lsum = getsum( i );
+            }
+        }
+        else if ( c == rbound ) {
+            int i;
+            for(i = rbound - 1; i >= 0 && homes[i] == 0; --i);
+            if ( i == -1 ) {
+            	rbound = 0;
+                rsum = 0;
+            }
+            else {
+            	rbound = i;
+                rsum = getsum( i );
+            }
+        }
+    }
+    else if( oldh == 0 ) {
+        if ( c < lbound ) {
+        	lsum = getsum(c);// * (asum - h);
+            lbound = c;
+        }
+        if ( c > rbound ) {
+        	rsum = getsum(c);// - rbound) * (asum - h);
+            rbound = c;
+        }
+    }
+    if ( c != lbound ) {
+    	lsum += abs( c - lbound ) * h;
+    }
+    if ( c != rbound ) {
+    	rsum += abs( c - rbound ) * h;
+    }
+}
+
+unsigned int getsum( int c ) {
+    int i;
+    unsigned int s = 0;
+    for ( i = lbound; i <= rbound; ++i ) {
+    	if ( homes[ i ] == 0 || i == c )
+        	continue;
+
+    	s += abs( i - c ) * homes[ i ];
+    }
+    return s;
+}
+
+void prints( unsigned int s ) {
+	unsigned int ls, rs;
+	int lt, rt;
+    if ( s >= lsum ) {
+    	unsigned int tl = s - lsum;
+        unsigned int t = tl/asum;
+        if ( t * asum == tl ) {
+        	printf( "%d 0\n", lbound-t );
+            return;
+        }
+
+        if ( s-(t*asum + lsum) > (t*asum + lsum + asum)-s ) {
+             lt = lbound - t - 1;
+             ls = (t*asum + lsum + asum)-s;
+        }
+        else {
+        	lt = lbound - t;
+            ls = s-(t*asum + lsum);
+        }
+    }
+    else {
+    	//Start searching SLOWLY;
+        int las = 0;
+        int ras = lsum;
+        int lss = 0;
+        int rss = asum;
+        int i = lbound;
+        ls = 1000000000;
+        while( ras + las > s && i < rbound ) {
+        	if ( las+ras-s < ls ) {
+            	lt = i;
+                ls = las+ras-s;
+            }
+            lss += homes[i];
+            rss -= homes[i];
+            las += lss;
+            ras -= rss;
+            ++i;
+        }
+        printf( "%d %d %d %u\n",ras,las,i,s);
+        if ( i < rbound && s-ras-las < ls ) {
+        	ls = s-ras-las;
+            lt=i;
+        }
+    }
+
+
+    if ( s >= rsum ) {
+    	unsigned int tr = s - rsum;
+        unsigned int t = tr/asum;
+        if ( t * asum == tr ) {
+        	printf( "%d 0\n", rbound+t );
+            return;
+        }
+
+        if ( s-(t*asum + rsum) > (t*asum + rsum + asum)-s ) {
+             rt = rbound + t + 1;
+             rs = (t*asum + rsum + asum)-s;
+        }
+        else {
+        	rt = rbound - t;
+            rs = s-(t*asum + lsum);
+        }
+    }
+    else {
+    	//Start searching SLOWLY;
+        int las = rsum;
+        int ras = 0;
+        int lss = asum;
+        int rss = 0;
+        int i = rbound;
+        rs = 1000000000;
+        while( ras + las > s && i > lbound ) {
+        	if ( las+ras-s < rs ) {
+            	rt = i;
+                rs = las+ras-s;
+            }
+            lss -= homes[i];
+            rss += homes[i];
+            las -= lss;
+            ras += rss;
+            --i;
+        }
+        printf( "%d %d %d %u\n",ras,las,i,s);
+        if ( i > lbound && s-ras-las < rs ) {
+        	rs = s-ras-las;
+            rt=i;
+        }
+    }
+
+    if ( ls < rs )
+    	printf( "%d %u\n", lt, ls );
+    else
+    	printf( "%d %u\n", rt, rs );
+}
+

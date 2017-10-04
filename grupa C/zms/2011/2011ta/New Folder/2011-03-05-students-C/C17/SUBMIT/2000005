@@ -1,0 +1,39 @@
+#include <iostream>
+using namespace std;
+int A[1000][1000];
+int razst[70000];
+int opiti[10002];
+int main ()
+{
+    int n;
+    cin >> n;
+    int k;
+    int a;
+    for(int i = 0; i < n; i ++)
+    {
+        for (int j = 0; j < n; j ++)
+        {
+            cin >> A[i][j];
+            if(!(i == 0 && j == n-1))
+            {
+                a = n - 1 - j + i;
+                //cout << a << " ";
+                if(razst[A[i][j]] > a || razst [A[i][j]] == 0 && A[i][j] != A[0][n-1]) razst[A[i][j]] = a;
+            }
+        }
+    }
+    cin >> k;
+    int bla;
+    for(int i = 0; i < k; i ++)
+    {
+        cin >> bla;
+        if (razst[bla] == 0 && A[0][n-1] != bla) opiti[i] = -1;
+        else opiti [i] = razst[bla];
+    }
+    for(int i = 0; i < k; i ++)
+    {
+        if(opiti[i] == -1) cout << "No Solution" << endl;
+        else cout << opiti[i] << endl;
+    }
+    return 0;
+}

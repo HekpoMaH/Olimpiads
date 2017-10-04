@@ -1,0 +1,141 @@
+#include<cstdio>
+#include<queue>
+#include<algorithm>
+using namespace std;
+
+struct point {
+	int x , y , rast;
+	point ( int a , int b , int c ) { x = a;y = b;rast = c; }
+};
+
+int n , m;
+int br_p;
+int start_x , start_y;
+int end_x , end_y;
+vector<int> p_x , p_y;
+int a[1 << 6][1 << 6];
+bool used[1 << 6][1 << 6];
+int dx[4] = { -1 , 0 , 0 , 1 };
+int dy[4] = { 0 , 1 , -1 , 0 };
+
+int bfs ( int ot_x , int ot_y , int do_x , int do_y ) {
+	queue<point> q;
+	memset ( used , 0 , sizeof ( used ) );
+	used[ot_x][ot_y] = 1;
+	q.push ( point ( ot_x , ot_y , 0 ) );
+	while ( !q.empty() ) {
+		for ( int i = 0;i < 4;++i ) {
+			point next ( q.front().x + dx[i] , q.front().y + dy[i] , q.front().rast + 1 );
+			if ( next.x == n ) next.x = 0;
+			if ( next.x == -1 ) next.x = n - 1;
+			if ( next.y == m ) next.y = 0;
+			if ( next.y == -1 ) next.y = m - 1;
+			if ( a[next.x][next.y] == 1 ) continue;
+			if ( !used[next.x][next.y] ) {
+				q.push ( next );
+				used[next.x][next.y] = 1;
+				if ( next.x == do_x && next.y == do_y ) return next.rast;
+			}
+		}
+		q.pop();
+	}
+	return -1;
+}
+
+int main() {
+	scanf ( "%d%d" , &n , &m );
+	char c;
+	for ( int i = 0;i < n;++i ) {
+		for ( int j = 0;j < m;++j ) {
+			scanf ( "%c" , &c );
+			if ( c == '\n' ) {
+				--j;
+				continue;
+			}
+			if ( c == 'E' ) {
+				start_x = i;
+				start_y = j;
+			}
+			if ( c == 'P' ) {
+				++br_p;
+				p_x.push_back ( i );
+				p_y.push_back ( j );
+			}
+			if ( c == 'X' ) {
+				end_x = i;
+				end_y = j;
+			}
+			if ( c == '#' ) a[i][j] = 1;
+			else a[i][j] = 0;
+		}
+	}
+	int koi_p[5];
+	for ( int i = 0;i < 5;++i ) koi_p[i] = i;
+	int min = 9999999;
+	
+	
+	int tek_sbor = 0;
+	int tek_x = start_x;
+	int tek_y = start_y;
+	bool b = 1;
+	int tekk;
+	for ( int i = 0;i < br_p;++i ) {
+		int tekk = bfs ( tek_x , tek_y , p_x[i] , p_y[i] );
+		if ( tekk == -1 ) {
+			b = 0;
+			break;
+		}
+		tek_x = p_x[i];
+		tek_y = p_y[i];
+		tek_sbor += tekk;
+//		printf ( "%d " , tekk );
+	}
+	int tekk2 = bfs ( tek_x , tek_y , end_x , end_y );
+	if ( tekk2 == -1 ) b = 0;
+	else tek_sbor += tekk2;
+	if ( !b ) {
+		printf ( "-1\n" );
+		return 0;
+	}
+	if ( tek_sbor < min ) min = tek_sbor;
+//	printf ( "%d\n" , tekk2 );
+	int asdf[5];
+	while ( next_permutation ( koi_p , koi_p + br_p ) ) {
+		tek_sbor = 0;
+		tek_x = start_x;
+		tek_y = start_y;
+		b = 1;
+		for ( int i = 0;i < br_p;++i ) {
+			int tekk = bfs ( tek_x , tek_y , p_x[koi_p[i]] , p_y[koi_p[i]] );
+//			printf ( "%d:%d->%d:%d = %d\n" , tek_x , tek_y , p_x[koi_p[i]] , p_y[koi_p[i]] , 	tekk );
+			if ( tekk == -1 ) {
+				b = 0;
+				break;
+			}
+			tek_x = p_x[koi_p[i]];
+			tek_y = p_y[koi_p[i]];
+			tek_sbor += tekk;
+		}
+		tekk2 = bfs ( tek_x , tek_y , end_x , end_y );
+//		printf ( "%d:%d->%d:%d = %d\n" , tek_x , tek_y , end_x , end_y , tekk2 );
+		if ( tekk2 == -1 ) b = 0;
+		else tek_sbor += tekk2;
+		if ( !b ) {
+			printf ( "-1\n" );
+			return 0;
+		}
+		if ( tek_sbor < min ) {
+			min = tek_sbor;
+			for ( int i = 0;i < 5;++i ) {
+				asdf[i] = koi_p[i];
+			}
+		}
+//		printf ( "%d\n" , tekk2 );
+//		puts ( "\n" );
+	}
+/*	for ( int i = 0;i < 5;++i ) {
+		printf ( "%d " , asdf[i] );
+	}
+*/	printf ( "%d\n" , min );
+	return 0;
+}

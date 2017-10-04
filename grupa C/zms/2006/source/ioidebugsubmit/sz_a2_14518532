@@ -1,0 +1,94 @@
+/*
+TASK:FESTA
+LANG:C++
+*/
+#include <stdio.h>
+#include <iostream.h>
+#include <math.h>
+long g[1000][2];
+long o[1000][2];
+long cnt,ms,scnt,ocnt,bs;
+void zad(long t)
+{
+  long i,j,s,ts,ts1,bp;
+  ms=0;
+  bp=0;
+  for (i=0;i<=cnt;i++) {
+			ms+=abs(g[i][0]-bp)*g[i][1];
+		      }
+  for (s=1;;s++) {
+		   ts=0;
+		   ts1=0;
+		   for (i=0;i<=cnt;i++) {
+					 if (g[i][0]>bp) ts+=abs(g[i][0]-s)*g[i][1];
+					 if (g[i][0]<bp) ts+=(g[i][0]+s)*g[i][1];
+					 if (g[i][0]<bp) ts1+=abs(g[i][0]-s)*g[i][1];
+					 if (g[i][0]>bp) ts1+=(g[i][0]+s)*g[i][1];
+				       }
+		   if (abs(ts-t)<abs(ms-t)) {
+					      ms=ts;
+					      bs=s;
+					    }
+			else scnt++;
+		   if (abs(ts1-t)<abs(ms-t)) {
+					      ms=ts1;
+					      bs=-s;
+					     }
+			else scnt++;
+		   if ((abs(ms-t)==0)||(abs(ms-t)==1)||(abs(ms-t)==2)||(abs(ms-t)==3))
+		   {
+		    scnt=0;
+		    o[ocnt][0]=bs;
+		    o[ocnt][1]=abs(ms-t);
+		    ocnt++;
+		    return;
+		  }
+		     if (scnt>500)
+		   {
+		     scnt=0;
+		     o[ocnt][0]=bs;
+		     o[ocnt][1]=abs(ms-t);
+		     ocnt++;
+		     return;
+		 }
+	       }
+}
+void adr(long p,long l)
+{
+  long i;
+  for (i=0;i<=cnt;i++) {
+			if (g[i][0]==p) {
+					  g[i][1]+=l;
+					  return ;
+					}
+		      }
+  cnt++;
+  g[cnt][0]=p;
+  g[cnt][1]=l;
+}
+void inp()
+{
+  long i,b,p,l;
+  char c;
+  cnt=-1;
+  for (i=0;;i++) {
+		   cin>>c;
+		   if ((c!='1')&&(c!='2')) {
+						return;
+					   }
+		   if (c=='1') {
+			       cin>>p;
+			       cin>>l;
+			       adr(p,l);
+			     }
+		   if (c=='2') {
+			       cin>>p;
+			       zad(p);
+			     }
+		 }
+}
+int main (void)
+{
+  inp();
+  return 0;
+}

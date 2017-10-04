@@ -1,0 +1,39 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+unsigned long long a[]={0,1,2,6,24,120,720,5040,40320,362880};//,3628800,39916800,479001600,6227020800,87178291200,1307674368000,20922789888000,355687428096000,6402373705728000,121645100408832000};
+queue<int> qqq;
+int an[]={1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+int main ()
+{
+    unsigned long long n,k,p,i,l,ans,br;
+    cin>>n>>k;
+    p=k;
+    for(i=1;i<n;i++)
+    {
+                    br=0;
+                    ans=k/a[n-1];
+                    if(k%a[n-1]>0)l=1;
+                    p=ans+l;
+                    for(int j= 0; j<=n;j++)
+                    {
+                            if(an[j]!=0&&br==p-1){qqq.push(an[j]);an[j]=0;break;}
+                            else
+                            if(an[j]!=0)br++;
+                    }
+                    k-=p-1;
+    }
+    p=1;br=0;
+    for(int j= 0; j<=n;j++)
+                    {
+                            if(an[j]!=0&&br==p-1){qqq.push(an[j]);an[j]=0;break;}
+                            else
+                            if(an[j]!=0)br++;
+                    }
+    while(!qqq.empty())
+    {
+                     cout<<qqq.front();
+                     qqq.pop();
+    }                
+    cout<<endl;
+}

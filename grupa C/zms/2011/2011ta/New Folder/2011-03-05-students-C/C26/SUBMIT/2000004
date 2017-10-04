@@ -1,0 +1,41 @@
+#include <iostream>
+using namespace std;
+int main ( ) {
+    int N[501][501], K[10001], a[130076][2], q, b, min, br, n, k, i, j, l;
+//    int N[1000001], K[10], a[10][3], q, b, min, br, n, k, i, j, l;
+    cin >> n;
+    for (i=1;i<=n;i++) for (j=1;j<=n;j++) cin >> N[i][j];
+    cin >> k;
+    for (i=1;i<=k;i++) cin >> K[i];
+    for (i=1;i<=k;i++)
+        {
+        for (j=1;j<=n*n;j++) for (l=0;l<=1;l++) a[j][l]=0;
+        br=n*n;
+        q=0;
+        for (j=1;j<=n;j++)
+            {
+            for (l=1;l<=n;l++)
+                {
+                if (N[j][l]!=K[i]) br--;
+                else
+                    {
+                    q++;
+                    a[q][0]=i;
+                    a[q][1]=j;
+                    }
+                }
+            }
+        if (br==0) cout << "No Solution" << endl;
+        else
+            {
+            if (q==1) min=(n-a[q][0])+(n-a[q][1]);
+            else
+                {
+                min=(n-a[1][0])+(n-a[1][1]);
+                for (j=2;j<=q;j++) if (min>=((n-a[j][0])+(n-a[j][1]))) min=(n-a[j][0])+(n-a[j][1]);
+                }
+            cout << min << endl;
+            }
+        }
+    return 0;
+}

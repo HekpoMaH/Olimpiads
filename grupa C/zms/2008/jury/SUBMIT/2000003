@@ -1,0 +1,81 @@
+/*
+TASK:context
+LANG:C++
+*/
+// Winter Mathematics Contests
+// Ruse'2008
+
+// Informatics Problem: CONTEXT
+// Jury Solution by Peter Sabev
+
+#pragma hdrstop
+#pragma argsused
+
+#include <stdio.h>
+#include <memory.h>
+#include <string.h>
+using namespace std;
+
+#define MaxSize_Keyword 50
+#define MaxSize_InputText 65000
+
+int strnicmp (const char *s1, const char *s2, size_t n) {
+	size_t i;
+	for (i = 0; i < n && *s1 && *s2 && *s1 == *s2; ++i, ++s1, ++s2);
+	return i == n || !*s1 && !*s2 ? 0 : *s1 - *s2;
+}
+
+void RemoveSpaces (char *X)
+// Removes blank spaces by just moving memory borders
+{
+  int firstChar = 0;
+  int length = strlen(X);
+  while (X[firstChar]==' ') firstChar++;
+  if (firstChar>0) memmove(X,X+firstChar,length-firstChar + 1);
+  length -= firstChar;
+  if (length == 0) return;
+  int lastChar = length-1;
+  while (X[lastChar]==' ' && lastChar>0) lastChar--;
+  if (length-lastChar-1 > 0 ) memset(X+lastChar+1,0,length-lastChar-1);
+}
+
+int main()
+
+{
+  // Variables Used
+  int N;
+  char *Keyword = new char [MaxSize_Keyword];
+  char *InputText = new char [MaxSize_InputText];
+  // Read Data
+  scanf("%d\n",&N);
+  gets(Keyword);
+  gets(InputText);
+  // Delete Empty Characters
+  RemoveSpaces(Keyword);
+  RemoveSpaces(InputText);
+  // Calculation
+  int KeywordLength=strlen(Keyword);
+  int ITLength=strlen(InputText);
+  for (int i=0;i<ITLength-KeywordLength+1;i++)
+    if (strnicmp(InputText + i, Keyword, KeywordLength)==0)
+      {
+        if ((KeywordLength+N*2)>=ITLength)
+          printf(InputText);
+        else  
+          { 
+            // Calculate offset
+            int Delta=0;
+            if ((N-i)>0) 
+              Delta=N-i;
+            else
+              if ((i+N+KeywordLength)>ITLength)
+                Delta=-i-N-KeywordLength+ITLength; 
+            fwrite(InputText+i-N+Delta,KeywordLength+N*2,1,stdout);
+          }  
+        printf("\n");
+      }
+  // Finalization
+  delete[] InputText;
+  delete[] Keyword;
+  return 0;
+}

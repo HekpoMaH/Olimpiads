@@ -1,0 +1,312 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 3: SUMMATIONS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap04.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap02.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="06ff_11b2">CHAPTER 3: SUMMATIONS<a name="06ff_11b2"></h1><P>
+<a name="06ff_11b0"><a name="06ff_11b1">When an algorithm contains an iterative control construct such as a <B>while</B> or <B>for</B> loop, its running time can be expressed as the sum of the times spent on each execution of the body of the loop. For example, we found in Section 1.2 that the <I>j</I>th iteration of insertion sort took time proportional to <I>j</I> in the worst case. By adding up the time spent on each iteration, we obtained the summation (or series)<P>
+<img src="42_a.gif"><P>
+Evaluating this summation yielded a bound of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) on the worst-case running time of the algorithm. This example indicates the general importance of understanding how to manipulate and bound summations. (As we shall see in Chapter 4, summations also arise when we use certain methods to solve recurrences.)<P>
+Section 3.1 lists several basic formulas involving summations. Section 3.2 offers useful techniques for bounding summations. The formulas in Section 3.1 are given without proof, though proofs for some of them are presented in Section 3.2 to illustrate the methods of that section. Most of the other proofs can be found in any calculus text.<P>
+
+
+
+
+
+<h1><a name="0701_11b9">3.1 Summation formulas and properties<a name="0701_11b9"></h1><P>
+<a name="0701_11b2"><a name="0701_11b3"><a name="0701_11b4">Given a sequence <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . of numbers, the finite sum <I>a</I><SUB>1</SUB> + <I>a</I><SUB>2</SUB> + . . . +<I>a<SUB>n</I></SUB> can be written<P>
+<img src="42_b.gif"><P>
+If <I>n</I> = 0, the value of the summation is defined to be 0. If <I>n</I> is not an integer, we assume that the upper limit is <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>. Similarly, if the sum begins with <I>k</I> = <I>x</I>, where <I>x</I> is not an integer, we assume that the initial value for the summation is <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>x</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>. (Generally, we shall put in floors and ceilings explicitly.) The value of a finite series is always well defined, and its terms can be added in any order.<P>
+Given a sequence <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . of numbers, the infinite sum <I>a</I><SUB>1</SUB> + <I>a</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> can be written<P>
+<img src="43_a.gif"><P>
+which is interpreted to mean<P>
+<img src="43_b.gif"><P>
+<a name="0701_11b5"><a name="0701_11b6"><a name="0701_11b7"><a name="0701_11b8">If the limit does not exist, the series <I><B>diverges</I></B>; otherwise, it <I><B>converges</I></B>. The terms of a convergent series cannot always be added in any order. We can, however, rearrange the terms of an <I><B>absolutely convergent series</I></B>, that is, a series <img src="43_c.gif"> for which the series <img src="43_d.gif"> also converges.<P>
+
+
+
+
+
+<h2>Linearity</h2><P>
+<a name="0702_11b9"><a name="0702_11ba">For any real number <I>c</I> and any finite sequences <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB> and <I>b</I><SUB>1</SUB>, <I>b</I><SUB>2</SUB>, . . . , <I>b<SUB>n</I></SUB>,<P>
+<img src="43_e.gif"><P>
+The linearity property is also obeyed by infinite convergent series.<P>
+<a name="0702_11bb"><a name="0702_11bc">The linearity property can be exploited to manipulate summations incorporating asymptotic notation. For example,<P>
+<img src="43_f.gif"><P>
+In this equation, the <IMG SRC="../IMAGES/bound.gif">-notation on the left-hand side applies to the variable <I>k</I>, but on the right-hand side, it applies to <I>n</I>. Such manipulations can also be applied to infinite convergent series.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Arithmetic series</h2><P>
+<a name="0703_11bd">The summation<P>
+<img src="43_g.gif"><P>
+which came up when we analyzed insertion sort, is an <I><B>arithmetic series</I></B> and has the value<P>
+<img src="43_h.gif"><P>
+<h4><a name="0703_11be">(3.1)<a name="0703_11be"></sub></sup></h4><P>
+<h4><a name="0703_11bf">(3.2)<a name="0703_11bf"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Geometric series</h2><P>
+<a name="0704_11be"><a name="0704_11bf"><a name="0704_11c0">For real <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> 1, the summation<P>
+<img src="44_a.gif"><P>
+is a <I><B>geometric </I></B>or e<I><B>xponential series</I></B> and has the value<P>
+<img src="44_b.gif"><P>
+<h4><a name="0704_11c1">(3.3)<a name="0704_11c1"></sub></sup></h4><P>
+When the summation is infinite and |<I>x</I>| &lt; 1, we have the infinite decreasing geometric series<P>
+<img src="44_c.gif"><P>
+<h4><a name="0704_11c2">(3.4)<a name="0704_11c2"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Harmonic series</h2><P>
+<a name="0705_11c1"><a name="0705_11c2">For positive integers <I>n</I>, the <I>n</I>th <B>harmonic number</B> is<P>
+<img src="44_d.gif"><P>
+<h4><a name="0705_11c3">(3.5)<a name="0705_11c3"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Integrating and differentiating series</h2><P>
+<a name="0706_11c3"><a name="0706_11c4">Additional formulas can be obtained by integrating or differentiating the formulas above. For example, by differentiating both sides of the infinite geometric series (3.4) and multiplying by <I>x</I>, we get<P>
+<img src="44_e.gif"><P>
+<h4><a name="0706_11c5">(3.6)<a name="0706_11c5"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Telescoping series</h2><P>
+<a name="0707_11c5"><a name="0707_11c6"><a name="0707_11c7">For any sequence <I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n</I></SUB>,<P>
+<img src="44_f.gif"><P>
+<h4><a name="0707_11c8">(3.7)<a name="0707_11c8"></sub></sup></h4><P>
+since each of the terms <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n-</I>1</SUB> is added in exactly once and subtracted out exactly once. We say that the sum<I><B> telescopes.</I></B> Similarly,<P>
+<img src="44_g.gif"><P>
+As an example of a telescoping sum, consider the series<P>
+<img src="45_a.gif"><P>
+Since we can rewrite each term as<P>
+<img src="45_b.gif"><P>
+we get<P>
+<img src="45_c.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2>Products</h2><P>
+<a name="0708_11c8">The finite product <I>a</I><SUB>1</SUB> <I>a</I><SUB>2</SUB> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <I>a<SUB>n</I></SUB> can be written<P>
+<img src="45_d.gif"><P>
+If <I>n</I> = 0, the value of the product is defined to be 1. We can convert a formula with a product to a formula with a summation by using the identity<P>
+<img src="45_e.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0709_0001">Exercises<a name="0709_0001"></h2><P>
+<a name="0709_0002">3.1-1<a name="0709_0002"><P>
+Find a simple formula for <img src="45_f.gif"><P>
+<a name="0709_0003">3.1-2<a name="0709_0003"><P>
+Show that <img src="45_g.gif"> by manipulating the harmonic series.<P>
+<a name="0709_0004">3.1-3<a name="0709_0004"><P>
+Show that <img src="45_h.gif"><P>
+<a name="0709_0005">3.1-4<a name="0709_0005"><P>
+Evaluate the sum <img src="45_i.gif"><P>
+<a name="0709_0006">3.1-5<a name="0709_0006"><P>
+Use the linearity property of summations to prove that <img src="45_j.gif"><P>
+<a name="0709_0007">3.1-6<a name="0709_0007"><P>
+Prove that <img src="46_a.gif"><P>
+<a name="0709_0008">3.1-7<a name="0709_0008"><P>
+Evaluate the product <img src="46_b.gif"><P>
+<a name="0709_0009">3.1-8<a name="0709_0009"><P>
+Evaluate the product <img src="46_c.gif"><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="070a_11cb">3.2 Bounding summations<a name="070a_11cb"></h1><P>
+<a name="070a_11c9"><a name="070a_11ca">There are many techniques available for bounding the summations that describe the running times of algorithms. Here are some of the most frequently used methods.<P>
+
+
+
+
+
+<h2>Mathematical induction</h2><P>
+The most basic way to evaluate a series is to use mathematical induction. As an example, let us prove that the arithmetic series <img src="46_d.gif"> evaluates to 1/2<I>n</I>(<I>n</I> + 1). We can easily verify this for <I>n</I> = 1, so we make the inductive assumption that it holds for <I>n</I> and prove that it holds for <I>n</I> + 1. We have<P>
+<img src="46_e.gif"><P>
+One need not guess the exact value of a summation in order to use mathematical induction. Induction can be used to show a bound as well. As an example, let us prove that the geometric series <img src="46_f.gif"> is <I>0</I>(3<I><SUP>n</I></SUP>). More specifically, let us prove that <img src="46_g.gif"> for some constant <I>c</I>. For the initial condition <I>n</I> = 0, we have <img src="46_h.gif"> as long as <I>c</I> <IMG SRC="../IMAGES/gteq.gif"> 1. Assuming that the bound holds for <I>n</I>, let us prove that it holds for <I>n</I> + 1. We have<P>
+<img src="46_i.gif"><P>
+as long as (1/3 + 1/<I>c</I>) <IMG SRC="../IMAGES/lteq12.gif"> 1 or, equivalently, <I>c</I> <IMG SRC="../IMAGES/gteq.gif"> 3/2. Thus, <img src="47_a.gif">, as we wished to show.<P>
+We have to be careful when we use asymptotic notation to prove bounds by induction. Consider the following fallacious proof that <img src="47_b.gif">. Certainly, <img src="47_c.gif">. Assuming the bound for <I>n</I>, we now prove it for <I>n</I>+1:<P>
+<img src="47_d.gif"><P>
+The bug in the argument is that the &quot;constant&quot; hidden by the &quot;big-oh<FONT FACE="CG Times (W1)" SIZE=2>&quot;</FONT> grows with <I>n</I> and thus is not constant. We have not shown that the same constant works for <I>all n.</I><P>
+<P>
+
+
+
+
+
+
+
+<h2>Bounding the terms</h2><P>
+Sometimes, a good upper bound on a series can be obtained by bounding each term of the series, and it often suffices to use the largest term to bound the others. For example, a quick upper bound on the arithmetic series (3.1) is<P>
+<img src="47_e.gif"><P>
+In general, for a series <img src="47_f.gif">, then<P>
+<img src="47_g.gif"><P>
+The technique of bounding each term in a series by the largest term is a weak method when the series can in fact be bounded by a geometric series. Given the series <img src="47_h.gif"> suppose that <I>a<SUB>k</I>+1</SUB>/<I>a<SUB>k</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>r</I> for all <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0, where <I>r</I> &lt; 1 is a constant. The sum can be bounded by an infinite decreasing geometric series, since <I>a<SUB>k</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>a</I><SUB>0</SUB><I>r<SUP>k</I></SUP>, and thus<P>
+<img src="47_i.gif"><P>
+We can apply this method to bound the summation <img src="48_a.gif">. The first term is 1/3, and the ratio of consecutive terms is<P>
+<img src="48_b.gif"><P>
+for all <I>k</I> <IMG SRC="../IMAGES/gteq.gif">1. Thus, each term is bounded above by (1/3)(2/3)<I><SUP>k</I></SUP>, so that<P>
+<img src="48_c.gif"><P>
+A common bug in applying this method is to show that the ratio of consecutive terms is less than 1 and then to assume that the summation is bounded by a geometric series. An example is the infinite harmonic series, which diverges since<P>
+<img src="48_d.gif"><P>
+The ratio of the (<I>k</I> + 1)st and <I>k</I>th terms in this series is <I>k</I>/(<I>k</I> + 1) &lt; 1, but the series is not bounded by a decreasing geometric series. To bound a series by a geometric series, one must show that the ratio is bounded away from 1; that is, there must be an <I>r</I> &lt; 1, which is a <I>constant</I>, such that the ratio of all pairs of consecutive terms never exceeds <I>r</I>. In the harmonic series, no such <I>r</I> exists because the ratio becomes arbitrarily close to 1.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Splitting summations</h2><P>
+One way to obtain bounds on a difficult summation is to express the series as the sum of two or more series by partitioning the range of the index and then to bound each of the resulting series. For example, suppose we try to find a lower bound on the arithmetic series <img src="48_e.gif">, which has already been shown to have an upper bound of <I>n</I><SUP>2</SUP>. We might attempt to bound each term in the summation by the smallest term, but since that term is 1, we get a lower bound of <I>n</I> for the summation--far off from our upper bound of <I>n</I><SUP>2</SUP>.<P>
+We can obtain a better lower bound by first splitting the summation. Assume for convenience that <I>n</I> is even. We have<P>
+<img src="48_f.gif"><P>
+<img src="49_a.gif"><P>
+which is an asymptotically tight bound, since <img src="49_b.gif">.<P>
+For a summation arising from the analysis of an algorithm, we can often split the summation and ignore a constant number of the initial terms. Generally, this technique applies when each term <I>a<SUB>k</I></SUB> in a summation <img src="49_c.gif"> is independent of <I>n</I>. Then for any constant <I>k</I><SUB>0</SUB> &gt; 0, we can write<P>
+<img src="49_d.gif"><P>
+since the initial terms of the summation are all constant and there is a constant number of them. We can then use other methods to bound <img src="49_e.gif">. For example, to find an asymptotic upper bound on<P>
+<img src="49_f.gif"><P>
+we observe that the ratio of consecutive terms is<P>
+<img src="49_g.gif"><P>
+if <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 3. Thus, the summation can be split into<P>
+<img src="49_h.gif"><P>
+since the second summation is a decreasing geometric series.<P>
+The technique of splitting summations can be used to determine asymptotic bounds in much more difficult situations. For example, we can obtain a bound of <I>0</I>(lg <I>n</I>) on the harmonic series (3.5):<P>
+<img src="49_i.gif"><P>
+The idea is to split the range 1 to <I>n</I> into <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n<FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/hfbrdr12.gif"><I></I></FONT> pieces and upper bound the contribution of each piece by 1. Thus,<P>
+<img src="50_a.gif"><P>
+<h4><a name="070d_0001">(3.8)<a name="070d_0001"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Approximation by integrals</h2><P>
+When a summation can be expressed as <img src="50_b.gif">, where &acirc;(<I>k</I>) is a monotonically increasing function, we can approximate it by integrals:<P>
+<img src="50_c.gif"><P>
+<h4><a name="070e_0001">(3.9)<a name="070e_0001"></sub></sup></h4><P>
+The justification for this approximation is shown in Figure 3.1. The summation is represented as the area of the rectangles in the figure, and the integral is the shaded region under the curve. When &acirc;(<I>k</I>) is a monotonically decreasing function, we can use a similar method to provide the bounds<P>
+<img src="50_d.gif"><P>
+<h4><a name="070e_0002">(3.10)<a name="070e_0002"></sub></sup></h4><P>
+The integral approximation (3.10) gives a tight estimate for the <I>n</I>th harmonic number. For a lower bound, we obtain<P>
+<img src="50_e.gif"><P>
+<h4><a name="070e_0003">(3.11)<a name="070e_0003"></sub></sup></h4><P>
+For the upper bound, we derive the inequality<P>
+<img src="50_f.gif"><P>
+which yields the bound<P>
+<img src="50_g.gif"><P>
+<h4><a name="070e_0004">(3.12)<a name="070e_0004"></sub></sup></h4><P>
+<img src="51_a.gif"><P>
+<h4><a name="070e_0005">Figure 3.1 Approximation of <img src="51_b.gif"> by integrals. The area of each rectangle is shown within the rectangle, and the total rectangle area represents the value of the summation. The integral is represented by the shaded area under the curve. By comparing areas in (a), we get <img src="51_c.gif">, and then by shifting the rectangles one unit to the right, we get <img src="51_d.gif">.in (b).<a name="070e_0005"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="070f_0001">Exercises<a name="070f_0001"></h2><P>
+<a name="070f_0002">3.2-1<a name="070f_0002"><P>
+Show that <img src="52_a.gif"> is bounded above by a constant.<P>
+<a name="070f_0003">3.2-2<a name="070f_0003"><P>
+Find an asymptotic upper bound on the summation<P>
+<img src="52_b.gif"><P>
+<a name="070f_0004">3.2-3<a name="070f_0004"><P>
+Show that the nth harmonic number is <IMG SRC="../IMAGES/omega12.gif">(1g n) by splitting the summation.<P>
+<a name="070f_0005">3.2-4<a name="070f_0005"><P>
+Approximate <img src="52_c.gif"> with an integral.<P>
+<a name="070f_0006">3.2-5<a name="070f_0006"><P>
+Why didn't we use the integral approximation (3.10) directly on <img src="52_d.gif"> to obtain an upper bound on the <I>n</I>th harmonic number?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0710_0001">Problems<a name="0710_0001"></h1><P>
+<a name="0710_0002">3-1 Bounding summations<a name="0710_0002"><P>
+Give asymptotically tight bounds on the following summations. Assume that <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 0 and <I>s</I> <IMG SRC="../IMAGES/gteq.gif"> 0 are constants.<P>
+<img src="52_e.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Knuth [121] is an excellent reference for the material presented in this chapter. Basic properties of series can be found in any good calculus book, such as Apostol [12] or Thomas and Finney [192].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap04.htm">Chapter 4</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

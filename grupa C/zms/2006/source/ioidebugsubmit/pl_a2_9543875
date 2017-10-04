@@ -1,0 +1,186 @@
+{
+TASK: festa
+LANG: PASCAL
+}
+
+const
+  maxo = 200001;
+  maxc = 180001;
+
+  infile  = '';
+  outfile = '';
+
+type
+  tcord = record
+    v : int64;
+    p : longint;
+    c : longint;
+  end;
+
+  tops = record
+    o : byte;
+    a : int64;
+    b : integer;
+  end;
+
+var
+  f : text;
+  g : text;
+
+  root, n, o, i : longint;
+
+  sum, ppl, res : int64;
+
+  op, a, b : int64;
+
+  ops : array[0..maxo] of tops;
+  cord : array[0..maxc] of tcord;
+
+
+procedure insert(x, v : longint);
+var
+  m, l, r : longint;
+  vv : int64;
+begin
+  l:=1;
+  r:=root;
+  vv:=x*v;
+  while true do
+  begin
+    m:=(l+r) shr 1;
+    if x < cord[m].c then
+    begin
+      r:=m-1;
+      cord[m].v:=cord[m].v + vv;
+      cord[m].p:=cord[m].p + v;
+    end
+    else if x > cord[m].c then
+    begin
+      l:=m+1;
+    end
+    else begin cord[m].p:=cord[m].p+v; cord[m].v:=cord[m].v + vv; break; end;
+  end;
+end;
+
+procedure find(ind: longint; var p, v : int64);
+var l, r, m : longint;
+begin
+  l:=1;
+  r:=root;
+  p:=0;
+  v:=0;
+  while true do
+  begin
+    m:=(l+r) div 2;
+    if m > ind then
+    begin
+      r:=m-1;
+    end
+    else if m <= ind then
+    begin
+      l:=m+1;
+      p:=p+cord[m].p;
+      v:=v+cord[m].v;
+    end;
+    if m = ind then break;
+  end;
+end;
+
+procedure print;
+var p, v, s1, s2 : int64;
+  k : longint;
+begin
+  res:=round((sum - ops[i].a) / ppl);
+  s1 := (sum - res * ppl);
+  for k:=1 to n do
+  begin
+    find(k, p, v);
+    s2:=p*cord[k].c - v + sum - v - cord[k].c*(ppl-p);
+    if abs(s2 - ops[i].a) < abs(ops[i].a-s1) then
+    begin
+      s1:=s2;
+      res:=cord[k].c;
+    end
+  end;
+  writeln(g, res, ' ', abs(ops[i].a-s1));
+end;
+
+var tswap : tcord;
+procedure swap(var a, b : tcord);
+begin tswap:=a; a:=b; b:=tswap; end;
+
+var qx : longint;
+procedure qsort(l, r : longint);
+var
+  ll, rr  : longint;
+begin
+  ll:=l;
+  rr:=r;
+  qx := cord[(ll+rr) div 2].c;
+  repeat
+    while cord[ll].c < qx do inc(ll);
+    while cord[rr].c > qx do dec(rr);
+    if ll <= rr then
+    begin
+      swap(cord[ll], cord[rr]);
+      inc(ll);
+      dec(rr);
+    end;
+  until ll > rr;
+
+  if ll < r then qsort(ll, r);
+  if rr > l then qsort(l, rr);
+end;
+
+var j : longint;
+
+begin
+  assign(f, infile);
+  assign(g, outfile);
+  rewrite(g);
+  reset(f);
+  while not eof(f) do
+  begin
+    inc(o);
+    read(f, op);
+    if op = 1 then
+    begin
+      readln(f, a, b);
+      inc(n);
+      for j:=1 to n do
+        if cord[j].c = a then break;
+      if j = n then cord[n].c:=a else dec(n);
+      ops[o].o:=1;
+      ops[o].a:=a;
+      ops[o].b:=b;
+    end
+    else
+    begin
+      readln(f, a);
+      ops[o].o:=2;
+      ops[o].a:=a;
+    end;
+  end;
+  close(f);
+
+  qsort(1, n);
+
+  root:=1;
+  while root < n do root:=root shl 1;
+
+  for i:=1 to o do
+  begin
+    if ops[i].o = 1 then
+    begin
+      insert(ops[i].a, ops[i].b);
+      ppl:=ppl+ops[i].b;
+      sum:=sum + ops[i].a*ops[i].b;
+    end
+    else
+    begin
+      print;
+    end;
+  end;
+
+  close(g);
+end.

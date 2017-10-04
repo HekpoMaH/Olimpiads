@@ -1,0 +1,86 @@
+#include <iostream>
+using namespace std;
+struct shop { int p, r, q, f; };
+shop a[1024];
+int n, l, i, cost;
+
+bool compare1 (shop a, shop b)
+{
+     if( a.q > b.q ) return 0;
+     return 1;
+} 
+
+bool compare2 (shop a, shop b)
+{
+     if( a.r > b.r ) return 1;
+     return 0;
+}
+
+bool compare3 (shop a, shop b)
+{
+     if( a.f > b.f ) return 0;
+     return 1;     
+}
+
+bool compare4 (shop a, shop b)
+{
+     if( a.p > b.p ) return 0;
+     return 1;
+}
+
+int main ()
+{
+    int s = 0;
+    cin >> n >> l;
+    for( i=1; i<=n; i++ )
+    { 
+         cin >> a[i].p >> a[i].r >> a[i].q >> a[i].f;
+         s += a[i].f; 
+    }
+    
+    if( s < l ) 
+    {
+        cout << "-1" << endl;
+        // system ("pause");
+        exit (0);
+    }
+    else 
+    {
+         sort( a+1, a+n+1, compare1 );
+         //sort( a+1, a+n+1, compare2 );
+         //sort( a+1, a+n+1, compare3 );
+         //sort( a+1, a+n+1, compare4 );
+         
+         //for( i=1; i<=n; i++ ) 
+         //cout << a[i].p << " " << a[i].r << " " << a[i].q <<  " " << a[i].f << endl;
+         
+         for( i=1; i<=n; i++ )
+         {
+              if( l == 0 ) break;
+              
+              if( a[i].r <= l ) 
+              {
+                  int hh = min( a[i].f, l );
+                  cost += a[i].q * hh;
+                  l -= hh;
+                  a[i].f -= hh;
+              }   
+         }
+         //cout << cost << endl;
+         
+         sort ( a+1, a+n+1, compare4 );
+         for( i=1; i<=n; i++ ) 
+         {
+              if( l == 0 ) break;
+              
+              int pp = min( a[i].f, l );
+              cost += pp * a[i].p;
+              l -= pp;
+              a[i].f -= pp;
+         }
+         
+         cout << cost << endl;
+         // system ("pause");
+         exit (0);
+    }
+}

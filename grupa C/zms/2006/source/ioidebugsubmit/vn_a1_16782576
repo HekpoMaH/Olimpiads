@@ -1,0 +1,72 @@
+/*
+TASK: cars
+LANG: C
+*/
+#include<stdio.h>
+long long a[500001][2],i,j,n,x,y,d[5000001];
+long long b[5000001][2]={0},p,p1,start=0,end=0,c,br=0;
+void push(long long q,long long w)
+{
+ b[start][0]=q;
+ b[start][1]=w;
+ start++;
+}
+long long pop()
+{
+ end++;
+ return end-1;
+}
+int main()
+{
+ scanf("%lld",&n);
+ for(i=0;i<n;i++)
+ {
+  scanf("%lld",&p);
+  a[i][0]=br;
+  if(p==0)
+  {
+   y=i;
+  }
+  for(j=0;j<p;j++)
+  {
+   scanf("%lld",&p1);
+   d[br]=p1-1;
+   br++;
+   b[p1-1][0]++;
+  }
+  a[i][1]=br;
+ }
+ if(n==1||n==2)
+ {
+  printf("1\n");
+ }
+ else
+ {
+  for(i=0;i<n;i++)
+  {
+   if(b[i][0]==0)
+   {
+    x=i;
+    break;
+   }
+  }
+  push(i,0);
+  while(start!=end)
+  {
+   p=pop();
+   p1=a[b[p][0]][1];
+   for(i=a[b[p][0]][0];i<p1;i++)
+   {
+    push(d[i],b[p][1]+1);
+    if(d[i]==y)
+    {
+     c=b[p][1]+1;
+    }
+   }
+  }
+  printf("%ld\n",c);
+ }
+ return 0;
+}
+
+

@@ -1,0 +1,50 @@
+<hashtable>
+  <entry>
+    <string>castle_submit_time</string>
+    <string>2010.04.25 11:59:01</string>
+  </entry>
+  <entry>
+    <string>num_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>castle</string>
+    <string>2000010</string>
+  </entry>
+  <entry>
+    <string>secret</string>
+    <string>2000012</string>
+  </entry>
+  <entry>
+    <string>secret_submit_time</string>
+    <string>2010.04.25 11:59:13</string>
+  </entry>
+  <entry>
+    <string>num_submit_time</string>
+    <string>2010.04.25 11:59:07</string>
+  </entry>
+  <entry>
+    <string>secret_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>castle_filename</string>
+    <string>castle.cpp</string>
+  </entry>
+  <entry>
+    <string>num</string>
+    <string>2000011</string>
+  </entry>
+  <entry>
+    <string>castle_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>num_filename</string>
+    <string>num.cpp</string>
+  </entry>
+  <entry>
+    <string>secret_filename</string>
+    <string>secret.cpp</string>
+  </entry>
+</hashtable>

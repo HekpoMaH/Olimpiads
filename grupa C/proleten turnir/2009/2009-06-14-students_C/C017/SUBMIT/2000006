@@ -1,0 +1,100 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+/*void bfs (long s, long f)
+{
+   q.push(s);
+   used[s]=0;
+   while(!q.empty)
+   {
+      t=q.top();
+      q.pop();
+      l=a[t].length();
+      for(j=0;j<=l-1;j++)
+      {
+         if (used[a[t][j]]==0)
+         {
+            used[a[t][j]]=1;
+            q.push(a[t][j]);
+         }
+      }
+   }
+}*/
+/*long i,ji,used[221],br1,br2,aa,bb,cc,dd,b[221][221],c[221][221],n,m,x,y;
+vector <long> a[221],v;
+void dfs (long s, long t, long used[221])
+{
+   long j,l1,l2,ij;
+   l1=a[s].size();
+   for(j=0;j<=l1-1;j++)
+   {
+      if (used[a[s][j]]==0)
+      {
+         used[a[s][j]]=1;
+         if (a[s][j]==t) 
+         {
+            br1++;
+            if (t==bb)
+            {
+               l2=v.size();
+               for(ij=0;ij<=l2-1;ij++)
+               {
+                  b[br1][ij+1]=v[ij];
+               }
+            }
+            if (t==cc)
+            {
+               l2=v.size();
+               for(ij=0;ij<=l2-1;ij++)
+               {
+                  c[br1][ij+1]=v[ij];
+               }
+            }
+         }
+         else {v.push_back(a[s][j]);}
+         dfs(a[s][j],t,used);
+         l2=v.size();
+         v.erase(v.begin()+l2-1);
+      }
+   }
+}*/
+int main()
+{
+    vector <long> a[221];
+    long n,m,i,x,y,aa,bb,cc,dd;
+    cin>>n>>m;
+    for(i=1;i<=m;i++)
+    {
+       cin>>x>>y;
+       a[x].push_back(y);
+       a[y].push_back(x);
+    }
+    cin>>aa>>bb>>cc>>dd;
+    cout<<0<<endl;
+   /* dfs(aa,bb,used);
+    for(i=0;i<=n-1;i++)
+    {
+       used[i]=0;
+    }
+    br2=br1;
+    br1=0;
+    dfs(cc,dd,used);
+    for(i=1;i<=br2;i++)
+    {
+       for(ji=1;ji<=5;ji++)
+       {
+          cout<<b[i][ji]<<" ";
+       }
+    }
+    cout<<endl;
+    for(i=1;i<=br1;i++)
+    {
+       for(ji=1;ji<=5;ji++)
+       {
+          cout<<c[i][ji]<<" ";
+       }
+    }
+    cout<<endl;*/
+    //system("pause");
+    return 0;
+}

@@ -1,0 +1,83 @@
+/*
+TASK:NUMBER
+LANG:C
+*/
+
+#include <stdio.h>
+#define B 30
+
+int n;
+int nc, pc;
+int a, b, c;
+int g[B][B] = {0, 0};
+int used[100];
+
+void rec (int i, int l) {
+	int j;
+	if (l == n - 1) {
+		pc ++;
+		return ;
+	}
+	for (j = 0; j < g[i][0]; j ++) {
+		rec (g[i][j + 2], l + 1);
+	}
+	return ;
+}
+
+int main () {
+	int i = 0, j = 0;
+	int p = 0, q = 0;
+	int ap, bp, cp;
+	scanf ("%d%d%d%d", &n, &a, &b, &c);
+	for (i = 1; i < 9; i ++) {
+		ap = a * i;
+		bp = b * i;
+		cp = c * i;
+		if (ap == bp && ap == cp && ap < 100) {
+  			g[nc ++][1] = ap;
+			pc ++;
+			used[ap] = 1;
+			continue;
+		} else if (ap == bp && bp < 100) {
+  			g[nc ++][1] = bp;
+			pc ++;
+			used[bp] = 1;
+			continue;
+		} else if (ap == cp && cp < 100) {
+  			g[nc ++][1] = cp;
+			pc ++;
+  			used[cp] = 1;
+			continue;
+		} else if (bp == cp && bp < 100) {
+  			g[nc ++][1] = bp;
+			pc ++;
+  			used[bp] = 1;
+			continue;
+		}
+		if (ap < 100 && !used[ap]) {
+  			g[nc ++][1] = ap;
+  			used[ap] = 1;
+		}
+		if (bp < 100 && !used[bp]) {
+  			g[nc ++][1] = bp;
+  			used[bp] = 1;
+		}
+		if (cp < 100 && !used[cp]) {
+  			g[nc ++][1] = cp;
+  			used[cp] = 1;
+		}
+	}
+	for (i = 0; i < nc - 1; i ++) {
+		p = g[i][1];
+		for (j = i + 1; j < nc; j ++) {
+			q = g[j][1];
+			if (p % 10 == q / 10) g[i][2 + g[i][0] ++] = j;
+			if (q % 10 == p / 10) g[j][2 + g[j][0] ++] = i;
+		}
+	}
+	for (i = 0; i < nc; i ++) {
+		rec (i, 1);
+	}
+	printf ("%d\n", pc);
+	return 0;
+}

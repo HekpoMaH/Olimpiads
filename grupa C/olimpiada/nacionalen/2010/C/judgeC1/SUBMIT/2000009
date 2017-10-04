@@ -1,0 +1,59 @@
+#include <iostream>
+using namespace std;
+
+long N;
+long long s;
+
+bool check(long long s)
+{int d,j;
+ char f[10];
+ bool b=false;
+ for (j=0;j<10;j++) f[j]=0;
+ while (s)
+ {d=s%10;
+  f[d]++;
+  if (!d && f[d]>1) return false;
+  if (b && f[d]>1) return false;
+  if (f[d]>1) b=true;
+  s/=10;
+ }
+ return true;
+}
+
+long long init(long N, int repDig)
+{long long a=0;
+ int d;
+ if (N%10==0) a=1;
+ else a=10;
+ if (repDig==1) a=10*a+1;
+ for (d=2;d<=9;d++)
+ {a=10*a+d;
+  if (d==repDig) a=10*a+d;;
+ }
+ if (N%10==0) a=10*a;
+ if (a%N!=0) a=a+N-a%N;
+ return a;
+}
+
+bool solve(long N)
+{int d;
+ if (N%100==0) return false;
+ if (N%9==0) d=9;
+ else if (N%3==0) d=3;
+      else d=1;
+ s=init(N,d);
+ do
+ {if (check(s))return true;
+  s+=N;
+ }while (s<=99876543210LL);
+ return false;
+}
+
+int main(void)
+{for (int i=0;i<2;i++)
+ {cin>>N;
+  if (solve(N))cout<<s<<endl;
+  else cout<<"no\n";
+ }
+ return 0;
+}

@@ -1,0 +1,81 @@
+{
+TASK: FEST
+LANG: PASCAL
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{var i, j, k, l, o, p, m, n : longint;
+
+begin
+ while not(eof) do
+   begin
+    read(k);
+    if k = 1 then readln(m, n)
+    else readln(m);
+   end;
+ writeln(-4, ' ', 1);
+ writeln(3, ' ', 4);
+end.
+ }

@@ -1,0 +1,21 @@
+/*
+TASK: carsa
+LANG: C++
+
+#include<iostream.h>
+#include<math.h>
+main()
+{
+int n;
+for(n=2;n<=5000;n++);
+cout<<"vavedete broq na krastovi6tata:  ";
+cin>>n;
+int v;
+v=(n*4);
+cout<<v;
+int k ;
+k=(v/987654321);
+cout<<k;
+
+return 0;
+}

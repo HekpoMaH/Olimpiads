@@ -1,0 +1,33 @@
+#include<cstdio>
+int n,nn,krak,nm,mn,res;
+int mas[2][1<<17];
+int main()
+{
+     scanf("%d",&n);
+     nn=n-1;
+     while(nn){++krak;nn/=2;}
+     nn=1<<krak;
+     for(int i=1;i<=n;++i)
+     {
+          scanf("%d",&nm);
+          mas[0][nm]=i;
+     }
+     for(int i=1;i<=n;++i)
+     {
+          scanf("%d",&nm);
+          nm=mn=mas[0][nm];
+          res+=mas[1][nn];
+          while(mn>0)
+          {
+               res-=mas[1][mn];
+               mn-=mn&(-mn);
+          }
+          while(nm<=nn)
+          {
+               ++mas[1][nm];
+               nm+=nm&(-nm);
+          }
+     }
+     printf("%d\n",res);
+     return 0;
+}

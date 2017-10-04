@@ -1,0 +1,44 @@
+#include <iostream>
+using namespace std;
+int n, k, m;
+char a[ 21 ] = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't' };
+bool b[ 21 ];
+int f( int a ) 
+{
+    int t = 1;
+    for( int i = 0; i < a - 1; i ++){
+        t *= a - i;
+    }
+    return t;
+}
+main()
+{
+    cin >> n >> k;
+    for( int j = 1; j < n - 1; j ++){
+        int l = f( n - j );
+        int q = k / l;
+        k %= l;
+        if(k == 0) {
+            k += l;
+            q --;
+            } 
+        for(int i = 0; i <= q + j; i ++) {
+                if( !b[ i ] ) {
+                m ++;
+                if( m == q + 1 ) {
+                    cout << a[ i ];
+                    b[ i ] = true;
+                    m = 0; break;
+                    }
+                }
+            }
+        }
+    if( k == 1 ) for( int i = 0; i < n; i ++ ){
+        if( !b[ i ] ) cout << a[ i ];
+    }
+    else for( int j = n - 1; j >= 0; j -- ) {
+        if( !b[ j ] ) cout << a[ j ];
+    }
+    cout << endl;
+    return 0;
+}

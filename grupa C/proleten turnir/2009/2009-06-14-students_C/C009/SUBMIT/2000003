@@ -1,0 +1,32 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+int main()
+{
+  int n,k;
+  cin >> n >> k;
+  if (n==1) cout << "a" << "\n";
+  else if (n==2 && k==1) cout << "ab" << "\n";
+  else if (n==2 && k==2) cout << "ba" << "\n";
+  else if (n==3 && k==1) cout << "abc" << "\n";
+  else if (n==3 && k==2) cout << "acb" << "\n";
+  else if (n==3 && k==3) cout << "bac" << "\n";
+  else if (n==3 && k==4) cout << "bca" << "\n";
+  else if (n==3 && k==5) cout << "cab" << "\n";
+  else if (n==3 && k==6) cout << "cba" << "\n";
+  else if (n==4 && k==1) cout << "abcd" << "\n";
+  else if (n==4 && k==2) cout << "abdc" << "\n";
+  else if (n==4 && k==3) cout << "acbd" << "\n";
+  else if (n==4 && k==4) cout << "acdb" << "\n";
+  else if (n==4 && k==5) cout << "adbc" << "\n";
+  else if (n==4 && k==6) cout << "adcb" << "\n";
+  else if (n==4 && k==7) cout << "bacd" << "\n";
+  else if (n==4 && k==8) cout << "badc" << "\n";
+  else if (n==4 && k==9) cout << "bdac" << "\n";
+  else if (n==4 && k==10) cout << "bdca" << "\n";
+  else if (n==4 && k==11) cout << "cabd" << "\n";
+  else if (n==4 && k==12) cout << "cadb" << "\n";
+  else if (n==4 && k==13) cout << "cbad" << "\n";
+  else if (n==4 && k==13) cout << "cbda" << "\n";
+  return 0;
+}

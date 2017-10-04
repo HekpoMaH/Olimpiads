@@ -1,0 +1,418 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 8: QUICKSORT</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap09.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap07.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0772_133f">CHAPTER 8: QUICKSORT<a name="0772_133f"></h1><P>
+<a name="0772_133d"><a name="0772_133e">Quicksort is a sorting algorithm whose worst-case running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) on an input array of <I>n</I> numbers. In spite of this slow worst-case running time, quicksort is often the best practical choice for sorting because it is remarkably efficient on the average: its expected running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>), and the constant factors hidden in the <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) notation are quite small. It also has the advantage of sorting in place (see page 3), and it works well even in virtual memory environments.<P>
+Section 8.1 describes the algorithm and an important subroutine used by quicksort for partitioning. Because the behavior of quicksort is complex, we start with an intuitive discussion of its performance in Section 8.2 and postpone its precise analysis to the end of the chapter. Section 8.3 presents two versions of quicksort that use a random-number generator. These &quot;randomized&quot; algorithms have many desirable properties. Their average-case running time is good, and no particular input elicits their worst-case behavior. One of the randomized versions of quicksort is analyzed in Section 8.4, where it is shown to run in <I>O</I>(<I>n</I><SUP>2</SUP>) time in the worst case and in <I>O</I>(<I>n </I>lg <I>n</I>) time on average.<P>
+
+
+
+
+
+<h1><a name="0774_1342">8.1 Description of quicksort<a name="0774_1342"></h1><P>
+<a name="0774_133f"><a name="0774_1340">Quicksort, like merge sort, is based on the divide-and-conquer paradigm introduced in Section 1.3.1. Here is the three-step divide-and-conquer process for sorting a typical subarray <I>A</I>[<I>p . . r</I>].<P>
+<B>Divide:     </B>The array <I>A</I>[<I>p . . r</I>] is partitioned (rearranged) into two nonempty subarrays <I>A</I>[<I>p . . q</I>] and <I>A</I>[<I>q</I> + 1 . . <I>r</I>] such that each element of <I>A</I>[<I>p . . q</I>] is less than or equal to each element of <I>A</I>[<I>q</I> + 1 . . <I>r</I>]. The index <I>q</I> is computed as part of this partitioning procedure.<P>
+<B>Conquer:     </B>The two subarrays <I>A</I>[<I>p . . q</I>] and <I>A</I>[<I>q</I> + 1 . . <I>r</I>] are sorted by recursive calls to quicksort.<P>
+<B>Combine:     </B>Since the subarrays are sorted in place, no work is needed to combine them: the entire array <I>A</I>[<I>p . . r</I>] is now sorted.<P>
+The following procedure implements quicksort.<P>
+<pre>QUICKSORT(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>p</I> &lt; <I>r</I></sub></sup></pre><P>
+<pre>2      <B>then</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>3           QUICKSORT(<I>A,p,q</I>)</sub></sup></pre><P>
+<pre>4           QUICKSORT(<I>A,q</I> + 1,<I>r</I>)</sub></sup></pre><P>
+<a name="0774_1341">To sort an entire array <I>A</I>, the initial call is <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>(<I>A</I>, 1, <I>length</I>[<I>A</I>]).<P>
+
+
+
+
+
+<h2>Partitioning the array</h2><P>
+<a name="0775_1342"><a name="0775_1343">The key to the algorithm is the <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure, which rearranges the subarray <I>A</I>[<I>p . . r</I>] in place.<P>
+<pre>PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>p</I>]</sub></sup></pre><P>
+<pre>2  <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p </I>- 1</sub></sup></pre><P>
+<pre>3  <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>r </I>+ 1</sub></sup></pre><P>
+<pre>4  <B>while</B> TRUE</sub></sup></pre><P>
+<pre>5      <B>do repeat</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I> - 1</sub></sup></pre><P>
+<pre>6           <B>until</B> <I>A</I>[<I>j</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I></sub></sup></pre><P>
+<pre><I>7         </I><B>repeat</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> + 1</sub></sup></pre><P>
+<pre>8           <B>until</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>x</I></sub></sup></pre><P>
+<pre>9         <B>if</B> <I>i</I> &lt; <I>j</I></sub></sup></pre><P>
+<pre>10            <B>then</B> exchange <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <I>A</I>[<I>j</I>]</sub></sup></pre><P>
+<pre>11            <B>else return</B> <I>j</I></sub></sup></pre><P>
+Figure 8.1 shows how <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> works. It first selects an element <I>x</I> = <I>A</I>[<I>p</I>] from <I>A</I>[<I>p . . r</I>] as a "pivot" element around which to partition <I>A</I>[<I>p . . r</I>]. It then grows two regions <I>A</I>[<I>p . . i</I>] and <I>A</I>[<I>j . . r</I>] from the top and bottom of <I>A</I>[<I>p . . r</I>], respectively, such that every element in <I>A</I>[<I>p . . i</I>] is less than or equal to <I>x</I> and every element in <I>A</I>[<I>j . . r</I>] is greater than or equal to <I>x</I>. Initially, <I>i</I> = <I>p</I> - 1 and <I>j</I> = <I>r</I> + 1, so the two regions are empty.<P>
+Within the body of the <B>while</B> loop, the index <I>j</I> is decremented and the index <I>i</I> is incremented, in lines 5-8, until <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>x</I> <IMG SRC="../IMAGES/gteq.gif"> <I>A</I>[<I>j</I>]. Assuming that these inequalities are strict, <I>A</I>[<I>i</I>] is too large to belong to the bottom region and <I>A</I>[<I>j</I>] is too small to belong to the top region. Thus, by exchanging <I>A</I>[<I>i</I>] and <I>A</I>[<I>j</I>] as is done in line 10, we can extend the two regions. (If the inequalities are not strict, the exchange can be performed anyway.)<P>
+The body of the <B>while</B> loop repeats until <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> <I>j</I>, at which point the entire array <I>A</I>[<I>p . . r</I>] has been partitioned into two subarrays <I>A</I>[<I>p . . q</I>] and <I>A</I>[<I>q</I> + 1 . . <I>r</I>], where <I>p</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>q</I> &lt; <I>r</I>, such that no element of <I>A</I>[<I>p . . q</I>] is larger than any element of <I>A</I>[<I>q</I> + 1. . <I>r</I>]. The value <I>q</I> = <I>j</I> is returned at the end of the procedure.<P>
+Conceptually, the partitioning procedure performs a simple function: it puts elements smaller than <I>x </I>into the bottom region of the array and elements larger than <I>x</I> into the top region. There are technicalities that make the pseudocode of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> a little tricky, however. For example, the indices <I>i</I> and <I>j</I> never index the subarray <I>A</I>[<I>p . . r</I>] out of bounds, but this isn't entirely apparent from the code. As another example, it is important that <I>A</I>[<I>p</I>] be used as the pivot element <I>x</I>. If <I>A</I>[<I>r</I>] is used instead and it happens that <I>A</I>[<I>r</I>] is also the largest element in the subarray <I>A</I>[<I>p . . r</I>], then <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> returns to <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> the value <I>q</I> = <I>r</I>, and <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> loops forever. Problem 8-1 asks you to prove <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> correct.<P>
+<img src="155_a.gif"><P>
+<h4><a name="0775_1344">Figure 8.1 The operation of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> on a sample array. Lightly shaded array elements have been placed into the correct partitions, and heavily shaded elements are not yet in their partitions. (a) The input array, with the initial values of i and j just off the left and right ends of the array. We partition around x = A[p] = 5. (b) The positions of i and j at line 9 of the first iteration of the while loop. (c) The result of exchanging the elements pointed to by i and j in line 10. (d) The positions of i and j at line 9 of the second iteration of the while loop. (e) The positions of i and j at line 9 of the third and last iteration of the while loop. The procedure terminates because i <IMG SRC="../IMAGES/gteq.gif"> j, and the value q = j is returned. Array elements up to and including A[j] are less than or equal to x = 5, and array elements after A[j] are greater than or equal to x = 5.<a name="0775_1344"></sub></sup></h4><P>
+The running time of P<FONT FACE="Courier New" SIZE=2>ARTITION </FONT>on an array <I>A</I>[<I>p . . r</I>] is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), where <I>n</I> = <I>r</I> - <I>p</I> + 1 (see Exercise 8.1-3).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0776_0001">Exercises<a name="0776_0001"></h2><P>
+<a name="0776_0002">8.1-1<a name="0776_0002"><P>
+Using Figure 8.1 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> on the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">13, 19, 9, 5, 12, 8, 7, 4, 11, 2, 6, 21<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0776_0003">8.1-2<a name="0776_0003"><P>
+What value of <I>q</I> does <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> return when all elements in the array <I>A</I>[<I>p . . r</I>] have the same value?<P>
+<a name="0776_0004">8.1-3<a name="0776_0004"><P>
+Give a brief argument that the running time of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> on a subarray of size <I>n</I> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<a name="0776_0005">8.1-4<a name="0776_0005"><P>
+How would you modify <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> to sort in nonincreasing order?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0777_1345">8.2 Performance of quicksort<a name="0777_1345"></h1><P>
+<a name="0777_1344">The running time of quicksort depends on whether the partitioning is balanced or unbalanced, and this in turn depends on which elements are used for partitioning. If the partitioning is balanced, the algorithm runs asymptotically as fast as merge sort. If the partitioning is unbalanced, however, it can run asymptotically as slow as insertion sort. In this section, we shall informally investigate how quicksort performs under the assumptions of balanced versus unbalanced partitioning.<P>
+
+
+
+
+
+<h2>Worst-case partitioning</h2><P>
+The worst-case behavior for quicksort occurs when the partitioning routine produces one region with <I>n</I> - 1 elements and one with only l element. (This claim is proved in Section 8.4.1.) Let us assume that this unbalanced partitioning arises at every step of the algorithm. Since partitioning costs <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time and <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1), the recurrence for the running time is<P>
+<pre><I>T</I>(<I>n</I>) = <I>T</I>(<I>n</I> - 1) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).</sub></sup></pre><P>
+To evaluate this recurrence, we observe that <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1) and then iterate:<P>
+<img src="156_a.gif"><P>
+We obtain the last line by observing that <img src="156_b.gif"> is the arithmetic series (3.2). Figure 8.2 shows a recursion tree for this worst-case execution of quicksort. (See Section 4.2 for a discussion of recursion trees.)<P>
+Thus, if the partitioning is maximally unbalanced at every recursive step of the algorithm, the running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Therefore the worstcase running time of quicksort is no better than that of insertion sort. Moreover, the <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) running time occurs when the input array is already completely sorted--a common situation in which insertion sort runs in <I>O</I>(<I>n</I>) time.<P>
+<img src="157_a.gif"><P>
+<h4><a name="0778_0001">Figure 8.2 A recursion tree for <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> in which the <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure always puts only a single element on one side of the partition (the worst case). The resulting running time is <IMG SRC="../IMAGES/bound.gif">(n<SUP>2</SUP><FONT FACE="Times New Roman" SIZE=2>).<a name="0778_0001"></FONT></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Best-case partitioning</h2><P>
+If the partitioning procedure produces two regions of size <I>n</I>/2, quicksort runs much faster. The recurrence is then<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>),</sub></sup></pre><P>
+which by case 2 of the master theorem (Theorem 4.1) has solution T(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>). Thus, this best-case partitioning produces a much faster algorithm. Figure 8.3 shows the recursion tree for this best-case execution of quicksort.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Balanced partitioning</h2><P>
+The average-case running time of quicksort is much closer to the best case than to the worst case, as the analyses in Section 8.4 will show. The key to understanding why this might be true is to understand how the balance of the partitioning is reflected in the recurrence that describes the running time.<P>
+Suppose, for example, that the partitioning algorithm always produces a 9-to-1 proportional split, which at first blush seems quite unbalanced. We then obtain the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = <I>T</I>(9<I>n</I>/10) + <I>T</I>(<I>n</I>/10) + <I>n</I></sub></sup></pre><P>
+on the running time of quicksort, where we have replaced <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) by <I>n</I> for convenience. Figure 8.4 shows the recursion tree for this recurrence. Notice that every level of the tree has cost <I>n</I>, until a boundary condition is reached at depth log<SUB>10</SUB> <I>n</I> = <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>), and then the levels have cost at most <I>n</I>. The recursion terminates at depth log<SUB>10/9 </SUB><I>n</I> = <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>). The total cost of quicksort is therefore <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>). Thus, with a 9-to-1 proportional split at every level of recursion, which intuitively seems quite unbalanced, quicksort runs in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time--asymptotically the same as if the split were right down the middle. In fact, even a 99-to-1 split yields an <I>O</I>(<I>n</I> lg <I>n</I>) running time. The reason is that any split of <I>constant</I> proportionality yields a recursion tree of depth <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>), where the cost at each level is <I>O</I>(<I>n</I>). The running time is therefore <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) whenever the split has constant proportionality.<P>
+<img src="158_a.gif"><P>
+<h4><a name="077a_0001">Figure 8.3 A recursion tree for <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> in which <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> always balances the two sides of the partition equally (the best case). The resulting running time is <IMG SRC="../IMAGES/bound.gif">(n lg n).<a name="077a_0001"></sub></sup></h4><P>
+<img src="158_b.gif"><P>
+<h4><a name="077a_0002">Figure 8.4 A recursion tree for <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> in which <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> always produces a 9-to-1 split, yielding a running time of <IMG SRC="../IMAGES/bound.gif">(n lg n).<a name="077a_0002"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Intuition for the average case</h2><P>
+To develop a clear notion of the average case for quicksort, we must make an assumption about how frequently we expect to encounter the various inputs. A common assumption is that all permutations of the input numbers are equally likely. We shall discuss this assumption in the next section, but first let's explore its ramifications.<P>
+When we run quicksort on a random input array, it is unlikely that the partitioning always happens in the same way at every level, as our informal analysis has assumed. We expect that some of the splits will be reasonably well balanced and that some will be fairly unbalanced. For example, Exercise 8.2-5 asks to you show that about 80 percent of the time <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> produces a split that is more balanced than 9 to 1, and about 20 percent of the time it produces a split that is less balanced than 9 to 1.<P>
+In the average case, <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> produces a mix of &quot;good&quot; and &quot;bad&quot; splits. In a recursion tree for an average-case execution of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, the good and bad splits are distributed randomly throughout the tree. Suppose for the sake of intuition, however, that the good and bad splits alternate levels in the tree, and that the good splits are best-case splits and the bad splits are worst-case splits. Figure 8.5(a) shows the splits at two consecutive levels in the recursion tree. At the root of the tree, the cost is <I>n</I> for partitioning and the subarrays produced have sizes <I>n</I> - 1 and 1: the worst case. At the next level, the subarray of size <I>n </I>- 1 is best-case partitioned into two subarrays of size (<I>n</I> - 1)/2. Let's assume that the boundary-condition cost is 1 for the subarray of size 1.<P>
+The combination of the bad split followed by the good split produces three subarrays of sizes 1, (<I>n</I> -1)/2, and (<I>n</I> - 1)/2 at a combined cost of 2<I>n </I>- 1 = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). Certainly, this situation is no worse than that in Figure 8. 5 (b), namely a single level of partitioning that produces two subarrays of sizes (<I>n</I> - 1)/2 + 1 and (<I>n</I> - 1)/2 at a cost of <I>n</I> = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). Yet this latter situation is very nearly balanced, certainly better than 9 to 1. Intuitively, the <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) cost of the bad split can be absorbed into the <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) cost of the good split, and the resulting split is good. Thus, the running time of quicksort, when levels alternate between good and bad splits, is like the running time for good splits alone: still <I>O</I>(<I>n</I> lg <I>n</I>), but with a slightly larger constant hidden by the <I>O</I>-notation. We shall give a rigorous analysis of the average case in Section 8.4.2.<P>
+<img src="160_a.gif"><P>
+<h4><a name="077b_0001">Figure 8.5 (a) Two levels of a recursion tree for quicksort. The partitioning at the root costs n and produces a "bad" split: two subarrays of sizes 1 and n - 1. The partitioning of the subarray of size n - 1 costs n - 1 and produces a "good" split: two subarrays of size (n - 1)/2. (b) A single level of a recursion tree that is worse than the combined levels in (a), yet very well balanced.<a name="077b_0001"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="077c_1347">Exercises<a name="077c_1347"></h2><P>
+<a name="077c_1348">8.2-1<a name="077c_1348"><P>
+Show that the running time of <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) when all elements of array <I>A</I> have the same value.<P>
+<a name="077c_1349">8.2-2<a name="077c_1349"><P>
+Show that the running time of Q<FONT FACE="Courier New" SIZE=2>UICKSORT </FONT>is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) when the array <I>A</I> is sorted in nonincreasing order.<P>
+<a name="077c_134a">8.2-3<a name="077c_134a"><P>
+Banks often record transactions on an account in order of the times of the transactions, but many people like to receive their bank statements with checks listed in order by check number. People usually write checks in order by check number, and merchants usually cash them with reasonable dispatch. The problem of converting time-of-transaction ordering to check-number ordering is therefore the problem of sorting almost-sorted input. Argue that the procedure <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> would tend to beat the procedure <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> on this problem.<P>
+<a name="077c_134b">8.2-4<a name="077c_134b"><P>
+<a name="077c_1345">Suppose that the splits at every level of quicksort are in the proportion 1 - <IMG SRC="../IMAGES/alpha12.gif"> to <IMG SRC="../IMAGES/alpha12.gif">, where 0 &lt; <IMG SRC="../IMAGES/alpha12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> 1/2 is a constant. Show that the minimum depth of a leaf in the recursion tree is approximately ep1g <I>n</I>/lg <IMG SRC="../IMAGES/alpha12.gif"> and the maximum depth is approximately - lg <I>n</I>/lg(1 - <IMG SRC="../IMAGES/alpha12.gif">). (Don't worry about integer round-off.)<P>
+<a name="077c_134c">8.2-5<a name="077c_134c"><P>
+<a name="077c_1346">Argue that for any constant 0 &lt; <IMG SRC="../IMAGES/alpha12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> 1/2, the probability is approximately 1 - 2<IMG SRC="../IMAGES/alpha12.gif"> that on a random input array, <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> produces a split more balanced than 1 - <IMG SRC="../IMAGES/alpha12.gif"> to <IMG SRC="../IMAGES/alpha12.gif">. For what value of <IMG SRC="../IMAGES/alpha12.gif"> are the odds even that the split is more balanced than less balanced?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="077d_1351">8.3 Randomized versions of quicksort<a name="077d_1351"></h1><P>
+<a name="077d_1347"><a name="077d_1348">In exploring the average-case behavior of quicksort, we have made an assumption that all permutations of the input numbers are equally likely. When this assumption on the distribution of the inputs is valid, many people regard quicksort as the algorithm of choice for large enough inputs. In an engineering situation, however, we cannot always expect it to hold. (See Exercise 8.2-3.) This section introduces the notion of a randomized algorithm and presents two randomized versions of quicksort that overcome the assumption that all permutations of the input numbers are equally likely.<P>
+An alternative to <I>assuming</I> a distribution of inputs is to <I>impose</I> a distribution. For example, suppose that before sorting the input array, quicksort randomly permutes the elements to enforce the property that every permutation is equally likely. (Exercise 8.3-4 asks for an algorithm that randomly permutes the elements of an array of size <I>n</I> in time <I>O</I>(<I>n</I>).) This modification does not improve the worst-case running time of the algorithm, but it does make the running time independent of the input ordering.<P>
+<a name="077d_1349"><a name="077d_134a"><a name="077d_134b"><a name="077d_134c">We call an algorithm <I><B>randomized</I></B> if its behavior is determined not only by the input but also by values produced by a <I><B>random-number generator</I></B>. We shall assume that we have at our disposal a random-number generator <FONT FACE="Courier New" SIZE=2>RANDOM</FONT>. A call to <FONT FACE="Courier New" SIZE=2>RANDOM</FONT>(<I>a,b</I>) returns an integer between <I>a </I>and <I>b</I>, inclusive, with each such integer being equally likely. For example, <FONT FACE="Courier New" SIZE=2>RANDOM</FONT>(0, 1) produces a 0 with probability 1/2 and a 1 with probability 1/2. Each integer returned by <FONT FACE="Courier New" SIZE=2>RANDOM</FONT> is independent of the integers returned on previous calls. You may imagine R<FONT FACE="Courier New" SIZE=2>ANDOM </FONT>as rolling a (<I>b</I> - <I>a</I> + 1 )-sided die to obtain its output. (In practice, most programming environments offer a <I><B>pseudorandom-number generator</I></B>: a deterministic algorithm that returns numbers that &quot;look&quot; statistically random.)<P>
+This randomized version of quicksort has an interesting property that is also possessed by many other randomized algorithms: <I>no particular input elicits its worst-case behavior</I>. Instead, its worst case depends on the random-number generator. Even intentionally, you cannot produce a bad input array for quicksort, since the random permutation makes the input order irrelevant. The randomized algorithm performs badly only if the random-number generator produces an unlucky permutation to be sorted. Exercise 13.4-4 shows that almost all permutations cause quicksort to perform nearly as well as the average case: there are <I>very</I> few permutations that cause near-worst-case behavior.<P>
+A randomized strategy is typically useful when there are many ways in which an algorithm can proceed but it is difficult to determine a way that is guaranteed to be good. If many of the alternatives are good, simply choosing one randomly can yield a good strategy. Often, an algorithm must make many choices during its execution. If the benefits of good choices outweigh the costs of bad choices, a random selection of good and bad choices can yield an efficient algorithm. We noted in Section 8.2 that a mixture of good and bad splits yields a good running time for quicksort, and thus it makes sense that randomized versions of the algorithm should perform well.<P>
+<a name="077d_134d"><a name="077d_134e">By modifying the <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure, we can design another randomized version of quicksort that uses this random-choice strategy. At each step of the quicksort algorithm, before the array is partitioned, we exchange element <I>A</I>[<I>p</I>] with an element chosen at random from <I>A</I>[<I>p</I> . . <I>r</I>]. This modification ensures that the pivot element <I>x</I> = <I>A</I>[<I>p</I>] is equally likely to be any of the <I>r</I> - <I>p</I> + 1 elements in the subarray. Thus, we expect the split of the input array to be reasonably well balanced on average. The randomized algorithm based on randomly permuting the input array also works well on average, but it is somewhat more difficult to analyze than this version.<P>
+<a name="077d_134f">The changes to <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> and <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> are small. In the new partition procedure, we simply implement the swap before actually partitioning:<P>
+<pre>RANDOMIZED-PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1  <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> RANDOM(<I>p,r</I>)</sub></sup></pre><P>
+<pre>2  exchange <I>A</I>[<I>p</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>3  <B>return</B> PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<a name="077d_1350">We now make the new quicksort call <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> in place of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>:<P>
+<pre>RANDOMIZED-QUICKSORT(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>p</I> &lt; <I>r</I></sub></sup></pre><P>
+<pre>2      <B>then</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> RANDOMIZED-PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>3           RANDOMIZED-QUICKSORT(<I>A,p,q</I>)</sub></sup></pre><P>
+<pre>4           RANDOMIZED-QUICKSORT(<I>A,q </I>+ 1,<I>r</I>)</sub></sup></pre><P>
+We analyze this algorithm in the next section.<P>
+
+
+
+
+
+<h2><a name="077e_1355">Exercises<a name="077e_1355"></h2><P>
+<a name="077e_1356">8.3-1<a name="077e_1356"><P>
+<a name="077e_1351">Why do we analyze the average-case performance of a randomized algorithm and not its worst-case performance?<P>
+<a name="077e_1357">8.3-2<a name="077e_1357"><P>
+<a name="077e_1352">During the running of the procedure <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>, how many calls are made to the random-number generator <FONT FACE="Courier New" SIZE=2>RANDOM</FONT> in the worst case? How does the answer change in the best case?<P>
+<a name="077e_1358">8.3-3<a name="077e_1358"><P>
+<a name="077e_1353">Describe an implementation of the procedure R<FONT FACE="Courier New" SIZE=2>ANDOM<I>(a, b)</I></FONT> that uses only fair coin flips. What is the expected running time of your procedure?<P>
+<a name="077e_1359">8.3-4<a name="077e_1359"><P>
+<a name="077e_1354">Give a <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-time, randomized procedure that takes as input an array <I>A</I>[1 . . <I>n</I>] and performs a random permutation on the array elements.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="077f_1356">8.4 Analysis of quicksort<a name="077f_1356"></h1><P>
+<a name="077f_1355">Section 8.2 gave some intuition for the worst-case behavior of quicksort and for why we expect it to run quickly. In this section, we analyze the behavior of quicksort more rigorously. We begin with a worst-case analysis, which applies to either <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> or <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>, and conclude with an average-case analysis of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>.<P>
+
+
+
+
+
+<h2><a name="0780_1357">8.4.1 Worst-case analysis<a name="0780_1357"></h2><P>
+<a name="0780_1356">We saw in Section 8.2 that a worst-case split at every level of recursion in quicksort produces a <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) running time, which, intuitively, is the worst-case running time of the algorithm. We now prove this assertion.<P>
+Using the substitution method (see Section 4.1), we can show that the running time of quicksort is <I>O</I>(<I>n</I><SUP>2</SUP>). Let <I>T</I>(<I>n</I>) be the worst-case time for the procedure <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> on an input of size <I>n</I>. We have the recurrence<P>
+<img src="163_a.gif"><P>
+<h4><a name="0780_1358">(8.1)<a name="0780_1358"></sub></sup></h4><P>
+where the parameter <I>q</I> ranges from 1 to <I>n</I> - 1 because the procedure <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> produces two regions, each having size at least 1. We guess that <I>T</I>(<I>n</I>)<I> </I><IMG SRC="../IMAGES/lteq12.gif"><I> cn</I><SUP>2 </SUP>for some constant <I>c</I>. Substituting this guess into (8.1), we obtain<P>
+<img src="163_b.gif"><P>
+The expression <I>q</I><SUP>2</SUP><I> + </I>(<I>n </I>-<I> q</I>)<SUP>2</SUP> achieves a maximum over the range 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>q </I><IMG SRC="../IMAGES/lteq12.gif"> <I>n </I>- 1 at one of the endpoints, as can be seen since the second derivative of the expression with respect to <I>q</I> is positive (see Exercise 8.4-2). This gives us the bound max<SUB>1</SUB><IMG SRC="../IMAGES/lteq12.gif"><I>q</I><SUB><IMG SRC="../IMAGES/lteq12.gif"><I>n </I>- 1</SUB>(<I>q</I><SUP>2</SUP><I> </I>+<I> </I>(<I>n </I>-<I> q</I>)<SUP>2</SUP>) <IMG SRC="../IMAGES/lteq12.gif"><I> </I>1<SUP>2</SUP> <I>+</I> (<I>n </I>- 1)<SUP>2</SUP> =<I> n</I><SUP>2</SUP> - 2(<I>n</I> - 1).<P>
+Continuing with our bounding of <I>T</I>(<I>n</I>)<I>,</I> we obtain<P>
+<pre>T(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I><SUP>2</SUP><I> </I>-<I> </I>2<I>c</I>(<I>n</I> - 1) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I><SUP>2 </SUP>,</sub></sup></pre><P>
+since we can pick the constant <I>c</I> large enough so that the 2<I>c</I>(<I>n</I> - 1)<I> </I>term dominates the <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) term. Thus, the (worst-case) running time of quicksort is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>)<I>.</I><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0781_1359">8.4.2 Average-case analysis<a name="0781_1359"></h2><P>
+<a name="0781_1357"><a name="0781_1358">We have already given an intuitive argument why the average-case running time of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n </I>1g <I>n</I>): if the split induced by <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> puts any constant fraction of the elements on one side of the partition, then the recursion tree has depth <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) and <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) work is performed at <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) of these levels. We can analyze the expected running time of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> precisely by first understanding how the partitioning procedure operates. We can then develop a recurrence for the average time required to sort an <I>n</I>-element array and solve this recurrence to determine bounds on the expected running time. As part of the process of solving the recurrence, we shall develop tight bounds on an interesting summation.<P>
+
+
+
+
+
+<h3>Analysis of partitioning</h3><P>
+<a name="0782_1359">We first make some observations about the operation of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>. When <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> is called in line 3 of the procedure <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, the element <I>A</I>[<I>p</I>] has already been exchanged with a random element in <I>A</I>[<I>p . . r</I>]. To simplify the analysis, we assume that all input numbers are distinct. If all input numbers are not distinct, it is still true that quick-sort's average-case running time is <I>O</I>(<I>n</I> lg <I>n</I>), but a somewhat more intricate analysis than we present here is required.<P>
+<a name="0782_135a">Our first observation is that the value of <I>q</I> returned by <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> depends only on the rank of <I>x = A</I>[<I>p</I>] among the elements in <I>A</I>[<I>p . . r</I>]<I>.</I> (The <I><B>rank</I></B> of a number in a set is the number of elements less than or equal to it.) If we let <I>n</I> =<I> r</I> - <I>p</I> + 1 be the number of elements in <I>A</I>[<I>p . . r</I>], swapping <I>A</I>[<I>p</I>] with a random element from <I>A</I>[<I>p . . r</I>] yields a probability 1/<I>n </I>that rank(<I>x</I>) = <I>i</I> for <I>i</I> = 1,2, . . . , <I>n.</I><P>
+We next compute the likelihoods of the various outcomes of the partitioning. If rank(<I>x</I>) = 1, then the first time through the <B>while </B>loop in lines 4-11 of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, index <I>i</I> stops at <I>i</I> = <I>p</I> and index <I>j</I> stops at <I>j</I> = <I>p.</I> Thus, when <I>q</I> = <I>j</I> is returned, the &quot;low&quot; side of the partition contains the sole element <I>A</I>[<I>p</I>]. This event occurs with probability 1/<I>n</I> since that is the probability that rank(<I>x</I>) = 1.<P>
+If rank(<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> 2, then there is at least one element smaller than <I>x = A</I>[<I>p</I>]<I>.</I> Consequently, the first time through the <I><B>while</I></B> loop, index <I>i</I> stops at <I>i</I> = <I>p</I> but <I>j</I> stops before reaching <I>p</I>. An exchange with <I>A</I>[<I>p</I>] is then made to put <I>A</I>[<I>p</I>] in the high side of the partition. When <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> terminates, each of the rank(<I>x</I>) - 1 elements in the low side of the partition is strictly less than <I>x</I>. Thus, for each <I>i</I> = 1,2, . . . , <I>n</I> - l, when rank(<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> 2, the probability is 1/<I>n</I> that the low side of the partition has <I>i</I> elements.<P>
+Combining these two cases, we conclude that the size <I>q</I> - <I>p</I> + 1 of the low side of the partition is 1 with probability 2/<I>n</I> and that the size is <I>i</I> with probability 1 /<I>n</I> for <I>i</I> = 2,3, . . . , <I>n</I> - 1.<P>
+<P>
+
+
+
+
+
+
+
+<h3>A recurence for the average case</h3><P>
+We now establish a recurrence for the expected running time of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>. Let <I>T</I>(<I>n</I>) denote the average time required to sort an <I>n</I>-element input array. A call to <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> with a 1-element array takes constant time, so we have <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1). A call to <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> with an array <I>A</I>[l<I> . . n</I>] of length <I>n</I> uses time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) to partition the array. The <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure returns an index <I>q,</I> and then <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> is called recursively with subarrays of length <I>q</I> and <I>n</I> - <I>q</I>. Consequently, the average time to sort an array of length <I>n</I> can be expressed as<P>
+<img src="165_a.gif"><P>
+<h4><a name="0783_0001">(8.2)<a name="0783_0001"></sub></sup></h4><P>
+The value of <I>q</I> has an almost uniform distribution, except that the value <I>q</I> = 1 is twice as likely as the others, as was noted above. Using the facts that <I>T</I>(1) = <IMG SRC="../IMAGES/bound.gif">(1) and <I>T</I>(<I>n</I> - 1) = <I>O</I>(<I>n</I><SUP>2</SUP>) from our worst-case analysis, we have<P>
+<img src="165_b.gif"><P>
+and the term <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) in equation (8.2) can therefore absorb the expression <img src="165_c.gif">. We can thus restate recurrence (8.2) as<P>
+<img src="165_d.gif"><P>
+<h4><a name="0783_0002">(8.3)<a name="0783_0002"></sub></sup></h4><P>
+Observe that for <I>k</I> = 1,2, . . . ,<I> n</I> - 1, each term <I>T</I>(<I>k</I>) of the sum occurs once as <I>T</I>(<I>q</I>) and once as <I>T</I>(<I>n - q</I>). Collapsing the two terms of the sum yields<P>
+<img src="165_e.gif"><P>
+<h4><a name="0783_0003">(8.4)<a name="0783_0003"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h3>Solving the recurrence</h3><P>
+We can solve the recurrence (8.4) using the substitution method. Assume inductively that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>an</I> 1g <I>n </I>+<I> b</I> for some constants <I>a</I> &gt;<I> </I>0 and <I>b</I> &gt; 0 to be determined. We can pick <I>a</I> and <I>b</I> sufficiently large so that <I>an </I>1g <I>n</I> +<I> b</I> is greater than <I>T</I>(1). Then for <I>n</I> &gt; 1, we have by substitution<P>
+<img src="166_a.gif"><P>
+We show below that the summation in the last line can be bounded by<P>
+<img src="166_b.gif"><P>
+<h4><a name="0784_0001">(8.5)<a name="0784_0001"></sub></sup></h4><P>
+Using this bound, we obtain<P>
+<img src="166_c.gif"><P>
+since we can choose <I>a</I> large enough so that <img src="166_d.gif"> dominates <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) + <I>b</I>. We conclude that quicksort's average running time is <I>O</I>(<I>n</I> lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h3>Tight bounds on the key summation</h3><P>
+It remains to prove the bound (8.5) on the summation<P>
+<img src="166_e.gif"><P>
+Since each term is at most <I>n</I> lg <I>n</I>, we have the bound<P>
+<img src="166_f.gif"><P>
+which is tight to within a constant factor. This bound is not strong enough to solve the recurrence as <I>T</I>(<I>n</I>) = <I>O</I>(<I>n</I> lg <I>n</I>), however. Specifically, we need a bound of <img src="166_g.gif"> for the solution of the recurrence to work out.<P>
+We can get this bound on the summation by splitting it into two parts, as discussed in Section 3.2 on page 48. We obtain<P>
+<img src="167_a.gif"><P>
+The lg <I>k</I> in the first summation on the right is bounded above by 1g(<I>n</I>/2) = 1g <I>n</I> - 1. The lg <I>k</I> in the second summation is bounded above by lg <I>n</I>. Thus,<P>
+<img src="167_b.gif"><P>
+if <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 2. This is the bound (8.5).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0786_1361">Exercises<a name="0786_1361"></h2><P>
+<a name="0786_1362">8.4-1<a name="0786_1362"><P>
+Show that quicksort's best-case running time is <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>1g<I>n</I>).<P>
+<a name="0786_1363">8.4-2<a name="0786_1363"><P>
+Show that <I>q</I><SUP>2</SUP> + (<I>n </I>- <I>q</I>)<SUP>2</SUP> achieves a maximum over <I>q</I> = 1, 2, . . . , <I>n </I>- 1 when <I>q</I> = 1 or <I>q</I> = <I>n </I>- 1.<P>
+<a name="0786_1364">8.4-3<a name="0786_1364"><P>
+Show that <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-Q<FONT FACE="Courier New" SIZE=2>UICKSORT'</FONT>s expected running time is <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>1g <I>n</I>).<P>
+<a name="0786_1365">8.4-4<a name="0786_1365"><P>
+<a name="0786_135b"><a name="0786_135c">The running time of quicksort can be improved in practice by taking advantage of the fast running time of insertion sort when its input is &quot;nearly&quot; sorted. When quicksort is called on a subarray with fewer than <I>k</I> elements, let it simply return without sorting the subarray. After the top-level call to quicksort returns, run insertion sort on the entire array to finish the sorting process. Argue that this sorting algorithm runs in <I>O</I>(<I>nk + n</I> 1g(<I>n</I>/<I>k</I>)) expected time. How should <I>k</I> be picked, both in theory and in practice?<P>
+<a name="0786_1366">8.4-5<a name="0786_1366"><P>
+Prove the identity<P>
+<img src="167_c.gif"><P>
+and then use the integral approximation method to give a tighter upper bound than (8.5) on the summation <img src="167_d.gif">.<P>
+<a name="0786_1367">8.4-6<a name="0786_1367"><P>
+<a name="0786_135d"><a name="0786_135e"><a name="0786_135f"><a name="0786_1360">Consider modifying the <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure by randomly picking three elements from array <I>A</I> and partitioning about their median. Approximate the probability of getting at worst an <IMG SRC="../IMAGES/alpha12.gif"><I>-to-(1 - <IMG SRC="../IMAGES/alpha12.gif"></I>) split, as a function of <IMG SRC="../IMAGES/alpha12.gif"><I> in the range 0 &lt; <IMG SRC="../IMAGES/alpha12.gif"></I> &lt; 1.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0787_1377">Problems<a name="0787_1377"></h1><P>
+<a name="0787_1378">8-1     Partition correctness<a name="0787_1378"><P>
+<a name="0787_1361"><a name="0787_1362"><a name="0787_1363"><a name="0787_1364"><a name="0787_1365"><a name="0787_1366"><a name="0787_1367">Give a careful argument that the procedure <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> in Section 8.1 is correct. Prove the following:<P>
+<I><B>a</I>.     </B>The indices <I>i</I> and <I>j</I> never reference an element of <I>A</I> outside the interval [<I>p </I>. . <I>r</I>].<P>
+<I><B>b</I>.</B>     The index <I>j</I> is not equal to <I>r</I> when <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> terminates (so that the split is always nontrivial).<P>
+<I><B>c</I>.     </B>Every element of <I>A</I>[<I>p </I>. . <I>j</I>] is less than or equal to every element of <I>A</I>[<I>j</I>+ 1 . . <I>r</I>] when <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> terminates.<P>
+<a name="0787_1379">8-2     Lomuto's partitioning algorithm<a name="0787_1379"><P>
+<a name="0787_1368"><a name="0787_1369">Consider the following variation of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, due to N. Lomuto. To partition <I>A</I>[<I>p </I>. . <I>r</I>], this version grows two regions, <I>A</I>[<I>p</I> . . <I>i</I>] and <I>A</I>[<I>i</I> + 1 . . <I>j</I>], such that every element in the first region is less than or equal to <I>x</I> = <I>A</I> [<I>r</I>] and every element in the second region is greater than <I>x</I>.<P>
+<pre>LOMUTO-PARTITION(<I>A, p, r</I>)</sub></sup></pre><P>
+<pre>1  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>r</I>]</sub></sup></pre><P>
+<pre>2  <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p </I>- 1</sub></sup></pre><P>
+<pre>3  <B>for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I> <B>to</B> <I>r</I></sub></sup></pre><P>
+<pre>4       <B>do if</B> <I>A</I>[<I>j</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>5             <B>then</B> <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>i </I>+ 1</sub></sup></pre><P>
+<pre>6                  exchange <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <I>A</I>[<I>j</I>]</sub></sup></pre><P>
+<pre>7  <B>if</B> <I>i </I>&lt; <I>r</I></sub></sup></pre><P>
+<pre>8      <B>then return</B> <I>i</I></sub></sup></pre><P>
+<pre>9      <B>else return</B> <I>i </I>- 1</sub></sup></pre><P>
+<I><B>a.     </I></B>Argue that <FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> is correct.<P>
+<I><B>b</I>.     </B>What are the maximum numbers of times that an element can be moved by <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> and by <FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT>?<P>
+<I><B>c</I>.</B>     Argue that <FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, like <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time on an <I>n</I>-element subarray.<P>
+<I><B>d</I>.</B>     How does replacing <FONT FACE="Courier New" SIZE=2>PARTITION</FONT> by <FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> affect the running time of <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> when all input values are equal?<P>
+<I><B>e</I>.     </B>Define a procedure <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-P<FONT FACE="Courier New" SIZE=2>ARTITION </FONT>that exchanges <I>A</I>[<I>r</I>] with a randomly chosen element in <I>A</I>[<I>p </I>. . <I>r</I>] and then calls <FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT>. Show that the probability that a given value <I>q</I> is returned by <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>LOMUTO</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> is equal to the probability that <I>p</I> + <I>r</I> - <I>q</I> is returned by <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT>.<P>
+<a name="0787_137a">8-3     Stooge sort<a name="0787_137a"><P>
+<a name="0787_136a">Professors Howard, Fine, and Howard have proposed the following &quot;elegan&quot; sorting algorithm:<P>
+<img src="169_a.gif"><P>
+<I><B>a.     </I></B>Argue that <FONT FACE="Courier New" SIZE=2>STOOGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>(<I>A</I>, 1, <I>length</I>[<I>A</I>]) correctly sorts the input array <I>A</I>[1 . . <I>n</I>], where <I>n</I> = <I>length</I>[<I>A</I>].<P>
+<I><B>b</I>.     </B>Give a recurrence for the worst-case running time of <FONT FACE="Courier New" SIZE=2>STOOGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> and a tight asymptotic (<IMG SRC="../IMAGES/bound.gif">-notation) bound on the worst-case running time.<P>
+<I><B>c</I>.</B>     Compare the worst-case running time of <FONT FACE="Courier New" SIZE=2>STOOGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> with that of insertion sort, merge sort, heapsort, and quicksort. Do the professors deserve tenure?<P>
+<a name="0787_137b">8-4     Stack depth for quicksort<a name="0787_137b"><P>
+<a name="0787_136b"><a name="0787_136c"><a name="0787_136d"><a name="0787_136e"><a name="0787_136f">The <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> algorithm of Section 8.1 contains two recursive calls to itself. After the call to <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>, the left subarray is recursively sorted and then the right subarray is recursively sorted. The second recursive call in <FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT> is not really necessary; it can be avoided by using an iterative control structure. This technique, called<I> <B>tail recursion</I></B>, is provided automatically by good compilers. Consider the following version of quicksort, which simulates tail recursion.<P>
+<pre><a name="0787_1370">QUICKSORT'(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1  <B>while</B> <I>p</I> &lt; <I>r</I></sub></sup></pre><P>
+<pre>2      <B>do</B> <img src="170_a.gif"> Partition and sort left subarray</sub></sup></pre><P>
+<pre>3         <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> PARTITION(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>4         QUICKSORT'(<I>A,p,q</I>)</sub></sup></pre><P>
+<pre>5         <I>p</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I> + 1</sub></sup></pre><P>
+<I><B>a</I>.     </B>Argue that <FONT FACE="Courier New" SIZE=2>QUICKSORT'</FONT>(<I>A</I>, 1, <I>length</I>[<I>A</I>]) correctly sorts the array <I>A</I>.<P>
+Compilers usually execute recursive procedures by using a <I><B>stack</I></B> that contains pertinent information, including the parameter values, for each recursive call. The information for the most recent call is at the top of the stack, and the information for the initial call is at the bottom. When a procedure is invoked, its information is <I><B>pushed</I></B> onto the stack; when it terminates, its information is <I><B>popped</I></B>. Since we assume that array parameters are actually represented by pointers, the information for each procedure call on the stack requires <I>O</I>(1) stack space. The <I><B>stack depth</I></B> is the maximum amount of stack space used at any time during a computation.<P>
+<I><B>b.</I></B>     Describe a scenario in which the stack depth of <FONT FACE="Courier New" SIZE=2>QUICKSORT'</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) on an <I>n</I>-element input array.<P>
+<I><B>c</I>.     </B>Modify the code for <FONT FACE="Courier New" SIZE=2>QUICKSORT'</FONT> so that the worst-case stack depth is <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>).<P>
+<a name="0787_137c">8-5     Median-of-3 partition<a name="0787_137c"><P>
+<a name="0787_1371"><a name="0787_1372"><a name="0787_1373"><a name="0787_1374"><a name="0787_1375"><a name="0787_1376">One way to improve the <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-Q<FONT FACE="Courier New" SIZE=2>UICKSORT </FONT>procedure is to partition around an element <I>x</I> that is chosen more carefully than by picking a random element from the subarray. One common approach is the <I><B>median-of-3</I></B> method: choose <I>x</I> as the median (middle element) of a set of 3 elements randomly selected from the subarray. For this problem, let us assume that the elements in the input array <I>A</I>[1 . . <I>n</I>] are distinct and that <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 3. We denote the sorted output array by <I>A</I>'[1 . . <I>n</I>]. Using the median-of-3 method to choose the pivot element <I>x</I>, define <I>p<SUB>i</I></SUB> = Pr{<I>x</I> = <I>A</I>'[<I>i</I>]}.<P>
+<I><B>a</I>.     </B>Give an exact formula for <I>p<SUB>i</I></SUB> as a function of <I>n</I> and <I>i</I> for <I>i</I> = 2, 3, . . . , <I>n</I> - 1 . (Note that <I>p</I><SUB>1</SUB> = <I>p<SUB>n</I></SUB> = 0.)<P>
+<I><B>b</I>.     </B>By what amount have we increased the likelihood of choosing <I>x</I> = A'[<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>(<I>n</I> + 1)/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>], the median of <I>A</I>[1 . . <I>n</I>], compared to the ordinary implementation? Assume that <I>n</I> <IMG SRC="../IMAGES/arrow12.gif"> <IMG SRC="../IMAGES/infin.gif">, and give the limiting ratio of these probabilities.<P>
+<I><B>c</I>.     </B>If we define a &quot;good&quot; split to mean choosing <I>x = A</I>'[<I>i</I>], where <I>n</I>/3 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> 2<I>n</I>/3, by what amount have we increased the likelihood of getting a good split compared to the ordinary implementation? (<I>Hint</I>: Approximate the sum by an integral.)<P>
+<I><B>d</I>.     </B>Argue that the median-of-3 method affects only the constant factor in the <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> 1g <I>n</I>) running time of quicksort.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The quicksort procedure was invented by Hoare [98]. Sedgewick [174] provides a good reference on the details of implementation and how they matter. The advantages of randomized algorithms were articulated by Rabin [165].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap09.htm">Chapter 9</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

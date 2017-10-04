@@ -1,0 +1,49 @@
+#include <iostream>
+using namespace std;
+int zamyk[1000][1000], n, k, i, j, stai;
+int bqgstvo[10000];
+
+bool na_reda(int s, int j){
+for (int i = 1; i <= n; i++)
+{
+if (s==zamyk[j][i]){
+return true;
+}else{
+return false;
+}
+}
+}
+
+int main(){
+cin >> n;
+for (i = 1; i <= n; i++){
+for (j = 1; j <= n; j++){
+    cin >> zamyk[i][j];
+}
+}
+cin >> k;
+for (i = 1; i <= k; i++){
+cin >> bqgstvo[i];
+}
+
+for (int q = 1; q <= k; q++){
+    stai = 0;
+    j = 1;
+while(na_reda(bqgstvo[q], j)==false){
+stai++;
+j++;
+}
+cout << stai << "  "  << j;
+/*
+for (int z = n; z > 0; z--){
+    stai++;
+if (zamyk[j][z]==bqgstvo[q]){
+cout << stai << endl;
+}
+}*/
+
+
+}
+system("PAUSE");
+return 0;
+}

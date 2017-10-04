@@ -1,0 +1,112 @@
+/*
+TASK: PHONE
+LANG: C++
+*/
+
+#include <iostream>
+#include <iomanip>
+using namespace std;
+
+void Read();
+void CreateGraph();
+void Solve();
+int Call(int i,int j);
+int Check();
+
+double A[100][100]; //graf
+double P[100];      //ceni
+char C[100][10];  //rabote6ti cifri
+char T[100][11]; //Tel nomera
+int v[100];      //poseteni
+int N;
+
+int main()
+{
+ Read();
+ CreateGraph();
+ Solve();
+
+ return 0;
+}
+
+void Read()
+{
+ int i,j,temp;
+ cin>>N;
+ N++;
+
+ for(i=0;i<N;i++)
+ {
+  cin>>T[i]>>P[i]>>temp;
+  for(j=0;j<temp;j++) cin>>C[i][j];
+ }
+ cin>>T[N+1];
+}
+
+void CreateGraph()
+{
+ int i,j;
+
+ for(i=0;i<N;i++)
+  for(j=0;j<N;j++)
+   if(Call(i,j)) A[i][j]=P[i];
+   else A[i][j]=32000;
+}
+
+int Call(int x,int y)
+{
+ int i=0,j,flag;
+
+ while(T[y][i])
+ {
+  flag=0;
+  for(j=0;j<11;j++)
+   if(C[x][j]==T[y][i])
+   {
+    flag=1;
+    break;
+   }
+   
+  if(!flag) return 0;
+  i++;
+ }
+ return 1;
+}
+
+void Solve()
+{
+ int k=0,i,mink; //teku6t vruh
+ double min;
+ double path[100];
+ for(i=0;i<N;i++)
+  path[i]=A[0][i];
+
+ while(1)
+ {
+  if(!Check()) break;
+  v[k]=1;
+  min=32000;
+
+  for(i=0;i<N;i++)
+   if(path[k]+A[k][i]<path[i]) path[i]=path[k]+A[k][i];
+
+  for(i=0;i<N;i++)
+   if((path[i]<min)&&(v[i]==0)) {min=path[i];mink=i;}
+  k=mink;
+ }
+
+ min=32000;
+
+ for(i=0;i<N;i++)
+  if(Call(i,N+1))
+   if(path[i]+P[i]<min) min=path[i]+P[i];
+ cout.setf(ios::fixed);
+ cout<<setprecision(2)<<min<<endl;
+}
+
+int Check()
+{
+ int i=0;
+ for(i=0;i<N;i++) if(!v[i]) return 1;
+ return 0;
+}

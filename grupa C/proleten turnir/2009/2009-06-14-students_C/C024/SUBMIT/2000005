@@ -1,0 +1,26 @@
+#include<iostream>
+#include<string>
+using namespace std;
+long long f[32],k,s;
+bool a[32];
+int main()
+{
+    int n,i,j,br;
+    scanf("%d%I64d",&n,&k);
+    k--;
+    f[0]=1; for(i=1;i<n;i++)f[i]=f[i-1]*i;
+    for(i=n-1;i>=1;i--)
+    {
+        s=k/f[i]; k%=f[i]; s++; br=0;
+        for(j=1;j<=n;j++)
+        {
+            if(!a[j])br++;
+            if(br==s)break;
+        }
+        a[j]=1;
+        printf("%c",(char)(j+(int)'a'-1));
+    }
+    for(i=1;i<=n;i++)
+        if(!a[i])printf("%c",(char)(i+(int)'a'-1));
+    printf("\n");
+}

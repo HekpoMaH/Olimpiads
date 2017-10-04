@@ -1,0 +1,55 @@
+/*
+TASK:school
+LANG:C
+*/
+#include<stdio.h>
+#define maxN 500
+
+int m,n;
+int list[maxN][maxN];
+int used[maxN];
+int res=0;
+
+/*void DFS(int i)
+{
+int p;
+used[i] = 1;
+for (p=1;p<=n;p++)
+    if ((used[p] != 1) && (list[i][p] == 1))
+       DFS(p);
+}*/
+
+void BFS(int i)
+{
+int queue[maxN],start=0,end=1,j;
+used[i] = 1;
+queue[0]=i;
+while (start != end) {
+    for (j=1;j<=n;j++)
+        if ((list[queue[start]][j] == 1) && (used[j] != 1))
+                queue[end++] = j;
+    used[queue[start]] = 1;
+    start++;
+    }
+}
+
+void Solve()
+{
+int i;
+for (i=1;i<=n;i++)
+    if (used[i] == 0)
+       {BFS(i);res++;}
+}
+
+int main()
+{
+int i,a,b;
+scanf("%d %d",&n,&m);
+for (i=1;i<=m;i++)
+    {scanf("%d %d",&a,&b);
+     list[a][b] = list[b][a] = 1;
+    }
+Solve();
+printf("%d\n",res);
+return 0;
+}

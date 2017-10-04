@@ -1,0 +1,34 @@
+#include<iostream>
+#include<string>
+using namespace std;
+struct kabel
+{
+    int p;
+    int r;
+    int q;
+    int f;
+};
+kabel a[128];
+int n,l,sum=0;
+void read()
+{
+    int i,b,c,d,e;
+    cin>>n>>l;
+    for(i=1;i<=n;i++)
+    {
+        cin>>b>>c>>d>>e;
+        a[i].p=b;
+        a[i].r=c;
+        a[i].q=d;
+        a[i].f=e;
+        sum+=e;
+        b=c=d=e=0;
+    }
+}
+
+int main()
+{
+    read();
+    if(sum<l){cout<<"-1\n";exit(0);}
+
+}

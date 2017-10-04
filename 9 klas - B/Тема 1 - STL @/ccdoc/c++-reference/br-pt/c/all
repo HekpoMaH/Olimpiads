@@ -1,0 +1,479 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="br-pt"
+ lang="br-pt" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>br-pt:c:all</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2010-02-03T19:51:57-0800" />
+<meta name="keywords" content="br-pt,c,all" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/br-pt/c/all?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=br-pt:c" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/br-pt/c/all" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/br-pt/c/all" />
+<link rel="canonical" href="all" />
+<link rel="stylesheet" media="all" type="text/css" href="../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='br-pt:c';var JSINFO = {"id":"br-pt:c:all","namespace":"br-pt:c"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h1><a name="todas_as_funcoes_do_c" id="todas_as_funcoes_do_c">Todas as funções do C</a></h1>
+<div class="level1">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"><a href="../../preprocessor/sharp" class="wikilink1" title="preprocessor:sharp"># and ##</a></td><td class="col1">manipula strings</td>
+	</tr>
+	<tr class="row1">
+		<td class="col0"><a href="../../preprocessor/define" class="wikilink1" title="preprocessor:define">#define</a></td><td class="col1">define variáveis</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"><a href="../../preprocessor/error" class="wikilink1" title="preprocessor:error">#error</a></td><td class="col1">mostrar uma mensagem de erro</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"><a href="../../preprocessor/preprocessor_if" class="wikilink1" title="preprocessor:preprocessor_if">#if, #ifdef, #ifndef, #else, #elif, #endif</a></td><td class="col1">operadores condicionais</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"><a href="../../preprocessor/include" class="wikilink1" title="preprocessor:include">#include</a></td><td class="col1">insere o conteúdo de outro arquivo</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"><a href="../../preprocessor/line" class="wikilink1" title="preprocessor:line">#line</a></td><td class="col1">muda informação da linha e arquivo</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"><a href="../../preprocessor/pragma" class="wikilink1" title="preprocessor:pragma">#pragma</a></td><td class="col1">implementação de comandos específicos</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"><a href="../../preprocessor/undef" class="wikilink1" title="preprocessor:undef">#undef</a></td><td class="col1">usado para remover definição de variáveis</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"><a href="../../preprocessor/preprocessor_vars" class="wikilink1" title="preprocessor:preprocessor_vars">Predefined preprocessor variables</a></td><td class="col1">diversas variáveis do preprocessor</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"><a href="../../c/other/abort" class="wikilink1" title="c:other:abort">abort</a> </td><td class="col1">para o programa</td>
+	</tr>
+	<tr class="row10">
+		<td class="col0"><a href="../../c/math/abs" class="wikilink1" title="c:math:abs">abs</a> </td><td class="col1">valor absoluto</td>
+	</tr>
+	<tr class="row11">
+		<td class="col0"><a href="../../c/math/acos" class="wikilink1" title="c:math:acos">acos</a> </td><td class="col1">arco cosseno</td>
+	</tr>
+	<tr class="row12">
+		<td class="col0"><a href="../../c/date/asctime" class="wikilink1" title="c:date:asctime">asctime</a> </td><td class="col1">uma versão textual do tempo</td>
+	</tr>
+	<tr class="row13">
+		<td class="col0"><a href="../../c/math/asin" class="wikilink1" title="c:math:asin">asin</a> </td><td class="col1">arco seno</td>
+	</tr>
+	<tr class="row14">
+		<td class="col0"><a href="../../c/other/assert" class="wikilink1" title="c:other:assert">assert</a> </td><td class="col1">para o programa se uma expressão não é verdadeira</td>
+	</tr>
+	<tr class="row15">
+		<td class="col0"><a href="../../c/math/atan" class="wikilink1" title="c:math:atan">atan</a> </td><td class="col1">arco tangente</td>
+	</tr>
+	<tr class="row16">
+		<td class="col0"><a href="../../c/math/atan2" class="wikilink1" title="c:math:atan2">atan2</a> </td><td class="col1">arco tangente usando sinais para determinar quadrantes</td>
+	</tr>
+	<tr class="row17">
+		<td class="col0"><a href="../../c/other/atexit" class="wikilink1" title="c:other:atexit">atexit</a> </td><td class="col1">estabelece uma função para ser chamada quando o programa sai</td>
+	</tr>
+	<tr class="row18">
+		<td class="col0"><a href="../../c/string/atof" class="wikilink1" title="c:string:atof">atof</a> </td><td class="col1">converte uma string para um double</td>
+	</tr>
+	<tr class="row19">
+		<td class="col0"><a href="../../c/string/atoi" class="wikilink1" title="c:string:atoi">atoi</a> </td><td class="col1">converte uma string para um inteiro</td>
+	</tr>
+	<tr class="row20">
+		<td class="col0"><a href="../../c/string/atol" class="wikilink1" title="c:string:atol">atol</a> </td><td class="col1">converte uma string para um long</td>
+	</tr>
+	<tr class="row21">
+		<td class="col0"><a href="../../c/other/bsearch" class="wikilink1" title="c:other:bsearch">bsearch</a> </td><td class="col1">executa uma busca binária</td>
+	</tr>
+	<tr class="row22">
+		<td class="col0"><a href="../../c/mem/calloc" class="wikilink1" title="c:mem:calloc">calloc</a> </td><td class="col1">aloca e limpa um bloco de memória</td>
+	</tr>
+	<tr class="row23">
+		<td class="col0"><a href="../../c/math/ceil" class="wikilink1" title="c:math:ceil">ceil</a> </td><td class="col1">o menor inteiro não menor que um certo valor</td>
+	</tr>
+	<tr class="row24">
+		<td class="col0"><a href="../../c/io/clearerr" class="wikilink1" title="c:io:clearerr">clearerr</a> </td><td class="col1">remove erros</td>
+	</tr>
+	<tr class="row25">
+		<td class="col0"><a href="../../c/date/clock" class="wikilink1" title="c:date:clock">clock</a> </td><td class="col1">retorna o total de tempo que o programa está rodando</td>
+	</tr>
+	<tr class="row26">
+		<td class="col0"><a href="../../c/math/cos" class="wikilink1" title="c:math:cos">cos</a> </td><td class="col1">cosseno</td>
+	</tr>
+	<tr class="row27">
+		<td class="col0"><a href="../../c/math/cosh" class="wikilink1" title="c:math:cosh">cosh</a> </td><td class="col1">cosseno hiperbólico</td>
+	</tr>
+	<tr class="row28">
+		<td class="col0"><a href="../../c/date/ctime" class="wikilink1" title="c:date:ctime">ctime</a> </td><td class="col1">retorna uma versão especificamente formatada do tempo</td>
+	</tr>
+	<tr class="row29">
+		<td class="col0"><a href="../../c/date/difftime" class="wikilink1" title="c:date:difftime">difftime</a> </td><td class="col1">a diferença entre dois tempos</td>
+	</tr>
+	<tr class="row30">
+		<td class="col0"><a href="../../c/math/div" class="wikilink1" title="c:math:div">div</a> </td><td class="col1">retorna o quociente e o resto da divisão</td>
+	</tr>
+	<tr class="row31">
+		<td class="col0"><a href="../../c/other/exit" class="wikilink1" title="c:other:exit">exit</a> </td><td class="col1">para o programa</td>
+	</tr>
+	<tr class="row32">
+		<td class="col0"><a href="../../c/math/exp" class="wikilink1" title="c:math:exp">exp</a> </td><td class="col1">retorna “e” elevado a uma dada potência</td>
+	</tr>
+	<tr class="row33">
+		<td class="col0"><a href="../../c/math/fabs" class="wikilink1" title="c:math:fabs">fabs</a> </td><td class="col1">valor absoluto para números de ponto flutuante</td>
+	</tr>
+	<tr class="row34">
+		<td class="col0"><a href="../../c/io/fclose" class="wikilink1" title="c:io:fclose">fclose</a> </td><td class="col1">fecha um arquivo</td>
+	</tr>
+	<tr class="row35">
+		<td class="col0"><a href="../../c/io/feof" class="wikilink1" title="c:io:feof">feof</a> </td><td class="col1">verdadeiro se está no fim do arquivo</td>
+	</tr>
+	<tr class="row36">
+		<td class="col0"><a href="../../c/io/ferror" class="wikilink1" title="c:io:ferror">ferror</a> </td><td class="col1">verifica por um erro de arquivo</td>
+	</tr>
+	<tr class="row37">
+		<td class="col0"><a href="../../c/io/fflush" class="wikilink1" title="c:io:fflush">fflush</a> </td><td class="col1">escreve o conteúdo do buffer de saída</td>
+	</tr>
+	<tr class="row38">
+		<td class="col0"><a href="../../c/io/fgetc" class="wikilink1" title="c:io:fgetc">fgetc</a> </td><td class="col1">retorna um caractere de uma stream</td>
+	</tr>
+	<tr class="row39">
+		<td class="col0"><a href="../../c/io/fgetpos" class="wikilink1" title="c:io:fgetpos">fgetpos</a> </td><td class="col1">retorna o indicador de posição do arquivo</td>
+	</tr>
+	<tr class="row40">
+		<td class="col0"><a href="../../c/io/fgets" class="wikilink1" title="c:io:fgets">fgets</a> </td><td class="col1">retorna uma string de caracteres de um stream</td>
+	</tr>
+	<tr class="row41">
+		<td class="col0"><a href="../../c/math/floor" class="wikilink1" title="c:math:floor">floor</a> </td><td class="col1">retorna o maior inteiro não maior que um dado valor</td>
+	</tr>
+	<tr class="row42">
+		<td class="col0"><a href="../../c/math/fmod" class="wikilink1" title="c:math:fmod">fmod</a> </td><td class="col1">retorna o resto da divisão</td>
+	</tr>
+	<tr class="row43">
+		<td class="col0"><a href="../../c/io/fopen" class="wikilink1" title="c:io:fopen">fopen</a> </td><td class="col1">abre um arquivo</td>
+	</tr>
+	<tr class="row44">
+		<td class="col0"><a href="../../c/io/fprintf" class="wikilink1" title="c:io:fprintf">fprintf</a> </td><td class="col1">imprime a saída formatada para um arquivo</td>
+	</tr>
+	<tr class="row45">
+		<td class="col0"><a href="../../c/io/fputc" class="wikilink1" title="c:io:fputc">fputc</a> </td><td class="col1">escreve um caractere para um arquivo</td>
+	</tr>
+	<tr class="row46">
+		<td class="col0"><a href="../../c/io/fputs" class="wikilink1" title="c:io:fputs">fputs</a> </td><td class="col1">escreve uma string para um arquivo</td>
+	</tr>
+	<tr class="row47">
+		<td class="col0"><a href="../../c/io/fread" class="wikilink1" title="c:io:fread">fread</a> </td><td class="col1">lê de um arquivo</td>
+	</tr>
+	<tr class="row48">
+		<td class="col0"><a href="../../c/mem/free" class="wikilink1" title="c:mem:free">free</a> </td><td class="col1">retorna a memória anteriormente alocada para o sistema operacional</td>
+	</tr>
+	<tr class="row49">
+		<td class="col0"><a href="../../c/io/freopen" class="wikilink1" title="c:io:freopen">freopen</a> </td><td class="col1">abre um stream existente com um nome diferente</td>
+	</tr>
+	<tr class="row50">
+		<td class="col0"><a href="../../c/math/frexp" class="wikilink1" title="c:math:frexp">frexp</a> </td><td class="col1">decompõe um número em notação científica</td>
+	</tr>
+	<tr class="row51">
+		<td class="col0"><a href="../../c/io/fscanf" class="wikilink1" title="c:io:fscanf">fscanf</a> </td><td class="col1">lê a entrada formatada de um arquivo</td>
+	</tr>
+	<tr class="row52">
+		<td class="col0"><a href="../../c/io/fseek" class="wikilink1" title="c:io:fseek">fseek</a> </td><td class="col1">move para uma localização específica em um arquivo</td>
+	</tr>
+	<tr class="row53">
+		<td class="col0"><a href="../../c/io/fsetpos" class="wikilink1" title="c:io:fsetpos">fsetpos</a> </td><td class="col1">move para uma localização específica em um arquivo</td>
+	</tr>
+	<tr class="row54">
+		<td class="col0"><a href="../../c/io/ftell" class="wikilink1" title="c:io:ftell">ftell</a> </td><td class="col1">retorna o indicador de posição atual do arquivo</td>
+	</tr>
+	<tr class="row55">
+		<td class="col0"><a href="../../c/io/fwrite" class="wikilink1" title="c:io:fwrite">fwrite</a> </td><td class="col1">escreve em um arquivo</td>
+	</tr>
+	<tr class="row56">
+		<td class="col0"><a href="../../c/io/getc" class="wikilink1" title="c:io:getc">getc</a> </td><td class="col1">lê um caractere de um arquivo</td>
+	</tr>
+	<tr class="row57">
+		<td class="col0"><a href="../../c/io/getchar" class="wikilink1" title="c:io:getchar">getchar</a> </td><td class="col1">lê um caractere de STDIN</td>
+	</tr>
+	<tr class="row58">
+		<td class="col0"><a href="../../c/other/getenv" class="wikilink1" title="c:other:getenv">getenv</a> </td><td class="col1">retorna informação ambiente sobre uma variável</td>
+	</tr>
+	<tr class="row59">
+		<td class="col0"><a href="../../c/io/gets" class="wikilink1" title="c:io:gets">gets</a> </td><td class="col1">lê uma string de STDIN</td>
+	</tr>
+	<tr class="row60">
+		<td class="col0"><a href="../../c/date/gmtime" class="wikilink1" title="c:date:gmtime">gmtime</a> </td><td class="col1">retorna um ponteiro para o tempo Greenwich Mean atual</td>
+	</tr>
+	<tr class="row61">
+		<td class="col0"><a href="../../c/string/isalnum" class="wikilink1" title="c:string:isalnum">isalnum</a> </td><td class="col1">verdadeiro se um caractere é alfa numérico</td>
+	</tr>
+	<tr class="row62">
+		<td class="col0"><a href="../../c/string/isalpha" class="wikilink1" title="c:string:isalpha">isalpha</a> </td><td class="col1">verdadeiro se um caractere é alfabético</td>
+	</tr>
+	<tr class="row63">
+		<td class="col0"><a href="../../c/string/iscntrl" class="wikilink1" title="c:string:iscntrl">iscntrl</a> </td><td class="col1">verdadeiro se um caractere é um caractere de controle</td>
+	</tr>
+	<tr class="row64">
+		<td class="col0"><a href="../../c/string/isdigit" class="wikilink1" title="c:string:isdigit">isdigit</a> </td><td class="col1">verdadeiro se um caractere é dígito</td>
+	</tr>
+	<tr class="row65">
+		<td class="col0"><a href="../../c/string/isgraph" class="wikilink1" title="c:string:isgraph">isgraph</a> </td><td class="col1">verdadeiro se um caractere é um caractere gráfico</td>
+	</tr>
+	<tr class="row66">
+		<td class="col0"><a href="../../c/string/islower" class="wikilink1" title="c:string:islower">islower</a> </td><td class="col1">verdadeiro se um caractere é minúsculo</td>
+	</tr>
+	<tr class="row67">
+		<td class="col0"><a href="../../c/string/isprint" class="wikilink1" title="c:string:isprint">isprint</a> </td><td class="col1">verdadeiro se um caractere é um caractere de impressão</td>
+	</tr>
+	<tr class="row68">
+		<td class="col0"><a href="../../c/string/ispunct" class="wikilink1" title="c:string:ispunct">ispunct</a> </td><td class="col1">verdadeiro se um caractere é pontuação</td>
+	</tr>
+	<tr class="row69">
+		<td class="col0"><a href="../../c/string/isspace" class="wikilink1" title="c:string:isspace">isspace</a> </td><td class="col1">verdadeiro se um caractere é espaço</td>
+	</tr>
+	<tr class="row70">
+		<td class="col0"><a href="../../c/string/isupper" class="wikilink1" title="c:string:isupper">isupper</a> </td><td class="col1">verdadeiro se um caractere é maiúsculo</td>
+	</tr>
+	<tr class="row71">
+		<td class="col0"><a href="../../c/string/isxdigit" class="wikilink1" title="c:string:isxdigit">isxdigit</a> </td><td class="col1">verdadeiro se um caractere é hexadecimal</td>
+	</tr>
+	<tr class="row72">
+		<td class="col0"><a href="../../c/math/labs" class="wikilink1" title="c:math:labs">labs</a> </td><td class="col1">valor absolutos para inteiros do tipo long</td>
+	</tr>
+	<tr class="row73">
+		<td class="col0"><a href="../../c/math/ldexp" class="wikilink1" title="c:math:ldexp">ldexp</a> </td><td class="col1">calcula um número em notação científica</td>
+	</tr>
+	<tr class="row74">
+		<td class="col0"><a href="../../c/math/ldiv" class="wikilink1" title="c:math:ldiv">ldiv</a> </td><td class="col1">retorna o quociente e o resto de uma divisão, na forma de inteiro long</td>
+	</tr>
+	<tr class="row75">
+		<td class="col0"><a href="../../c/date/localtime" class="wikilink1" title="c:date:localtime">localtime</a> </td><td class="col1">retorna um ponteiro para o tempo atual</td>
+	</tr>
+	<tr class="row76">
+		<td class="col0"><a href="../../c/math/log" class="wikilink1" title="c:math:log">log</a> </td><td class="col1">logaritmo natural</td>
+	</tr>
+	<tr class="row77">
+		<td class="col0"><a href="../../c/math/log10" class="wikilink1" title="c:math:log10">log10</a> </td><td class="col1">ogaritmo natural em base 10</td>
+	</tr>
+	<tr class="row78">
+		<td class="col0"><a href="../../c/other/longjmp" class="wikilink1" title="c:other:longjmp">longjmp</a> </td><td class="col1">inicia a execução até um certo ponto no programa</td>
+	</tr>
+	<tr class="row79">
+		<td class="col0"><a href="../../c/mem/malloc" class="wikilink1" title="c:mem:malloc">malloc</a> </td><td class="col1">aloca memória</td>
+	</tr>
+	<tr class="row80">
+		<td class="col0"><a href="../../c/string/memchr" class="wikilink1" title="c:string:memchr">memchr</a> </td><td class="col1">procura no array pela primeira ocorrência de um caractere</td>
+	</tr>
+	<tr class="row81">
+		<td class="col0"><a href="../../c/string/memcmp" class="wikilink1" title="c:string:memcmp">memcmp</a> </td><td class="col1">compara dois buffers</td>
+	</tr>
+	<tr class="row82">
+		<td class="col0"><a href="../../c/string/memcpy" class="wikilink1" title="c:string:memcpy">memcpy</a> </td><td class="col1">copia um buffer em another</td>
+	</tr>
+	<tr class="row83">
+		<td class="col0"><a href="../../c/string/memmove" class="wikilink1" title="c:string:memmove">memmove</a> </td><td class="col1">move um buffer para outro</td>
+	</tr>
+	<tr class="row84">
+		<td class="col0"><a href="../../c/string/memset" class="wikilink1" title="c:string:memset">memset</a> </td><td class="col1">preenche um buffer com um caractere</td>
+	</tr>
+	<tr class="row85">
+		<td class="col0"><a href="../../c/date/mktime" class="wikilink1" title="c:date:mktime">mktime</a> </td><td class="col1">retorna a versão calendário de um dado tempo</td>
+	</tr>
+	<tr class="row86">
+		<td class="col0"><a href="../../c/math/modf" class="wikilink1" title="c:math:modf">modf</a> </td><td class="col1"> decompõe um número em partes inteira e fracional</td>
+	</tr>
+	<tr class="row87">
+		<td class="col0"><a href="../../c/io/perror" class="wikilink1" title="c:io:perror">perror</a> </td><td class="col1">mostra a versão em string do erro atual para STDERR</td>
+	</tr>
+	<tr class="row88">
+		<td class="col0"><a href="../../c/math/pow" class="wikilink1" title="c:math:pow">pow</a> </td><td class="col1">retorna um dado número elevado por outro número</td>
+	</tr>
+	<tr class="row89">
+		<td class="col0"><a href="../../c/io/printf" class="wikilink1" title="c:io:printf">printf</a> </td><td class="col1">escreve a saída formatada para STDOUT</td>
+	</tr>
+	<tr class="row90">
+		<td class="col0"><a href="../../c/io/putc" class="wikilink1" title="c:io:putc">putc</a> </td><td class="col1">escreve um caractere para um stream</td>
+	</tr>
+	<tr class="row91">
+		<td class="col0"><a href="../../c/io/putchar" class="wikilink1" title="c:io:putchar">putchar</a> </td><td class="col1">escreve um caractere para STDOUT</td>
+	</tr>
+	<tr class="row92">
+		<td class="col0"><a href="../../c/other/putenv" class="wikilink1" title="c:other:putenv">putenv</a> </td><td class="col1">adiciona/modifica as configurações ambientes</td>
+	</tr>
+	<tr class="row93">
+		<td class="col0"><a href="../../c/io/puts" class="wikilink1" title="c:io:puts">puts</a> </td><td class="col1">escreve uma string para STDOUT</td>
+	</tr>
+	<tr class="row94">
+		<td class="col0"><a href="../../c/other/qsort" class="wikilink1" title="c:other:qsort">qsort</a> </td><td class="col1">executa o quicksort</td>
+	</tr>
+	<tr class="row95">
+		<td class="col0"><a href="../../c/other/raise" class="wikilink1" title="c:other:raise">raise</a> </td><td class="col1">envia um sinal para o programa</td>
+	</tr>
+	<tr class="row96">
+		<td class="col0"><a href="../../c/other/rand" class="wikilink1" title="c:other:rand">rand</a> </td><td class="col1">retorna um número pseudo-aleatório</td>
+	</tr>
+	<tr class="row97">
+		<td class="col0"><a href="../../c/mem/realloc" class="wikilink1" title="c:mem:realloc">realloc</a> </td><td class="col1">changes the size of previously allocated memory</td>
+	</tr>
+	<tr class="row98">
+		<td class="col0"><a href="../../c/io/remove" class="wikilink1" title="c:io:remove">remove</a> </td><td class="col1">apaga um arquivo</td>
+	</tr>
+	<tr class="row99">
+		<td class="col0"><a href="../../c/io/rename" class="wikilink1" title="c:io:rename">rename</a> </td><td class="col1">renomea um arquivo</td>
+	</tr>
+	<tr class="row100">
+		<td class="col0"><a href="../../c/io/rewind" class="wikilink1" title="c:io:rewind">rewind</a> </td><td class="col1">move o indicador de posição do arquivo para o início do arquivo</td>
+	</tr>
+	<tr class="row101">
+		<td class="col0"><a href="../../c/io/scanf" class="wikilink1" title="c:io:scanf">scanf</a> </td><td class="col1">lê a entrada formatada de STDIN</td>
+	</tr>
+	<tr class="row102">
+		<td class="col0"><a href="../../c/io/setbuf" class="wikilink1" title="c:io:setbuf">setbuf</a> </td><td class="col1">atribui o buffer para um stream específico</td>
+	</tr>
+	<tr class="row103">
+		<td class="col0"><a href="../../c/other/setjmp" class="wikilink1" title="c:other:setjmp">setjmp</a> </td><td class="col1">muda a execução para iniciar em um certo ponto</td>
+	</tr>
+	<tr class="row104">
+		<td class="col0"><a href="../../c/date/setlocale" class="wikilink1" title="c:date:setlocale">setlocale</a> </td><td class="col1">muda a localização atual</td>
+	</tr>
+	<tr class="row105">
+		<td class="col0"><a href="../../c/io/setvbuf" class="wikilink1" title="c:io:setvbuf">setvbuf</a> </td><td class="col1">muda o buffer e o tamanho para um stream específico</td>
+	</tr>
+	<tr class="row106">
+		<td class="col0"><a href="../../c/other/signal" class="wikilink1" title="c:other:signal">signal</a> </td><td class="col1">registra uma função como controlador de sinal</td>
+	</tr>
+	<tr class="row107">
+		<td class="col0"><a href="../../c/math/sin" class="wikilink1" title="c:math:sin">sin</a> </td><td class="col1">seno</td>
+	</tr>
+	<tr class="row108">
+		<td class="col0"><a href="../../c/math/sinh" class="wikilink1" title="c:math:sinh">sinh</a> </td><td class="col1">seno hiperbólico</td>
+	</tr>
+	<tr class="row109">
+		<td class="col0"><a href="../../c/io/sprintf" class="wikilink1" title="c:io:sprintf">sprintf</a> </td><td class="col1">escreve a saída formatada para um buffer</td>
+	</tr>
+	<tr class="row110">
+		<td class="col0"><a href="../../c/math/sqrt" class="wikilink1" title="c:math:sqrt">sqrt</a> </td><td class="col1">raiz quadrada</td>
+	</tr>
+	<tr class="row111">
+		<td class="col0"><a href="../../c/other/srand" class="wikilink1" title="c:other:srand">srand</a> </td><td class="col1">inicializa o gerador de números aleatórios</td>
+	</tr>
+	<tr class="row112">
+		<td class="col0"><a href="../../c/io/sscanf" class="wikilink1" title="c:io:sscanf">sscanf</a> </td><td class="col1">lê uma entrada formatada de um buffer</td>
+	</tr>
+	<tr class="row113">
+		<td class="col0"><a href="../../c/string/strcat" class="wikilink1" title="c:string:strcat">strcat</a> </td><td class="col1">concatena duas strings</td>
+	</tr>
+	<tr class="row114">
+		<td class="col0"><a href="../../c/string/strchr" class="wikilink1" title="c:string:strchr">strchr</a> </td><td class="col1">encontra a primeira ocorrência de um caractere em uma string</td>
+	</tr>
+	<tr class="row115">
+		<td class="col0"><a href="../../c/string/strcmp" class="wikilink1" title="c:string:strcmp">strcmp</a> </td><td class="col1">compara duas strings</td>
+	</tr>
+	<tr class="row116">
+		<td class="col0"><a href="../../c/string/strcoll" class="wikilink1" title="c:string:strcoll">strcoll</a> </td><td class="col1">compara duas strings de acordo com a localidade atual</td>
+	</tr>
+	<tr class="row117">
+		<td class="col0"><a href="../../c/string/strcpy" class="wikilink1" title="c:string:strcpy">strcpy</a> </td><td class="col1">copia uma string em outra</td>
+	</tr>
+	<tr class="row118">
+		<td class="col0"><a href="../../c/string/strcspn" class="wikilink1" title="c:string:strcspn">strcspn</a> </td><td class="col1">procura em uma string por qualquer caractere em outra</td>
+	</tr>
+	<tr class="row119">
+		<td class="col0"><a href="../../c/string/strerror" class="wikilink1" title="c:string:strerror">strerror</a> </td><td class="col1">retorna a versão de texto de um dado código de erro</td>
+	</tr>
+	<tr class="row120">
+		<td class="col0"><a href="../../c/date/strftime" class="wikilink1" title="c:date:strftime">strftime</a> </td><td class="col1">retorna os elementos individuais de uma data e tempo</td>
+	</tr>
+	<tr class="row121">
+		<td class="col0"><a href="../../c/string/strlen" class="wikilink1" title="c:string:strlen">strlen</a> </td><td class="col1">retorna o tamanho de uma string</td>
+	</tr>
+	<tr class="row122">
+		<td class="col0"><a href="../../c/string/strncat" class="wikilink1" title="c:string:strncat">strncat</a> </td><td class="col1">concatena um certo número de caracteres de duas strings</td>
+	</tr>
+	<tr class="row123">
+		<td class="col0"><a href="../../c/string/strncmp" class="wikilink1" title="c:string:strncmp">strncmp</a> </td><td class="col1">compara um certo número de caracteres de duas strings</td>
+	</tr>
+	<tr class="row124">
+		<td class="col0"><a href="../../c/string/strncpy" class="wikilink1" title="c:string:strncpy">strncpy</a> </td><td class="col1">copia um certo número de caracteres de uma string em outra</td>
+	</tr>
+	<tr class="row125">
+		<td class="col0"><a href="../../c/string/strpbrk" class="wikilink1" title="c:string:strpbrk">strpbrk</a> </td><td class="col1">encontra a primeira localização de qualquer caractere em uma string em outra string</td>
+	</tr>
+	<tr class="row126">
+		<td class="col0"><a href="../../c/string/strrchr" class="wikilink1" title="c:string:strrchr">strrchr</a> </td><td class="col1">encontra a última ocorrência de um caractere em uma string</td>
+	</tr>
+	<tr class="row127">
+		<td class="col0"><a href="../../c/string/strspn" class="wikilink1" title="c:string:strspn">strspn</a> </td><td class="col1">retorna o tamanho de uma substring em uma string</td>
+	</tr>
+	<tr class="row128">
+		<td class="col0"><a href="../../c/string/strstr" class="wikilink1" title="c:string:strstr">strstr</a> </td><td class="col1">encontra a primeira ocorrência de uma substring em uma string</td>
+	</tr>
+	<tr class="row129">
+		<td class="col0"><a href="../../c/string/strtod" class="wikilink1" title="c:string:strtod">strtod</a> </td><td class="col1">converte uma string para um double</td>
+	</tr>
+	<tr class="row130">
+		<td class="col0"><a href="../../c/string/strtok" class="wikilink1" title="c:string:strtok">strtok</a> </td><td class="col1">encontra o próximo token na string</td>
+	</tr>
+	<tr class="row131">
+		<td class="col0"><a href="../../c/string/strtol" class="wikilink1" title="c:string:strtol">strtol</a> </td><td class="col1">converte uma string para um long</td>
+	</tr>
+	<tr class="row132">
+		<td class="col0"><a href="../../c/string/strtoul" class="wikilink1" title="c:string:strtoul">strtoul</a> </td><td class="col1">converte uma string para um unsigned long</td>
+	</tr>
+	<tr class="row133">
+		<td class="col0"><a href="../../c/string/strxfrm" class="wikilink1" title="c:string:strxfrm">strxfrm</a> </td><td class="col1">converte uma substring tal que possa ser usada por funções de comparação de string</td>
+	</tr>
+	<tr class="row134">
+		<td class="col0"><a href="../../c/other/system" class="wikilink1" title="c:other:system">system</a> </td><td class="col1">executa uma chamada de sistema</td>
+	</tr>
+	<tr class="row135">
+		<td class="col0"><a href="../../c/math/tan" class="wikilink1" title="c:math:tan">tan</a> </td><td class="col1">tangente</td>
+	</tr>
+	<tr class="row136">
+		<td class="col0"><a href="../../c/math/tanh" class="wikilink1" title="c:math:tanh">tanh</a> </td><td class="col1">tangente hiperbólica</td>
+	</tr>
+	<tr class="row137">
+		<td class="col0"><a href="../../c/date/time" class="wikilink1" title="c:date:time">time</a> </td><td class="col1">retorna o tempo atual do sistema</td>
+	</tr>
+	<tr class="row138">
+		<td class="col0"><a href="../../c/io/tmpfile" class="wikilink1" title="c:io:tmpfile">tmpfile</a> </td><td class="col1">retorna um ponteiro para um arquivo temporário</td>
+	</tr>
+	<tr class="row139">
+		<td class="col0"><a href="../../c/io/tmpnam" class="wikilink1" title="c:io:tmpnam">tmpnam</a> </td><td class="col1">retorna um arquivo único</td>
+	</tr>
+	<tr class="row140">
+		<td class="col0"><a href="../../c/string/tolower" class="wikilink1" title="c:string:tolower">tolower</a> </td><td class="col1">converte um caractere para minúsculo</td>
+	</tr>
+	<tr class="row141">
+		<td class="col0"><a href="../../c/string/toupper" class="wikilink1" title="c:string:toupper">toupper</a> </td><td class="col1">converte um caractere para maiúsculo </td>
+	</tr>
+	<tr class="row142">
+		<td class="col0"><a href="../../c/io/ungetc" class="wikilink1" title="c:io:ungetc">ungetc</a> </td><td class="col1">insere um caractere no final de um stream</td>
+	</tr>
+	<tr class="row143">
+		<td class="col0"><a href="../../c/other/va_arg" class="wikilink1" title="c:other:va_arg">va_arg</a> </td><td class="col1">usa lista de parâmetros de tamanho variável</td>
+	</tr>
+	<tr class="row144">
+		<td class="col0"><a href="../../c/io/vprintf_vfprintf_vsprintf" class="wikilink1" title="c:io:vprintf_vfprintf_vsprintf">vprintf, vfprintf, and vsprintf</a> </td><td class="col1">escreve saída formatada com lista de argumentos variável</td>
+	</tr>
+	<tr class="row145">
+		<td class="col0"><a href="../../c/io/vscanf_vfscanf_vsscanf" class="wikilink1" title="c:io:vscanf_vfscanf_vsscanf">vscanf, vfscanf, vsscanf</a> </td><td class="col1">retorna entrada formatada de stdin com lista de argumentos variável</td>
+	</tr>
+</table>
+
+</div>
+</div>
+</body>
+</html>

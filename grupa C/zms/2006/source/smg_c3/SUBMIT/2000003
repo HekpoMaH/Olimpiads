@@ -1,0 +1,82 @@
+/*
+TASK: MORSE
+LANG: C
+*/
+
+#include <stdio.h>
+#include <string.h>
+
+char to_lower(char ch) {
+	if (ch >= 'A' && ch <= 'Z') {
+		ch -= 'A'-'a';
+	}
+	return ch;
+}
+
+int code_char(char ch) {
+	if ((to_lower(ch) >= 'a' && to_lower(ch) <= 'z') || (ch >= '0' && ch <= '9') || ch == '.' || ch == ',' || ch == '-' || ch == '?' || ch == ' ') {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+		
+int main() {
+	char morse[256][8];
+	strcpy(morse['a'], ".-");
+	strcpy(morse['b'], "-...");
+	strcpy(morse['c'], "-.-.");
+	strcpy(morse['d'], "-..");
+	strcpy(morse['e'], ".");
+	strcpy(morse['f'], "..-.");
+	strcpy(morse['g'], "-..");
+	strcpy(morse['h'], "....");
+	strcpy(morse['i'], "..");
+	strcpy(morse['j'], ".---");
+	strcpy(morse['k'], "-.-");
+	strcpy(morse['l'], ".-..");
+	strcpy(morse['m'], "--");
+	strcpy(morse['n'], "-.");
+	strcpy(morse['o'], "---");
+	strcpy(morse['p'], ".--.");
+	strcpy(morse['q'], "--.-");
+	strcpy(morse['r'], ".-.");
+	strcpy(morse['s'], "...");
+	strcpy(morse['t'], "-");
+	strcpy(morse['u'], "..-");
+	strcpy(morse['v'], "...-");
+	strcpy(morse['w'], ".--");
+	strcpy(morse['x'], "-..-");
+	strcpy(morse['y'], "-.--");
+	strcpy(morse['z'], "--..");
+	strcpy(morse['0'], "-----");
+	strcpy(morse['1'], ".----");
+	strcpy(morse['2'], "..---");
+	strcpy(morse['3'], "...--");
+	strcpy(morse['4'], "....-");
+	strcpy(morse['5'], ".....");
+	strcpy(morse['6'], "-....");
+	strcpy(morse['7'], "--...");
+	strcpy(morse['8'], "---..");
+	strcpy(morse['9'], "----.");
+	strcpy(morse['.'], ".-.-.-");
+	strcpy(morse[','], "--..--");
+	strcpy(morse['-'], "-..-.");
+	strcpy(morse['?'], "..--..");
+	strcpy(morse[' '], ".-.-.");
+	strcpy(morse[0], "...-.-");
+	char temp = '\0',prev;
+	while (1) {
+		prev = temp;
+		scanf("%c", &temp);
+		if ((temp == ' ' && prev != ' ') || temp != ' ') {
+			if (code_char(temp)) {
+				printf("%s ", morse[to_lower(temp)]);
+			} else {
+				break;
+			}
+		}
+	}
+	printf("%s\n", morse[0]);
+	return 0;
+}

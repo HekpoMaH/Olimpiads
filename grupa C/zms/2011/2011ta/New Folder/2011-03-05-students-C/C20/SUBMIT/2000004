@@ -1,0 +1,25 @@
+#include<cstdio>
+#include<list>
+using namespace std;
+int main() {
+	int n;
+	int a[50000];
+	list<int> b;
+	scanf ( "%d" , &n );
+	for ( int i = 0;i < n;++i ) scanf ( "%d" , &a[i] );
+	for ( int i = 0;i < n;++i ) {
+		int c;
+		scanf ( "%d" , &c );
+		b.push_back ( c );
+	}
+	int res = 0;
+	for ( int i = 0;i < n;++i ) {
+		int x = 0;
+		list<int>::iterator j = b.begin();
+		for ( ;*j != a[i];j++ , ++x );
+		b.erase(j);
+		res += x;
+	}
+	printf ( "%d\n" , res );
+	return 0;
+}

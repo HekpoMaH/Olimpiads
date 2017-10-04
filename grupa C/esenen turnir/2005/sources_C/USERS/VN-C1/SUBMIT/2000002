@@ -1,0 +1,39 @@
+/*
+TASK:SCHOOL
+LANG:C
+*/
+#include <stdio.h>
+int n,a[502][502]={0,0},used[502]={0};
+void rec (int);
+int main ()
+{
+int i,j,m,p,k,br=0;
+scanf ("%d %d",&n,&m);
+for (i=0;i<m;i++)
+    {
+    scanf ("%d %d",&p,&k);
+    a[p][++a[p][0]]=k;
+    }
+for (i=1;i<=n;i++)
+    if (used[i]==0)
+       {
+       rec (i);
+       br++;
+       }
+printf ("%d\n",br);
+return 0;
+}
+
+
+void rec (int i)
+{
+int j;
+if (used[i]==1) return;
+used[i]=1;
+for (j=1;j<=a[i][0];j++)
+    {
+    rec (a[i][j]);
+    }
+return;
+}
+

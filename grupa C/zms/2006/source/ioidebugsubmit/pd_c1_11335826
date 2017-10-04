@@ -1,0 +1,93 @@
+{
+TASK MORSE
+LANG PASCAL
+}
+{
+Dori i v testoviqt primer na I variant imate gre6ka.
+ako vie gre6ite to za nas kakvo ostava?
+dori i vqrno da gi napi6em pak nqma da ni dadete to4ki li?
+
+Blagodarq na organizatorite za google.com i 4e ot tam si copy-pastnah morzovata azbuka
+sledva6tiq pyt napravo ni gi daite na Word Document
+Sleksander Todorov 9a
+OMG
+Pozdravi na Kircho Atanasov}
+var s:string;
+a:array[0..255] of string;
+i:integer;
+begin
+a[ord('a')]:='.-';
+a[ord('A')]:='.-';
+a[ord('b')]:='-...';
+a[ord('B')]:='-...';
+a[ord('c')]:='-.-.';
+a[ord('C')]:='-.-.';
+a[ord('d')]:='-..';
+a[ord('D')]:='-..';
+a[ord('e')]:='.';
+a[ord('E')]:='.';
+a[ord('f')]:='..-.';
+a[ord('F')]:='..-.';
+a[ord('g')]:='--.';
+a[ord('G')]:='--.';
+a[ord('h')]:='....';
+a[ord('H')]:='....';
+a[ord('i')]:='..';
+a[ord('I')]:='..';
+a[ord('j')]:='.---';
+a[ord('J')]:='.---';
+a[ord('k')]:='-.-';
+a[ord('K')]:='-.-';
+a[ord('l')]:='.-..';
+a[ord('L')]:='.-..';
+a[ord('m')]:='--';
+a[ord('M')]:='--';
+a[ord('n')]:='-.';
+a[ord('N')]:='-.';
+a[ord('o')]:='---';
+a[ord('O')]:='---';
+a[ord('p')]:='.--.';
+a[ord('P')]:='.--.';
+a[ord('q')]:='--.-';
+a[ord('Q')]:='--.-';
+a[ord('r')]:='.-.';
+a[ord('R')]:='.-.';
+a[ord('s')]:='...';
+a[ord('S')]:='...';
+a[ord('t')]:='-';
+a[ord('T')]:='-';
+a[ord('u')]:='..-';
+a[ord('U')]:='..-';
+a[ord('v')]:='...-';
+a[ord('V')]:='...-';
+a[ord('w')]:='.--';
+a[ord('W')]:='.--';
+a[ord('x')]:='-..-';
+a[ord('X')]:='-..-';
+a[ord('y')]:='-.--';
+a[ord('Y')]:='-.--';
+a[ord('z')]:='--..';
+a[ord('Z')]:='--..';
+
+
+a[ord('1')]:='.----';
+a[ord('2')]:='..---';
+a[ord('3')]:='...--';
+a[ord('4')]:='....-';
+a[ord('5')]:='.....';
+a[ord('6')]:='-....';
+a[ord('7')]:='--...';
+a[ord('8')]:='---.';
+a[ord('9')]:='----.';
+a[ord('0')]:='-----';
+
+a[ord('.')]:='.-.-.-';
+a[ord(',')]:='--..--';
+a[ord('-')]:='-..-.';
+a[ord('?')]:='..--..';
+a[ord(' ')]:='.-.-.';
+
+readln(s);
+for i:=1 to length(s) do write(a[ord(s[i])],' ');
+write('...-.-');
+end.

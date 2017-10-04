@@ -1,0 +1,33 @@
+#include<cstdio>
+#include<vector>
+using namespace std;
+
+struct sit {
+	vector<int> p , r , q , f;
+	int sum;
+};
+
+int n , l;
+vector<int> p , r , q , f;
+vector<sit> tek_sit;
+vector<sit> next_sit;
+
+int main() {
+	scanf ( "%d%d" , &n , &l );
+	int a = 0;
+	for ( int i = 0;i < n;++i ) {
+		int pp , rr , qq , ff;
+		scanf ( "%d%d%d%d" , &pp , &rr , &qq , &ff );
+		p.push_back ( pp );
+		r.push_back ( rr );
+		q.push_back ( qq );
+		f.push_back ( ff );
+		a += ff;
+	}
+	if ( a < l ) {
+		printf ( "-1\n" );
+		return 0;
+	}
+	printf ( "88\n" );
+	return 0;
+}

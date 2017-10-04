@@ -1,0 +1,61 @@
+/*
+TASK: cars
+LANG: C
+*/
+
+#include <stdio.h>
+#include <string.h>
+
+long N, crin[500000], crout[500000], rc, roads[5500000], queue[500000], qf=0, ql=0, res[500000], last;
+
+void add(long i)
+{
+  queue[ql++]=i;
+}
+
+long get(void)
+{
+  if(qf==ql)
+    return -1;
+  return queue[qf++];
+}
+
+void input(void)
+{
+  long i, j;
+  scanf("%ld", &N);
+  memset(crin, 0, sizeof(long)*N);
+  for(i=rc=0; i<N; ++i)
+  {
+    crout[i]=rc;
+    scanf("%ld", &j);
+    if(!j)
+      last=i;
+    for(; j; --j)
+    {
+      scanf("%ld", &roads[rc]);
+      ++crin[--roads[rc++]];
+    }
+    roads[rc++]=-1;
+  }
+}
+
+int main(void)
+{
+  long t, i;
+  input();
+  memset(res, 0, N*sizeof(long));
+  for(i=0; crin[i]; ++i);
+  add(i);
+  res[i]=1;
+  while((t=get())>=0)
+    for(i=crout[t]; roads[i]>=0; ++i)
+    {
+      res[roads[i]]=(res[roads[i]]+res[t])%987654321;
+      if((--crin[roads[i]])==0)
+        add(roads[i]);
+    }
+  printf("%ld\n", res[last]);
+  return 0;
+}
+

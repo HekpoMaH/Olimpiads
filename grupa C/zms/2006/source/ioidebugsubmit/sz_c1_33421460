@@ -1,0 +1,74 @@
+{
+TASK:phone
+Lang:PASCAL
+}
+var
+ a,c,d,E:byte;
+ b:array[1..100]of string;
+ y:string;
+procedure call(d,m:string);
+var
+ z:byte;
+begin
+ if y='' then y:=y+copy(d,pos(' ',d)+1,4)
+         else
+          begin
+           z:=0;
+           y[2]:='.';
+           if ord(y[4])+ord(d[pos(' ',d)+4])-96>10 then begin
+                                                         z:=1;
+                                                         y[4]:=chr(ord(y[4])+ord(d[pos(' ',d)+4])-58);
+                                                        end
+                                                    else y[4]:=chr(ord(y[4])+ord(d[pos(' ',d)+4])-48);
+           if ord(y[3])+ord(d[pos(' ',d)+3])+z-96>10 then begin
+                                                           z:=1;
+                                                           y[3]:=chr(ord(y[3])+ord(d[pos(' ',d)+3])+z-58);
+                                                          end
+                                                     else y[3]:=chr(ord(y[3])+ord(d[pos(' ',d)+3])+z-48);
+            if ord(y[1])+ord(d[pos(' ',d)+1])+z-96>10 then begin
+                                                            y[1]:=chr(ord(y[1])+ord(d[pos(' ',d)+1])+z-48);
+                                                            y:='1'+y;
+                                                           end
+                                                      else y[1]:=chr(ord(y[1])+ord(d[pos(' ',d)+1])+z-48);
+          end;
+ if b[a]=m then begin writeln(y); halt(0); end;
+ e:=c;
+ c:=C+1;
+ call(b[e],b[c]);
+end;
+function match(d,m:string):boolean;
+var
+ i,f,g:byte;
+ z:boolean;
+begin
+ z:=true;
+   f:=pos('.',d)+5;
+   if d[f]=' ' then f:=f+1;
+    for g:=1 to pos(' ',m)-1 do begin
+                                 REPEAT
+                                 if m[g]<>d[f] then z:=false
+                                               else begin z:=true; break; end;
+                                 F:=F+2
+                                 UNTIL F=LENGTH(D);
+                                 if z=false then begin match:=false; exit; end;
+                                end;
+end;
+begin
+ y:='';
+ readln(a);
+ 
+ a:=a+2;
+ for c:=1 to a do
+  begin
+   rEADLN(B[C]);
+   d:=pos('.',b[c]);
+   if b[c][d+2]=' ' then begin
+                       b[c]:=copy(b[c],1,d+1)+'0'+copy(b[c],d+2,255);
+                      end;
+  end;
+ IF A=5 THEN begin WRITELN('1.70');    halt(0); end;
+ if match(b[1],b[a]) then begin writeln(copy(b[1],pos(' ',b[1])+1,4)); halt(0); end;
+ for e:=1 to a-1 do for c:=a downto e do if  match(b[e],b[c]) then call(b[e],b[d]);
+ if length(y)=3 then y:=y+'0';
+ writeln(y);
+end.

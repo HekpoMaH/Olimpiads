@@ -1,0 +1,34 @@
+<hashtable>
+  <entry>
+    <string>puzzles_submit_time</string>
+    <string>2012.03.03 17:27:57</string>
+  </entry>
+  <entry>
+    <string>puzzles_filename</string>
+    <string>puzzles.cpp</string>
+  </entry>
+  <entry>
+    <string>puzzles</string>
+    <string>2000008</string>
+  </entry>
+  <entry>
+    <string>nozero_submit_time</string>
+    <string>2012.03.03 17:19:38</string>
+  </entry>
+  <entry>
+    <string>nozero</string>
+    <string>2000006</string>
+  </entry>
+  <entry>
+    <string>nozero_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>puzzles_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>nozero_filename</string>
+    <string>nozero.cpp</string>
+  </entry>
+</hashtable>

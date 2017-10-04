@@ -1,0 +1,50 @@
+<hashtable>
+  <entry>
+    <string>alldig_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>partition_submit_time</string>
+    <string>2010.04.22 12:06:16</string>
+  </entry>
+  <entry>
+    <string>segments_submit_time</string>
+    <string>2010.04.22 12:06:42</string>
+  </entry>
+  <entry>
+    <string>partition_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>segments_filename</string>
+    <string>segments_author.cpp</string>
+  </entry>
+  <entry>
+    <string>segments</string>
+    <string>2000008</string>
+  </entry>
+  <entry>
+    <string>alldig_submit_time</string>
+    <string>2010.04.22 12:06:52</string>
+  </entry>
+  <entry>
+    <string>segments_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>partition</string>
+    <string>2000007</string>
+  </entry>
+  <entry>
+    <string>alldig_filename</string>
+    <string>alldig.cpp</string>
+  </entry>
+  <entry>
+    <string>alldig</string>
+    <string>2000009</string>
+  </entry>
+  <entry>
+    <string>partition_filename</string>
+    <string>partition.cpp</string>
+  </entry>
+</hashtable>

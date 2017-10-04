@@ -1,0 +1,105 @@
+/*
+TASK: REBUS
+LANG: C
+*/
+
+typedef long long type;
+
+int is_letter(char c) {
+	if (c >= 'A' && c <= 'Z') {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+type eval(char side[], int replacements[]) {
+	type final = 0,temp = 0;
+	int sign = 1;
+	int i = 0;
+	while (1) {
+		if (is_letter(side[i])) {
+			temp *= 10;
+			temp += replacements[side[i]];
+		} else {
+			if (sign == 1) {
+				final += temp;
+			} else {
+				final -= temp;
+			}
+			temp = 0;
+			if (side[i] != '\0') {
+				if (side[i] == '+') {
+					sign = 1;
+				} else {
+					sign = -1;
+				}
+			} else {
+				break;
+			}
+		}
+		i++;
+	}
+	return final;
+}
+
+char left_side[2002],right_side[2002];
+char nums[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int nums_i = 0;
+
+int main() {
+	char temp;
+	int i = 0,k = 0,j;
+	while (1) {
+		scanf("%c", &temp);
+		if (temp != '\n' && temp != '\0') {
+			if (is_letter(temp)) {
+				j = 0;
+				while (j < nums_i) {
+					if (nums[j] == temp) {
+						j = -1;
+						break;
+					}
+					j++;
+				}
+				if (j != -1) {
+					nums[nums_i++] = temp;
+				}
+			}
+			if (temp != '=') {
+				if (!k) {
+					left_side[i++] = temp;
+				} else {
+					right_side[i++] = temp;
+				}
+			} else {
+				if (k == 0) {
+					k = 1;
+					left_side[i] = '\0';
+					i = 0;
+				}
+			}
+		} else {
+			right_side[i] = '\0';
+			break;
+		}
+	}
+	int min;
+	i = 0;
+	while (i < nums_i) {
+		min = i;
+		j = i;
+		while (j < nums_i) {
+			if (nums[j] < nums[min]) {
+				min = j;
+			}
+			j++;
+		}
+		k = nums[0];
+		nums[0] = nums[min];
+		nums[min] = k;
+		i++;
+	}
+	printf("%c %c %c %c %c %c %c %c", nums[0], nums[1], nums[2], nums[3], nums[4], nums[5], nums[6], nums[7]);
+	return 0;
+}

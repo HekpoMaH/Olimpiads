@@ -1,0 +1,79 @@
+/*
+TASK:school
+LANG:C++
+*/
+
+
+# include <stdio.h>
+# define MAXSCHOOL (512)
+# define MAXMAX (1<<14)
+struct graf {
+
+   int y,next;
+
+} data[MAXMAX];
+
+int n,m,fp,pr[MAXSCHOOL];
+int used[MAXSCHOOL];
+
+void add(int a,int b) {
+    data[fp].y = b;
+    data[fp].next = pr[a];
+    pr[a] = fp++;
+}
+
+void read() {
+    scanf("%d %d", &n, &m);
+    int a,b;
+    fp = 1;
+    for(int i = 1; i <= m; i++) {
+        scanf("%d %d", &a,&b);
+        add(a,b);
+        add(b,a);
+    }
+}
+
+void bfs(int v) {
+    int queue[MAXSCHOOL],start=0,end=0,level=0;
+    queue[0] = v;
+    end = 1;
+    level = 1;
+    used[v] = 1;
+    while(end>start) {
+
+         for(int i = start; i < level; i++) {
+              int p = pr[queue[i]];
+              while(p > 0) {
+                   if(used[data[p].y] == 0) {
+                        used[data[p].y] = 1;
+                        queue[end++] = data[p].y;
+                   }
+                 p = data[p].next;
+              }
+
+         }
+         start = level;
+         level = end;
+
+
+    }
+
+}
+
+int main() {
+
+    read();
+    for(int i = 0; i <= n; i++) {
+         used[i] = 0;
+    }
+    int count = 0;
+    for(int i = 1; i <= n; i++) {
+        if(used[i] == 0) {
+             bfs(i);
+             //printf("i=%d\n", i);
+             count++;
+         }
+    }
+    printf("%d\n", count);
+return 0;
+}

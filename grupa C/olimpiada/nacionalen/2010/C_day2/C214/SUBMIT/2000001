@@ -1,0 +1,30 @@
+#include<cstdio>
+#include<cmath>
+#define POINT code[n*x+y]
+char code[1<<20];
+int n,k,point,x,y;
+int main()
+{
+    while(1)
+    {
+        char inchar;
+        inchar=getchar();
+        if(inchar=='\n')break;
+        if((inchar>='0')&&(inchar<='9'))
+            k+=inchar-'0';
+        code[point++]=inchar;
+    }n=sqrt(point);k%=n;
+    x=k;y=0;
+    while((POINT>='A')&&(POINT<='Z'))
+    {
+        putchar(POINT);
+        bool X=(x<(n-1));
+        bool Y=(y<(n-1));
+        if(X&&Y){++x;++y;}
+        else if((!X)&&Y){x=0;}
+        else if(X&&(!Y)){++x;y=0;}
+        else if((!X)&&(!Y)){x=1;y=0;}
+    }
+    puts("");
+    return 0;
+}

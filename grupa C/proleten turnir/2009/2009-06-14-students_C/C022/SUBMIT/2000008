@@ -1,0 +1,52 @@
+#include<iostream>
+#include<vector>
+
+using namespace std;
+
+unsigned long long int k,f[20];
+
+int t,n;
+     
+string a,ans;
+
+void zap(){
+     
+     f[1]=f[0]=1;
+     
+     a="ab";
+     
+     for(int i=2;i<n;i++){a=a+(char)(i+'a');f[i]=f[i-1]*i;}
+     
+     }
+
+int main(){
+    
+    cin>>n>>k;
+    
+    zap();
+    
+    k--;
+    
+    while(n>1){
+               
+             int o=k/f[n-1];
+             
+             ans=ans+a[o];
+             
+             a.erase(o,1);
+             
+             t++;
+             
+             k-=f[n-1]*o;
+             
+             n--;
+             
+             }
+             
+    ans=ans+a[0];
+    
+    cout<<ans<<endl;
+    
+    return 0;
+    
+    }

@@ -1,0 +1,118 @@
+{
+TASK:hlinks
+LANG:PASCAL
+}
+program hlinks;
+var
+  s:string;
+  abc:boolean;
+  i,j,k,l,num,dot,en,st,max:integer;
+  mas:array[1..10000] of char;
+function is_ok(i:integer):boolean;
+begin
+ is_ok:=true;
+ if (mas[i]='.') or (mas[i]='/') or (mas[i+1]='.') or (mas[i+1]='/') then
+ begin
+  is_ok:=false;
+  exit;
+ end;
+ if (mas[i]>='a') and (mas[i]<='z') then
+ begin
+  is_ok:=false;
+  exit;
+ end;
+ if (mas[i]>='A') and (mas[i]<='Z') then
+ begin
+  is_ok:=false;
+  exit;
+ end;
+ if (mas[i]>='1') and (mas[i]<='9') then
+ begin
+  is_ok:=false;
+  exit;
+ end;
+end;
+function is_part(i:integer):boolean;
+begin
+ is_part:=false;
+ if (mas[i]>='a') and (mas[i]<='z') then
+ begin
+  is_part:=true;
+  exit;
+ end;
+ if (mas[i]>='1') and (mas[i]<='9') then
+ begin
+  is_part:=true;
+  exit;
+ end;
+ if (mas[i]='.') or (mas[i]='/') then
+ begin
+  if mas[i]='.' then
+   inc(dot);
+  is_part:=true;
+  exit;
+ end;
+end;
+begin
+   num:=0;
+   while not eof do
+   begin
+    inc(num);
+    read(mas[num]);
+   end;
+   i:=0;
+   abc:=false;
+   if not is_part(1) then
+   begin
+    inc(i);
+    abc:=true;
+    write(mas[i]);
+   end;
+   repeat
+    inc(i);
+    if i<>1 then
+     write(mas[i]);
+    if (not is_ok(i)) and (i<>1) then
+     continue;
+    en:=0;
+    if i=1 then
+     j:=i
+      else
+     j:=i+1;
+    st:=j;
+    dot:=0;
+    max:=0;
+    if not is_part(j) then
+     continue;
+    s:='';
+    repeat
+     if is_ok(j) then
+     begin
+      en:=j-1;
+      break;
+     end;
+     if (not is_part(j)) and (s<>'http') then
+      break;
+     if length(s)<255 then
+      s:=s+mas[j];
+     if (mas[j]='.') and (j>max) then
+      max:=j;
+     inc(j);
+    until 1=2;
+    if (dot>0) and (en-max<5) and (en-max>1) and (s[1]<>'.') and (s[1]<>'/') then
+    begin
+     write('<a href="');
+     for l:=st to en do
+      write(mas[l]);
+     write('">');
+     for l:=st to en do
+      write(mas[l]);
+     write('</a>');
+     i:=en;
+    end
+     else
+    if abc=false then
+     write(mas[i]);
+   until i=num;
+   readln
+end.

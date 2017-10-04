@@ -1,0 +1,81 @@
+/*
+TASK:cars
+LANG:C++
+*/
+
+#include <list>
+#include <queue>
+#include <cstdio>
+#include <vector>
+
+typedef unsigned int ind;
+typedef unsigned int grval;
+typedef std::vector<ind> nodecont;
+
+const grval mod = 987654321;
+
+class node
+{
+public:
+	nodecont pred;
+	nodecont succ;
+};
+
+int main()
+{
+	ind n;
+	std::scanf("%u", &n);
+	std::vector<ind> preds(n, 0);
+	std::vector<node> graph(n);
+	std::vector<grval> ans(n, 0);
+	std::queue<ind> q;
+
+	ind k, x;
+	for (ind i = 0; i < n; i++)
+	{
+		std::scanf("%u", &k);
+
+		for (ind j = 0; j < k; j++)
+		{
+			std::scanf("%u", &x); x--;
+			graph[i].succ.push_back(x);
+			graph[x].pred.push_back(i);
+			preds[x]++;
+		}
+	}
+
+	for (ind i = 0; i < n; i++)
+		if (!preds[i])
+			q.push(i);
+
+	ind finish = 0;	/* Initialization just to shut up the warning. */
+	for (ind i = 0; i < n; i++)
+		if (!graph[i].succ.size())
+		{finish = i; i = n;}
+
+	ans[q.front()] = 1;
+
+	//std::printf("Checkpoint.\n");
+
+	while (!ans[finish])
+	{
+		ind c = q.front(); q.pop();
+		
+		for (nodecont::iterator it = graph[c].pred.begin(); it != graph[c].pred.end(); it++)
+			ans[c] += ans[*it];
+
+		//std::printf("%u - %u\n", c+1, ans[c]);
+
+		for (nodecont::iterator it = graph[c].succ.begin(); it != graph[c].succ.end(); it++)
+		{
+			preds[*it]--;
+			if (!preds[*it]) q.push(*it);
+		}
+	}
+
+	//std::printf("Checkpoint.\n");
+
+	std::printf("%u\n", ans[finish]%mod);
+
+	return 0;
+}

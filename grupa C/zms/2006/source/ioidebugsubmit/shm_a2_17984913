@@ -1,0 +1,50 @@
+/*
+TASK: cars
+LANG: C++
+*/
+#include <stdio.h>
+#include <vector>
+#define MAXN 500002
+#define MOD 987654321
+using namespace std;
+
+ int marked[MAXN];
+ int n,z;
+ int list[MAXN];
+ int pos[MAXN];
+ vector<int> a[MAXN];
+ int d[MAXN];
+ int c[MAXN];
+
+ void dfs (int i)
+  {
+   int j;
+   marked[i]=1;
+   for (j=0;j<c[i];j++)
+    if (marked[a[i][j]]==0)
+     dfs(a[i][j]);
+   list[++z]=i;
+   pos[i]=z;
+  }
+
+ int main ()
+  {
+   int i,j;
+   scanf("%d",&n);
+   for (i=1;i<=n;i++)
+    {
+     scanf("%d",&c[i]);
+     a[i].reserve(c[i]);
+     for (j=0;j<c[i];j++)
+      scanf("%d",&a[i][j]);
+    }
+   for (i=1;i<=n;i++)
+    if (marked[i]==0)
+     dfs(i);
+   d[1]=1;
+   for (i=2;i<=n;i++)
+    for (j=0;j<c[list[i]];j++)
+     d[i]=(d[i]+d[pos[a[list[i]][j]]])%MOD;
+   printf("%d\n",d[n]);
+   return 0;
+  }

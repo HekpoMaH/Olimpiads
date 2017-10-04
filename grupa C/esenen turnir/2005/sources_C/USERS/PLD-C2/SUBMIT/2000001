@@ -1,0 +1,43 @@
+{
+TASK:school
+LANG:PASCAL
+}
+
+{$S-}
+var a:array[1..500,1..500]of integer;
+    n,m,i,x,y,br:integer;
+    inp:boolean;
+
+
+ procedure rec(ind:integer);
+  var c:integer;
+   begin
+    for c:=1 to n do
+     if a[ind,c]=1 then
+      begin
+       if not inp then inp:=true;
+       a[ind,c]:=0;
+       rec(c);
+      end;
+   end;
+
+
+begin
+ br:=0;
+ read(n,m);
+ for i:=1 to m do begin read(x,y);a[x,y]:=1;end;
+
+
+ for i:=1 to n do
+  begin
+   inp:=false;
+   rec(i);
+   if inp then inc(br);
+  end;
+
+
+ writeln(br);
+
+
+end.
+

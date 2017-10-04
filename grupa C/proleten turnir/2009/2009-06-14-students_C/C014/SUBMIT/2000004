@@ -1,0 +1,22 @@
+#include <iostream>
+using namespace std;
+int n,m,x[1024],y[1024],a1,a2,a3,a4;
+void read()
+{
+    int i;
+    cin>>n>>m;
+    for (i=1;i<=m;i++)
+    cin>>x[i]>>y[i];
+    cin>>a1>>a2>>a3>>a4;
+}
+int cross()
+{
+    int i;
+    cout<<"1"<<endl;
+}
+int main ()
+{
+    read();
+    cross();
+    return 0;
+}

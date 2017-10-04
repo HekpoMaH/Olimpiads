@@ -1,0 +1,48 @@
+#include<iostream>
+#include<string>
+#include<math.h>
+#include<cctype>
+using namespace std;
+string s;
+char a[101][51];
+long n,k,o,sum,d,x,y,o1,o2,b[101][101],ok,f;
+int main()
+{   cin>>s;
+    n=s.size();
+    k=sqrt(n);
+    for(int i=0;i<=k-1;i++)
+    {for(int j=0;j<=k-1;j++)
+     {a[i+1][j+1]=s[o];o++;}
+     sum+=i+1;}
+    d=sum%k;
+    x=d+1;y=1;
+    b[x][y]=1;cout<<a[x][y];
+  while(0==0)
+    {
+    
+     x++;y++;b[x][y]=1;
+         if(!isalpha(a[x][y])) {break;}
+     cout<<a[x][y];
+ 
+    if(y==k) {
+              for(int i=x;i<=k;i++)
+              {if(b[i][1]==0) {ok++;f=i;break;}}
+              if(ok==0) {o1=x;o2=y;break;}
+              else {b[f][1]=1;cout<<a[f][1];x=f;y=1;ok=0;}
+              }
+    if(x==k) { for(int i=y;i<=k;i++)
+              {if(b[1][i]==0) {ok++;f=i;break;}}
+              if(ok==0) {o1=x;o2=y;break;}
+              else {b[1][f]=1;cout<<a[1][f];x=1;y=f;ok=0;}
+              }          
+}cout<<endl;
+  /*    for(int i=0;i<=k-1;i++)
+    {for(int j=0;j<=k-1;j++)
+     {cout<<b[i+1][j+1]<<" ";}
+     cout<<endl;}
+     */
+ 
+  // system("pause");
+    return 0;
+}
+//RNLAJDSRGT5EO8OTHIKOLWOEKIMF!MOIL2A!

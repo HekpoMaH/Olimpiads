@@ -1,0 +1,59 @@
+/*
+TASK:number
+LANG:C++
+*/
+
+#include <iostream>
+#include <stdlib.h>
+#include <math.h>
+
+using namespace std;
+
+int M=0;
+int N;
+int d1,d2,d3;
+char CNum[20];
+
+void Read();
+void Solve();
+
+int main()
+{
+	Read();
+	Solve();
+
+	cout<<M<<endl;
+
+	return 0;
+}
+
+void Read()
+{
+	cin>>N>>d1>>d2>>d3;
+}
+
+void Solve()
+{
+	int x1=pow(10,(N-1)),x2=pow(10,(N));
+	char cdc[3];
+	cdc[2]=0;
+	int idc;
+	int flag=0;
+
+	for(int i=x1;i<x2;i++)
+	{
+		flag=1;
+		sprintf(CNum, "%d", i);
+		//itoa(i,CNum,10);
+		for(int j=0;j<N-1;j++)
+		{
+			cdc[0]=CNum[j];
+			cdc[1]=CNum[j+1];
+			if(cdc[0]=='0') continue;
+			idc=atoi(cdc);
+			if(! ((idc%d1 == 0)||(idc%d2 == 0)||(idc%d3 == 0)) ) flag=0;
+		}
+		if(flag)
+			M++;
+	}
+}

@@ -1,0 +1,56 @@
+/*
+TASK:HLINKS
+LANG:C
+*/
+
+#include<stdio.h>
+#include<ctype.h>
+#include<string.h>
+#define MAX 1000
+int main()
+{
+  int i=0,len,to4ka=0,fl=0,ind=0,j,brt;
+  char a[MAX+1],tmp[MAX],c;
+
+
+ while(!feof(stdin))
+  {
+   scanf("%c",&a[i]); i++;
+  }
+
+ len=155;
+      i=0;
+ while(i<len)
+  {      ind=to4ka=brt=fl=0; j=i; strcpy(tmp,"");
+   while(isalpha(a[i]) || isdigit(a[i]) || a[i]=='/' || a[i]=='.' || a[i]==':' && i<len)
+    {
+    
+     if(isalpha(a[i]) || isdigit(a[i])) { tmp[ind]=a[i]; ind++; i++; brt++; continue; }
+
+     
+     if(a[i]==':') { if(a[i-1]!='p' || a[i-2]!='t' || a[i-3]!='t' || a[i-4]!='h' || a[i+1]!='/' || a[i+2]!='/') { brt++; fl=1; break; }
+     else { tmp[ind]=':'; tmp[ind+1]='/'; tmp[ind+2]='/'; i+=3; ind+=3; brt++; continue; }
+     }
+     
+     else if(a[i]=='.') { tmp[ind]='.'; ind++; i++; to4ka=1; brt=0;
+        if(tmp[ind-2]=='.') { fl=1; break; } }
+
+     else if(a[i]=='/') { tmp[ind]='/'; ind++; i++; }
+
+
+
+    }
+   tmp[ind]='\0';
+   if(j==i) { printf("%c",a[i]); i++; }
+   else {
+   if(tmp[0]=='.' || tmp[0]=='/' || (to4ka && (brt<=1 || brt>=5)) || !to4ka || fl) printf("%s",tmp);
+   else { /*printf("<a href=''"%s"",tmp);*/
+    printf("<a href=%c",34); printf("%s",tmp); printf("%c>",34); printf("%s</a>",tmp);
+   }
+       }
+  }
+
+ // printf("\n");
+return 0;
+}
+

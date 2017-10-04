@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="es"
+ lang="es" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>es:complexity</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2010-01-17T20:33:44-0800" />
+<meta name="keywords" content="es,complexity" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/es/complexity?do=index" title="Índice" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=es" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/es/complexity" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/es/complexity" />
+<link rel="canonical" href="complexity" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='es';var JSINFO = {"id":"es:complexity","namespace":"es"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="tiempo_de_ejecucion" id="tiempo_de_ejecucion">Tiempo de ejecución</a></h2>
+<div class="level2">
+
+<p>
+
+Existen distintos modos de medir el tiempo de ejecución de un algoritmo. Dada una entrada de tamaño N, se les puede describir del siguiente modo.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Nombre</th><th class="col1">Tiempo</th><th class="col2">Descripción</th><th class="col3">Formula</th><th class="col4">Ejemplo</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">factorial</td><td class="col1">lentisimo</td><td class="col2">su tiempo de ejecución es proporcional a N elevado a la N-ésima potencia</td><td class="col3 centeralign">  N!  </td><td class="col4">Solución de fuerza bruta al problema del vendedor viajero</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">exponencial</td><td class="col1">lento</td><td class="col2">su tiempo de ejecución es proporcional a una constante elevada a la N-ésima potencia</td><td class="col3 centeralign">  K<sup>N</sup>  </td><td class="col4">Solución de fuerza bruta al cubo mágico (Rubik&#039;s Cube)</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">polinomial</td><td class="col1">rápido</td><td class="col2">su tiempo de ejecución es proporcional a N elevado a una constante</td><td class="col3 centeralign">  N<sup>K</sup>  </td><td class="col4">Ordenación por comparación (algoritmos de burbuja, inserción y selección)</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">logarítmico lineal</td><td class="col1">más rápido</td><td class="col2">su tiempo de ejecución esta entre el lineal y el polinomial</td><td class="col3 centeralign">  N * log(N)  </td><td class="col4">Ordenación logaritmica lineal (quicksort, heapsort, mergesort)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">lineal</td><td class="col1">aún más rápido</td><td class="col2">su tiempo de ejecución es proporcional a N</td><td class="col3 centeralign">  K * N  </td><td class="col4">El recorrido de un arreglo</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">logarítmico</td><td class="col1">mucho más rápido</td><td class="col2">su tiempo de ejecución es proporcional al logaritmo de N</td><td class="col3 centeralign">  K * log(N)  </td><td class="col4">Búsqueda binaria</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">constante</td><td class="col1">rapidisimo</td><td class="col2">siempre toma el mismo tiempo sin importar cuán grande sea N</td><td class="col3 centeralign">  K  </td><td class="col4">Visualización de el elemento i-ésimo en un arreglo</td>
+	</tr>
+</table>
+
+</div>
+<!-- SECTION "Tiempo de ejecución" [1-1309] -->
+<h3><a name="analisis_de_complejidad" id="analisis_de_complejidad">Analisis de Complejidad</a></h3>
+<div class="level3">
+
+<p>
+
+Una operación puede tener diversos tiempo de ejecución/complejidad para distintos órdenes o conjuntos de datos de entrada. Estos son los diferentes métodos para analisis de complejidad:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Nombre</th><th class="col1">Descripción</th><th class="col2">Ejemplo</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">mejor caso (best-case)</td><td class="col1">Es es el caso en el que la operación se ejecuta tan rapido como es posible</td><td class="col2"> La ordenación por burbuja tiene una complejidad de tiempo de mejor caso N</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">caso promedio (average-case)</td><td class="col1"> Es el caso donde la operación se ejecuta en un periodo de tiempo comparable a la mayoría de los casos posibles</td><td class="col2">El algoritmo quicksort tiene un tiempo de complejidad promedio de N * log(N)</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">peor caso (worst-case)</td><td class="col1">Es donde la operación se ejeucta lo mas lento posible</td><td class="col2"> El algoritmo quicksort tiene un tiempo de complejidad en el peor de los casos de N<sup>2</sup></td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">peor caso amortizado</td><td class="col1">Seria el promedio de el peor caso sobre un conjunto infinito de datos de entrada</td><td class="col2"> vector::push_back() tiene un tiempo de complejidad amortizado en el peor de sus casos de K (tiempo constante)</td>
+	</tr>
+</table>
+
+<p>
+
+La elección de el mejor algoritmo depende de que casos se espera que la aplicación encuentre. Por ejemplo, una aplicación que deba protegerse a si misma de entradas maliciosas siempre evitara malas implementaciones de quickort que tiene un peor caso de complejidad de N<sup>2</sup> aun cuando en su caso promedio mas rapido es mejor comparado con los otros algoritmos de ordenación.
+</p>
+
+</div>
+<!-- SECTION "Analisis de Complejidad" [1310-] --></div>
+</body>
+</html>

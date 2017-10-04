@@ -1,0 +1,40 @@
+{
+TASK:SCHOOL
+LANG:PASCAL
+}
+var
+a,c:array[0..1000] of integer;
+b:array[0..501,0..501] of byte;
+n,br,i,q,h,m:CARDINAL;
+nqma:boolean;
+begin
+readln(n,m);
+for i:=1 to m do begin
+                 readln(q,h);
+                 b[q,h]:=1;
+                 b[h,q]:=1;
+                 end;
+repeat
+nqma:=true;
+for i:=1 to n do
+ if c[i]=0 then begin
+                a[1]:=i;
+                c[i]:=1;
+                q:=0;
+                h:=1;
+                nqma:=false;
+                break;
+                end;
+if not nqma then repeat
+                 inc(q);
+                 for i:=1 to n do
+                   if (c[i]=0) and (b[a[q],i]=1) then begin
+                                                      c[i]:=1;
+                                                      inc(h);
+                                                      a[h]:=i;
+                                                      end;
+                 until q=h;
+br:=br+1;
+until nqma;
+writeln(br-1);
+end.

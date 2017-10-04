@@ -1,0 +1,40 @@
+#include<iostream>
+using namespace std;
+
+int n;
+unsigned long long int k;
+unsigned long long int f[21];
+int p[21];
+
+void compute_fact()
+{
+ for(int i=1;i<=20;i++) p[i]=i;
+ f[1]=1;
+ for(int i=2;i<=20;i++) f[i]=i*f[i-1];
+}
+
+void move(int i, int n)
+{ int w=p[i]; 
+  for(int j=i;j<n;j++) p[j]=p[j+1];
+  p[n]=w;
+}
+
+void find(int n, unsigned long long int k)
+{
+  if(n<2) return;
+  unsigned long long int pos=k/f[n-1]+1;
+  unsigned long long int r=k%f[n-1]; 
+  if(r==0){r=f[n-1];pos--;}
+  move(pos,n);
+  find(n-1,r);
+}
+
+int main()
+{
+  cin >> n >> k;
+  compute_fact();
+  find(n,k);
+  for(int i=n;i>=1;i--) cout << (char)(p[i]-1+(int)'a');
+  cout << endl;
+}
+

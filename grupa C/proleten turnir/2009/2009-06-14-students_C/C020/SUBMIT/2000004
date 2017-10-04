@@ -1,0 +1,36 @@
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+
+struct magazin{
+  int p,r,q,f,cena;
+};
+magazin mag[101];
+
+int n,l,tempcena,a[110];
+long long F;
+
+int main()
+{
+  scanf("%d %d", &n, &l);
+  for (int u=1;u<=l;u++) { a[u]=999999; }
+ for (int i=0;i<n;i++) {
+   scanf("%d%d%d%d", &mag[i].p, &mag[i].r, &mag[i].q, &mag[i].f);
+   F+=mag[i].f;
+ }
+ if (F<l) { printf("-1\n"); return 0; }
+ if (l==0) { printf("0\n"); return 0; }
+ for (int j=0;j<n;j++) {
+   for (int i=1;i<=l;i++) {
+     for (int h=1;h<=i;h++) {
+       if (h>mag[j].f) break;
+       if (h>=mag[j].r) {
+         if (a[i-h]+h*mag[j].q<a[i]) a[i]=a[i-h]+h*mag[j].q;
+       }
+       else if (a[i-h]+h*mag[j].p<a[i]) a[i]=a[i-h]+h*mag[j].p;
+     }
+   }
+ }
+  printf("%d\n", a[l]);
+ return 0;
+}

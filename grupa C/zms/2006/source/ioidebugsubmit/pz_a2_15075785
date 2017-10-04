@@ -1,0 +1,49 @@
+{
+TASK: festa
+LANG: PASCAL
+}
+Program Fest;
+type
+jiteli=-1000..1000;
+var
+a:array[1..1000000] of jiteli;
+p,r,q,m,max,s:longint;
+Procedure vupros(s:longint);
+  var
+  i,j : integer;
+  suma,maxs,smax,rezs,srez,mins: longint;
+  Begin
+  maxs:=0;
+  mins:=2000000;
+  for i:=-max to 4*max do BEGIN
+                          suma:=0;
+                          for j:=1 to max do suma:=suma+abs(i-j)*a[j];
+                          if (suma>maxs)and(suma<=s) then begin
+                                                          maxs:=suma;
+                                                          rezs:=i;
+                                                          end;
+                          if (suma<mins)and(suma>=s) then begin
+                                                          mins:=suma;
+                                                          srez:=i;
+                                                          end;
+                          END;
+  if abs(s-maxs)<abs(mins-s) then writeln(rezs,' ',abs(s-maxs))
+                              else writeln(srez,' ',abs(mins-s));
+  end;
+Begin
+for p:=1 to 30000 do a[p]:=0;
+for p:=1 to 200000 do
+                   begin
+                   read(r);
+                   if r=1 then begin
+                                read(q,m);
+                                a[q]:=a[q]+m;
+                                if q>max then max:=q;
+                               end;
+                   if r=2 then begin
+                               read(s);
+                               vupros(s);
+                               end;
+                   readln;
+                   end;
+end.

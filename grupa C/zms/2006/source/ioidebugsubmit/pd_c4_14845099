@@ -1,0 +1,38 @@
+#include <stdio.h>
+
+long long a[110];
+
+long long it1 (long long z,long long val)
+{ long long i=1; long long j=110;
+  long long r=0; long long m;
+
+  while (1)
+  { m=(i+j)/2;
+    if (m==z) break;
+    if (m<z) { r+=a[m];
+               i=m+1; }
+    if (m>z) { a[m]+=val;
+               j=m-1; }
+  }
+
+  a[m]+=val;
+  r+=val;
+  return r;
+}
+
+int main ()
+{int i,n,type;
+ long long x,y,p;
+ scanf("%d",&n);
+ for (i=1;i<=n;i++)
+   { scanf("%d",&type);
+     if (type==1) { scanf("%lld%lld",&x,&y);
+                 it1(x,y); }
+     else {  scanf("%lld",&x);
+             p=it1(x,0);
+             printf("%lld\n",p); }
+   }
+
+ return 0;
+}
+

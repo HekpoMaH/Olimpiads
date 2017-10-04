@@ -1,0 +1,43 @@
+#include<iostream>
+#include<deque>
+using namespace std;
+int main()
+{
+  deque<int>b;
+char a[1000000];
+int ch;
+char c;
+long n,i,j,k,m,r,s=0;
+cin>>a;
+m=strlen(a);
+for(i=2;i<m;i++)
+if(i*i==m){n=i;//cout<<"MAN"<<endl;
+          break;}
+
+for(i=0;i<m;i++)
+{
+  if(a[i]>='0' && a[i]<='9'){s=s+a[i]-48;//cout<<"MEAN"<<s<<endl;
+                                        }
+}
+k=s%n;
+i=n*k;
+while(1==1)
+{
+  if(a[i]>='A' && a[i]<='Z'){b.push_back(a[i]-48);}
+  else {break;}
+  if((i+1)%n==0){i++;}
+  else if(i+n+1>m){i=i-m+n;}
+  else{i+=n+1;}
+
+}
+while(!b.empty())
+{
+  ch=b.front();
+  c=ch+48;
+  cout<<c;
+  b.pop_front();
+}
+
+cout<<endl;
+return 0;
+}

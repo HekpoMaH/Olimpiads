@@ -1,0 +1,35 @@
+#include<iostream>
+using namespace std;
+long long n,k,s,x,t,ok,a[128][256],b[16],i,j;
+char c[128];
+int main()
+ {
+ scanf("%s",&c);
+ n=strlen(c);
+ for(i=0;i<n;i++)
+ {x=c[i]-'0';
+  b[x]++;
+  if(b[x]>1) k++;
+  if(x==0) {ok=1;t++;}
+ }
+ a[1][0]=1;
+ for(i=2;i<=n;i++)
+ a[i][0]=(i*(a[i-1][0]+1))%1800000007;
+ a[1][0]=1;a[1][1]=0;
+ x=1;
+ if(k!=0)
+ {for(i=1;i<n;i++)
+  {x=(x*i)%1800000007;
+   a[n][k]=(a[n][k]+x*(n-k))%1800000007;
+  }
+  x*=n;
+  j=k*n;
+  if(j==0) j++;
+  a[n][k]=(a[n][k]+x/j)%1800000007;
+ }
+ if(n-1==k) a[n][k]=n;
+ if(ok==1) a[n][k]=(a[n][k]+1)%1800000007;
+ cout<<a[n][k]<<endl;
+ //system("PAUSE");
+ return 0;
+ }

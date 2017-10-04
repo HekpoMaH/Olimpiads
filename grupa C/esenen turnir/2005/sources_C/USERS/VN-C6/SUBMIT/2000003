@@ -1,0 +1,30 @@
+/*
+TASK:school
+LANG:C
+*/
+#include<stdio.h>
+int G[600][600],used[600],N;
+void DFS(int a, int parent)
+{
+int i;
+used[a]=1;
+for(i=1;i<N;i++)
+                  if(G[a][i]&&i!=parent)DFS(i,a);
+}
+int main()
+{
+int M,i,a,b,br=0;
+scanf("%d%d",&N,&M);
+for(i=0;i<M;i++)
+ {
+ scanf("%d%d",&a,&b);
+ G[a][b]=1;
+ G[b][a]=1;
+ }
+if(M==N){printf("1\n");return 0;}
+for(i=1;i<N;i++)
+                if(!used[i]){br++;DFS(i,0);}
+printf("%d\n",br);
+return 0;
+}
+

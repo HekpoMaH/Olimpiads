@@ -1,0 +1,365 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 20: BINOMIAL HEAPS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap21.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap19.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0862_165c">CHAPTER 20: BINOMIAL HEAPS<a name="0862_165c"></h1><P>
+<a name="0862_164b"><a name="0862_164c"><a name="0862_164d"><a name="0862_164e"><a name="0862_164f">This chapter and Chapter 21 present data structures known as <I><B>mergeable heaps</I></B>, which support the following five operations.<P>
+<a name="0862_1650"><FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>() creates and returns a new heap containing no elements.<P>
+<a name="0862_1651"><FONT FACE="Courier New" SIZE=2>INSERT</FONT>(<I>H, x</I>) inserts node <I>x</I>, whose <I>key</I> field has already been filled in, into heap <I>H</I>.<P>
+<a name="0862_1652"><FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>(<I>H</I>) returns a pointer to the node in heap <I>H</I> whose key is minimum.<P>
+<a name="0862_1653"><FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>(<I>H</I>) deletes the node from heap<I> H</I> whose key is minimum, returning a pointer to the node.<P>
+<a name="0862_1654"><a name="0862_1655"><FONT FACE="Courier New" SIZE=2>UNION</FONT>(<I>H</I><SUB>l</SUB>,<I> H</I><SUB>2</SUB>) creates and returns a new heap that contains all the nodes of heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB>. Heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> are "destroyed" by this operation.<P>
+In addition, the data structures in these chapters also support the following two operations.<P>
+<a name="0862_1656"><FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>(<I>H, x, k</I>) assigns to node <I>x</I> within heap <I>H</I> the new key value <I>k</I>, which is assumed to be no greater than its current key value.<P>
+<a name="0862_1657"><FONT FACE="Courier New" SIZE=2>DELETE</FONT>(<I>H, x</I>) deletes node <I>x</I> from heap <I>H</I>.<P>
+As the table in Figure 20.1 shows, if we don't need the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation, ordinary binary heaps, as used in heapsort (Chapter 7), work well. Operations other than <FONT FACE="Courier New" SIZE=2>UNION</FONT> run in worst-case time <I>O</I>(lg <I>n</I>) (or better) on a binary heap. If the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation must be supported, however, binary heaps perform poorly. By concatenating the two arrays that hold the binary heaps to be merged and then running <FONT FACE="Courier New" SIZE=2>HEAPIFY</FONT>, the U<FONT FACE="Courier New" SIZE=2>NION </FONT>operation takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time in the worst case.<P>
+In this chapter, we shall examine "binomial heaps," whose worst-case time bounds are also shown in Figure 20.1. In particular, the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation takes only <I>O</I>(lg <I>n</I>) time to merge two binomial heaps with a total of <I>n</I> elements.<P>
+<a name="0862_1658"><a name="0862_1659"><a name="0862_165a"><a name="0862_165b">In Chapter 21, we shall explore Fibonacci heaps, which have even better time bounds for some operations. Note, however, that the running times for Fibonacci heaps in Figure 20.1 are amortized time bounds, not worst-case per operation time bounds.<P>
+<pre>             Binary heap    Binomial heap   Fibonacci heap</sub></sup></pre><P>
+<pre>Procedure    (worst-case)    (worst-case)    (amortized)</sub></sup></pre><P>
+<pre>--------------------------------------------------------------</sub></sup></pre><P>
+<pre>MAKE-HEAP         <IMG SRC="../IMAGES/bound.gif">(1)            <IMG SRC="../IMAGES/bound.gif">(1)            <IMG SRC="../IMAGES/bound.gif">(1)</sub></sup></pre><P>
+<pre>INSERT           <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>)        <I>O</I>(lg <I>n</I>)           <IMG SRC="../IMAGES/bound.gif">(1)</sub></sup></pre><P>
+<pre>MINIMUM          <IMG SRC="../IMAGES/bound.gif">(1)          <I>O</I>(lg <I>n</I>)           <IMG SRC="../IMAGES/bound.gif">(l)</sub></sup></pre><P>
+<pre>EXTRACT-MIN      <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>)        <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>)         <I>O</I>(lg <I>n</I>)</sub></sup></pre><P>
+<pre>UNION             <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)          <I>O</I>(lg <I>n</I>)           <IMG SRC="../IMAGES/bound.gif">(1)</sub></sup></pre><P>
+<pre>DECREASE-KEY     <IMG SRC="../IMAGES/bound.gif">(lg<I> n</I>)        <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>)           <IMG SRC="../IMAGES/bound.gif">(1)</sub></sup></pre><P>
+<pre>DELETE            <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>)        <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>)         <I>O</I>(lg <I>n</I>)</sub></sup></pre><P>
+<h4><a name="0862_165d">Figure 20.1 Running times for operations on three implementations of mergeable heaps. The number of items in the heap(s) at the time of an operation is denoted by n.<a name="0862_165d"></sub></sup></h4><P>
+This chapter ignores issues of allocating nodes prior to insertion and freeing nodes following deletion. We assume that the code that calls the heap procedures handles these details.<P>
+Binary heaps, binomial heaps, and Fibonacci heaps are all inefficient in their support of the operation <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>; it can take a while to find a node with a given key. For this reason, operations such as <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> and D<FONT FACE="Courier New" SIZE=2>ELETE </FONT>that refer to a given node require a pointer to that node as part of their input. This requirement poses no problem in many applications.<P>
+Section 20.1 defines binomial heaps after first defining their constituent binomial trees. It also introduces a particular representation of binomial heaps. Section 20.2 shows how we can implement operations on binomial heaps in the time bounds given in Figure 20.1.<P>
+
+
+
+
+
+<h1><a name="0864_0001">20.1 Binomial trees and binomial heaps<a name="0864_0001"></h1><P>
+A binomial heap is a collection of binomial trees, so this section starts by defining binomial trees and proving some key properties. We then define binomial heaps and show how they can be represented.<P>
+
+
+
+
+
+<h2><a name="0865_1662">20.1.1 Binomial trees<a name="0865_1662"></h2><P>
+<a name="0865_165c"><a name="0865_165d"><a name="0865_165e">The <I><B>binomial tree </I></B><I>B<SUB>k</I></SUB> is an ordered tree (see Section 5.5.2) defined recursively. As shown in Figure 20.2(a), the binomial tree <I>B</I><SUB>0</SUB><I> </I>consists of a single node. The binomial tree <I>B<SUB>k</I></SUB> consists of two binomial trees <I>B<SUB>k</I>-1</SUB> that are <I><B>linked</I></B> together: the root of one is the leftmost child of the root of the other. Figure 20.2(b) shows the binomial trees <I>B</I><SUB>0</SUB><I> t</I>hrough <I>B<SUB>4</I></SUB>.<P>
+Some properties of binomial trees are given by the following lemma<I>.</I><P>
+<img src="402_a.gif"><P>
+<h4><a name="0865_1663">Figure 20.2 (a) The recursive definition of the binomial tree B<SUB>k</SUB>. Triangles represent rooted subtrees. (b) The binomial trees B<SUB>o</SUB> through B<SUB>4</SUB>. Node depths in B<SUB>4</SUB> are shown. (c) Another way of looking at the binomial tree B<SUB>k.<a name="0865_1663"></sub></sup></h4><P>
+<a name="0865_1664">Lemma 20.1<a name="0865_1664"><P>
+<a name="0865_165f">For the binomial tree <I>B<SUB>k</I></SUB>,<P>
+1.     there are 2<I><SUP>k </I></SUP>nodes,<P>
+<a name="0865_1660">2.     the height of the tree is <I>k</I>,<P>
+3.     there are exactly <img src="402_b.gif"> nodes at depth <I>i</I> for <I>i</I> = 0, 1, . . . , <I>k</I>, and<P>
+<a name="0865_1661">4.     the root has degree <I>k</I>, which is greater than that of any other node; moreover if the children of the root are numbered from left to right by<I> k</I> - 1, <I>k</I> - 2, . . . ,<I> </I>0, child <I>i</I> is the root of a subtree <I>B<SUB>i</I></SUB>.<P>
+<I><B>Proof     </I></B>The proof is by induction on <I>k</I>. For each property, the basis is the binomial tree <I>B</I><SUB>0</SUB>. Verifying that each property holds for <I>B</I><SUB>0</SUB> is trivial.<P>
+For the inductive step, we assume that the lemma holds for <I>B<SUB>k</I>-1</SUB>.<P>
+1.     Binomial tree <I>B<SUB>k</I></SUB> consists of two copies of <I>B<SUB>k</I>-1</SUB>, so <I>B<SUB>k</I></SUB> has 2<I><SUP>k</I></SUP>-<SUP>1</SUP> + 2<I><SUP>k</I></SUP>-<SUP>1</SUP> = 2<I><SUP>k</I></SUP> nodes.<P>
+2.     Because of the way in which the two copies of B<I><SUB>k</I>-1 </SUB>are linked to form B<I><SUB>k</I></SUB>, the maximum depth of a node in <I>B<SUB>k</I></SUB> is one greater than the maximum depth in <I>B<SUB>k</I>-1</SUB> . By the inductive hypothesis, this maximum depth is (<I>k</I>-1) + 1 = <I>k</I>.<P>
+3.     Let <I>D</I>(<I>k, i</I>) be the number of nodes at depth <I>i</I> of binomial tree<I> B<SUB>k</SUB>.</I> Since <I>B<SUB>k</I></SUB> is composed of two copies of <I>B<SUB>k</I>-1</SUB> linked together, a node at depth<I> i </I>in <I>B<SUB>k</I>-1</SUB> appears in <I>B<SUB>k</I></SUB> once at depth <I>i </I>and once at depth <I>i</I> + 1. In other words, the number of nodes at depth <I>i</I> in <I>B<SUB>k</I></SUB> is the number of nodes at depth<I> i</I> in <I>B<SUB>k</I>-1</SUB> plus the number of nodes at depth <I>i</I> - 1 in <I>B<SUB>k</I>-1</SUB> . Thus,<P>
+<img src="403_a.gif"><P>
+The second equality follows from the inductive hypothesis, and the third equality follows from Exercise 6.1-7.<P>
+4.     The only node with greater degree in <I>B<SUB>k</SUB> </I>than in <I>B<SUB>k</I>-1</SUB>, is the root, which has one more child than in <I>B<SUB>k</I>-1</SUB>. Since the root of<I> B<SUB>k</I>-1</SUB> has degree <I>k</I>-1, the root of <I>B<SUB>k</I></SUB> has degree <I>k</I>. Now by the inductive hypothesis, and as Figure 20.2(c) shows, from left to right, the children of the root of <I>B<SUB>k</I>-1</SUB> are roots of <I>B<SUB>k</I>-2</SUB>, <I>B<SUB>k</I>-3</SUB>, . . ., <I>B</I><SUB>0</SUB>. When <I>B<SUB>k</I>-1</SUB> is linked to <I>B<SUB>k</I>-1</SUB>, therefore, the children of the resulting root are roots of <I>B<SUB>k</I>-1</SUB>, <I>B<SUB>k</I>-2</SUB>, . . . , <I>B</I><SUB>0</SUB><I>     </I> <P>
+<a name="0865_1665">Corollary 20.2<a name="0865_1665"><P>
+The maximum degree of any node in an <I>n</I>-node binomial tree is lg <I>n</I>.<P>
+<I><B>Proof     </I></B>Immediate from properties l and 4 of Lemma 20.1.      <P>
+The term &quot;binomial tree&quot; comes from property 3 of Lemma 20.1, since the terms <img src="403_b.gif"> are the binomial coefficients. Exercise 20.1-3 gives further justification for the term.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0866_1664">20.1.2 Binomial heaps<a name="0866_1664"></h2><P>
+<a name="0866_1662">A <I><B>binomial heap H</I></B> is a set of binomial trees that satisfies the following <I><B>binomial-heap properties.</I></B><P>
+<a name="0866_1663">1.     Each binomial tree in <I>H</I> is<I><B> heap-ordered:</I></B> the key of a node is greater than or equal to the key of its parent.<P>
+2.     There is at most one binomial tree in <I>H</I> whose root has a given degree.<P>
+The first property tells us that the root of a heap-ordered tree contains the smallest key in the tree.<P>
+The second property implies that an <I>n</I>-node binomial heap <I>H</I> consists of at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1 binomial trees. To see why, observe that the binary representation of <I>n</I> has <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1 bits, say <IMG SRC="../IMAGES/lftwdchv.gif"><I>b</I><IMG SRC="../IMAGES/hfbrdl12.gif"><SUB>lg <I>n</I></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"><SUB>,<I>b</I></SUB><FONT FACE="Courier New" SIZE=2><SUB><IMG SRC="../IMAGES/hfbrdl12.gif">lg <I>n</I></SUB><IMG SRC="../IMAGES/hfbrdr12.gif"> - 1</FONT><SUB> , . . . , <I>b</I></SUB><FONT FACE="Courier New" SIZE=2>0<SUB></SUB><IMG SRC="../IMAGES/wdrtchv.gif"></FONT>, so that <img src="403_c.gif">. By property 1 of Lemma 20.1, therefore, binomial tree <I>B<SUB><FONT FACE="Courier New" SIZE=2>i </I></FONT></SUB>appears in <I>H</I> if and only if bit <I>b<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> = 1. Thus, binomial heap <I>H</I> contains at most <IMG SRC="../IMAGES/hfbrdl12.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"> + 1 binomial trees.<P>
+<img src="404_a.gif"><P>
+<h4><a name="0866_1665">Figure 20.3 A binomial heap H with n = 13 nodes. (a) The heap consists of binomial trees B<SUB>0</SUB>, B<SUB>2</SUB>, and B<SUB>3</SUB>, which have 1, 4, and 8 nodes respectively, totaling n = 13 nodes. Since each binomial tree is heap-ordered, the key of any node is no less than the key of its parent. Also shown is the root list, which is a linked list of roots in order of increasing degree. (b) A more detailed representation of binomial heap H. Each binomial tree is stored in the left-child, right-sibling representation, and each node stores its degree.<a name="0866_1665"></sub></sup></h4><P>
+Figure 20.3(a) shows a binomial heap <I>H</I> with 13 nodes. The binary representation of 13 is <IMG SRC="../IMAGES/lftwdchv.gif">1101<IMG SRC="../IMAGES/wdrtchv.gif">, and <I>H</I> consists of heap-ordered binomial trees <I>B</I><SUB>3</SUB>,<I> B</I><SUB>2</SUB>, and <I>B</I><SUB>0</SUB>, having 8, 4, and 1 nodes respectively, for a total of 13 nodes.<P>
+
+
+
+
+
+<h3>Representing binomial heaps</h3><P>
+As shown in Figure 20.3(b), each binomial tree within a binomial heap is stored in the left-child, right-sibling representation of Section 11.4. Each node has a <I>key</I> field and any other satellite information required by the application. In addition, each node <I>x</I> contains pointers <I>p</I>[<I>x</I>] to its parent, <I>child</I> [<I>x</I>] to its leftmost child, and <I>sibling</I>[<I>x</I>] to the sibling of <I>x</I> immediately to its right. If node <I>x</I> is a root, then <I>p</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>. If node <I>x</I> has no children, then <I>child</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, and if<I> x</I> is the rightmost child of its parent, then <I>sibling</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Each node <I>x</I> also contains the field <I>degree</I>[<I>x</I>] , which is the number of children of <I>x</I>.<P>
+<img src="405_a.gif"><P>
+<h4><a name="0867_1665">Figure 20.4 The binomial tree B<SUB>4</SUB> with nodes labeled in binary by a postorder walk.<a name="0867_1665"></sub></sup></h4><P>
+<a name="0867_1664">As Figure 20.3 also shows, the roots of the binomial trees within a binomial heap are organized in a linked list, which we refer to as the <I><B>root list</I></B>. The degrees of the roots strictly increase as we traverse the root list. By the second binomial-heap property, in an <I>n</I>-node binomial heap the degrees of the roots are a subset of {0, 1, . . . , <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g<I> n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>}. The <I>sibling</I> field has a different meaning for roots than for nonroots. If <I>x</I> is a root, then <I>sibling</I>[<I>x</I>] points to the next root in the root list. (As usual, <I>sibling</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT> if <I>x</I> is the last root in the root list.)<P>
+A given binomial heap <I>H</I> is accessed by the field <I>head</I>[<I>H</I>], which is simply a pointer to the first root in the root list of <I>H</I>. If binomial heap <I>H</I> has no elements, then <I>head</I>[<I>H</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0868_0001">Exercises<a name="0868_0001"></h2><P>
+<a name="0868_0002">20.1-1<a name="0868_0002"><P>
+Suppose that <I>x</I> is a node in a binomial tree within a binomial heap, and assume that <I>sibling</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <FONT FACE="Courier New" SIZE=2>NIL</FONT>. If <I>x</I> is not a root, how does <I>degree</I>[<I>sibling</I>[<I>x</I>]] compare to <I>degree</I>[<I>x</I>]? How about if <I>x</I> is a root?<P>
+<a name="0868_0003">20.1-2<a name="0868_0003"><P>
+If <I>x</I> is a nonroot node in a binomial tree within a binomial heap, how does <I>degree</I>[<I>p</I>[<I>x</I>]] compare to <I>degree</I>[<I>x</I>]?<P>
+<a name="0868_0004">20.1-3<a name="0868_0004"><P>
+Suppose we label the nodes of binomial tree <I>B<SUB>k</I></SUB> in binary by a postorder walk, as in Figure 20.4. Consider a node <I>x</I> labeled <I>l</I> at depth <I>i</I>, and let <I>j</I> = <I>k</I> - <I>i</I>. Show that <I>x</I> has <I>j</I> l's in its binary representation. How many binary <I>k</I>-strings are there that contain exactly <I>j</I> 1's? Show that the degree of <I>x</I> is equal to the number of 1's to the right of the rightmost 0 in the binary representation of <I>l</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0869_0001">20.2 Operations on binomial heaps<a name="0869_0001"></h1><P>
+In this section, we show how to perform operations on binomial heaps in the time bounds shown in Figure 20.1. We shall only show the upper bounds; the lower bounds are left as Exercise 20.2-10.<P>
+
+
+
+
+
+<h2>Creating a new binomial heap</h2><P>
+<a name="086a_1665"><a name="086a_1666">To make an empty binomial heap, the <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure simply allocates and returns an object <I>H</I>, where <I>head</I>[<I>H</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>. The running time is <IMG SRC="../IMAGES/bound.gif">(1).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Finding the minimum key</h2><P>
+<a name="086b_1667"><a name="086b_1668"><a name="086b_1669">The procedure <FONT FACE="Courier New" SIZE=2>BINOMIAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP-</FONT><FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> returns a pointer to the node with the minimum key in an <I>n</I>-node binomial heap <I>H</I>. This implementation assumes that there are no keys with value <IMG SRC="../IMAGES/infin.gif">. (See Exercise 20.2-5.)<P>
+<pre>BINOMIAL-HEAP-MINIMUM(<I>H</I>)</sub></sup></pre><P>
+<pre>1  <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>2  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>head</I>[<I>H</I>]</sub></sup></pre><P>
+<pre>3  <I>min</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre>4  <B>while</B> <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>5      <B>do if</B> <I>key</I>[<I>x</I>] &lt; <I>min</I></sub></sup></pre><P>
+<pre>6            <B>then</B> <I>min</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>key</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>7                 <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>8         <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>sibling</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>9  <B>return</B> <I>y</I></sub></sup></pre><P>
+Since a binomial heap is heap-ordered, the minimum key must reside in a root node. The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> procedure checks all roots, which number at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1, saving the current minimum in <I>min</I> and a pointer to the current minimum in <I>y</I>. When called on the binomial heap of Figure 20.3, <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> returns a pointer to the node with key 1.<P>
+Because there are at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif">l</FONT>g <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1 roots to check, the running time of <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> is <I>O</I>(lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Uniting two binomial heaps </h2><P>
+<a name="086c_166a"><a name="086c_166b">The operation of uniting two binomial heaps is used as a subroutine by most of the remaining operations. The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> procedure repeatedly links binomial trees whose roots have the same degree. The following procedure links the <I>B<SUB>k</I>-1 </SUB>tree rooted at node <I>y</I> to the <I>B<SUB>k</I>-1 </SUB>tree rooted at node <I>z</I>; that is, it makes <I>z</I> the parent of <I>y</I>. Node <I>z</I> thus becomes the root of a <I>B<SUB>k</I></SUB> tree.<P>
+<pre><a name="086c_166c">BINOMIAL-LINK(<I>y,z</I>)</sub></sup></pre><P>
+<pre>1  <I>p</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>z</I></sub></sup></pre><P>
+<pre>2  <I>sibling</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>child</I>[<I>z</I>]</sub></sup></pre><P>
+<pre>3  <I>child</I>[<I>z</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>y</I></sub></sup></pre><P>
+<pre>4  <I>degree</I>[<I>z</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>degree</I>[<I>z</I>]+1</sub></sup></pre><P>
+The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT> procedure makes node <I>y</I> the new head of the linked list of node <I>z</I>'s children in <I>O</I>(1) time. It works because the left-child, right-sibling representation of each binomial tree matches the ordering property of the tree: in a <I>B<SUB>k</I> </SUB>tree, the leftmost child of the root is the root of a <I>B<SUB>k</I>-1<I> </I></SUB>tree.<P>
+The following procedure unites binomial heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB>, returning the resulting heap. It destroys the representations of <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2 </SUB>in the process. Besides <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>LINK</FONT>, the procedure uses an auxiliary procedure <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT> that merges the root lists of <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> into a single linked list that is sorted by degree into monotonically increasing order. The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure, whose pseudocode we leave as Exercise 20.2-2, is similar to the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure in Section 1.3.1.<P>
+<img src="408_a.gif"><P>
+<a name="086c_166d">Figure 20.5 shows an example of <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> in which all four cases given in the pseudocode occur.<P>
+<a name="086c_166e">The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> procedure has two phases. The first phase, performed by the call of <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT>, merges the root lists of binomial heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> into a single linked list <I>H</I> that is sorted by degree into monotonically increasing order. There might be as many as two roots (but no more) of each degree, however, so the second phase links roots of equal degree until at most one root remains of each degree. Because the linked list <I>H</I> is sorted by degree, we can perform all the link operations quickly.<P>
+In detail, the procedure works as follows. Lines 1-3 start by merging the root lists of binomial heaps <I>H</I><SUB>1 </SUB>and <I>H</I><SUB>2 </SUB>into a single root list <I>H</I>. The root lists of <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> are sorted by strictly increasing degree, and <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT> returns a root list <I>H</I> that is sorted by monotonically increasing degree. If the root lists of <I>H</I><SUB>1 </SUB>and <I>H</I><SUB>2 </SUB>have <I>m</I> roots altogether, <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT> runs in <I>O</I>(<I>m</I>) time by repeatedly examining the roots at the heads of the two root lists and appending the root with the lower degree to the output root list, removing it from its input root list in the process.<P>
+The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> procedure next initializes some pointers into the root list of <I>H</I>. First, it simply returns in lines 4-5 if it happens to be uniting two empty binomial heaps. From line 6 on, therefore, we know that <I>H</I> has at least one root. Throughout the procedure, we maintain three pointers into the root list:<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>x</I> points to the root currently being examined,<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>prev-x</I> points to the root preceding <I>x</I> on the root list: <I>sibling</I>[<I>prev-x</I>] = <I>x</I>, and<P>
+<IMG SRC="../IMAGES/dot12.gif">     <I>next-x</I> points to the root following <I>x</I> on the root list: <I>sibling</I>[<I>x</I>] = <I>next-x</I>.<P>
+Initially, there are at most two roots on the root list <I>H</I> of a given degree: because <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB> were binomial heaps, they each had only one root of a given degree. Moreover, B<FONT FACE="Courier New" SIZE=2>INOMIAL-</FONT>H<FONT FACE="Courier New" SIZE=2>EAP-</FONT><FONT FACE="Courier New" SIZE=2>MERGE</FONT> guarantees us that if two roots in <I>H</I> have the same degree, they are adjacent in the root list.<P>
+In fact, during the execution of B<FONT FACE="Courier New" SIZE=2>INOMlAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT>, there may be three roots of a given degree appearing on the root list <I>H</I> at some time. We shall see in a moment how this situation could occur. At each iteration of the <B>while</B> loop of lines 9-21, therefore, we decide whether to link <I>x</I> and <I>next-x</I> based on their degrees and possibly the degree of <I>sibling</I>[<I>next-x</I>]. An invariant of the loop is that each time we start the body of the loop, both <I>x</I> and <I>next-x</I> are non-<FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+Case 1, shown in Figure 20.6(a), occurs when <I>degree</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>degree</I>[<I>next-x</I>], that is, when <I>x</I> is the root of a <I>B<SUB>k</I></SUB>-tree and <I>next-x</I> is the root of a <I>B<SUB>l</I></SUB>-tree for some <I>l</I> &gt; <I>k.</I> Lines 11-12 handle this case. We don't link <I>x</I> and <I>next-x,</I> so we simply march the pointers one position further down the list. Updating <I>next-x</I> to point to the node following the new node <I>x</I> is handled in line 21, which is common to every case.<P>
+Case 2, shown in Figure 20.6(b), occurs when <I>x</I> is the first of three roots of equal degree, that is, when<P>
+<pre><I>degree</I>[<I>x</I>] = <I>degree</I>[<I>next</I>-<I>x</I>]<I> </I>=<I> degree</I>[<I>sibling</I>[<I>next</I>-<I>x</I>]]<I>.</I></sub></sup></pre><P>
+We handle this case in the same manner as case 1: we just march the pointers one position further down the list. Line 10 tests for both cases 1 and 2, and lines 11-12 handle both cases.<P>
+Cases 3 and 4 occur when <I>x</I> is the first of two roots of equal degree, that is, when<P>
+<pre><I>degree</I>[<I>x</I>] = <I>degree</I>[<I>next</I>-<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>degree</I>[<I>sibling</I>[<I>next</I>-<I>x</I>]].</sub></sup></pre><P>
+These cases may occur on the next iteration after any case, but one of them always occurs immediately following case 2. In cases 3 and 4, we link <I>x</I> and <I>next-x.</I> The two cases are distinguished by whether <I>x</I> or <I>next-x</I> has the smaller key, which determines the node that will be the root after the two are linked.<P>
+In case 3, shown in Figure 20.6(c), <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>key</I>[<I>next-x</I>], so <I>next-x</I> is linked to <I>x.</I> Line 14 removes <I>next-x</I> from the root list, and line 15 makes <I>next-x</I> the leftmost child of <I>x.</I><P>
+<img src="410_a.gif"><P>
+<h4><a name="086c_166f">Figure 20.5 The execution of <FONT FACE="Courier New" SIZE=2>BINOMIAL-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>HEAP-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>UNION.</FONT></FONT></FONT></FONT></FONT>(a) Binomial heaps H<SUB>1 </SUB>and H<SUB>2.</SUB> (b) Binomial heap H is the output of <FONT FACE="Courier New" SIZE=2>BINOMIAL-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>HEAP-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>MERGE(H<SUB>1</SUB>,H<SUB>2</SUB>)</FONT></FONT></FONT></FONT></FONT>. Initially, x is the first root on the root list of H. Because both x and next-x have degree 0 and key[x] &lt; key[next-x], case 3 applies. (c) After the link occurs, x is the first of three roots with the same degree, so case 2 applies. (d) After all the pointers move down one position in the root list, case 4 applies, since x is the first of two roots of equal degree. (e) After the link occurs, case 3 applies. (f) After another link, case 1 applies, because x has degree 3 and next-x has degree 4. This iteration of the while loop is the last, because after the pointers move down one position in the root list, next-x = <FONT FACE="Courier New" SIZE=2>NIL<FONT FACE="Times New Roman" SIZE=2>.<a name="086c_166f"></FONT></FONT></sub></sup></h4><P>
+<img src="411_a.gif"><P>
+In case 4, shown in Figure 20.6(d), <I>next-x</I> has the smaller key, so <I>x</I> is linked to <I>next-x.</I> Lines 16-18 remove <I>x</I> from the root list, which has two cases depending on whether <I>x</I> is the first root on the list (line 17) or is not (line 18). Line 19 then makes <I>x</I> the leftmost child of <I>next-x</I>, and line 20 updates <I>x</I> for the next iteration.<P>
+Following either case 3 or case 4, the setup for the next iteration of the <B>while</B> loop is the same. We have just linked two <I>B<SUB>k</I></SUB>-trees to form a <I>B<SUB>k</I>+l</SUB>-tree, which <I>x</I> now points to. There were already zero, one, or two other <I>B<SUB>k</I>+1-</SUB>trees on the root list from the output of B<FONT FACE="Courier New" SIZE=2>INOMIAL-</FONT>H<FONT FACE="Courier New" SIZE=2>EAP-</FONT><FONT FACE="Courier New" SIZE=2>MERGE</FONT>, so <I>x</I> is now the first of either one, two, or three <I>B<SUB>k</I>+l</SUB>-trees on the root list. If <I>x</I> is the only one, then we enter case 1 in the next iteration: <I>degree</I> [<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>degree</I>[<I>next-x</I>]. If <I>x</I> is the first of two, then we enter either case 3 or case 4 in the next iteration. It is when <I>x</I> is the first of three that we enter case 2 in the next iteration.<P>
+The running time of B<FONT FACE="Courier New" SIZE=2>INOMIAL-</FONT>H<FONT FACE="Courier New" SIZE=2>EAP-</FONT><FONT FACE="Courier New" SIZE=2>UNION</FONT> is <I>O</I>(1g <I>n</I>), where <I>n</I> is the total number of nodes in binomial heaps <I>H</I><SUB>1</SUB> and <I>H</I><SUB>2</SUB>. We can see this as follows. Let <I>H</I><SUB>1</SUB> contain <I>n</I><SUB>1</SUB> nodes and <I>H</I><SUB>2</SUB> contain <I>n</I><SUB>2</SUB> nodes, so that <I>n</I> = <I>n</I><SUB>1</SUB> + <I>n</I><SUB>2</SUB>. Then, <I>H</I><SUB>1</SUB> contains at most <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1 roots and <I>H</I><SUB>2</SUB> contains at most <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 1 roots, so <I>H</I> contains at most <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 2 <IMG SRC="../IMAGES/lteq12.gif"> 2 <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> + 2 = <I>O</I>(1g <I>n</I>) roots immediately after the call of B<FONT FACE="Courier New" SIZE=2>INOMIAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT>. The time to perform <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT> is thus <I>O</I>(lg <I>n</I>). Each iteration of the <B>while</B> loop takes <I>O</I>(1) time, and there are at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>1</SUB><IMG SRC="../IMAGES/hfbrdr12.gif"> + <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><SUB>2</SUB><IMG SRC="../IMAGES/hfbrdr12.gif"> + 2 iterations because each iteration either advances the pointers one position down the root list of <I>H</I> or removes a root from the root list. The total time is thus <I>O</I>(lg <I>n</I>).<P>
+<img src="412_a.gif"><P>
+<h4><a name="086c_1670">Figure 20.6 The four cases that occur in <FONT FACE="Courier New" SIZE=2>BINOMIAL-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>HEAP-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>UNION.</FONT></FONT></FONT></FONT></FONT> Labels a, b, c, and d serve only to identify the roots involved; they do not indicate the degrees or keys of these roots. In each case, x is the root of a B<SUB>k</SUB>-tree and l &gt; k. (a) Case 1: degree[x] <IMG SRC="../IMAGES/noteq.gif"> degree[next-x]. The pointers move one position further down the root list. (b) Case 2: degree[x] = degree[next-x]<SUB> = </SUB>degree[sibling[next-x]]. Again, the pointers move one position further down the list, and the next iteration executes either case 3 or case 4. (c) Case 3: degree[x] = degree[next-x] <IMG SRC="../IMAGES/noteq.gif"> degree[sibling[next-x] and key[x] <IMG SRC="../IMAGES/lteq12.gif"> key[next-x]. We remove next-x from the root list and link it to x, creating a<SUB> </SUB>B<SUB>k+1</SUB>-tree. (d) Case 4: degree[x] = degree[next-x] <IMG SRC="../IMAGES/noteq.gif"> degree[sibling[next-x]] and key[next-x] <IMG SRC="../IMAGES/lteq12.gif"> key[x]. We remove x from the root list and link it to next-x, again creating a B <SUB>k+1</SUB>-tree.<a name="086c_1670"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Inserting a node</h2><P>
+<a name="086d_166f"><a name="086d_1670">The following procedure inserts node <I>x</I> into binomial heap <I>H,</I> assuming of course that node <I>x</I> has already been allocated and <I>key</I>[<I>x</I>] has already been filled in.<P>
+<pre><a name="086d_1671">BINOMIAL-HEAP-INSERT(<I>H</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>1  <I>H</I>'<I> </I><IMG SRC="../IMAGES/arrlt12.gif"><I> </I>MAKE-BINOMIAL-HEAP()</sub></sup></pre><P>
+<pre>2  <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>3  <I>child</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>4  <I>sibling</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+<pre>5  <I>degree</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6  <I>head</I>[<I>H</I>'] <IMG SRC="../IMAGES/arrlt12.gif"> x</sub></sup></pre><P>
+<pre>7  <I>H </I><IMG SRC="../IMAGES/arrlt12.gif"> BINOMIAL-HEAP-UNION(<I>H,H</I>')</sub></sup></pre><P>
+The procedure simply makes a one-node binomial heap <I>H</I>' in <I>O</I>(1) time and unites it with the <I>n</I>-node binomial heap <I>H</I> in <I>O</I>(1g <I>n</I>) time. The call to <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> takes care of freeing the temporary binomial heap <I>H</I>'. (A direct implementation that does not call <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> is given as Exercise 20.2-8.)<P>
+<P>
+
+
+
+
+
+
+
+<h2>Extracting the node with minimum key</h2><P>
+<a name="086e_1672"><a name="086e_1673">The following procedure extracts the node with the minimum key from binomial heap <I>H</I> and returns a pointer to the extracted node.<P>
+<pre><a name="086e_1674">BINOMIAL-HEAP-EXTRACT-MIN(<I>H</I>)</sub></sup></pre><P>
+<pre>1  find the root <I>x</I> with the minimum key in the root list of <I>H,</I></sub></sup></pre><P>
+<pre>and remove <I>x</I> from the root list of <I>H</I></sub></sup></pre><P>
+<pre>2  <I>H</I>' <IMG SRC="../IMAGES/arrlt12.gif"> MAKE-BINOMIAL-HEAP()</sub></sup></pre><P>
+<pre>3  reverse the order of the linked list of <I>x</I>'s children,</sub></sup></pre><P>
+<pre>and set <I>head</I>[<I>H</I>'] to point to the head of the resulting list</sub></sup></pre><P>
+<pre>4  <I>H</I> <SUB><IMG SRC="../IMAGES/arrlt12.gif"> BINOMIAL-HEAP-UNION(<I>H</I>,<I>H</I></SUB>'<I>)</I></sub></sup></pre><P>
+<pre>5  <B>return</B> <I>x</I></sub></sup></pre><P>
+This procedure works as shown in Figure 20.7. The input binomial heap <I>H </I>is shown in Figure 20.7(a). Figure 20.7(b) shows the situation after line 1: the root <I>x</I> with the minimum key has been removed from the root list of <I>H</I>. If <I>x</I> is the root of a <I>B<SUB>k</SUB>-</I>tree, then by property 4 of Lemma 20.1, <I>x</I>'s children, from left to right, are roots of <I>B<SUB>k</I></SUB>-<SUB>1</SUB>-, <I>B<SUB>k</I></SUB>-<SUB>2</SUB>-, . . . , <I>B</I><SUB>0</SUB>-trees. Figure 20.7(c) shows that by reversing the list of <I>x</I>'s children in line 3, we have a binomial heap <I>H</I>' that contains every node in <I>x</I>'s tree except for <I>x</I> itself. Because <I>x</I>'s tree is removed from <I>H</I> in line 1, the binomial heap that results from uniting <I>H</I> and <I>H</I>' in line 4, shown in Figure 20.7(d), contains all the nodes originally in <I>H</I> except for <I>x</I>. Finally, line 5 returns <I>x</I>.<P>
+<img src="414_a.gif"><P>
+<h4><a name="086e_1675">Figure 20.7 The action of B<FONT FACE="Courier New" SIZE=2>INOMIAL-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>EXTRACT<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>MIN<FONT FACE="Times New Roman" SIZE=2>. (a) A binomial heap H. (b) The root x with minimum key is removed from the root list of H. (c) The linked list of x's children is reversed, giving another binomial heap H'. (d) The result of uniting H and H'.<a name="086e_1675"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Since each of lines 1-4 takes <I>O</I>(lg <I>n</I>) time if <I>H</I> has <I>n</I> nodes, B<FONT FACE="Courier New" SIZE=2>INOMIAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> runs in <I>O</I>(lg <I>n</I>) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Decreasing a key</h2><P>
+<a name="086f_1675"><a name="086f_1676">The following procedure decreases the key of a node <I>x</I> in a binomial heap <I>H</I> to a new value <I>k</I>. It signals an error if <I>k</I> is greater than <I>x</I>'s current key.<P>
+<pre><a name="086f_1677">BINOMIAL-HEAP-DECREASE-KEY (<I>H</I>,<I>x</I>,<I>k</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>k </I>&gt; <I>key</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>2      <B>then error</B> &quot;new key is greater than current key&quot;</sub></sup></pre><P>
+<pre>3  <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I></sub></sup></pre><P>
+<pre>4  <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>5  <I>z</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>6  <B>while</B><I> z</I> <IMG SRC="../IMAGES/noteq.gif"> NIL and <I>key</I>[<I>y</I>] &lt; <I>key</I>[<I>z</I>]</sub></sup></pre><P>
+<pre>7      <B>do</B> exchange <I>key</I>[<I>y</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <I>key</I>[<I>z</I>]</sub></sup></pre><P>
+<pre>8         <img src="415_a.gif"> If <I>y</I> and <I>z</I> have satellite fields, exchange them, too.</sub></sup></pre><P>
+<pre>9         <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>z</I></sub></sup></pre><P>
+<pre>10        <I>z</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I>[<I>y</I>]</sub></sup></pre><P>
+As shown in Figure 20.8, this procedure decreases a key in the same manner as in a binary heap: by &quot;bubbling up&quot; the key in the heap. After ensuring that the new key is in fact no greater than the current key and then assigning the new key to <I>x</I>, the procedure goes up the tree, with <I>y </I>initially pointing to node <I>x</I>. In each iteration of the <B>while</B> loop of lines 6-10, <I>key</I>[<I>y</I>] is checked against the key of <I>y'</I>s parent <I>z</I>. If<I> y</I> is the root or <I>key</I>[<I>y</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>key</I>[<I>z</I>], the binomial tree is now heap-ordered. Otherwise, node <I>y </I>violates heap ordering, so its key is exchanged with the key of its parent <I>z</I>, along with any other satellite information. The procedure then sets <I>y</I> to <I>z</I>, going up one level in the tree, and continues with the next iteration.<P>
+The <FONT FACE="Courier New" SIZE=2>BINOMIAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> procedure takes <I>O</I>(lg <I>n</I>) time. By property 2 of Lemma 20.1, the maximum depth of <I>x</I> is <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg<I> n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, so the <B>while</B> loop of lines 6-10 iterates at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg<I> n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> times.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Deleting a key</h2><P>
+<a name="0870_1678"><a name="0870_1679">It is easy to delete a node <I>x'</I>s key and satellite information from binomial heap <I>H</I> in <I>O</I>(lg<I> n</I>) time. The following implementation assumes that no node currently in the binomial heap has a key of - <IMG SRC="../IMAGES/infin.gif"><FONT FACE="Times New Roman" SIZE=4>.</FONT><P>
+<img src="416_a.gif"><P>
+<h4><a name="0870_167b">Figure 20.8 The action of <FONT FACE="Courier New" SIZE=2>BINOMIAL<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>HEAP<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DECREASE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>KEY</FONT></FONT></FONT></FONT></FONT></FONT></FONT>. (a) The situation just before line 5 of the first iteration of the while loop. Node y has had its key decreased to 7, which is less than the key of y's parent z. (b) The keys of the two nodes are exchanged, and the situation just before line 5 of the second iteration is shown. Pointers y and z have moved up one level in the tree, but heap order is still violated. (c) After another exchange and moving pointers y and z up one more level, we finally find that heap order is satisfied, so the while loop terminates.<a name="0870_167b"></sub></sup></h4><P>
+<pre><a name="0870_167a">BINOMIAL-HEAP-DELETE(<I>H,x</I>)</sub></sup></pre><P>
+<pre>1 BINOMIAL-HEAP-DECREASE-KEY(<I>H,x,</I>-<IMG SRC="../IMAGES/infin.gif">)</sub></sup></pre><P>
+<pre>2 BINOMIAL-HEAP-EXTRACT-MIN(<I>H</I>)</sub></sup></pre><P>
+The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> procedure makes node <I>x</I> have the unique minimum key in the entire binomial heap by giving it a key of -<IMG SRC="../IMAGES/infin.gif">. (Exercise 20.2-6 deals with the situation in which -<IMG SRC="../IMAGES/infin.gif"><I><FONT FACE="Times New Roman" SIZE=4> </I></FONT>cannot appear as a key, even temporarily.) It then bubbles this key and the associated satellite information up to a root by calling <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>. This root is then removed from <I>H</I> by a call of <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT-</FONT><FONT FACE="Courier New" SIZE=2>MIN</FONT>.<P>
+The <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP-</FONT><FONT FACE="Courier New" SIZE=2>DELETE</FONT> procedure takes <I>O</I>(lg <I>n</I>) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0871_1681">Exercises<a name="0871_1681"></h2><P>
+<a name="0871_1682">20.2-1<a name="0871_1682"><P>
+Give an example of two b<I>inary</I> heaps with <I>n</I> elements each such that <FONT FACE="Courier New" SIZE=2>BUILD</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time on the concatenation of their arrays.<P>
+<a name="0871_1683">20.2-2<a name="0871_1683"><P>
+<a name="0871_167b">Write pseudocode for <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MERGE</FONT>.<P>
+<a name="0871_1684">20.2-3<a name="0871_1684"><P>
+Show the binomial heap that results when a node with key 24 is inserted into the binomial heap shown in Figure 20.7(d).<P>
+<a name="0871_1685">20.2-4<a name="0871_1685"><P>
+Show the binomial heap that results when the node with key 28 is deleted from the binomial heap shown in Figure 20.8(c).<P>
+<a name="0871_1686">20.2-5<a name="0871_1686"><P>
+<a name="0871_167c">Explain why the <FONT FACE="Courier New" SIZE=2>BINOMIAL-</FONT><FONT FACE="Courier New" SIZE=2>HEAP-</FONT><FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> procedure might not work correctly if keys can have the value <I><FONT FACE="Times New Roman" SIZE=4></I><IMG SRC="../IMAGES/infin.gif"></FONT><I></I>. Rewrite the pseudocode to make it work correctly in such cases.<P>
+<a name="0871_1687">20.2-6<a name="0871_1687"><P>
+<a name="0871_167d">Suppose there is no way to represent the key - <IMG SRC="../IMAGES/infin.gif">. Rewrite the <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> procedure to work correctly in this situation. It should still take <I>O</I>(lg <I>n</I>) time.<P>
+<a name="0871_1688">20.2-7<a name="0871_1688"><P>
+<a name="0871_167e"><a name="0871_167f">Discuss the relationship between inserting into a binomial heap and incrementing a binary number and the relationship between uniting two binomial heaps and adding two binary numbers.<P>
+<a name="0871_1689">20.2-8<a name="0871_1689"><P>
+<a name="0871_1680">In light of Exercise 20.2-7, rewrite <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> to insert a node directly into a binomial heap without calling <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT>.<P>
+<a name="0871_168a">20.2-9<a name="0871_168a"><P>
+Show that if root lists are kept in strictly decreasing order by degree (instead of strictly increasing order), each of the binomial heap operations can be implemented without changing its asymptotic running time.<P>
+<a name="0871_168b">20.2-10<a name="0871_168b"><P>
+Find inputs that cause <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, and <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> to run in <IMG SRC="../IMAGES/omega12.gif">(lg <I>n</I>) time. Explain why the worst-case running times of <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, and <FONT FACE="Courier New" SIZE=2>BINOMIAL</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT>-<FONT FACE="Courier New" SIZE=2>UNION</FONT> are <img src="417_a.gif"> (lg <I>n</I>)<I> </I>but not <IMG SRC="../IMAGES/omega12.gif">(lg <I>n</I>). (See Problem 2-5.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0872_168f">Problems<a name="0872_168f"></h1><P>
+<a name="0872_1690">20-1     2-3-4 heaps<a name="0872_1690"><P>
+<a name="0872_1681"><a name="0872_1682"><a name="0872_1683"><a name="0872_1684"><a name="0872_1685">Chapter 19 introduced the 2-3-4 tree, in which every internal node (other than possibly the root) has two, three, or four children and all leaves have the same depth. In this problem, we shall implement <I><B>2-3-4 heaps</I></B><I>,</I> which support the mergeable-heap operations.<P>
+The 2-3-4 heaps differ from 2-3-4 trees in the following ways. In 2-3-4 heaps, only leaves store keys, and each leaf <I>x</I> stores exactly one key in the field <I>key</I>[<I>x</I>]. There is no particular ordering of the keys in the leaves; that is, from left to right, the keys may be in any order. Each internal node <I>x </I>contains a value <I>small</I>[<I>x</I>] that is equal to the smallest key stored in any leaf in the subtree rooted at <I>x</I>. The root <I>r </I>contains a field <I>height </I>[<I>r</I>]<I> </I>that is the height of the tree. Finally, 2-3-4 heaps are intended to be kept in main memory, so that disk reads and writes are not needed.<P>
+Implement the following 2-3-4 heap operations. Each of the operations in parts (a)-(e) should run in <I>O</I>(lg <I>n</I>) time on a 2-3-4 heap with <I>n</I> elements. The <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation in part (f) should run in <I>O</I>(lg <I>n</I>) time, where <I>n</I> is the number of elements in the two input heaps.<P>
+<a name="0872_1686"><I><B>a</I>.</B>     <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, which returns a pointer to the leaf with the smallest key.<P>
+<a name="0872_1687"><I><B>b</I>.</B>     <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, which decreases the key of a given leaf <I>x</I> to a given value <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>key</I>[<I>x</I>].<P>
+<a name="0872_1688"><B>c.</B>     <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, which inserts leaf <I>x</I> with key <I>k</I>.<P>
+<a name="0872_1689"><I><B>d</I>.</B>     <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, which deletes a given leaf <I>x</I>.<P>
+<a name="0872_168a"><I><B>e</I>.</B>     <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, which extracts the leaf with the smallest key.<P>
+<a name="0872_168b"><I><B>f.</I></B>     <FONT FACE="Courier New" SIZE=2>UNION</FONT>, which unites two 2-3-4 heaps, returning a single 2-3-4 heap and destroying the input heaps.<P>
+<a name="0872_1691">20-2     Minimum-spanning-tree algorithm using mergeable heaps<a name="0872_1691"><P>
+<a name="0872_168c"><a name="0872_168d">Chapter 24 presents two algorithms to solve the problem of finding a minimum spanning tree of an undirected graph. Here, we shall see how mergeable heaps can be used to devise a different minimum-spanning-tree algorithm.<P>
+We are given a connected, undirected graph <I>G </I>=<I> </I>(<I>V, E</I>) with a weight function <I>w: E </I><IMG SRC="../IMAGES/arrow12.gif"><I> </I><B>R</B><I>. </I>We call<I> w</I>(<I>u,v</I>) the weight of edge (<I>u, v</I>). We wish to find a minimum spanning tree for <I>G</I>: an acyclic subset <I>T</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>E</I> that connects all the vertices in <I>V</I> and whose total weight<P>
+<img src="418_a.gif"><P>
+is minimized.<P>
+The following pseudocode, which can be proven correct using techniques from Section 24.1, constructs a minimum spanning tree <I>T</I>. It maintains a partition {<I>V<SUB>i</I></SUB>} of the vertices of<I> V</I> and, with each set <I>V<SUB>i</I></SUB>, a set<P>
+<pre><I>E<SUB>i</I></SUB> <IMG SRC="../IMAGES/rgtubar.gif"> {(<I>u,v</I>): <I>u</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V<SUB>i</I></SUB> or <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I>V<SUB>i</I></SUB>}</sub></sup></pre><P>
+of edges incident on vertices in <I>V<SUB>i</I></SUB>.<P>
+<img src="419_a.gif"><P>
+<a name="0872_168e">Describe how to implement this algorithm using the mergeable-heap operations given in Figure 20.1. Give the running time of your implementation, assuming that the mergeable heaps are implemented by binomial heaps.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Binomial heaps were introduced in 1978 by Vuillemin [196]. Brown[36, 37] studied their properties in detail.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap21.htm">Chapter 21</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

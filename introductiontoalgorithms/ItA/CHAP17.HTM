@@ -1,0 +1,477 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 17: GREEDY ALGORITHMS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap18.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap16.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0825_1576">CHAPTER 17: GREEDY ALGORITHMS<a name="0825_1576"></h1><P>
+<a name="0825_1574"><a name="0825_1575">Algorithms for optimization problems typically go through a sequence of steps, with a set of choices at each step. For many optimization problems, using dynamic programming to determine the best choices is overkill; simpler, more efficient algorithms will do. A <I><B>greedy algorithm</I></B> always makes the choice that looks best at the moment. That is, it makes a locally optimal choice in the hope that this choice will lead to a globally optimal solution. This chapter explores optimization problems that are solvable by greedy algorithms.<P>
+Greedy algorithms do not always yield optimal solutions, but for many problems they do. We shall first examine in Section 17.1 a simple but nontrivial problem, the activity-selection problem, for which a greedy algorithm efficiently computes a solution. Next, Section 17.2 reviews some of the basic elements of the greedy approach. Section 17.3 presents an important application of greedy techniques: the design of data-compression (Huffman) codes. In Section 17.4, we investigate some of the theory underlying combinatorial structures called "matroids" for which a greedy algorithm always produces an optimal solution. Finally, Section 17.5 illustrates the application of matroids using the problem of scheduling unit-time tasks with deadlines and penalties.<P>
+The greedy method is quite powerful and works well for a wide range of problems. Later chapters will present many algorithms that can be viewed as applications of the greedy method, including minimum-spanning-tree algorithms (Chapter 24), Dijkstra<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm for shortest paths form a single source (Chapter 25), and Chv&aacute;tal's greedy set-covering heuristic (Chapter 37). Minimum spanning trees form a classic example of the greedy method. Although this chapter and Chapter 24 can be read independently of each other, you may find it useful to read them together.<P>
+
+
+
+
+
+<h1><a name="0827_1578">17.1 An activity-selection problem<a name="0827_1578"></h1><P>
+<a name="0827_1576">Our first example is the problem of scheduling a resource among several competing activities. We shall find that a greedy algorithm provides an elegant and simple method for selecting a maximum-size set of mutually compatible activities.<P>
+Suppose we have a set <I>S</I> = { 1, 2, . . . , <I>n</I>} of <I>n</I> proposed <I><B>activities</I></B> that wish to use a resource, such as a lecture hall, which can be used by only one activity at a time. Each activity <I>i</I> has a<I><B> start time</I></B> <I>s<SUB>i </I></SUB>and a <I><B>finish time</I></B> &acirc;<I><SUB>i</I></SUB>, where <I>s<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> &acirc;<I><SUB>i</I></SUB>. If selected, activity <I>i</I> takes place during the half-open time interval [<I>s<SUB>i</I></SUB>,&acirc;<I><SUB>i</I></SUB>). Activities <I>i</I> and <I>j</I> are <I><B>compatible</I></B> if the intervals [<I>s<SUB>i</I></SUB>, &acirc;<I><SUB>i</I></SUB>) and [<I>s<SUB>j</I></SUB>,&acirc;<I><SUB>j</I></SUB>) do not overlap (i.e., <I>i</I> and <I>j</I> are compatible if <I>s<SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> &acirc;<I><SUB>j</I></SUB> or <I>s<SUB>j</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> &acirc;<I><SUB>i</I></SUB>). The <I><B>activity-selection problem</I></B> is to select a maximum-size set of mutually compatible activities.<P>
+A greedy algorithm for the activity-selection problem is given in the following pseudocode. We assume that the input activities are in order by increasing finishing time:<P>
+<pre>&acirc;<SUB>1</SUB> <IMG SRC="../IMAGES/lteq12.gif"> &acirc;<SUB>2</SUB> <IMG SRC="../IMAGES/lteq12.gif"> . . . <IMG SRC="../IMAGES/lteq12.gif"> &acirc;<I><SUB>n</I> .</sub></sup></pre><P>
+<h4><a name="0827_1579">(17.1)<a name="0827_1579"></sub></sup></h4><P>
+If not, we can sort them into this order in time <I>O</I>(<I>n </I>1g <I>n</I>), breaking ties arbitrarily. The pseudocode assumes that inputs <I>s</I> and &acirc; are represented as arrays.<P>
+<pre><a name="0827_1577">GREEDY-ACTIVITY-SELECTOR(<I>s, f</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>s</I>]</sub></sup></pre><P>
+<pre>2 <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> {1}</sub></sup></pre><P>
+<pre>3 <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>4 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>5      <B>do</B> <B>if</B> <I>s<SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> &acirc;<I><SUB>j</I></sub></sup></pre><P>
+<pre>6            <B>then</B> <I>A</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>i</I>}</sub></sup></pre><P>
+<pre>7                 <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I></sub></sup></pre><P>
+<pre>8 <B>return</B> <I>A</I></sub></sup></pre><P>
+The operation of the algorithm is shown in Figure 17.1. The set <I>A</I> collects the selected activities. The variable <I>j</I> specifies the most recent addition to <I>A</I>. Since the activities are considered in order of nondecreasing finishing time, <I>f<SUB>j</I></SUB> is always the maximum finishing time of any activity in <I>A</I>. That is,<P>
+<pre>&acirc;<I><SUB>j</I></SUB> = max{<I>f<SUB>k</I></SUB> : <I>K</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>}.</sub></sup></pre><P>
+<h4><a name="0827_157a">(17.2)<a name="0827_157a"></sub></sup></h4><P>
+Lines 2-3 select activity 1, initialize <I>A</I> to contain just this activity, and initialize <I>j</I> to this activity. Lines 4-7 consider each activity <I>i</I> in turn and add <I>i</I> to <I>A</I> if it is compatible with all previously selected activities. To see if activity <I>i</I> is compatible with every activity currently in <I>A</I>, it suffices by equation (17.2) to check (line 5) that its start time <I>s<SUB>i</I></SUB> is not earlier than the finish time <I>f<SUB>j</I></SUB> of the activity most recently added to <I>A</I>. If activity <I>i</I> is compatible, then lines 6-7 add it to <I>A</I> and update <I>j</I>. The <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>ACTIVITY</FONT>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT> procedure is quite efficient. It can schedule a set <I>S</I> of <I>n</I> activities in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time, assuming that the activities were already sorted initially by their finish times.<P>
+<img src="331_a.gif"><P>
+<h4><a name="0827_157b">Figure 17.1 The operation of <FONT FACE="Courier New" SIZE=2>GREEDY<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>ACTIVITY<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT></FONT></FONT></FONT></FONT> on 11 activities given at the left. Each row of the figure corresponds to an iteration of the for loop in lines 4-7. The activities that have been selected to be in set A are shaded, and activity i, shown in white, is being considered. If the starting time s<SUB>i</SUB> of activity i occurs before the finishing time f<SUB>j</SUB> of the most recently selected activity j (the arrow between them points left), it is rejected. Otherwise (the arrow points directly up or to the right), it is accepted and put into set A.<a name="0827_157b"></sub></sup></h4><P>
+The activity picked next by <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>ACTIVITY</FONT>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT> is always the one with the earliest finish time that can be legally seheduled. The activity picked is thus a &quot;greedy&quot; choice in the sense that, intuitively, it leaves as much opportunity as possible for the remaining activities to be scheduled. That is, the greedy choice is the one that maximizes the amount of unscheduled time remaining.<P>
+
+
+
+
+
+<h2>Proving the greedy algorithm correct</h2><P>
+Greedy algorithms do not always produce optimal solutions. However, <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>ACTIVITY</FONT>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT> always finds an optimal solution to an instance of the activity-selection problem.<P>
+<a name="0828_0001">Theorem 17.1<a name="0828_0001"><P>
+Algorithm <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>ACTIVITY</FONT>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT> produces solutions of maximum size for the activity-selection problem.<P>
+<I><B>Proof     </I></B>Let <I>S</I> = {1, 2, . . . , <I>n</I>} be the set of activities to schedule. Since we are assuming that the activities are in order by finish time, activity 1 has the earliest finish time. We wish to show that there is an optimal solution that begins with a greedy choice, that is, with activity 1.<P>
+Suppose that <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>S</I> is an optimal solution to the given instance of the activity-selection problem, and let us order the activities in <I>A</I> by finish time. Suppose further that the first activity in <I>A</I> is activity <I>k</I>. If <I>k</I> = 1, then schedule <I>A</I> begins with a greedy choice. If <I>k</I> <IMG SRC="../IMAGES/noteq.gif"> 1, we want to show that there is another optimal solution <I>B</I> to <I>S</I> that begins with the greedy choice, activity 1. Let <I>B</I> = <I>A</I> - {<I>k</I>} <IMG SRC="../IMAGES/wideu.gif"> {1}. Because <I>f<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>f<SUB>k</I></SUB>, the activities in <I>B</I> are disjoint, and since <I>B</I> has the same number of activities as <I>A</I>, it is also optimal. Thus, <I>B</I> is an optimal solution for <I>S</I> that contains the greedy choice of activity 1. Therefore, we have shown that there always exists an optimal schedule that begins with a greedy choice.<P>
+Moreover, once the greedy choice of activity 1 is made, the problem reduces to finding an optimal solution for the activity-selection problem over those activities in <I>S</I> that are compatible with activity 1. That is, if <I>A</I> is an optimal solution to the original problem <I>S</I>, then <I>A</I>' = <I>A</I> - {1} is an optimal solution to the activity-selection problem <I>S</I>'<I> = {</I>i<I> <IMG SRC="../IMAGES/memof12.gif"></I> <I>S</I>: <I><FONT FACE="Courier New" SIZE=2>S<SUB>i</I></FONT></SUB> <IMG SRC="../IMAGES/gteq.gif"> <I><FONT FACE="Courier New" SIZE=2>f<SUB>1</I></FONT></SUB>}. Why? If we could find a solution <I>B</I>'<I> to </I>S<I>'</I> with more activities than <I>A</I>'<I>, adding activity 1 to </I>B<I>'</I> would yield a solution <I>B</I> to <I>S</I> with more activities than <I>A</I>, thereby contradicting the optimality of <I>A</I>. Therefore, after each greedy choice is made, we are left with an optimization problem of the same form as the original problem. By induction on the number of choices made, making the greedy choice at every step produces an optimal solution.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0829_157b">Exercises<a name="0829_157b"></h2><P>
+<a name="0829_157c">17.1-1<a name="0829_157c"><P>
+<a name="0829_1578">Give a dynamic-programming algorithm for the activity-selection problem, based on computing <I>m<SUB>i</I></SUB> iteratively for <I>i</I> = 1, 2, . . . , <I>n</I>, where <I>m<SUB>i</I></SUB> is the size of the largest set of mutually compatible activities among activities {1, 2, . . . , <I>i</I>}. Assume that the inputs have been sorted as in equation (17.1). Compare the running time of your solution to the running time of <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>ACTIVITY</FONT>-<FONT FACE="Courier New" SIZE=2>SELECTOR</FONT>.<P>
+<a name="0829_157d">17.1-2<a name="0829_157d"><P>
+<a name="0829_1579">Suppose that we have a set of activities to schedule among a large number of lecture halls. We wish to schedule all the activities using as few lecture halls as possible. Give an efficient greedy algorithm to determine which activity should use which lecture hall.<P>
+<a name="0829_157a">(This is also known as the <I><B>interval-graph coloring problem.</I></B> We can create an interval graph whose vertices are the given activities and whose edges connect incompatible activities. The smallest number of colors required to color every vertex so that no two adjacent vertices are given the same color corresponds to finding the fewest lecture halls needed to schedule all of the given activities.)<P>
+<a name="0829_157e">17.1-3<a name="0829_157e"><P>
+Not just any greedy approach to the activity-selection problem produces a maximum-size set of mutually compatible activities. Give an example to show that the approach of selecting the activity of least duration from those that are compatible with previously selected activities does not work. Do the same for the approach of always selecting the activity that overlaps the fewest other remaining activities.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="082a_157c">17.2 Elements of the greedy strategy<a name="082a_157c"></h1><P>
+<a name="082a_157b">A greedy algorithm obtains an optimal solution to a problem by making a sequence of choices. For each decision point in the algorithm, the choice that seems best at the moment is chosen. This heuristic strategy does not always produce an optimal solution, but as we saw in the activity-selection problem, sometimes it does. This section discusses some of the general properties of greedy methods.<P>
+How can one tell if a greedy algorithm will solve a particular optimization problem? There is no way in general, but there are two ingredients that are exhibited by most problems that lend themselves to a greedy strategy: the greedy-choice property and optimal substructure.<P>
+
+
+
+
+
+<h2>Greedy-choice property</h2><P>
+<a name="082b_157c"><a name="082b_157d">The first key ingredient is the <I><B>greedy-choice property</I></B>: a globally optimal solution can be arrived at by making a locally optimal (greedy) choice. Here is where greedy algorithms differ from dynamic programming. In dynamic programming, we make a choice at each step, but the choice may depend on the solutions to subproblems. In a greedy algorithm, we make whatever choice seems best at the moment and then solve the subproblems arising after the choice is made. The choice made by a greedy algorithm may depend on choices so far, but it cannot depend on any future choices or on the solutions to subproblems. Thus, unlike dynamic programming, which solves the subproblems bottom up, a greedy strategy usually progresses in a top-down fashion, making one greedy choice after another, iteratively reducing each given problem instance to a smaller one.<P>
+Of course, we must prove that a greedy choice at each step yields a globally optimal solution, and this is where cleverness may be required. Typically, as in the case of Theorem 17.1, the proof examines a globally optimal solution. It then shows that the solution can be modified so that a greedy choice is made as the first step, and that this choice reduces the problem to a similar but smaller problem. Then, induction is applied to show that a greedy choice can be used at every step. Showing that a greedy choice results in a similar but smaller problem reduces the proof of correctness to demonstrating that an optimal solution must exhibit optimal substructure.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Optimal substructure</h2><P>
+<a name="082c_157e"><a name="082c_157f">A problem exhibits <I><B>optimal substructure</I></B> if an optimal solution to the problem contains within it optimal solutions to subproblems. This property is a key ingredient of assessing the applicability of dynamic programming as well as greedy algorithms. As an example of optimal substructure, recall that the proof of Theorem 17.1 demonstrated that if an optimal solution <I>A </I>to the activity selection problem begins with activity 1, then the set of activities <I>A</I>' = <I>A</I> - {1} is an optimal solution to the activity-selection problem <I>S</I>'<I> = {</I>i <I><IMG SRC="../IMAGES/memof12.gif"> S</I> : <I>s<SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> <I>&acirc;</I><SUB>1</SUB>}.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Greedy versus dynamic programming</h2><P>
+<a name="082d_1580"><a name="082d_1581">Because the optimal-substructure property is exploited by both greedy and dynamic-programming strategies, one might be tempted to generate a dynamic-programming solution to a problem when a greedy solution suffices, or one might mistakenly think that a greedy solution works when in fact a dynamic-programming solution is required. To illustrate the subtleties between the two techniques, let us investigate two variants of a classical optimization problem.<P>
+<a name="082d_1582"><a name="082d_1583">The <I><B>0-1 knapsack problem</I></B> is posed as follows. A thief robbing a store finds <I>n</I> items; the <I>i</I>th item is worth <I>v<SUB>i</I></SUB> dollars and weighs <I>w<SUB>i</I></SUB> pounds, where <I>v<SUB>i</I></SUB> and <I>w<SUB>i</I></SUB> are integers. He wants to take as valuable a load as possible, but he can carry at most <I>W</I> pounds in his knapsack for some integer <I>W</I>. What items should he take? (This is called the 0-1 knapsack problem because each item must either be taken or left behind; the thief cannot take a fractional amount of an item or take an item more than once.)<P>
+<a name="082d_1584"><a name="082d_1585">In the <I><B>fractional knapsack problem</I></B>, the setup is the same, but the thief can take fractions of items, rather than having to make a binary (0-1) choice for each item. You can think of an item in the 0-1 knapsack problem as being like a gold ingot, while an item in the fractional knapsack problem is more like gold dust.<P>
+<a name="082d_1586"><a name="082d_1587">Both knapsack problems exhibit the optimal-substructure property. For the 0-1 problem, consider the most valuable load that weighs at most <I>W </I>pounds. If we remove item <I>j</I> from this load, the remaining load must be the most valuable load weighing at most <I>W</I> - <I>w<SUB>j</I></SUB> that the thief can take from the <I>n</I> - 1 original items excluding <I>j</I>. For the comparable fractional problem, consider that if we remove a weight <I>w</I> of one item <I>j</I> from the optimal load, the remaining load must be the most valuable load weighing at most <I>W</I> - <I>w</I> that the thief can take from the <I>n</I> - 1 original items plus <I>w<SUB>j</I></SUB> - <I>w</I> pounds of item <I>j</I>.<P>
+<a name="082d_1588">Although the problems are similar, the fractional knapsack problem is solvable by a greedy strategy, whereas the 0-1 problem is not. To solve the fractional problem, we first compute the value per pound <I>v<SUB>i</I></SUB>/<I>w<SUB>i</I></SUB> for each item. Obeying a greedy strategy, the thief begins by taking as much as possible of the item with the greatest value per pound. If the supply of that item is exhausted and he can still carry more, he takes as much as possible of the item with the next greatest value per pound, and so forth until he can't carry any more. Thus, by sorting the items by value per pound, the greedy algorithm runs in <I>O</I>(<I>n</I>1g<I>n</I>) time. The proof that the fractional knapsack problem has the greedy-choice property is left as Exercise 17.2-1.<P>
+To see that this greedy strategy does not work for the 0-1 knapsack problem, consider the problem instance illustrated in Figure 17.2(a). There are 3 items, and the knapsack can hold 50 pounds. Item 1 weighs 10 pounds and is worth 60 dollars. Item 2 weighs 20 pounds and is worth 100 dollars. Item 3 weighs 30 pounds and is worth 120 dollars. Thus, the value per pound of item 1 is 6 dollars per pound, which is greater than the value per pound of either item 2 (5 dollars per pound) or item 3 (4 dollars per pound). The greedy strategy, therefore, would take item 1 first. As can be seen from the case analysis in Figure 17.2(b), however, the optimal solution takes items 2 and 3, leaving 1 behind. The two possible solutions that involve item 1 are both suboptimal.<P>
+For the comparable fractional problem, however, the greedy strategy, which takes item 1 first, does yield an optimal solution, as shown in Figure 17.2 (c). Taking item 1 doesn't work in the 0-1 problem because the thief is unable to fill his knapsack to capacity, and the empty space lowers the effective value per pound of his load. In the 0-1 problem, when we consider an item for inclusion in the knapsack, we must compare the solution to the subproblem in which the item is included with the solution to the subproblem in which the item is excluded before we can make the choice. The problem formulated in this way gives rise to many overlapping subproblems--a hallmark of dynamic programming, and indeed, dynamic programming can be used to solve the 0-1 problem. (See Exercise 17.2-2.)<P>
+<img src="336_a.gif"><P>
+<h4><a name="082d_1589">Figure 17.2 The greedy strategy does not work for the 0-1 knapsack problem. (a) The thief must select a subset of the three items shown whose weight must not exceed 50 pounds. (b) The optimal subset includes items 2 and 3. Any solution with item 1 is suboptimal, even though item 1 has the greatest value per pound. (c) For the fractional knapsack problem, taking the items in order of greatest value per pound yields an optimal solution.<a name="082d_1589"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="082e_158e">Exercises<a name="082e_158e"></h2><P>
+<a name="082e_158f">17.2-1<a name="082e_158f"><P>
+Prove that the fractional knapsack problem has the greedy-choice property.<P>
+<a name="082e_1590">17.2-2<a name="082e_1590"><P>
+Give a dynamic-programming solution to the 0-1 knapsack problem that runs in <I>O</I>(<I>n W</I>) time, where <I>n</I> is number of items and <I>W</I> is the maximum weight of items that the thief can put in his knapsack.<P>
+<a name="082e_1591">17.2-3<a name="082e_1591"><P>
+<a name="082e_1589"><a name="082e_158a"><a name="082e_158b">Suppose that in a 0-1 knapsack problem, the order of the items when sorted by increasing weight is the same as their order when sorted by decreasing value. Give an efficient algorithm to find an optimal solution to this variant of the knapsack problem, and argue that your algorithm is correct.<P>
+<a name="082e_1592">17.2-4<a name="082e_1592"><P>
+Professor Midas drives an automobile from Newark to Reno along Interstate 80. His car's gas tank, when full, holds enough gas to travel <I>n</I> miles, and his map gives the distances between gas stations on his route. The professor wishes to make as few gas stops as possible along the way. Give an efficient method by which Professor Midas can determine at which gas stations he should stop, and prove that your strategy yields an optimal solution.<P>
+<a name="082e_1593">17.2-5<a name="082e_1593"><P>
+Describe an efficient algorithm that, given a set {<I>x</I><SUB>1</SUB>,<I>x</I><SUB>2</SUB>, . . ., <I>x<SUB>n</I></SUB>} of points  on the real line, determines the smallest set of unit-length closed intervals that contains all of the given points. Argue that your algorithm is correct.<P>
+<a name="082e_1594">17.2-6<a name="082e_1594"><P>
+<a name="082e_158c"><a name="082e_158d">Show how to solve the fractional knapsack problem in <I>O</I>(<I>n</I>) time. Assume that you have a solution to Problem 10-2.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="082f_1596">17.3 Huffman codes<a name="082f_1596"></h1><P>
+<a name="082f_158e"><a name="082f_158f"><a name="082f_1590">Huffman codes are a widely used and very effective technique for compressing data; savings of 20% to 90% are typical, depending on the characteristics of the file being compressed. Huffman's greedy algorithm uses a table of the frequencies of occurrence of each character to build up an optimal way of representing each character as a binary string.<P>
+Suppose we have a 100,000-character data file that we wish to store compactly. We observe that the characters in the file occur with the frequencies given by Figure 17.3. That is, only six different characters appear, and the character <FONT FACE="Courier New" SIZE=2>a</FONT> occurs 45,000 times.<P>
+<a name="082f_1591"><a name="082f_1592"><a name="082f_1593"><a name="082f_1594">There are many ways to represent such a file of information. We consider the problem of designing a <I><B>binary character code</I></B> (or <I><B>code</I></B> for short) wherein each character is represented by a unique binary string. If we use a <I><B>fixed-length code</I></B>, we need 3 bits to represent six characters: <FONT FACE="Courier New" SIZE=2>a</FONT> = 000, <FONT FACE="Courier New" SIZE=2>b</FONT> = 001, . . . , <FONT FACE="Courier New" SIZE=2>f</FONT> = 101. This method requires 300,000 bits to code the entire file. Can we do better?<P>
+<pre>                             a     b     c     d      e     f</sub></sup></pre><P>
+<pre>--------------------------------------------------------------</sub></sup></pre><P>
+<pre>Frequency (in thousands)    45    13    12    16      9      5</sub></sup></pre><P>
+<pre>Fixed-length codeword      000   001   010   011    100    101</sub></sup></pre><P>
+<pre>Variable-length codeword    0    101   100   111   1101   1100</sub></sup></pre><P>
+<h4><a name="082f_1597">Figure 17.3 A character-coding problem. A data file of 100,000 characters contains only the characters <FONT FACE="Courier New" SIZE=2>a-f<FONT FACE="Times New Roman" SIZE=2>, with the frequencies indicated. If each character is assigned a 3-bit codeword, the file can be encoded in 300,000 bits. Using the variable-length code shown, the file can be encoded in 224,000 bits.<a name="082f_1597"></FONT></FONT></sub></sup></h4><P>
+<a name="082f_1595">A<I> <B>variable-length code</I></B> can do considerably better than a fixed-length code, by giving frequent characters short codewords and infrequent characters long codewords. Figure 17.3 shows such a code; here the 1-bit string 0 represents <FONT FACE="Courier New" SIZE=2>a</FONT>, and the 4-bit string 1100 represents <FONT FACE="Courier New" SIZE=2>f</FONT>. This code requires (45 <IMG SRC="../IMAGES/dot10.gif"> 1 + 13 <IMG SRC="../IMAGES/dot10.gif"> 3 + 12 <IMG SRC="../IMAGES/dot10.gif"> 3 + 16 <IMG SRC="../IMAGES/dot10.gif"> 3 + 9 <IMG SRC="../IMAGES/dot10.gif"> 4 + 5 <IMG SRC="../IMAGES/dot10.gif"> 4) <IMG SRC="../IMAGES/dot10.gif"> 1,000 = 224,000 bits to represent the file, a savings of approximately 25%. In fact, this is an optimal character code for this file, as we shall see.<P>
+
+
+
+
+
+<h2>Prefix codes</h2><P>
+<a name="0830_1596">We consider here only codes in which no codeword is also a prefix of some other codeword. Such codes are called <I><B>prefix codes.</I></B><SUP>1</SUP> It is possible to show (although we won't do so here) that the optimal data compression achievable by a character code can always be achieved with a prefix code, so there is no loss of generality in restricting attention to prefix codes.<P>
+<SUP><FONT FACE="Times" SIZE=1>1 </SUP><FONT FACE="Times" SIZE=2>Perhaps &quot;prefix-free codes&quot; would be a better name, but the term &quot;prefix codes&quot; is standard in the literature.</FONT></FONT><P>
+Prefix codes are desirable because they simplify encoding (compression) and decoding. Encoding is always simple for any binary character code; we just concatenate the codewords representing each character of the file. For example, with the variable-length prefix code of Figure 17.3, we code the 3-character file <FONT FACE="Courier New" SIZE=2>abc</FONT> as 0 <IMG SRC="../IMAGES/dot10.gif"> 101 <IMG SRC="../IMAGES/dot10.gif"> 100 = 0101100, where we use &quot;<IMG SRC="../IMAGES/dot10.gif">&quot; to denote concatenation.<P>
+Decoding is also quite simple with a prefix code. Since no codeword is a prefix of any other, the codeword that begins an encoded file is unambiguous. We can simply identify the initial codeword, translate it back to the original character, remove it from the encoded file, and repeat the decoding process on the remainder of the encoded file. In our example, the string 001011101 parses uniquely as 0 <IMG SRC="../IMAGES/dot10.gif"> 0 <IMG SRC="../IMAGES/dot10.gif"> 101 <IMG SRC="../IMAGES/dot10.gif"> 1101, which decodes to <FONT FACE="Courier New" SIZE=2>aabe</FONT>.<P>
+The decoding process needs a convenient representation for the prefix code so that the initial codeword can be easily picked off. A binary tree whose leaves are the given characters provides one such representation. We interpret the binary codeword for a character as the path from the root to that character, where 0 means &quot;go to the left child&quot; and 1 means &quot;go to the right child.&quot; Figure 17.4 shows the trees for the two codes of our example. Note that these are not binary search trees, since the leaves need not appear in sorted order and internal nodes do not contain character keys.<P>
+<a name="0830_1597">An optimal code for a file is always represented by a <I>full</I> binary tree, in which every nonleaf node has two children (see Exercise 17.3-1). The fixed-length code in our example is not optimal since its tree, shown in Figure 17.4(a), is not a full binary tree: there are codewords beginning 10 . . . , but none beginning 11 . . . . Since we can now restrict our attention to full binary trees, we can say that if <I>C</I> is the alphabet from which the characters are drawn, then the tree for an optimal prefix code has exactly <I>|C| leaves, one for each letter of the alphabet, and exactly |</I>C| - 1 internal nodes.<P>
+<img src="339_a.gif"><P>
+<h4><a name="0830_1598">Figure 17.4 Trees corresponding to the coding schemes in Figure 17.3. Each leaf is labeled with a character and its frequency of occurrence. Each internal node is labeled with the sum of the weights of the leaves in its subtree. (a) The tree corresponding to the fixed-length code <FONT FACE="Courier New" SIZE=2>a<FONT FACE="Times New Roman" SIZE=2> = 000, . . . , <FONT FACE="Courier New" SIZE=2>f<FONT FACE="Times New Roman" SIZE=2> = 100. (b) The tree corresponding to the optimal prefix code <FONT FACE="Courier New" SIZE=2>a<FONT FACE="Times New Roman" SIZE=2> = 0, <FONT FACE="Courier New" SIZE=2>b<FONT FACE="Times New Roman" SIZE=2> = 101, . . . , <FONT FACE="Courier New" SIZE=2>f<FONT FACE="Times New Roman" SIZE=2> = 1100<a name="0830_1598"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Given a tree <I>T</I> corresponding to a prefix code, it is a simple matter to compute the number of bits required to encode a file. For each character <I>c</I> in the alphabet <I>C</I>, let <I>f</I>(<I>c</I>) denote the frequency of <I>c</I> in the file and let <I>d<SUB>T</I></SUB>(<I>c</I>) denote the depth of <I>c</I>'s leaf in the tree. Note that <I>d<SUB>T</I></SUB>(<I>c</I>) is also the length of the codeword for character <I>c</I>. The number of bits required to encode a file is thus<P>
+<img src="339_b.gif"><P>
+<h4><a name="0830_1599">(17.3)<a name="0830_1599"></sub></sup></h4><P>
+which we define as the <I><B>cost</I></B> of the tree <I>T</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Constructing a Huffman code</h2><P>
+Huffman invented a greedy algorithm that constructs an optimal prefix code called a <I><B>Huffman code.</I></B> The algorithm builds the tree <I>T</I> corresponding to the optimal code in a bottom-up manner. It begins with a set of |<I>C|</I> leaves and performs a sequence of |<I>C|</I> - 1 &quot;merging&quot; operations to create the final tree.<P>
+<a name="0831_1598">In the pseudocode that follows, we assume that <I>C</I> is a set of <I>n</I> characters and that each character <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>C</I> is an object with a defined frequency <I>f</I>[<I>c</I>]. A priority queue <I>Q</I>, keyed on <I>f</I>, is used to identify the two least-frequent objects to merge together. The result of the merger of two objects is a new object whose frequency is the sum of the frequencies of the two objects that were merged.<P>
+<pre><a name="0831_1599">HUFFMAN(<I>C</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> |<I>C|</I></sub></sup></pre><P>
+<pre><I>2 Q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>C</I></sub></sup></pre><P>
+<pre>3 <B>for</B><I> i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n - </I>1</sub></sup></pre><P>
+<pre>4      <B>do</B> <I>z</I> <IMG SRC="../IMAGES/arrlt12.gif"> ALLOCATE-NODE()</sub></sup></pre><P>
+<pre>5         <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>left</I>[<I>z</I>] <IMG SRC="../IMAGES/arrlt12.gif"> EXTRACT-MIN(<I>Q</I>)</sub></sup></pre><P>
+<pre>6         y <IMG SRC="../IMAGES/arrlt12.gif"> <I>right</I>[<I>z</I>] <IMG SRC="../IMAGES/arrlt12.gif"> EXTRACT-MIN(<I>Q</I>)</sub></sup></pre><P>
+<pre>7         <I>f</I>[<I>z</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>f</I>[<I>x</I>] + <I>f</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>8         INSERT(<I>Q</I>, <I>z</I>)</sub></sup></pre><P>
+<pre>9 <B>return</B><I> </I>EXTRACT-MIN(<I>Q</I>)</sub></sup></pre><P>
+For our example, Huffman's algorithm proceeds as shown in Figure 17.5. Since there are 6 letters in the alphabet, the initial queue size is <I>n</I> = 6, and 5 merge steps are required to build the tree. The final tree represents the optimal prefix code. The codeword for a letter is the sequence of edge labels on the path from the root to the letter.<P>
+Line 2 initializes the priority queue <I>Q</I> with the characters in <I>C</I>. The <B>for</B> loop in lines 3-8 repeatedly extracts the two nodes <I>x</I> and <I>y</I> of lowest frequency from the queue, and replaces them in the queue with a new node <I>z</I> representing their merger. The frequency of <I>z</I> is computed as the sum of the frequencies of <I>x</I> and <I>y</I> in line 7. The node <I>z</I> has <I>x</I> as its left child and <I>y</I> as its right child. (This order is arbitrary; switching the left and right child of any node yields a different code of the same cost.) After <I>n</I> - 1 mergers, the one node left in the queue--the root of the code tree--is returned in line 9.<P>
+The analysis of the running time of Huffman's algorithm assumes that <I>Q</I> is implemented as a binary heap (see Chapter 7). For a set <I>C</I> of <I>n</I> characters, the initialization of <I>Q</I> in line 2 can be performed in <I>O</I>(<I>n</I>) time using the B<FONT FACE="Courier New" SIZE=2>UILD-</FONT><FONT FACE="Courier New" SIZE=2>HEAP</FONT> procedure in Section 7.3. The <B>for</B> loop in lines 3-8 is executed exactly |<I>n|</I> - 1 times, and since each heap operation requires time <I>O</I>(1g <I>n</I>), the loop contributes <I>O</I>(<I>n</I> 1g <I>n</I>) to the running time. Thus, the total running time of <FONT FACE="Courier New" SIZE=2>HUFFMAN</FONT> on a set of <I>n</I> characters is <I>O</I>(<I>n</I> 1g <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Correctness of Huffman's algorithm</h2><P>
+<a name="0832_159a">To prove that the greedy algorithm <FONT FACE="Courier New" SIZE=2>HUFFMAN</FONT> is correct, we show that the problem of determining an optimal prefix code exhibits the greedy-choice and optimal-substructure properties. The next lemma shows that the greedy-choice property holds.<P>
+<img src="341_a.gif"><P>
+<h4><a name="0832_159c">Figure 17.5 The steps of Huffman's algorithm for the frequencies given in Figure 17.3. Each part shows the contents of the queue sorted into increasing order by frequency. At each step, the two trees with lowest frequencies are merged. Leaves are shown as rectangles containing a character and its frequency. Internal nodes are shown as circles containing the sum of the frequencies of its children. An edge connecting an internal node with its children is labeled 0 if it is an edge to a left child and 1 if it is an edge to a right child. The codeword for a letter is the sequence of labels on the edges connecting the root to the leaf for that letter. (a) The initial set of n = 6 nodes, one for each letter. (b)-(e) Intermediate stages.(f) The final tree.<a name="0832_159c"></sub></sup></h4><P>
+<img src="342_a.gif"><P>
+<h4><a name="0832_159d">Figure 17.6 An illustration of the key step in the proof of Lemma 17.2. In the optimal tree T, leaves b and c are two of the deepest leaves and are siblings. Leaves x and y are the two leaves that Huffman's algorithm merges together first; they appear in arbitrary positions in T. Leaves b and x are swapped to obtain tree T'. Then, leaves c and y are swapped to obtain tree T\". Since each swap does not increase the cost, the resulting tree T\" is also an optimal tree.<a name="0832_159d"></sub></sup></h4><P>
+<a name="0832_159e">Lemma 17.2<a name="0832_159e"><P>
+<a name="0832_159b">Let <I>C</I> be an alphabet in which each character <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>C</I> has frequency <I>f</I>[<I>c</I>]. Let <I>x</I> and <I>y</I> be two characters in <I>C</I> having the lowest frequencies. Then there exists an optimal prefix code for <I>C</I> in which the codewords for <I>x </I>and <I>y </I>have the same length and differ only in the last bit.<P>
+<I><B>Proof     </I></B>The idea of the proof is to take the tree <I>T</I> representing an arbitrary  optimal prefix code and modify it to make a tree representing another optimal prefix code such that the characters <I>x</I> and <I>y</I> appear as sibling leaves of maximum depth in the new tree. If we can do this, then their codewords will have the same length and differ only in the last bit.<P>
+Let <I>b</I> and <I>c</I> be two characters that are sibling leaves of maximum depth in <I>T</I>. Without loss of generality, we assume that <I>f</I>[b] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<I>c</I>] and <I>f</I>[<I>x</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<I>y</I>]. Since <I>f</I>[<I>x</I>] and <I>f</I>[<I>y</I>] are the two lowest leaf frequencies, in order, and <I>f</I>[<I>b</I>] and <I>f</I>[<I>c</I>] are two arbitrary frequencies, in order, we have <I>f</I>[<I>x</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<I>b</I>] and <I>f</I>[<I>y</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>[<I>c</I>]. As shown in Figure 17.6, we exchange the positions in <I>T </I>of <I>b</I> and <I>x</I> to produce a tree <I>T</I>', and then we exchange the positions in <I>T</I>' of <I>c</I> and <I>y</I> to produce a tree <I>T</I>\". By equation (17.3), the difference in cost between <I>T</I> and <I>T</I>'<I> is</I><P>
+<img src="342_b.gif"><P>
+because both <I>f</I>[<I>b</I>] - <I>f</I>[<I>x</I>] and <I>d<SUB>T</I></SUB>[<I>b</I>] - <I>d<SUB>T</I></SUB>[<I>x</I>] are nonnegative. More specifically, <I>f</I>[<I>b</I>] - <I>f</I>[<I>x</I>] is nonnegative because <I>x</I> is a minimum-frequency leaf, and <I>d<SUB>T</I></SUB>[<I>b</I>] - <I>d<SUB>T</I></SUB>[<I>x</I>] is nonnegative because <I>b </I>is a leaf of maximum depth <I>in T</I>. Similarly, because exchanging <I>y</I> and <I>c</I> does not increase the cost, <I>B</I>(<I>T</I>') - <I>B</I>(<I>T</I>\") is nonnegative. Therefore, <I>B</I>(<I>T</I>\") <IMG SRC="../IMAGES/lteq12.gif"> <I>B</I>(<I>T</I>), and since <I>T</I> is optimal, <I>B</I>(<I>T</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>B</I>(<I>T</I>\"), which implies <I>B</I>(<I>T</I>\") = <I>B</I>(<I>T</I>). Thus, <I>T</I>\" is an optimal tree in which <I>x</I> and <I>y</I> appear as sibling leaves of maximum depth, from which the lemma follows.      <P>
+Lemma 17.2 implies that the process of building up an optimal tree by mergers can, without loss of generality, begin with the greedy choice of merging together those two characters of lowest frequency. Why is this a greedy choice? We can view the cost of a single merger as being the sum of the frequencies of the two items being merged. Exercise 17.3-3 shows that the total cost of the tree constructed is the sum of the costs of its mergers. Of all possible mergers at each step, <FONT FACE="Courier New" SIZE=2>HUFFMAN</FONT> chooses the one that incurs the least cost.<P>
+The next lemma shows that the problem of constructing optimal prefix codes has the optimal-substructure property.<P>
+<a name="0832_159f">Lemma 17.3<a name="0832_159f"><P>
+Let <I>T</I> be a full binary tree representing an optimal prefix code over an alphabet <I>C</I>, where frequency <I>f</I> [<I>c</I>] is defined for each character <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>C</I>. Consider any two characters <I>x</I> and <I>y </I>that appear as sibling leaves in <I>T</I>, and let <I>z</I> be their parent. Then, considering <I>z</I> as a character with frequency <I>f</I>[<I>z</I>] = <I>f</I>[<I>x</I>] + <I>f</I>[<I>y</I>], the tree <I>T</I>'<I> = </I>T<I> - {</I>x,y<I>} represents an optimal prefix code for the alphabet </I>C<I>' = </I>C<I> - {</I>x,y<I>} <IMG SRC="../IMAGES/wideu.gif"> {</I>z<I>}.</I><P>
+<I><B>Proof     </I></B>We first show that the cost <I>B</I>(<I>T</I>) of tree <I>T</I> can be expressed in terms of the cost <I>B</I>(<I>T</I>') of tree <I>T</I><I>'</I> by considering the component costs in equation (17.3). For each <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>C</I> - {<I>x,y</I>}, we have <I>d<SUB>T</I></SUB>(<I>c</I>) = <I>d<SUB>T</I></SUB>'<SUB>(<I>c</I>)</SUB>, and hence <I>f</I>[<I>c</I>]<I>d<SUB><FONT FACE="Courier New" SIZE=2>T</I></FONT></SUB>(<I>c</I>) = <I>f</I>[<I>c</I>]<I>d<SUB><FONT FACE="Courier New" SIZE=2>T</I></SUB>'</FONT><SUB>(<I>c</I>)</SUB>. Since <I>d<SUB>T</I></SUB>(<I>x</I>) = <I>d<SUB>T</I></SUB>(<I>y</I>) = <I>d<SUB>T</I></SUB>'<SUB>(<I>z</I>)</SUB> + 1, we have<P>
+<pre><I>f</I>[<I>x</I>]<I>d<SUB>T</I></SUB>(<I>x</I>) + <I>f</I>[<I>y</I>]<I>d<SUB>T</I></SUB>(<I>y</I>) = (<I>f</I>[<I>x</I>]) + (<I>f</I>[<I>y</I>])<I>d<SUB>T</I></SUB>'<SUB>(<I>z</I>)</SUB> + 1)</sub></sup></pre><P>
+<pre>= <I>f</I>[<I>z</I>]<I>d<SUB>T</I></SUB>'<SUB>(<I>z</I>)</SUB> + (<I>f</I>[<I>x</I>] + <I>f</I>[<I>y</I>]),</sub></sup></pre><P>
+from which we conclude that<P>
+<pre><I>B</I>(<I>T</I>) = <I>B</I>(<I>T</I>') + <I>f</I>[<I>x</I>] + <I>f</I>[<I>y</I>].</sub></sup></pre><P>
+If <I>T</I><I>'</I> represents a nonoptimal prefix code for the alphabet <I>C</I><I>'</I>, then there exists a tree <I>T</I>\" whose leaves are characters in <I>C</I><I>'</I> such that <I>B</I>(<I>T</I>\"<I>) &lt; </I><I>B</I>(<I>T</I><I>'</I>). Since <I>z</I> is treated as a character in <I>C</I>'<I>, it appears as a leaf in </I>T<I>\"</I>. If we add <I>x</I> and <I>y</I> as children of <I>z</I> in <I>T</I><I>\"</I>, then we obtain a prefix code for <I>C </I>with cost <I>B</I>(<I>T</I><I>\"</I>) + <I>f</I>[<I>x</I>] + <I>f</I>[<I>y</I>] &lt; <I>B</I>(<I>T</I>), contradicting the optimality of <I>T</I>. Thus, <I>T</I><I>'</I> must be optimal for the alphabet <I>C</I>'<I>.      </I><P>
+<a name="0832_15a0">Theorem 17.4<a name="0832_15a0"><P>
+Procedure <FONT FACE="Courier New" SIZE=2>HUFFMAN </FONT>produces an optimal prefix code.<P>
+<I><B>Proof     </I></B>Immediate from Lemmas 17.2 and 17.3.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0833_0001">Exercises<a name="0833_0001"></h2><P>
+<a name="0833_0002">17.3-1<a name="0833_0002"><P>
+Prove that a binary tree that is not full cannot correspond to an optimal prefix code.<P>
+<a name="0833_0003">17.3-2<a name="0833_0003"><P>
+What is an optimal Huffman code for the following set of frequencies, based on the first 8 Fibonacci numbers?<P>
+<pre>a:1 b:1 c:2 d:3 e:5 f:8 g:13 h:21</sub></sup></pre><P>
+Can you generalize your answer to find the optimal code when the frequencies are the first <I>n</I> Fibonacci numbers?<P>
+<a name="0833_0004">17.3-3<a name="0833_0004"><P>
+Prove the total cost of a tree for a code can also be computed as the sum, over all internal nodes, of the combined frequencies of the two children of the node.<P>
+<a name="0833_0005">17.3-4<a name="0833_0005"><P>
+Prove that for an optimal code, if the characters are ordered so that their frequencies are nonincreasing, then their codeword lengths are nondecreasing.<P>
+<a name="0833_0006">17.3-5<a name="0833_0006"><P>
+Let <I>C</I> = {0, 1, . . . , <I>n</I> - 1} be a set of characters. Show that any optimal prefix code on <I>C</I> can be represented by a sequence of<P>
+<pre>2<I>n</I> - 1 + <I>n</I> <IMG SRC="../IMAGES/hfbrul14.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrur14.gif"></sub></sup></pre><P>
+bits. (<I>Hint:</I> Use 2<I>n</I>- 1 bits to specify the structure of the tree, as discovered by a walk of the tree.)<P>
+<a name="0833_0007">17.3-6<a name="0833_0007"><P>
+Generalize Huffman's algorithm to ternary codewords (i.e., codewords using the symbols 0, 1, and 2), and prove that it yields optimal ternary codes.<P>
+<a name="0833_0008">17.3-7<a name="0833_0008"><P>
+Suppose a data file contains a sequence of 8-bit characters such that all 256 characters are about as common: the maximum character frequency is less than twice the minimum character frequency. Prove that Huffman coding in this case is no more efficient than using an ordinary 8-bit fixed-length code.<P>
+<a name="0833_0009">17.3-8<a name="0833_0009"><P>
+Show that no compression scheme can expect to compress a file of randomly chosen 8-bit characters by even a single bit. (<I>Hint:</I> Compare the number of files with the number of possible encoded files.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0834_159d">* 17.4 Theoretical foundations for greedy methods<a name="0834_159d"></h1><P>
+<a name="0834_159c">There is a beautiful theory about greedy algorithms, which we sketch in this section. This theory is useful in determining when the greedy method yields optimal solutions. It involves combinatorial structures known as &quot;matroids.&quot; Although this theory does not cover all cases for which a greedy method applies (for example, it does not cover the activity-selection problem of Section 17.1 or the Huffman coding problem of Section 17.3), it does cover many cases of practical interest. Furthermore, this theory is being rapidly developed and extended to cover many more applications; see the notes at the end of this chapter for references.<P>
+
+
+
+
+
+<h2><a name="0835_15ab">17.4.1 Matroids<a name="0835_15ab"></h2><P>
+<a name="0835_159d">A <I><B>matroid</I></B> is an ordered pair <img src="345_a.gif"> satisfying the following conditions.<P>
+1.     <I>S</I> is a finite nonempty set.<P>
+<a name="0835_159e"><a name="0835_159f"><a name="0835_15a0"><a name="0835_15a1">2.     <img src="345_b.gif"> is a nonempty family of subsets of <I>S</I>, called the <I><B>independent</I></B> subsets of <I>S</I>, such that if <img src="345_c.gif"> and <I>A </I><IMG SRC="../IMAGES/rgtubar.gif"><I> B</I>, then <img src="345_d.gif">. We say that <img src="345_e.gif"><I> </I>is <I><B>hereditary</I></B> if it satisfies this property. Note that the empty set <img src="345_f.gif"> is necessarily a member of <img src="345_g.gif">.<P>
+<a name="0835_15a2">3.     If <img src="345_h.gif"><I>,</I> and<I> |A| &lt; |B|</I>, then there is some element <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B - A </I>such that <img src="345_i.gif">. We say that <I>M </I>satisfies the <I><B>exchange property</I></B>.<P>
+<a name="0835_15a3">The word &quot;matroid&quot; is due to Hassler Whitney. He was studying <I><B>matric matroids</I></B>, in which the elements of <I>S</I> are the rows of a given matrix and a set of rows is independent if they are linearly independent in the usual sense. It is easy to show that this structure defines a matroid (see Exercise 17.4-2).<P>
+<a name="0835_15a4">As another illustration of matroids, consider the <I><B>graphic matroid</I></B> <img src="345_j.gif"> defined in terms of a given undirected graph <I>G = </I>(<I> V, E</I>) as follows.<P>
+<IMG SRC="../IMAGES/dot12.gif">     The set <I>S<SUB>G</I></SUB> is defined to be <I>E</I>, the set of edges of <I>G</I>.<P>
+<IMG SRC="../IMAGES/dot12.gif">     If <I>A</I> is a subset of <I>E</I>, then <img src="345_k.gif"> if and only if <I>A</I> is acyclic. That is, a set of edges is independent if and only if it forms a forest.<P>
+<a name="0835_15a5"><a name="0835_15a6">The graphic matroid <I>M<SUB>G</I></SUB> is closely related to the minimum-spanning-tree problem, which is covered in detail in Chapter 24.<P>
+<a name="0835_15ac">Theorem 17.5<a name="0835_15ac"><P>
+If<I> G</I> is an undirected graph, then <img src="345_l.gif"> is a matroid.<P>
+<I><B>Proof     </I></B>Clearly, <I>S<SUB>G</I></SUB> = <I>E</I> is a finite set. Furthermore, <img src="345_m.gif"> is hereditary, since a subset of a forest is a forest. Putting it another way, removing edges from an acyclic set of edges cannot create cycles.<P>
+Thus, it remains to show that <I>M<SUB>G</I></SUB> satisfies the exchange property. Suppose that <I>A</I> and <I>B</I> are forests of <I>G</I> and that |<I>B| &gt; |</I>A|. That is, <I>A</I> and <I>B </I>are acyclic sets of edges, and <I>B</I> contains more edges than <I>A</I> does.<P>
+It follows from Theorem 5.2 that a forest having <I>k</I> edges contains exactly |<I>V|-</I>k<I> trees. (To prove this another way, begin with |</I>V| trees and no edges. Then, each edge that is added to the forest reduces the number of trees by one.) Thus, forest <I>A</I> contains |<I>V| - |</I>A| trees, and forest <I>B</I> contains |<I>V| - |</I>B| trees.<P>
+Since forest <I>B</I> has fewer trees than forest <I>A</I> does, forest <I>B</I> must contain some tree <I>T</I> whose vertices are in two different trees in forest <I>A</I>. Moreover, since <I>T</I> is connected, it must contain an edge (<I>u, v</I>) such that vertices <I>u</I> and<I> v</I> are in different trees in forest <I>A</I>. Since the edge (<I>u, v</I>) connects vertices in two different trees in forest <I>A</I>, the edge (<I>u, v</I>) can be added to forest <I>A</I> without creating a cycle. Therefore, <I>M<SUB>G</I></SUB> satisfies the exchange property, completing the proof that <I>M<SUB>G</I></SUB> is a matroid.      <P>
+<a name="0835_15a7">Given a matroid <img src="346_a.gif">, we call an element <I>x</I> <IMG SRC="../IMAGES/notmem.gif"> <I>A</I> an <I><B>extension</I></B> of <img src="346_b.gif"> if <I>x</I> can be added to <I>A</I> while preserving independence; that is, <I>x</I> is an extension of <I>A </I>if <img src="346_c.gif">. As an example, consider a graphic matroid <I>M<SUB>G</I></SUB>. If <I>A</I> is an independent set of edges, then edge <I>e</I> is an extension of <I>A</I> if and only if <I>e</I> is not in <I>A </I>and the addition of<I> x</I> to <I>A </I>does not create a cycle.<P>
+<a name="0835_15a8">If <I>A</I> is an independent subset in a matroid <I>M</I>, we say that <I>A</I> is <I><B>maximal </I></B>if it has no extensions. That is, <I>A</I> is maximal if it is not contained in any larger independent subset of <I>M</I>. The following property is often useful.<P>
+<a name="0835_15ad">Theorem 17.6<a name="0835_15ad"><P>
+All maximal independent subsets in a matroid have the same size.<P>
+<I><B>Proof     </I></B>Suppose to the contrary that <I>A</I> is a maximal independent subset of <I>M</I> and there exists another larger maximal independent subset <I>B</I> of <I>M</I>. Then, the exchange property implies that <I>A</I> is extendable to a larger independent set <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} for some <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I> - <I>A</I>, contradicting the assumption that <I>A</I> is maximal.      <P>
+As an illustration of this theorem, consider a graphic matroid <I>M<SUB>G</I></SUB> for a connected, undirected graph <I>G</I>. Every maximal independent subset of <I>M<SUB>G</I></SUB> must be a free tree with exactly |<I>V| - 1 edges that connects all the vertices of </I>G<I>. Such a tree is called a </I><B>spanning tree<I></B> of </I>G<I>.</I><P>
+<a name="0835_15a9"><a name="0835_15aa">We say that a matroid <img src="346_d.gif"> is <I><B>weighted</I> </B>if there is an associated weight function <I>w</I> that assigns a strictly positive weight <I>w</I>(<I>x</I>) to each element <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>. The weight function <I>w</I> extends to subsets of <I>S</I> by summation: <P>
+<img src="346_e.gif"><P>
+for any <I>A </I><IMG SRC="../IMAGES/rgtubar.gif"><I> S</I>. For example, if we let <I>w</I>(<I>e</I>) denote the length of an edge <I>e</I> in a graphic matroid <I>M<SUB>G</I></SUB>, then <I>w</I>(<I>A</I>) is the total length of the edges in edge set <I>A</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0836_15b3">17.4.2 Greedy algorithms on a weighted matroid<a name="0836_15b3"></h2><P>
+<a name="0836_15ab"><a name="0836_15ac">Many problems for which a greedy approach provides optimal solutions can be formulated in terms of finding a maximum-weight independent subset in a weighted matroid. That is, we are given a weighted matroid <img src="347_a.gif">, and we wish to find an independent set <img src="347_b.gif"> such that <I>w</I>(<I>A</I>) is maximized. We call such a subset that is independent and has maximum possible weight an <I><B>optimal</I></B> subset of the matroid. Because the weight <I>w</I>(<I>x</I>) of any element <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> is positive, an optimal subset is always a maximal independent subset--it always helps to make <I>A</I> as large as possible.<P>
+<a name="0836_15ad"><a name="0836_15ae">For example, in the <I><B>minimum-spanning-tree problem</I></B>, we are given a connected undirected graph <I>G</I> = (<I>V, E</I>) and a length function <I>w</I> such that <I>w </I>(<I>e</I>) is the (positive) length of edge <I>e</I>. (We use the term &quot;length&quot; here to refer to the original edge weights for the graph, reserving the term &quot;weight&quot; to refer to the weights in the associated matroid.) We are asked to find a subset of the edges that connects all of the vertices together and has minimum total length. To view this as a problem of finding an optimal subset of a matroid, consider the weighted matroid <I>M<SUB>G</I></SUB> with weight function <I>w</I>'<I>, where </I>w<I>'</I>(<I>e</I>) = <I>w</I><SUB>0</SUB> - <I>w</I>(<I>e</I>) and <I>w</I><SUB>0</SUB> is larger than the maximum length of any edge. In this weighted matroid, all weights are positive and an optimal subset is a spanning tree of minimum total length in the original graph. More specifically, each maximal independent subset <I>A</I> corresponds to a spanning tree, and since<P>
+<pre><I>w'</I>(<I>A</I>)<I> = </I>(|<I>V| - 1)</I>w<I><SUB>0</SUB> - </I>w<I>(</I>A<I>)</I></sub></sup></pre><P>
+for any maximal independent subset <I>A</I>, the independent subset that maximizes <I>w</I><I>'</I>(<I>A</I>)<I> </I>must minimize<I> w</I>(<I>A</I>). Thus, any algorithm that can find an optimal subset <I>A</I> in an arbitrary matroid can solve the minimum-spanning-tree problem.<P>
+Chapter 24 gives algorithms for the minimum-spanning-tree problem, but here we give a greedy algorithm that works for any weighted matroid. The algorithm takes as input a weighted matroid <img src="347_c.gif"> with an an associated positive weight function <I>w</I>, and it returns an optimal subset <I>A</I>. In our pseudocode, we denote the components of <I>M</I> by <I>S</I>[<I>M</I>]<I> </I>and<I> </I><img src="347_d.gif"> and the weight function by <I>w</I>. The algorithm is greedy because it considers each element <I>x </I><IMG SRC="../IMAGES/memof12.gif"><I> S</I> in turn in order of nonincreasing weight and immediately adds it to the set <I>A</I> being accumulated if <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} is independent.<P>
+<img src="348_a.gif"><P>
+<a name="0836_15af">The elements of <I>S</I> are considered in turn, in order of nonincreasing weight. If the element <I>x</I> being considered can be added to <I>A</I> while maintaining <I>A</I>'s independence, it is. Otherwise, <I>x</I> is discarded. Since the empty set is independent by the definition of a matroid, and since <I>x</I> is only added to <I>A </I>if<I> A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} is independent, the subset <I>A</I> is always independent, by induction. Therefore, <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> always returns an independent subset <I>A</I>. We shall see in a moment that <I>A</I> is a subset of maximum possible weight, so that <I>A</I> is an optimal subset.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> is easy to analyze. Let <I>n</I> denote |<I>S|</I>. The sorting phase of <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> takes time <I>O</I>(<I>n </I>l<I>g n</I>). Line 4 is executed exactly <I>n</I> times, once for each element of <I>S</I>. Each execution of line 4 requires a check on whether or not the set <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} is independent. If each such check takes time <I>O</I>(<I>f(n</I>)), the entire algorithm runs in time <I>O</I>(<I>n </I>l<I>g n</I> +<I> nf</I>(<I>n</I>)).<P>
+We now prove that <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> returns an optima1 subset.<P>
+<a name="0836_15b4">Lemma 17.7<a name="0836_15b4"><P>
+<a name="0836_15b0">Suppose that <img src="348_b.gif"> is a weighted matroid with weight function <I>w</I> and that <I>S</I> is sorted into nonincreasing order by weight. Let <I>x</I> be the first element of <I>S</I> such that {<I>x</I>} is independent, if any such <I>x</I> exists. If <I>x</I> exists, then there exists an optimal subset <I>A</I> of <I>S</I> that contains <I>x</I>.<P>
+<I><B>Proof     </I></B>If no such <I>x</I> exists, then the only independent subset is the empty set and we're done. Otherwise, let <I>B</I> be any nonempty optimal subset. Assume that <I>x</I> <IMG SRC="../IMAGES/notmem.gif"> <I>B</I>; otherwise, we let <I>A</I> = <I>B</I> and we're done.<P>
+No element of <I>B</I> has weight greater than <I>w</I>(<I>x</I>). To see this, observe that <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I> implies that {<I>y</I>} is independent, since <img src="348_c.gif"> and <I>I</I> is hereditary. Our choice of <I>x</I> therefore ensures that <I>w</I>(<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>w</I>(<I>y</I>) for any <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>.<P>
+Construct the set <I>A</I> as follows. Begin with <I>A</I> = {<I>x</I>}. By the choice of <I>x, A</I> is independent. Using the exchange property, repeatedly find a new element of <I>B</I> that can be added to <I>A</I> until |<I>A| = |</I>B| while preserving the independence of <I>A</I>. Then, <I>A = B - </I>{<I>y</I>} <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} for some <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>, and so<P>
+<pre><I>w</I>(<I>A</I>) <I>= w</I>(<I>B</I>)<I> - w</I>(<I>y</I>) + <I>w</I>(<I>x</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif"> <I>w</I>(<I>B</I>) .</sub></sup></pre><P>
+Because <I>B</I> is optimal, <I>A</I> must also be optimal, and because <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>, the lemma is proven.      <P>
+We next show that if an element is not an option initially, then it cannot be an option later.<P>
+<a name="0836_15b5">Lemma 17.8<a name="0836_15b5"><P>
+Let <img src="349_a.gif"> be any matroid. If <I>x</I> is an element of <I>S</I> such that <I>x</I> is not an extension of <img src="349_b.gif">, then <I>x</I> is not an extension of any independent subset <I>A </I>of <I>S.</I><P>
+<I><B>Proof     </I></B>The proof is by contradiction. Assume that <I>x</I> is an extension of <I>A</I> but not of <img src="349_c.gif">. Since <I>x</I> is an extension of <I>A</I>, we have that <I>A</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>}<I> </I>is independent. Since <img src="349_d.gif"> is hereditary, {<I>x</I>} must be independent, which contradicts the assumption that <I>x</I> is not an extension of <img src="349_e.gif">.      <P>
+Lemma 17.8 says that any element that cannot be used immediately can never be used. Therefore, <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> cannot make an error by passing over any initial elements in <I>S</I> that are not an extension of <img src="349_f.gif">, since they can never be used.<P>
+<a name="0836_15b6">Lemma 17.9<a name="0836_15b6"><P>
+<a name="0836_15b1"><a name="0836_15b2">Let <I>x</I> be the first element of <I>S</I> chosen by <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> for the weighted matroid <img src="349_g.gif">. The remaining problem of finding a maximum-weight independent subset containing <I>x</I> reduces to finding a maximum-weight independent subset of the weighted matroid <img src="349_h.gif">, where<P>
+<img src="349_i.gif"><P>
+the weight function for <I>M</I>'<I> is the weight function for </I>M<I>, restricted to </I>S<I>'</I>. (We call <I>M</I>'<I> the </I><B>contraction<I></B> of </I>M<I> by the element </I>x<I>.)</I><P>
+<I><B>Proof     </I></B>If <I>A</I> is any maximum-weight independent subset of <I>M</I> containing <I>x</I>, then <I>A</I>' = A - <I>{</I>x<I>} is an independent subset of </I>M<I>'</I>. Conversely, any independent subset <I>A</I>'<I> of </I>M<I>'</I> yields an independent subset <I>A</I> = <I>A</I>'<I> <IMG SRC="../IMAGES/wideu.gif"> {</I>x<I>} of </I>M<I>. Since we have in both cases that </I>w<I>(</I>A<I>) = </I>w<I>(</I>A<I>'</I>) + <I>w</I>(<I>x</I>), a maximum-weight solution in <I>M</I> containing <I>x</I> yields a maximum-weight solution in <I>M</I>', and vice versa.<P>
+<a name="0836_15b7">Theorem 17.10<a name="0836_15b7"><P>
+If <img src="349_j.gif"> is a weighted matroid with weight function<I> w,</I> then the call <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>(<I>M, w</I>) returns an optimal subset.<P>
+<I><B>Proof     </I></B>By Lemma 17.8, any elements that are passed over initially because they are not extensions of <img src="349_k.gif"> can be forgotten about, since they can never be useful. Once the first element <I>x </I>is selected, Lemma 17.7 implies that <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> does not err by adding <I>x</I> to <I>A</I>, since there exists an optimal subset containing <I>x</I>. Finally, Lemma 17.9 implies that the remaining problem is one of finding an optimal subset in the matroid <I>M</I><I>'</I> that is the contraction of <I>M</I> by <I>x</I>. After the procedure <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> sets <I>A </I>to{<I>x</I>}, all of its remaining steps can be interpreted as acting in the matroid <img src="350_a.gif">, because <I>B</I> is independent in <I>M</I><I>'</I> if and only if <I>B</I> <IMG SRC="../IMAGES/wideu.gif"> {<I>x</I>} is independent in <I>M</I>, for all sets <img src="350_b.gif">. Thus, the subsequent operation of <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> will find a maximum-weight independent subset for <I>M</I><I>'</I>, and the overall operation of <FONT FACE="Courier New" SIZE=2>GREEDY</FONT> will find a maximum-weight independent subset for <I>M</I>.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0837_0001">Exercises<a name="0837_0001"></h2><P>
+<a name="0837_0002">17.4-1<a name="0837_0002"><P>
+Show that <img src="350_c.gif"> is a matroid, where <I>S</I> is any finite set and <img src="350_d.gif"> is the set of all subsets of <I>S</I> of size at most <I>k</I>, where <I>k </I><IMG SRC="../IMAGES/lteq12.gif"> |S|.<P>
+<a name="0837_0003">17.4-2<a name="0837_0003"><P>
+Given an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> real-valued matrix <I>T</I>, show that <img src="350_e.gif"> is a matroid, where <I>S</I> is the set of columns of <I>T</I> and <img src="350_f.gif"><I> </I>if and only if the columns in <I>A</I> are linearly independent.<P>
+<a name="0837_0004">17.4-3<a name="0837_0004"><P>
+Show that if <img src="350_g.gif"> is a matroid, then <img src="350_h.gif"> is a matroid, where <img src="350_i.gif"> contains some maximal <img src="350_j.gif">. That is, the maximal independent sets of <img src="350_k.gif"> are just the complements of the maximal independent sets of <img src="350_l.gif">.<P>
+<a name="0837_0005">17.4-4<a name="0837_0005"><P>
+Let <I>S</I> be a finite set and let <I>S</I><SUB>1</SUB>, <I>S</I><SUB>2</SUB>, . . . , <I>S<SUB>k</I></SUB> be a partition of <I>S</I> into nonempty disjoint subsets. Define the structure <img src="350_m.gif"> by the condition that <img src="350_n.gif">. Show that <img src="350_o.gif"> is a matroid. That is, the set of all sets <I>A</I> that contain at most one member in each block of the partition determines the independent sets of a matroid.<P>
+<a name="0837_0006">17.4-5<a name="0837_0006"><P>
+Show how to transform the weight function of a weighted matroid problem, where the desired optimal solution is a <I>minimum-weight</I> maximal independent subset, to make it an standard weighted-matroid problem. Argue carefully that your transformation is correct.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0838_15b5">* 17.5 A task-scheduling problem<a name="0838_15b5"></h1><P>
+<a name="0838_15b3"><a name="0838_15b4">An interesting problem that can be solved using matroids is the problem of optimally scheduling unit-time tasks on a single processor, where each task has a deadline and a penalty that must be paid if the deadline is missed. The problem looks complicated, but it can be solved in a surprisingly simple manner using a greedy algorithm.<P>
+A <I><B>unit-time task</I></B> is a job, such as a program to be run on a computer, that requires exactly one unit of time to complete. Given a finite set <I>S</I> of unit-time tasks, a <I><B>schedule</I></B> for <I>S</I> is a permutation of <I>S</I> specifying the order in which these tasks are to be performed. The first task in the schedule begins at time 0 and finishes at time 1, the second task begins at time 1 and finishes at time 2, and so on.<P>
+The problem of <I><B>scheduling unit-time tasks with deadlines and penalties for a single processor</I></B> has the following inputs:<P>
+<IMG SRC="../IMAGES/dot12.gif">     a set <I>S</I> = {1, 2, . . . , <I>n</I>} of <I>n</I> unit-time tasks;<P>
+<IMG SRC="../IMAGES/dot12.gif">     a set of <I>n</I> integer <I><B>deadlines</I></B> <I>d</I><SUB>1</SUB>, <I>d</I><SUB>2</SUB>, . . . , <I>d<SUB>n</SUB>,</I> such that each <I>d<SUB>i</I></SUB> satisfies 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>d<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> and task <I>i</I> is supposed to finish by time <I>d<SUB>i</SUB>;</I> and<P>
+<IMG SRC="../IMAGES/dot12.gif">     a set of <I>n</I> nonnegative weights or <I><B>penalties</I></B> <I>w</I><SUB>1</SUB>,<I>w</I><SUB>2</SUB>, . . . , <I>w<SUB>n</I></SUB>, such that a penalty <I>w<SUB>i</I></SUB> is incurred if task <I>i</I> is not finished by time <I>d<SUB>i</I></SUB> and no penalty is incurred if a task finishes by its deadline.<P>
+We are asked to find a schedule for <I>S</I> that minimizes the total penalty incurred for missed deadlines.<P>
+Consider a given schedule. We say that a task is <I><B>late</I></B> in this schedule if it finishes after its deadline. Otherwise, the task is <I><B>early</I></B> in the schedule. An arbitrary schedule can always be put into <I><B>early-first form</I></B>, in which the early tasks precede the late tasks. To see this, note that if some early task <I>x</I> follows some late task <I>y</I>, then we can switch the positions of <I>x</I> and <I>y</I> without affecting <I>x</I> being early or <I>y</I> being late.<P>
+We similarly claim that an arbitrary schedule can always be put into <I><B>canonical form</I></B>, in which the early tasks precede the late tasks and the early tasks are scheduled in order of nondecreasing deadlines. To do so, we put the schedule into early-first form. Then, as long as there are two early tasks <I>i</I> and <I>j</I> finishing at respective times <I>k</I> and <I>k</I> + 1 in the schedule such that <I>dj </I>&lt; <I>d<SUB>i</I></SUB>, we swap the positions of <I>i</I> and <I>j</I>. Since task <I>j</I> is early before the swap, <I>k</I> + 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>d<SUB>j</I></SUB>. Therefore, <I>k</I> + 1 &lt; <I>d<SUB>i</I></SUB>, and so task <I>i</I> is still early after the swap. Task <I>j</I> is moved earlier in the schedule, so it also still early after the swap.<P>
+The search for an optimal schedule thus reduces to finding a set <I>A</I> of tasks that are to be early in the optimal schedule. Once <I>A</I> is determined, we can create the actual schedule by listing the elements of <I>A</I> in order of nondecreasing deadline, then listing the late tasks (i.e., <I>S</I> - <I>A</I>) in any order, producing a canonical ordering of the optimal schedule.<P>
+We say that a set <I>A</I> of tasks is <I><B>independent</I></B> if there exists a schedule for these tasks such that no tasks are late. Clearly, the set of early tasks for a schedule forms an independent set of tasks. Let <img src="351_a.gif"> denote the set of all independent sets of tasks.<P>
+Consider the problem of determining whether a given set <I>A</I> of tasks is independent. For <I>t</I> = 1, 2, . . . , <I>n</I>, let <I>N<SUB>t</I></SUB>(<I>A</I>) denote the number of tasks in <I>A</I> whose deadline is <I>t</I> or earlier.<P>
+<a name="0838_15b6">Lemma 17.11<a name="0838_15b6"><P>
+For any set of tasks <I>A</I>, the following statements are equivalent.<P>
+1.     The set <I>A</I> is independent.<P>
+2.     For <I>t</I> = 1, 2, . . . , <I>n</I>, we have <I>N<SUB>t</I></SUB>(<I>A</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>t</I>.<P>
+3.     If the tasks in <I>A</I> are scheduled in order of nondecreasing deadlines, then no task is late.<P>
+<I><B>Proof     </I></B>Clearly, if <I>N<SUB>t</I></SUB>(<I>A</I>) &gt; <I>t</I> for some <I>t</I>, then there is no way to make a schedule with no late tasks for set <I>A</I>, because there are more than <I>t</I> tasks to finish before time <I>t</I>. Therefore, (1) implies (2). If (2) holds, then (3) must follow: there is no way to &quot;get stuck&quot; when scheduling the tasks in order of nondecreasing deadlines, since (2) implies that the <I>i</I>th largest deadline is at most <I>i</I>. Finally, (3) trivially implies (1).      <P>
+Using property 2 of Lemma 17.11, we can easily compute whether or not a given set of tasks is independent (see Exercise 17.5-2).<P>
+The problem of minimizing the sum of the penalties of the late tasks is the same as the problem of maximizing the sum of the penalties of the early tasks. The following theorem thus ensures that we can use the greedy algorithm to find an independent set <I>A</I> of tasks with the maximum total penalty.<P>
+<a name="0838_15b7">Theorem 17.12<a name="0838_15b7"><P>
+If <I>S</I> is a set of unit-time tasks with deadlines, and <img src="352_a.gif"> is the set of all independent sets of tasks, then the corresponding system <img src="352_b.gif"> is a matroid.<P>
+<I><B>Proof     </I></B>Every subset of an independent set of tasks is certainly independent. To prove the exchange property, suppose that <I>B</I> and <I>A</I> are independent sets of tasks and that |<I>B| &gt; |</I>A|. Let <I>k</I> be the largest <I>t</I> such that <I>N<SUB>t</I></SUB>(<I>B</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>N<SUB>t</I></SUB>(<I>A</I>). Since <I>N<SUB>n</I></SUB>(<I>B</I>) = |<I>B| and </I>N<SUB>n<I></SUB>(</I>A<I>) = |</I>A|, but |<I>B| &gt; |</I>A|, we must have that <I>k</I> &lt; <I>n</I> and that <I>N<SUB>j</I></SUB>(<I>B</I>) &gt; <I>N<SUB>j</I></SUB>(<I>A</I>) for all <I>j</I> in the range <I>k</I> + 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>j </I><IMG SRC="../IMAGES/lteq12.gif"><I> </I>n<I>. Therefore, </I>B<I> contains more tasks with deadline </I>k<I> + 1 than </I>A<I> does. Let </I>x<I> be a task in </I>B<I> - </I>A<I> with deadline </I>k<I> + 1. Let </I>A<I>'</I> = <I>A</I> = <I>A </I><IMG SRC="../IMAGES/wideu.gif"><I> </I>{<I>x</I>}.<P>
+We now show that <I>A</I>' must be independent by using property 2 of Lemma 17.11. For 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>t </I><IMG SRC="../IMAGES/lteq12.gif"><I></I> <I>k</I>, we have <I>N<SUB>t</I></SUB>(<I>A</I>'<I>) = </I>N<SUB>t<I></SUB>(</I>A<I>) <IMG SRC="../IMAGES/lteq12.gif"></I> <I>t,</I>since <I>A</I> is independent. For <I>k</I> &lt; <I>t</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, we have <I>N<SUB>t</I></SUB>(<I>A</I>'<I>) <IMG SRC="../IMAGES/lteq12.gif"> </I>N<SUB>t<I></SUB>(</I>B<I>) <IMG SRC="../IMAGES/lteq12.gif"> </I><I>t</I>, since <I>B</I> is independent. Therefore, <I>A</I><I>'</I> is independent, completing our proof that <img src="352_c.gif"> is a matroid.      <P>
+By Theorem 17.10, we can use a greedy algorithm to find a maximum- weight independent set of tasks <I>A</I>. We can then create an optimal schedule having the tasks in <I>A</I> as its early tasks. This method is an efficient algorithm for scheduling unit-time tasks with deadlines and penalties for a single processor. The running time is <I>O</I>(<I>n</I><SUP>2</SUP>) using <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>, since each of the <I>O</I>(<I>n</I>) independence checks made by that algorithm takes time O<I>(n)</I> (see Exercise 17.5-2). A faster implementation is given in Problem 17-3.<P>
+<pre>                Task</sub></sup></pre><P>
+<pre>     1   2   3   4    5    6  7</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre><I>d<SUB>i   </I></SUB>4   2   4   3    1    4   6</sub></sup></pre><P>
+<pre><I>w<SUB>i  </I></SUB>70  60  50  40   30   20  10</sub></sup></pre><P>
+<h4><a name="0838_15b8">Figure 17.7 An instance of the problem of scheduling unit-time tasks with deadlines and penalties for a single processor.<a name="0838_15b8"></sub></sup></h4><P>
+Figure 17.7 gives an example of a problem of scheduling unit-time tasks with deadlines and penalties for a single processor. In this example, the greedy algorithm selects tasks 1, 2, 3, and 4, then rejects tasks 5 and 6, and finally accepts task 7. The final optimal schedule is<P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">2, 4, 1, 3, 7, 5, 6<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+which has a total penalty incurred of <I>w</I><SUB>5 +</SUB><I>w</I><SUB>6 = </SUB>50<SUB>.</sub><P>
+
+
+
+
+
+<h2><a name="0839_0001">Exercises<a name="0839_0001"></h2><P>
+<a name="0839_0002">17.5-1<a name="0839_0002"><P>
+Solve the instance of the scheduling problem given in Figure 17.7, but with each penalty <I>w<SUB>i</I></SUB> replaced by 80 - <I>w<SUB>i</I></SUB>.<P>
+<a name="0839_0003">17.5-2<a name="0839_0003"><P>
+Show how to use property 2 of Lemma 17.11 to determine in time <I>O</I>(|<I>A|</I>) whether or not a given set <I>A</I> of tasks is independent.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="083a_15bf">Problems<a name="083a_15bf"></h1><P>
+<a name="083a_15c0">17-1     Coin changing<a name="083a_15c0"><P>
+<a name="083a_15b5"><a name="083a_15b6">Consider the problem of making change for <I>n</I> cents using the least number of coins<I>.</I><P>
+<I><B>a</I></B><I>.     </I>Describe a greedy algorithm to make change consisting of quarters, dimes, nickels, and pennies. Prove that your algorithm yields an optimal solution.<P>
+<I><B>b</I></B>.     Suppose that the available coins are in the denominations <I>c</I><SUP>0</SUP>,<SUB> </SUB><I>c</I><SUP>1</SUP>, . . . , <I>c<SUP>k</SUP><B><SUB> </I></B></SUB>for some integers <I>c</I> &gt;1 and <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1. Show that the greedy algorithm always yields an optimal solution.<P>
+<I><B>c</I></B>.     Give a set of coin denominations for which the greedy algorithm does not yield an optimal solution.<P>
+<a name="083a_15c1">17-2     Acyclic subgraphs<a name="083a_15c1"><P>
+<a name="083a_15b7"><a name="083a_15b8"><a name="083a_15b9"><I><B>a</I>.</B>     Let <I>G</I> = (<I>V, E</I>) be an undirected graph. Using the definition of a matroid, show that <img src="354_a.gif"><I>) </I>is a matroid, where <img src="354_b.gif"> if and only if <I>A</I> is an acyclic subset of <I>E</I>.<P>
+<a name="083a_15ba"><I><B>b.</I></B>     The <I><B>incidence matrix</I></B> for an undirected graph <I>G = (V, E)</I> is a |<I>V| </I>X |<I>E|</I> matrix <I>M</I> such that <I>M<SUB>ve</I></SUB> = 1 if edge <I>e</I> is incident on vertex <I>v</I>, and <I>M<SUB>ve</I></SUB> = 0 otherwise. Argue that a set of columns of <I>M</I> is linearly independent if and only if the corresponding set of edges is acyclic. Then, use the result of Exercise 17.4-2 to provide an alternate proof that <img src="354_c.gif"> of part (a) is matroid.<P>
+<I><B>c</I>.</B>     Suppose that a nonnegative weight <I>w</I>(<I>e</I>) is associated with each edge in an undirected graph <I>G = ( V, E)</I>. Give an efficient algorithm to find an an acyclic subset of <I>E</I> of maximum total weight.<P>
+<I><B>d.</I></B><I>     </I>Let <I>G</I>(<I>V, E</I>) be an arbitrary directed graph, and let<I> </I><img src="354_d.gif">) be defined so that <img src="354_e.gif"> if and only if <I>A</I> does not contain any directed cycles. Give an example of a directed graph <I>G</I> such that the associated system <img src="354_f.gif">) is not a matroid. Specify which defining condition for a matroid fails to hold.<P>
+<a name="083a_15bb"><I><B>e.</I></B>     The <I><B>incidence matrix</I></B> for a directed graph <I>G= (V, E)</I> is a |<I>V| X |</I>E|<I> </I>matrix <I>M</I> such that <I>M<SUB>ve</I></SUB> = -1 if edge <I>e</I> leaves vertex <I>v, M<SUB>ve</SUB> </I>= 1 if edge <I>e </I>enters vertex <I>v</I>, and and <I>M<SUB>ve</SUB> </I>= 0 otherwise. Argue that if a set of edges of<I> G </I>is linearly independent, then the corresponding set of edges does not contain a directed cycle.<P>
+<I><B>f.</I></B><I>     </I>Exercise 17.4-2 tells us that the set of linearly independent sets of columns of any matrix <I>M</I> forms a matroid. Explain carefully why the results of parts (d) and (e) are not contradictory. How can there fail to be a perfect correspondence between the notion of a set of edges being acyclic and the notion of the associated set of columns of the incidence matrix being linearly independent?<P>
+<a name="083a_15c2">17-3     Scheduling variations<a name="083a_15c2"><P>
+<a name="083a_15bc"><a name="083a_15bd"><a name="083a_15be">Consider the following algorithm for solving the problem in Section 17.5 of scheduling unit-time tasks with deadlines and penalties. Let all <I>n</I> time slots be initially empty, where time slot <I>i</I> is the unit-length slot of time that finishes at time <I>i. </I>We consider the jobs in order of monotonically decreasing penalty. When considering job <I>j</I>, if there exists a time slot at or before<I> j</I>'s deadline <I>d<SUB>j</SUB> </I>that is still empty, assign job <I>j</I> to the latest such slot, filling it. If there is no such slot, assign job <I>j</I> to the latest of the as yet unfilled slots.<P>
+<I><B>a</I>.</B>     Argue that this algorithm always gives an optional answer.<P>
+<I><B>b</I>.</B>     Use the fast disjoint-set forest presented in Section 22.3 to implement the algorithm efficiently. Assume that the set of input jobs has already been sorted into monotonically decreasing order by penalty. Analyze the running time of your implementation.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+<a name="083b_15bf">Much more material on greedy algorithms and matroids can be found in Lawler [132] and Papadimitriou and Steiglitz [154].<P>
+The greedy algorithm first appeared in the combinatorial optimization literature in a 1971 article by Edmonds [62], though the theory of matroids dates back to a 1935 article by Whitney [200].<P>
+Our proof of the correctness of the greedy algorithm for the activity-selection problem follows that of Gavril [80]. The task-scheduling problem is studied in Lawler [132], Horowitz and Sahni [105], and Brassard and Bratley [33].<P>
+Huffman codes were invented in 1952 [107]; Lelewer and Hirschberg [136] surveys data-compression techniques known as of 1987.<P>
+An extension of matroid theory to greedoid theory was pioneered by Korte and Lov&aacute;sz [127, 128, 129, 130], who greatly generalize the theory presented here.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap18.htm">Chapter 18</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,95 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int n,a,b,c,d,e,f,g,max,max2;
+    cin>>n;
+    if(n==1)
+    {
+            cin>>a;
+            cout<<"1"<<endl;
+    }
+    if(n==2)
+    {
+            cin>>a>>b;
+            if(a>b)cout<<a+1<<endl;
+            else cout<<b+1<<endl;
+    }
+    if(n==3)
+    {
+            cin>>a>>b>>c;
+            if(a>b&&a>c)max=a;
+            if(b>a&&b>c)max=b;
+            else max=c;
+            if(max=a&&b>c)cout<<a+b+1<<endl;
+            else
+            if(max=a&&c>b)cout<<a+c+1<<endl;
+            else
+             if(max=b&&a>c)cout<<b+a+1<<endl;
+            else
+            if(max=b&&c>a)cout<<b+c+1<<endl;
+            else
+            if(a>b)cout<<c+a+1<<endl;
+            else
+            if(b>a)cout<<c+b+1<<endl;
+    }
+    if(n==4)
+    {
+            cin>>a>>b>>c>>d;
+            if(a>b&&a>c&&a>d)max2=a;
+            else
+            if(b>a&&b>c&&b>d)max2=b;
+            else
+            if(c>b&&c>a&&c>d)max2=c;
+            else max2=d;
+            if(max2=a&&b>c&&b>d&&c>d)cout<<a+b+c+1<<endl;
+            else
+            if(max2=a&&b>c&&b>d&&d>c)cout<<a+b+d+1<<endl;
+            else
+            if(max2=a&&c>b&&c>d&&b>d)cout<<a+c+b+1<<endl;
+            else
+            if(max2=a&&c>b&&c>d&&d>b)cout<<a+c+d+1<<endl;
+            else
+            if(max2=a&&d>c&&d>b&&c>b)cout<<a+d+c+1<<endl;
+            else
+            if(max2=a&&d>c&&d>b&&c<d)cout<<a+d+b+1<<endl;
+            else
+            if(max2=b&&a>c&&a>d&&c>d)cout<<b+a+c+1<<endl;
+            else
+            if(max2=b&&a>c&&a>d&&d>c)cout<<b+b+d+1<<endl;
+            else
+            if(max2=b&&c>a&&c>d&&a>d)cout<<b+c+a+1<<endl;
+            else
+            if(max2=b&&c>a&&b>d&&b>a)cout<<b+c+d+1<<endl;
+            else
+            if(max2=b&&d>a&&d>c&&c>a)cout<<b+d+c+1<<endl;
+            else
+            if(max2=b&&d>a&&d>b&&a>c)cout<<b+d+a+1<<endl;
+            else
+            if(max2=c&&a>b&&a>d&&b>d)cout<<c+a+b+1<<endl;
+            else
+            if(max2=c&&a>b&&a>d&&d>b)cout<<c+b+d+1<<endl;
+            else
+            if(max2=c&&b>a&&b>d&&a>d)cout<<c+b+a+1<<endl;
+            else
+            if(max2=c&&b>a&&b>d&&d>a)cout<<c+b+d+1<<endl;
+            else
+            if(max2=c&&d>a&&d>b&&a>b)cout<<c+d+a+1<<endl;
+            else
+            if(max2=c&&d>a&&d>b&&b>a)cout<<c+d+b+1<<endl;
+            else
+            if(max2=d&&a>b&&a>c&&c>b)cout<<d+a+c+1<<endl;
+            else
+            if(max2=d&&a>b&&a>c&&d>c)cout<<d+a+b+1<<endl;
+            else
+            if(max2=d&&b>a&&b>c&&a>c)cout<<d+b+a+1<<endl;
+            else
+            if(max2=d&&b>a&&b>d&&c>a)cout<<d+b+c+1<<endl;
+            else
+            if(max2=d&&c>a&&c>b&&a>b)cout<<d+c+a+1<<endl;
+            else
+            if(max2=d&&c>a&&c>b&&b>a)cout<<d+c+b+1<<endl;
+            }
+    
+    return 0;
+}

@@ -1,0 +1,112 @@
+#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int cnt_edges;
+int cnt_ways;
+int p_home;
+int stadium;
+int g_home;
+int school;
+bool table_pesho[200][200];
+bool table_gosho[200][200];
+vector<int> map[200];
+bool used(vector<int> v, int wanted) {
+    sort(v.begin(), v.end());
+    int l = 0, r = v.size(), m;
+    while (l + 1 < r) {
+        m = (l + r) / 2;
+        if (v[m] <= wanted) {
+            l = m;
+        } else {
+            r = m;
+        }
+    }
+    if (v[l] == wanted) return 1;
+    return 0;
+}
+bool make_pesho(vector<int> v) {
+    if (v[v.size() - 1] == stadium) return 1;
+    int last = v[v.size() - 1];
+    bool yes;
+    for (unsigned i = 0;i < map[last].size(); ++i) {
+        if (!used(v, map[last][i])) {
+            v.push_back(map[last][i]);
+            yes = make_pesho(v);
+            if (yes) {
+                for (unsigned i = 0;i < v.size(); ++i) {
+                    table_pesho[v[i]][i] = 1;
+                }
+            }
+            v.pop_back();
+        }
+    }
+    return 0;
+}
+bool make_gosho(vector<int> v) {
+    if (v[v.size() - 1] == school) return 1;
+    int last = v[v.size() - 1];
+    bool yes;
+    for (unsigned i = 0;i < map[last].size(); ++i) {
+        if (!used(v, map[last][i])) {
+            v.push_back(map[last][i]);
+            yes = make_gosho(v);
+            if (yes) {
+                for (unsigned i = 0;i < v.size(); ++i) {
+                    table_gosho[v[i]][i] = 1;
+                }
+            }
+            v.pop_back();
+        }
+    }
+    return 0;
+}
+void make() {
+    vector<int> v;
+    v.push_back(p_home);
+    make_pesho(v);
+    v.clear();
+    v.push_back(g_home);
+    make_gosho(v);
+}
+int main() {
+    scanf("%d %d", &cnt_edges, &cnt_ways);
+    int v1, v2;
+    for (int i = 0;i < cnt_ways; ++i) {
+        scanf("%d %d", &v1, &v2);
+        map[v1].push_back(v2);
+        map[v2].push_back(v1);
+    }
+    scanf("%d %d %d %d", &p_home, &stadium, &g_home, &school);
+    table_gosho[g_home][0] = 1;
+    table_pesho[p_home][0] = 1;
+    make();
+    for (int i = 0;i < cnt_edges; ++i) {
+        for (int j = 0;j < cnt_edges; ++j) {
+            table_pesho[i][j] *= table_gosho[i][j];
+        }
+    }
+    int ans = 0;
+    for (int i = 0;i < cnt_edges; ++i) {
+        for (int j = 0;j < cnt_edges; ++j) {
+            table_pesho[i][0] += table_pesho[i][j];
+        }
+        ans += table_pesho[i][0];
+    }
+    printf("%d\n", ans);
+    /*
+    for (int i = 0;i < cnt_edges; ++i) {
+        printf("%d -> ", i);
+        for (unsigned j = 0;j < map[i].size(); ++j) {
+            printf("%d, ", map[i][j]);
+        }
+        puts("");
+    }
+    for (int i = 0;i < cnt_edges; ++i) {
+        for (int j = 0;j < cnt_edges; ++j) {
+            printf(" %d", table_pesho[i][j]);
+        }
+        puts("");
+    }*/
+    return 0;
+}

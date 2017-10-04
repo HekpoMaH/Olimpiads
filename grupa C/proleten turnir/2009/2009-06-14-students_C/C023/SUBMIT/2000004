@@ -1,0 +1,35 @@
+#include<iostream>
+#include<cstdio>
+using namespace std;
+
+int dp[128],n,q[128],f[128],r[128],p[128],m;
+int i,j,g;
+
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for(i=0;i<n;i++)
+     scanf("%d%d%d%d",&p[i],&r[i],&q[i],&f[i]);
+    dp[0]=1;
+    for(i=0;i<n;i++)
+     for(j=m;j>=0;j--)
+     {
+            for(g=1;g<=f[i];g++)
+            {
+                if(g>=r[i])
+                {
+                    if(j>=g)
+                     if(dp[j-g]&&(dp[j-g]+q[i]*g<dp[j]||dp[j]==0))
+                      dp[j]=dp[j-g]+q[i]*g;
+                }
+                else
+                {
+                    if(j>=g)
+                     if(dp[j-g]&&(dp[j-g]+p[i]*g<dp[j]||dp[j]==0))
+                      dp[j]=dp[j-g]+p[i]*g;
+                }
+            }
+     }
+    printf("%d\n",dp[m]-1);
+}
+

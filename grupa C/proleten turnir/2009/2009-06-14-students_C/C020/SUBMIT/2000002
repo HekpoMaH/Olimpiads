@@ -1,0 +1,29 @@
+#include<iostream>
+using namespace std;
+
+int n,n2;
+long long k,nf=1,t;
+char a[20]={'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t'};
+bool ost[20];
+char izhod[20];
+
+int main()
+{
+  cin>>n>>k;
+  n2=n;
+  for (int i=1;i<=n;i++) { nf*=i; }
+  for (;n!=0;) {
+    nf/=n;
+    t=k/nf;
+    if (k%nf!=0) t++;
+    if(t==0) t=n;
+    for (int j=0,f=0;j<n2&&f<t;j++) { if (ost[j]!=1) f++; if(f==t) { t=j; break; } }
+    izhod[n2-n]=t;
+    ost[t]=1;
+    k%=nf;
+    n--;
+  }
+  for (int i=0;i<n2;i++) { cout<<a[izhod[i]]; }
+  cout<<endl;
+  return 0;
+}

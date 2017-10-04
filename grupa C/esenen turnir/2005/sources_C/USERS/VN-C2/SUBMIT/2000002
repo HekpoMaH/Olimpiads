@@ -1,0 +1,59 @@
+/*
+TASK:NUMBER
+LANG:C
+*/
+
+#include <stdio.h>
+#define B 30
+
+int n;
+int nc, pc;
+int a, b, c;
+int g[B][B] = {0, 0};
+int used[100];
+
+void rec (int i, int l) {
+	int j;
+	if (l == n - 1) {
+		pc ++;
+		return ;
+	}
+	for (j = 0; j < g[i][0]; j ++) {
+		rec (g[i][j + 2], l + 1);
+	}
+	return ;
+}
+
+int main () {
+	int i = 0, j = 0;
+	int p = 0, q = 0;
+	scanf ("%d%d%d%d", &n, &a, &b, &c);
+	for (i = 1; i < 9; i ++) {
+		if (a * i < 100 && !used[a * i]) {
+  			g[nc ++][1] = a * i;
+  			used[a * i] = 1;
+		}
+		if (b * i < 100 && !used[b * i]) {
+  			g[nc ++][1] = b * i;
+  			used[b * i] = 1;
+		}
+		if (c * i < 100 && !used[c * i]) {
+  			g[nc ++][1] = c * i;
+  			used[c * i] = 1;
+		}
+	}
+	for (i = 0; i < nc - 1; i ++) {
+		p = g[i][1];
+		for (j = i + 1; j < nc; j ++) {
+			q = g[j][1];
+			if (j == i) continue;
+			if (p % 10 == q / 10) g[i][2 + g[i][0] ++] = j;
+			if (q % 10 == p / 10) g[j][2 + g[j][0] ++] = i;
+		}
+	}
+	for (i = 0; i < nc; i ++) {
+		rec (i, 1);
+	}
+	printf ("%d\n", pc);
+	return 0;
+}

@@ -1,0 +1,56 @@
+{
+TASK: cars
+LANG: PASCAL
+}
+const maxn=500003;
+const maxm= 10*maxn;
+var a : array[1..maxM+5]of longint;
+    poz, br, s, taken : array[1..maxn+5]of longint;
+    otg, na, kr, i, j, k, n, m, p : longint;
+
+Procedure readin;
+begin
+  readln( n);
+  poz[1]:=1;
+  for i:=1 to n do begin
+    read( k);
+    br[i]:=k;
+    poz[i+1]:=poz[i]+k;
+    if k=0 then kr:=i;
+    for j:=1 to k do begin
+      read( p);
+      a[poz[i]+j-1]:=p;
+      inc(s[p]);
+    end;
+    readln;
+  end;
+  for i:=1 to n do if s[i]=0 then begin
+    na:=i;
+    break;
+  end;
+end;
+
+Procedure bla(v : longint);
+var u, b, p : longint;
+begin
+  if v=kr then begin inc(otg); exit; end;
+  b:=br[v];
+  if b=0 then exit;
+  for u:=poz[v] to poz[v]+b-1 do begin
+    p:=a[u];
+    if taken[p]=0 then begin
+      taken[p]:=1;
+      bla(p);
+      taken[p]:=0;
+    end;
+  end;
+end;
+
+
+Begin
+  readin;
+  taken[na]:=1;
+  bla(na);
+  writeln(otg);
+
+End.

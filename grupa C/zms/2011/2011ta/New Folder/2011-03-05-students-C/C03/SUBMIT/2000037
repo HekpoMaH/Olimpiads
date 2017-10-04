@@ -1,0 +1,46 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+long long a[1006][1006],n,k,b,mn,br,s;
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin>>n;
+    for(long long i=0;i<n;i++)
+    {
+        for(long long j=0;j<n;j++)
+        {
+            cin>>a[i][j];
+
+            br++;
+        }
+    }
+    cin>>k;
+    for(long long i=0;i<k;i++)
+    {
+        cin>>b;
+        mn=999999;
+        for(long long j=0;j<n;j++)
+        {
+            for(long long h=0;h<n;h++)
+            {
+                if(a[j][h]==b)
+                {
+                    s=j+n-h-1;
+                    if(s<mn)mn=s;
+                }
+            }
+        }
+        if(mn==999999)cout<<"No Solution"<<"\n";
+        else cout<<mn<<"\n";
+    }
+    return 0;
+}
+/*4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

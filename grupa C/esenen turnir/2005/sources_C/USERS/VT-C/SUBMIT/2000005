@@ -1,0 +1,39 @@
+{
+TASK:school
+LANG:PASCAL
+}
+program school;
+var
+  graph:array[1..500] of record sons:array[1..500] of integer; u:integer; end;
+  added:array[1..500] of boolean;
+  a,b,i,n,m,ans:integer;
+procedure DFS(num:integer);
+var
+  i:integer;
+begin
+ added[num]:=true;
+ for i:=1 to graph[num].u do
+  if (not added[graph[num].sons[i]]) then
+   DFS(graph[num].sons[i]);
+end;
+begin
+   readln(n,m);
+   for i:=1 to m do
+   begin
+    read(a,b);
+    with graph[a] do
+    begin
+     inc(u);
+     sons[u]:=b;
+    end;
+   end;
+   ans:=0;
+   for i:=1 to n do
+    if not added[i] then
+    begin
+     DFS(i);
+     inc(ans);
+    end;
+   writeln(ans);
+   readln
+end.

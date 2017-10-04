@@ -1,0 +1,158 @@
+/*
+TASK:festa
+LANG:C++
+*/
+#include<cstdio>
+#include<set>
+#include<cstdlib>
+using namespace std;
+class point
+    {
+    public:
+    int x;
+    long long people;
+    point(int a, int b){x=a;people=b;}
+    point(){x=0;people=0;}
+    point(int a){x=a;people=0;}
+    bool operator< (const point &kk)const{return kk.x > x;}
+    void operator= (point kk){x=kk.x;people=kk.people;}
+    };
+set<point> ss;
+void print()
+    {
+    set<point>::iterator it;
+    for(it=ss.begin();it!=ss.end();it++)
+        printf("%d %d\n",it->x,it->people);
+
+    }
+long long ab(long long t)
+     {
+     if(t<0) return -t;
+     else return t;
+     }
+int main()
+    {
+    int a, x, p,px;
+    long long gg;
+    int fl;
+    point t;
+    point kk;
+    long long suml=0, sumr=0;
+    int cp=0,cx;
+    long long ansl,ansr,lx,rx;
+    long long s,lp,rp;
+    long long l, r;
+    long long cs;
+    set<point>::iterator it;
+    set<point>::reverse_iterator it1;
+    long long pp;
+    //freopen("fest.in","r",stdin);
+    //scanf("%d",&p);
+    scanf("%d",&p);
+    while(!feof(stdin))
+       {
+         //scanf("%d",&p);
+         if(p==1)
+            {
+            scanf("%d %d",&x,&a);
+            it=ss.find(point(x));
+            t=*it;
+            t.people+=a;
+            t.x=x;
+            if(it!=ss.end())
+                ss.erase(it);
+            ss.insert(t);
+            }
+         if(p==2)
+            {
+            scanf("%lld",&s);
+            sumr=suml=0;
+            cp=ss.begin()->people;
+            cx=ss.begin()->x;
+            it=ss.begin();
+            l=ss.begin()->x;
+            r=ss.rend()->x;
+            fl=0;
+            it++;
+            for(;it!=ss.end();it++)
+               {
+               sumr+=ab((it->x-cx)*cp);
+               cx=it->x;
+               cp+=it->people;
+               }
+            it1=ss.rbegin();
+            it1++;
+            cp=ss.rbegin()->people;
+            cx=ss.rbegin()->x;
+            for(;it1!=ss.rend();it1++)
+               {
+               suml+=ab((it1->x-cx)*cp);
+               cx=it1->x;
+               cp+=it1->people;
+               }
+           //printf("%d\n",cp);
+           if(sumr==s)
+              {printf("%lld %lld\n",r,sumr);return 0;}
+           if(suml==s)
+              {printf("%lld %lld\n",l,suml);return 0;}
+           if(suml<s)
+              {
+              fl=1;
+              lx=(s-suml)/cp;
+              ansl=suml+lx*cp-s;
+              if(ab(ansl)>ab(suml+(lx+1)*cp-s)){ansl=suml+(lx+1)*cp-s;lx++;}
+              //printf("%lld %lld\n",l-lx,ansl);
+              lx=l-lx;
+              }
+           if(sumr<s)
+              {
+              rx=(s-sumr)/cp;
+              ansr=sumr+rx*cp-s;
+              if(ab(ansr)>ab(suml+(rx+1)*cp-s)){ansl=sumr+(rx+1)*cp-s;rx++;}
+              rx+=r;
+              //printf("%lld %lld\n",r+rx,ansr);
+              }
+           if(sumr>s)
+              {
+              lp=cp;
+              rp=0;
+              cs=sumr;
+              px=ss.rbegin()->x;
+              it1=ss.rbegin();
+              it1++;
+              pp=ss.rbegin()->people;
+              for(;it1!=ss.rend()&&cs>s;it1++)
+                 {
+                 lp-=(pp+it1->people);
+                 rp+=pp;
+                 cs+=(px-it1->x)*rp;
+                 cs-=(px-it1->x)*lp;
+                 cs-=it1->people*(px-it1->x);
+                 px=it1->x;
+                 pp+=it1->people;
+                 }
+              ansr=1000000000000000ll;
+              it1--;
+              it1--;
+              for(int i=px;i!=it1->x;i++)
+                {
+                if(ab(ansr-s)>ab(cs+(i-px)*lp+(i-px)*rp-s))
+                    {
+                    ansr=ab(cs+(i-px)*lp+(i-px)*rp);
+                    rx=i;
+                    }
+                }
+              ansr-=s;
+              if(!fl)
+                 {
+                 ansl=ansr;
+                 lx=rx;
+                 }
+              }
+           if(ab(ansl)<ab(ansr))printf("%lld %lld\n",lx,ab(ansl));
+           else printf("%lld %lld\n",rx,ab(ansr));
+           }//if(p==2)
+       scanf("%d",&p);
+       }
+    return 0;
+    }

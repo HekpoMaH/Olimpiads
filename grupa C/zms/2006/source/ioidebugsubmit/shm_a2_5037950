@@ -1,0 +1,144 @@
+/*
+TASK: expres
+LANG: C
+*/
+#include <stdio.h>
+#define INF 1000000000
+
+ struct
+  {
+   int x,y,z,s;
+  }prev[64][64][64];
+
+ char g[10][15]={ "111101101101111",
+                  "001001001001001",
+                  "111001111100111",
+                  "111001111001111",
+                  "101101111001001",
+                  "111100111001111",
+                  "111100111101111",
+                  "111001001001001",
+                  "111101111101111",
+                  "111101111001111" };
+ int a[64][64][64];
+ char b[8][256];
+ int h[10][10][2];
+ int n,m,o;
+ char r[8][256];
+
+ void pd (int k)
+  {
+   int i,j,w;
+   w=0;
+   for (i=0;i<5;i++)
+    for (j=0;j<3;j++)
+     r[i][o+j]=g[k][w++];
+   o+=3;
+  }
+
+ void ps(int s)
+  {
+   int i,j;
+   for (i=0;i<5;i++)
+    for (j=0;j<3;j++)
+     r[i][o+j]='0';
+   r[2][o+0]=r[2][o+1]=r[2][o+2]='1';
+   if (s==1) r[1][o+1]=r[3][o+1]='1';
+   o+=3;
+  }
+
+ void show (int pos,int i,int j)
+  {
+   if (pos==1) pd(prev[pos][i][j].z);
+   if (pos!=1)
+    {
+     show(pos-1,prev[pos][i][j].x,prev[pos][i][j].y);
+     ps(prev[pos][i][j].s);     
+     pd(prev[pos][i][j].z);
+    }
+  }
+
+ int get (int z)
+  {
+   int i,j,k;
+   char t[15];
+   k=0;
+   for (i=0;i<5;i++)
+    for (j=0;j<3;j++)
+     t[k++]=b[i][j+z];
+   for (i=0;i<=9;i++)
+    {
+     for (j=0;j<15;j++)
+      if (t[j]!=g[i][j]) break;
+     if (j==15) return i;
+    }
+  }
+
+ void modify (int pos,int z,int s,int p,int q)
+  {
+   int i,j,k;
+   for (i=0;i<=m;i++)
+    for (j=0;j<=m;j++)
+     if (a[pos-1][i][j]!=-INF)
+      for (k=0;k<=9;k++)
+       if (i+h[z][k][0]+p<=m && j+h[z][k][1]+q<=m
+         && a[pos][i+h[z][k][0]+p][j+h[z][k][1]+q]<a[pos-1][i][j]+s*k)
+        {
+            a[pos][i+h[z][k][0]+p][j+h[z][k][1]+q]=a[pos-1][i][j]+s*k;
+         prev[pos][i+h[z][k][0]+p][j+h[z][k][1]+q].z=k;
+         prev[pos][i+h[z][k][0]+p][j+h[z][k][1]+q].x=i;
+         prev[pos][i+h[z][k][0]+p][j+h[z][k][1]+q].y=j;
+         prev[pos][i+h[z][k][0]+p][j+h[z][k][1]+q].s=s;
+        }
+  }  
+
+ int main ()
+  {
+   int i,j,k,pom;
+   scanf("%d%d",&n,&m);
+   //
+   for (i=0;i<=9;i++)
+    for (j=0;j<=9;j++)
+     for (k=0;k<15;k++)
+      {
+       if (g[i][k]=='0' && g[j][k]=='1') h[i][j][0]++;
+       if (g[i][k]=='1' && g[j][k]=='0') h[i][j][1]++;
+      }
+   //
+   for (i=0;i<5;i++)
+    scanf("%s",b[i]);
+   for (i=0;i<=n;i++)
+    for (j=0;j<=m;j++)
+     for (k=0;k<=m;k++)
+      a[i][j][k]=-INF;
+   pom=get(0);
+   a[0][0][0]=0;
+   modify(1,pom,1,0,0);
+   for (i=2;i<=n;i++)
+    {
+     j=(i-1)*3+(i-2)*3;
+     pom=get((i-1)*6);
+     if (b[1][j+1]=='1')
+      {
+       modify(i,pom,1,0,0);
+       modify(i,pom,-1,0,2);
+      }
+     if (b[1][j+1]=='0')
+      {
+       modify(i,pom,-1,0,0);
+       modify(i,pom,1,2,0);
+      }            
+    }
+   i=-INF;
+   for (j=0;j<=m/2;j++)
+    if (i<a[n][j][j])
+     {
+      i=a[n][j][j];
+      k=j;
+     }
+   printf("%d\n",i);
+   show(n,k,k);
+   for (i=0;i<5;i++)
+    printf("%s\n",r[i]);
+   return 0;
+  }

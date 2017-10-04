@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="tr"
+ lang="tr" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>tr:c:math:abs</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-12-13T11:37:22-0800" />
+<meta name="keywords" content="tr,c,math,abs" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/tr/c/math/abs?do=index" title="İndeks" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=tr:c:math" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/tr/c/math/abs" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/tr/c/math/abs" />
+<link rel="canonical" href="abs" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='tr:c:math';var JSINFO = {"id":"tr:c:math:abs","namespace":"tr:c:math"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="abs" id="abs">abs</a></h2>
+<div class="level2">
+
+<p>
+Söz dizimi:
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;cstdlib&gt;</span>
+    <span class="kw4">int</span> abs<span class="br0">&#40;</span> <span class="kw4">int</span> num <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+
+abs() fonksiyonu num un kesin değerini döndürür. Örneğin:
+</p>
+<pre class="c code c++" style="font-family:monospace;">     <span class="kw4">int</span> sihirli_sayi <span class="sy0">=</span> <span class="nu0">10</span><span class="sy0">;</span>
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;Bir tahmin gir: &quot;</span><span class="sy0">;</span>
+     cin <span class="sy0">&gt;&gt;</span> x<span class="sy0">;</span>
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;Tahmininiz &quot;</span> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;sihirli sayiya &quot;</span> <span class="sy0">&lt;&lt;</span> abs<span class="br0">&#40;</span> sihirli_sayi <span class="sy0">-</span> x <span class="br0">&#41;</span> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;kadar yaklasti. &quot;</span> <span class="sy0">&lt;&lt;</span> endl<span class="sy0">;</span></pre>
+<p>
+C++ aşağıdaki aşırı yüklenmiş biçimleri sağlar:
+
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;cstdlib&gt;</span>
+    <span class="kw4">long</span> abs<span class="br0">&#40;</span> <span class="kw4">long</span> num <span class="br0">&#41;</span><span class="sy0">;</span> <span class="co1">// labs() benzeri</span>
+&nbsp;
+    <span class="co2">#include &lt;cmath&gt;</span>
+    <span class="co1">// fabs() eş anlamlısı</span>
+    <span class="kw4">float</span> abs<span class="br0">&#40;</span> <span class="kw4">float</span> num <span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="kw4">double</span> abs<span class="br0">&#40;</span> <span class="kw4">double</span> num <span class="br0">&#41;</span><span class="sy0">;</span>
+    <span class="kw4">long</span> <span class="kw4">double</span> abs<span class="br0">&#40;</span> <span class="kw4">long</span> <span class="kw4">double</span> num <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+İlgili başlıklar: <a href="http://www.cppreference.com/wiki/tr/c/math/fabs" class="wikilink2" title="tr:c:math:fabs" rel="nofollow">fabs</a>, <a href="http://www.cppreference.com/wiki/tr/c/math/labs" class="wikilink2" title="tr:c:math:labs" rel="nofollow">labs</a>
+</p>
+
+</div>
+<!-- SECTION "abs" [3-] --></div>
+</body>
+</html>

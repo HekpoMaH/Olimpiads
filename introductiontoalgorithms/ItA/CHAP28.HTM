@@ -1,0 +1,310 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 28: SORTING NETWORKS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap29.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="partvii.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="091b_1913">CHAPTER 28: SORTING NETWORKS<a name="091b_1913"></h1><P>
+<a name="091b_1912">In Part II, we examined sorting algorithms for serial computers (random-access machines, or RAM's) that allow only one operation to be executed at a time. In this chapter, we investigate sorting algorithms based on a comparison network model of computation in which many comparison operations can be performed simultaneously.<P>
+Comparison networks differ from RAM's in two important respects. First, they can only perform comparisons. Thus, an algorithm such as counting sort (see Section 9.2) cannot be implemented on a comparison network. Second, unlike the RAM model, in which operations occur serially--that is, one after another--operations in a comparison network may occur at the same time, or &quot;in parallel.&quot; As we shall see, this characteristic allows the construction of comparison networks that sort <I>n</I> values in sublinear time.<P>
+We begin in Section 28.1 by defining comparison networks and sorting networks. We also give a natural definition for the &quot;running time&quot; of a comparison network in terms of the depth of the network. Section 28.2 proves the &quot;zero-one principle,&quot; which greatly eases the task of analyzing the correctness of sorting networks.<P>
+The efficient sorting network that we shall design is essentially a parallel version of the merge-sort algorithm from Section 1.3.1. Our construction will have three steps. Section 28.3 presents the design of a &quot;bitonic&quot; sorter that will be our basic building block. We modify the bitonic sorter slightly in Section 28.4 to produce a merging network that can merge two sorted sequences into one sorted sequence. Finally, in Section 28.5, we assemble these merging networks into a sorting network that can sort <I>n</I> values in <I>O</I>(lg<SUP>2</SUP> <I>n</I>)<I> </I>time.<P>
+
+
+
+
+
+<h1><a name="091d_1920">28.1 Comparison networks<a name="091d_1920"></h1><P>
+<a name="091d_1913"><a name="091d_1914"><a name="091d_1915"><a name="091d_1916">Sorting networks are comparison networks that always sort their inputs, so it makes sense to begin our discussion with comparison networks and their characteristics. A comparison network is comprised solely of wires and comparators. A <I><B>comparator</I></B>, shown in Figure 28.1 (a), is a device with two inputs, <I>x</I> and <I>y</I>, and two outputs, <I>x</I>' and <I>y</I>', that performs the following function:<P>
+<img src="635_a.gif"><P>
+<h4><a name="091d_1921">Figure 28.1 (a) A comparator with inputs x and y and outputs x' and y'. (b) The same comparator, drawn as a single vertical line. Inputs x = 7, y = 3 and outputs x' = 3, y' = 7 are shown.<a name="091d_1921"></sub></sup></h4><P>
+<pre><I>x</I>'  =  min(<I>x, y</I>) ,</sub></sup></pre><P>
+<pre><I>y</I>'  =  max(<I>x, y</I>) .</sub></sup></pre><P>
+Because the pictorial representation of a comparator in Figure 28.1 (a) is too bulky for our purposes, we shall adopt the convention of drawing comparators as single vertical lines, as shown in Figure 28.1(b). Inputs appear on the left and outputs on the right, with the smaller input value appearing on the top output and the larger input value appearing on the bottom output. We can thus think of a comparator as sorting its two inputs.<P>
+We shall assume that each comparator operates in <I>O</I>(1) time. In other words, we assume that the time between the appearance of the input values <I>x</I> and <I>y</I> and the production of the output values <I>x</I>' and <I>y</I>' is a constant.<P>
+<a name="091d_1917"><a name="091d_1918"><a name="091d_1919"><a name="091d_191a"><a name="091d_191b"><a name="091d_191c">A <I><B>wire</I></B> transmits a value from place to place. Wires can connect the output of one comparator to the input of another, but otherwise they are either network input wires or network output wires. Throughout this chapter, we shall assume that a comparison network contains <I>n</I> <I><B>input wires</I></B><I> a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>, through which the values to be sorted enter the network, and <I>n</I> <I><B>output wires</I></B> <I>b</I><SUB>1</SUB>, <I>b</I><SUB>2</SUB>, . . . , <I>b<SUB>n</I></SUB>, which produce the results computed by the network. Also, we shall speak of the <I><B>input sequence</I></B> <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and the <I><B>output sequence</I></B> <IMG SRC="../IMAGES/lftwdchv.gif"><I>b</I><SUB>1</SUB>,<I>b</I><SUB>2, . . . ,</SUB><I>b<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, referring to the values on the input and output wires. That is, we use the same name for both a wire and the value it carries. Our intention will always be clear from the context.<P>
+Figure 28.2 shows a <I><B>comparison network</I></B>, which is a set of comparators interconnected by wires. We draw a comparison network on <I>n</I> inputs as a collection of <I>n</I> horizontal <I><B>lines</I></B> with comparators stretched vertically. Note that a line does <I>not</I> represent a single wire, but rather a sequence of distinct wires connecting various comparators. The top line in Figure 28.2, for example, represents three wires: input wire <I>a</I><SUB>1</SUB>, which connects to an input of comparator <I>A</I>; a wire connecting the top output of comparator <I>A</I> to an input of comparator <I>C</I>; and output wire <I>b</I><SUB>1</SUB>, which comes from the top output of comparator <I>C</I>. Each comparator input is connected to a wire that is either one of the network's <I>n</I> input wires <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB> or is connected to the output of another comparator. Similarly, each comparator output is connected to a wire that is either one of the network's <I>n</I> output wires <I>b</I><SUB>1</SUB>, <I>b</I><SUB>2</SUB>, . . . , <I>b<SUB>n</I></SUB> or is connected to the input of another comparator. The main requirement for interconnecting comparators is that the graph of interconnections must be acyclic: if we trace a path from the output of a given comparator to the input of another to output to input, etc., the path we trace must never cycle back on itself and go through the same comparator twice. Thus, as in Figure 28.2, we can draw a comparison network with network inputs on the left and network outputs on the right; data move through the network from left to right.<P>
+<img src="636_a.gif"><P>
+<h4><a name="091d_1922">Figure 28.2 (a) A 4-input, 4-output comparison network, which is in fact a sorting network. At time 0, the input values shown appear on the four input wires. (b) At time 1, the values shown appear on the outputs of comparators A and B, which are at depth l. (c) At time 2, the values shown appear on the outputs of comparators C and D, at depth 2. Output wires b<SUB>1</SUB> and b<SUB>4</SUB> now have their final values, but output wires b<SUB>2</SUB> and b<SUB>3</SUB> do not. (d) At time 3, the values shown appear on the outputs of comparator E, at depth 3. Output wires b<SUB>2</SUB> and b<SUB>3</SUB> now have their final values.<a name="091d_1922"></sub></sup></h4><P>
+Each comparator produces its output values only when both of its input values are available to it. In Figure 28.2(a), for example, suppose that the sequence <IMG SRC="../IMAGES/lftwdchv.gif">9, 5, 2, 6<IMG SRC="../IMAGES/wdrtchv.gif"> appears on the input wires at time 0. At time 0, then, only comparators <I>A</I> and <I>B</I> have all their input values available. Assuming that each comparator requires one time unit to compute its output values, comparators <I>A</I> and <I>B</I> produce their outputs at time 1; the resulting values are shown in Figure 28.2(b). Note that comparators <I>A</I> and <I>B</I> produce their values at the same time, or &quot;in parallel.&quot; Now, at time 1, comparators <I>C </I>and <I>D</I>, but not <I>E</I>, have all their input values available. One time unit later, at time 2, they produce their outputs, as shown in Figure 28.2(c). Comparators <I>C</I> and <I>D</I> operate in parallel as well. The top output of comparator <I>C</I> and the bottom output of comparator <I>D</I> connect to output wires <I>b</I><SUB>1</SUB> and <I>b</I><SUB>4</SUB>, respectively, of the comparison network, and these network output wires therefore carry their final values at time 2. Meanwhile, at time 2, comparator <I>E</I> has its inputs available, and Figure 28.2(d) shows that it produces its output values at time 3. These values are carried on network output wires <I>b</I><SUB>2</SUB> and <I>b</I><SUB>3</SUB>, and the output sequence <IMG SRC="../IMAGES/lftwdchv.gif">2, 5, 6, 9<IMG SRC="../IMAGES/wdrtchv.gif"> is now complete.<P>
+<a name="091d_191d"><a name="091d_191e">Under the assumption that each comparator takes unit time, we can define the &quot;running time&quot; of a comparison network, that is, the time it takes for all the output wires to receive their values once the input wires receive theirs. Informally, this time is the largest number of comparators that any input element can pass through as it travels from an input wire to an output wire. More formally, we define the <I><B>depth</I></B> of a wire as follows. An input wire of a comparison network has depth 0. Now, if a comparator has two input wires with depths <I>d<SUB>x</I></SUB> and <I>d<SUB>y</I></SUB>, then its output wires have depth max(<I>d<SUB>x</I></SUB>, <I>d<SUB>y</I></SUB>) + 1. Because there are no cycles of comparators in a comparison network, the depth of a wire is well defined, and we define the depth of a comparator to be the depth of its output wires. Figure 28.2 shows comparator depths. The depth of a comparison network is the maximum depth of an output wire or, equivalently, the maximum depth of a comparator. The comparison network of Figure 28.2, for example, has depth 3 because comparator <I>E</I> has depth 3. If each comparator takes one time unit to produce its output value, and if network inputs appear at time 0, a comparator at depth <I>d</I> produces its outputs at time <I>d</I>; the depth of the network therefore equals the time for the network to produce values at all of its output wires.<P>
+<a name="091d_191f">A <I><B>sorting network</I></B> is a comparison network for which the output sequence is monotonically increasing (that is, <I>b</I><SUB>1</SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>b</I><SUB>2</SUB> <IMG SRC="../IMAGES/lteq12.gif"> . . . <IMG SRC="../IMAGES/lteq12.gif"> <I>b<SUB>n</I></SUB>) for <I>every</I> input sequence. Of course, not every comparison network is a sorting network, but the network of Figure 28.2 is. To see why, observe that after time 1, the minimum of the four input values has been produced by either the top output of comparator <I>A</I> or the top output of comparator <I>B</I>. After time 2, therefore, it must be on the top output of comparator <I>C</I>. A symmetrical argument shows that after time 2, the maximum of the four input values has been produced by the bottom output of comparator <I>D</I>. All that remains is for comparator <I>E </I>to ensure that the middle two values occupy their correct output positions, which happens at time 3.<P>
+A comparison network is like a procedure in that it specifies how comparisons are to occur, but it is unlike a procedure in that its physical size depends on the number of inputs and outputs. Therefore, we shall actually be describing &quot;families&quot; of comparison networks. For example, the goal of this chapter is to develop a family <FONT FACE="Courier New" SIZE=2>SORTER</FONT> of efficient sorting networks. We specify a given network within a family by the family name and the number of inputs (which equals the number of outputs). For example, the <I>n</I>-input, <I>n</I>-output sorting network in the family <FONT FACE="Courier New" SIZE=2>SORTER</FONT> is named <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>].<P>
+<img src="638_a.gif"><P>
+<h4><a name="091d_1923">Figure 28.3 A sorting network based on insertion sort for use in Exercise 28.1-6.<a name="091d_1923"></sub></sup></h4><P>
+
+
+
+
+
+<h2><a name="091e_1925">Exercises<a name="091e_1925"></h2><P>
+<a name="091e_1926">28.1-1<a name="091e_1926"><P>
+Show the values that appear on all the wires of the network of Figure 28.2 when it is given the input sequence <IMG SRC="../IMAGES/lftwdchv.gif">9, 6, 5, 2<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="091e_1927">28.1-2<a name="091e_1927"><P>
+Let <I>n</I> be an exact power of 2. Show how to construct an <I>n</I>-input, <I>n</I>-output comparison network of depth lg <I>n</I> in which the top output wire always carries the minimum input value and the bottom output wire always carries the maximum input value.<P>
+<a name="091e_1928">28.1-3<a name="091e_1928"><P>
+<a name="091e_1920"><a name="091e_1921">Professor Nielsen claims that if we add a comparator anywhere in a sorting network, the resulting network also sorts. Show that the professor is mistaken by adding a comparator to the network of Figure 28.2 in such a way that the resulting network does not sort every input permutation.<P>
+<a name="091e_1929">28.1-4<a name="091e_1929"><P>
+<a name="091e_1922">Prove that any sorting network on <I>n</I> inputs has depth at least lg <I>n</I>.<P>
+<a name="091e_192a">28.1-5<a name="091e_192a"><P>
+Prove that the number of comparators in any sorting network is at least <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>).<P>
+<a name="091e_192b">28.1-6<a name="091e_192b"><P>
+<a name="091e_1923"><a name="091e_1924">Consider the comparison network shown in Figure 28.3. Prove that it is in fact a sorting network, and describe how its structure is related to that of insertion sort (Section 1.1).<P>
+<a name="091e_192c">28.1-7<a name="091e_192c"><P>
+We can represent an <I>n</I>-input comparison network with <I>c</I> comparators as a list of <I>c</I> pairs of integers in the range from 1 to <I>n</I>. If two pairs contain an integer in common, the order of the corresponding comparators in the network is determined by the order of the pairs in the list. Given this representation, describe an<I> O</I>(<I>n</I>+<I>c</I>)-time (serial) algorithm for determining the depth of a comparison network.<P>
+<a name="091e_192d">28.1-8<a name="091e_192d"><P>
+Suppose that in addition to the standard kind of comparator, we introduce an &quot;upside-down&quot; comparator that produces its minimum output on the bottom wire and its maximum output on the top wire. Show how to convert any sorting network that uses a total of <I>c</I> standard and upside-down comparators to one that uses <I>c</I> standard ones. Prove that your conversion method is correct.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="091f_1926">28.2 The zero-one principle<a name="091f_1926"></h1><P>
+<a name="091f_1925">The <I><B>zero-one principle</I></B> says that if a sorting network works correctly when each input is drawn from the set {0,1}, then it works correctly on arbitrary input numbers. (The numbers can be integers, reals, or, in general, any set of values from any linearly ordered set.) As we construct sorting networks and other comparison networks, the zero-one principle will allow us to focus on their operation for input sequences consisting solely of 0's and 1's. Once we have constructed a sorting network and proved that it can sort all zero-one sequences, we shall appeal to the zero-one principle to show that it properly sorts sequences of arbitrary values.<P>
+The proof of the zero-one principle relies on the notion of a monotonically increasing function (Section 2.2).<P>
+<a name="091f_1927">Lemma 28.1<a name="091f_1927"><P>
+If a comparison network transforms the input sequence <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> into the output sequence <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>b</I><SUB>1</SUB>, <I>b</I><SUB>2</SUB>, . . . , <I>b<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, then for any monotonically increasing function <I>f</I>, the network transforms the input sequence <I>f</I>(<I>a</I>) = <IMG SRC="../IMAGES/lftwdchv.gif"><I>f</I>(<I>a</I><SUB>1</SUB>), <I>f</I>(<I>a</I><SUB>2</SUB>), . . . , <I>f</I>(<I>a<SUB>n</I></SUB>)<IMG SRC="../IMAGES/wdrtchv.gif"> into the output sequence<I> f</I>(<I>b</I>) = <IMG SRC="../IMAGES/lftwdchv.gif"><I>f</I>(<I>b</I><SUB>1</SUB>), <I>f</I>(<I>b</I><SUB>2</SUB>), . . . , <I>f</I>(<I>b<SUB>n</I></SUB>)<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<I><B>Proof     </I></B>We shall first prove the claim that if <I>f</I> is a monotonically increasing function, then a single comparator with inputs<I> f</I>(<I>x</I>) and <I>f</I>(<I>y</I>) produces outputs <I>f</I>(min(<I>x,y</I>)) and <I>f</I>(max(<I>x,y</I>)). We shall then use induction to prove the lemma.<P>
+To prove the claim, consider a comparator whose input values are <I>x</I> and <I>y</I>. The upper output of the comparator is min(<I>x,y</I>) and the lower output is max(<I>x,y</I>). Suppose we now apply<I> f</I>(<I>x</I>) and<I> f</I>(<I>y</I>) to the inputs of the comparator, as is shown in Figure 28.4. The operation of the comparator yields the value min(<I>f</I>(<I>x</I>), <I>f</I>(<I>y</I>)) on the upper output and the value max(<I>f</I>(<I>x</I>), <I>f</I>(<I>y</I>)) on the lower output. Since<I> f</I> is monotonically increasing, <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>y</I> implies <I>f</I>(<I>x</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>f</I>(<I>y</I>). Consequently, we have the identities<P>
+<pre>min(<I>f</I>(<I>x</I>), <I>f</I>(<I>y</I>))  =  <I>f</I>(min(<I>x,y</I>)) ,</sub></sup></pre><P>
+<pre>max(<I>f</I>(<I>x</I>), <I>f</I>(<I>y</I>))  =  <I>f</I>(max(<I>x,y</I>)) .</sub></sup></pre><P>
+Thus, the comparator produces the values<I> f </I>(min(<I>x,y</I>)) and <I>f </I>(max(<I>x,y</I>)) when <I>f </I>(<I>x</I>) and <I>f </I>(<I>y</I>) are its inputs, which completes the proof of the claim.<P>
+<img src="640_a.gif"><P>
+<h4><a name="091f_1928">Figure 28.4 The operation of the comparator in the proof of Lemma 28.1. The function f is monotonically increasing.<a name="091f_1928"></sub></sup></h4><P>
+We can use induction on the depth of each wire in a general comparison network to prove a stronger result than the statement of the lemma: if a wire assumes the value <I>a<SUB>i</I></SUB> when the input sequence <I>a</I> is applied to the network, then it assumes the value <I>f</I>(<I>a<SUB>i</I></SUB>) when the input sequence <I>f</I>(<I>a</I>) is applied. Because the output wires are included in this statement, proving it will prove the lemma.<P>
+For the basis, consider a wire at depth 0, that is, an input wire <I>a<SUB>i</I></SUB>. The result follows trivially: when <I>f</I>(<I>a</I>) is applied to the network, the input wire carries <I>f</I>(<I>a<SUB>i</I></SUB>). For the inductive step, consider a wire at depth <I>d</I>, where <I>d </I><IMG SRC="../IMAGES/gteq.gif"> 1. The wire is the output of a comparator at depth<I> d</I>, and the input wires to this comparator are at a depth strictly less than <I>d</I>. By the inductive hypothesis, therefore, if the input wires to the comparator carry values <I>a<SUB>i</I></SUB> and <I>a<SUB>j</I></SUB> when the input sequence<I> a </I>is applied, then they carry <I>f</I>(<I>a<SUB>i</I></SUB>) and <I>f</I>(<I>a<SUB>j</I></SUB>) when the input sequence <I>f</I>(<I>a</I>) is applied. By our earlier claim, the output wires of this comparator then carry<I> f</I>(min(<I>a<SUB>i</I></SUB>, <I>a<SUB>j</I></SUB>)) and <I>f</I>(max(<I>a<SUB>i</I></SUB>, <I>a<SUB>j</I></SUB>)). Since they carry min(<I>a<SUB>i</I></SUB>, <I>a<SUB>j</I></SUB>) and max(<I>a<SUB>i</I></SUB>, <I>a<SUB>j</I></SUB>) when the input sequence is <I>a</I>, the lemma is proved.      <P>
+As an example of the application of Lemma 28.1, Figure 28.5 shows the sorting network from Figure 28.2 with the monotonically increasing function<I> f</I>(<I>x</I>) = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>x/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> applied to the inputs. The value on every wire is <I>f</I> applied to the value on the same wire in Figure 28.2.<P>
+When a comparison network is a sorting network, Lemma 28.1 allows us to prove the following remarkable result.<P>
+<a name="091f_1929">Theorem 28.2<a name="091f_1929"><P>
+If a comparison network with <I>n</I> inputs sorts all 2<I><SUP>n</I></SUP> possible sequences of 0's and 1<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s correctly, then it sorts all sequences of arbitrary numbers correctly.<P>
+<img src="641_a.gif"><P>
+<h4><a name="091f_192a">Figure 28.5 (a) The sorting network from Figure 28.2 with input sequence <IMG SRC="../IMAGES/lftwdchv.gif">9, 5, 2, 6<IMG SRC="../IMAGES/wdrtchv.gif">. (b) The same sorting network with the monotonically increasing function f(x) = f(<IMG SRC="../IMAGES/hfbrul14.gif">x/2<IMG SRC="../IMAGES/hfbrur14.gif">) applied to the inputs. Each wire in this network has the value of f applied to the value on the corresponding wire in (a).<a name="091f_192a"></sub></sup></h4><P>
+<I><B>Proof     </I></B>Suppose for the purpose of contradiction that the network sorts all zero-one sequences, but there exists a sequence of arbitrary numbers that the network does not correctly sort. That is, there exists an input sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> containing elements <I>a<SUB>i</I></SUB> and <I>a<SUB>j</I></SUB> such that <I>a<SUB>i</I></SUB> &lt; <I>a<SUB>j</I></SUB>, but the network places <I>a<SUB>j</SUB> </I>before <I>a<SUB>i</SUB> </I>in the output sequence. We define a monotonically increasing function<I> f</I> as<P>
+<img src="641_b.gif"><P>
+Since the network places <I>a<SUB>j</I></SUB> before <I>a<SUB>i</I></SUB> in the output sequence when <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is input, it follows from Lemma 28.1 that it places <I>f</I>(<I>a<SUB>j</I></SUB>) before <I>f</I>(<I>a<SUB>i</I></SUB>) in the output sequence when <IMG SRC="../IMAGES/lftwdchv.gif"><I>f</I>(<I>a</I><SUB>1</SUB>), <I>f</I>(<I>a</I><SUB>2</SUB>), . . . , <I>f</I>(<I>a<SUB>n</I></SUB>)<IMG SRC="../IMAGES/wdrtchv.gif"> is input. But since<I> f</I>(<I>a<SUB>j</I></SUB>) = 1 and <I>f</I>(<I>a<SUB>i</I></SUB>) = 0, we obtain the contradiction that the network fails to sort the zero-one sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>f</I>(<I>a</I><SUB>1</SUB>), <I>f</I>(<I>a</I><SUB>2</SUB>), . . . , <I>f</I>(<I>a<SUB>n</I></SUB>)<IMG SRC="../IMAGES/wdrtchv.gif"> correctly.      <P>
+
+
+
+
+
+<h2><a name="0920_1927">Exercises<a name="0920_1927"></h2><P>
+<a name="0920_1928">28.2-1<a name="0920_1928"><P>
+Prove that applying a monotonically increasing function to a sorted sequence produces a sorted sequence.<P>
+<a name="0920_1929">28.2-2<a name="0920_1929"><P>
+Prove that a comparison network with <I>n</I> inputs correctly sorts the input sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>n, n</I> - 1, . . . , 1<IMG SRC="../IMAGES/wdrtchv.gif"> if and only if it correctly sorts the <I>n</I> - 1 zero-one sequences <IMG SRC="../IMAGES/lftwdchv.gif">1, 0, 0, . . . , 0, 0<IMG SRC="../IMAGES/wdrtchv.gif">, <IMG SRC="../IMAGES/lftwdchv.gif">1, 1, 0, . . . , 0, 0<IMG SRC="../IMAGES/wdrtchv.gif">, . . . , <IMG SRC="../IMAGES/lftwdchv.gif">1, 1, 1, . . . , 1, 0<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0920_192a">28.2-3<a name="0920_192a"><P>
+Use the zero-one principle to prove that the comparison network shown in Figure 28.6 is a sorting network.<P>
+<a name="0920_192b">28.2-4<a name="0920_192b"><P>
+<a name="0920_1926">State and prove an analog of the zero-one principle for a decision-tree model. (<I>Hint:</I> Be sure to handle equality properly.)<P>
+<img src="642_a.gif"><P>
+<h4><a name="0920_192c">Figure 28.6 A sorting network for sorting 4 numbers.<a name="0920_192c"></sub></sup></h4><P>
+<a name="0920_192d">28.2-5<a name="0920_192d"><P>
+Prove that an <I>n</I>-input sorting network must contain at least one comparator between the <I>i</I>th and (<I>i</I> + 1 )st lines for all <I>i</I> = 1, 2, . . . , <I>n</I> - 1.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0921_192c">28.3 A bitonic sorting network<a name="0921_192c"></h1><P>
+<a name="0921_1927"><a name="0921_1928"><a name="0921_1929"><a name="0921_192a"><a name="0921_192b">The first step in our construction of an efficient sorting network is to construct a comparison network that can sort any <I><B>bitonic sequence:</I></B> a sequence that either monotonically increases and then monotonically decreases, or else monotonically decreases and then monotonically increases. For example, the sequences <IMG SRC="../IMAGES/lftwdchv.gif">1, 4, 6, 8, 3, 2<IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">9, 8, 3, 2, 4, 6<IMG SRC="../IMAGES/wdrtchv.gif"> are both bitonic. The zero-one sequences that are bitonic have a simple structure. They have the form 0<I><SUP>i</I></SUP>1<I><SUP>j</I></SUP>0<I><SUP>k</I></SUP> or the form 1<I><SUP>i</I></SUP>0<I><SUP>j</I></SUP>1<I><SUP>k</I></SUP>, for some <I>i</I>, <I>j</I>, <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0. Note that a sequence that is either monotonically increasing or monotonically decreasing is also bitonic.<P>
+The bitonic sorter that we shall construct is a comparison network that sorts bitonic sequences of 0's and 1's. Exercise 28.3-6 asks you to show that the bitonic sorter can sort bitonic sequences of arbitrary numbers.<P>
+
+
+
+
+
+<h2>The half-cleaner</h2><P>
+<a name="0922_192c">A bitonic sorter is comprised of several stages, each of which is called a <I><B>half-cleaner</I></B>. Each half-cleaner is a comparison network of depth 1 in which input line<I> i </I>is compared with line <I>i</I> + <I>n</I>/2 for <I>i</I> = 1, 2, . . . , <I>n</I>/2. (We assume that <I>n</I> is even.) Figure 28.7 shows <FONT FACE="Courier New" SIZE=2>HALF</FONT>-<FONT FACE="Courier New" SIZE=2>CLEANER</FONT>[8], the half-cleaner with 8 inputs and 8 outputs.<P>
+<a name="0922_192d">When a bitonic sequence of 0's and 1's is applied as input to a half-cleaner, the half-cleaner produces an output sequence in which smaller values are in the top half, larger values are in the bottom half, and both halves are bitonic. In fact, at least one of the halves is <I><B>clean</I></B>--consisting of either all 0's or all 1's--and it is from this property that we derive the name &quot;half-cleaner.&quot; (Note that all clean sequences are bitonic.) The next lemma proves these properties of half-cleaners.<P>
+<img src="643_a.gif"><P>
+<h4><a name="0922_192e">Figure 28.7 The comparison network <FONT FACE="Courier New" SIZE=2>HALF-CLEANER[8]</FONT>. Two different sample zero-one input and output values are shown. The input is assumed to be bitonic. A half-cleaner ensures that every output element of the top half is at least as small as every output element of the bottom half. Moreover, both halves are bitonic, and at least one half is clean.<a name="0922_192e"></sub></sup></h4><P>
+<a name="0922_192f">Lemma 28.3<a name="0922_192f"><P>
+If the input to a half-cleaner is a bitonic sequence of 0's and 1's, then the output satisfies the following properties: both the top half and the bottom half are bitonic, every element in the top half is at least as small as every element of the bottom half, and at least one half is clean.<P>
+<I><B>Proof     </I></B>The comparison network <FONT FACE="Courier New" SIZE=2>HALF</FONT>-<FONT FACE="Courier New" SIZE=2>CLEANER</FONT>[<I>n</I>] compares inputs<I> i</I> and <I>i</I> + <I>n</I>/2 for <I>i</I> = 1, 2, . . . , <I>n</I>/2. Without loss of generality, suppose that the input is of the form 00 . . . 011 . . . 100 . . . 0. (The situation in which the input is of the form 11 . . . 100 . . . 011 . . . 1 is symmetric.) There are three possible cases depending upon the block of consecutive 0's or 1s in which the midpoint<I> n</I>/2 falls, and one of these cases (the one in which the midpoint occurs in the block of 1<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s) is further split into two cases. The four cases are shown in Figure 28.8. In each case shown, the lemma holds.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>The bitonic sorter</h2><P>
+<a name="0923_192e">By recursively combining half-cleaners, as shown in Figure 28.9, we can build a <I><B>bitonic sorter</I></B>, which is a network that sorts bitonic sequences. The first stage of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] consists of <FONT FACE="Courier New" SIZE=2>HALF</FONT>-<FONT FACE="Courier New" SIZE=2>CLEANER</FONT>[<I>n</I>], which, by Lemma 28.3, produces two bitonic sequences of half the size such that every element in the top half is at least as small as every element in the bottom half. Thus, we can complete the sort by using two copies of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>/2] to sort the two halves recursively. In Figure 28.9(a), the recursion has been shown explicitly, and in Figure 28.9(b), the recursion has been unrolled to show the progressively smaller half-cleaners that make up the remainder of the bitonic sorter. The depth <I>D</I>(<I>n</I>) of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] is given by the recurrence whose solution is <I>D</I>(<I>n</I>) = lg <I>n</I>.<P>
+<img src="644_a.gif"><P>
+<h4><a name="0923_192f">Figure 28.8 The possible comparisons in <FONT FACE="Courier New" SIZE=2>HALF<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>CLEANER<FONT FACE="Times New Roman" SIZE=2>[n]. </FONT></FONT></FONT></FONT>The input sequence is assumed to be a bitonic sequence of 0's and 1<FONT FACE="CG Times (W1)" SIZE=2>'<FONT FACE="Times New Roman" SIZE=2></FONT></FONT>s, and without loss of generality, we assume that it is of the form 00 . . . 011 . . . 100 . . . 0. Subsequences of 0<FONT FACE="CG Times (W1)" SIZE=2>'<FONT FACE="Times New Roman" SIZE=2></FONT></FONT>s are white, and subsequences of 1's are gray. We can think of the n inputs as being divided into two halves such that for i = 1, 2, . . . , n/2, inputs i and i + n/2 are compared. (a)-(b) Cases in which the division occurs in the middle subsequence of 1<FONT FACE="CG Times (W1)" SIZE=2>'</FONT><FONT FACE="Times New Roman" SIZE=2>s. (c)-(d) </FONT>Cases in which the division occurs in a subsequence of 0<FONT FACE="CG Times (W1)" SIZE=2>'<FONT FACE="Times New Roman" SIZE=2></FONT></FONT>s. For all cases, every element in the top half is at least as small as every element in the bottom half, both halves are bitonic, and at least one half is clean.<a name="0923_192f"></sub></sup></h4><P>
+<img src="645_a.gif"><P>
+<h4><a name="0923_1930">Figure 28.9 The comparison network <FONT FACE="Courier New" SIZE=2>BITONIC-SORTER</FONT>[n], shown here for n = 8. (a) The recursive construction: <FONT FACE="Courier New" SIZE=2>HALF-CLEANER</FONT>[n] followed by two copies of <FONT FACE="Courier New" SIZE=2>BITONIC-SORTER</FONT>[n/2] that operate in parallel. (b) The network after unrolling the recursion. Each half-cleaner is shaded. Sample zero-one values are shown on the wires.<a name="0923_1930"></sub></sup></h4><P>
+<img src="645_b.gif"><P>
+Thus, a zero-one bitonic sequence can be sorted by <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>, which has a depth of lg <I>n</I>. It follows by the analog of the zero-one principle given as Exercise 28.3-6 that any bitonic sequence of arbitrary numbers can be sorted by this network.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0924_1930">Exercises<a name="0924_1930"></h2><P>
+<a name="0924_1931">28.3-1<a name="0924_1931"><P>
+How many bitonic sequences of 0's and 1's are there?<P>
+<a name="0924_1932">28.3-2<a name="0924_1932"><P>
+Show that <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>], where <I>n</I> is an exact power of 2, contains <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) comparators.<P>
+<a name="0924_1933">28.3-3<a name="0924_1933"><P>
+Describe how an <I>O</I>(lg <I>n</I>)-depth bitonic sorter can be constructed when the number <I>n</I> of inputs is not an exact power of 2.<P>
+<a name="0924_1934">28.3-4<a name="0924_1934"><P>
+If the input to a half-cleaner is a bitonic sequence of arbitrary numbers, prove that the output satisfies the following properties: both the top half and the bottom half are bitonic, and every element in the top half is at least as small as every element in the bottom half.<P>
+<a name="0924_1935">28.3-5<a name="0924_1935"><P>
+Consider two sequences of 0's and 1's. Prove that if every element in one sequence is at least as small as every element in the other sequence, then one of the two sequences is clean.<P>
+<a name="0924_1936">28.3-6<a name="0924_1936"><P>
+<a name="0924_192f">Prove the following analog of the zero-one principle for bitonic sorting networks: a comparison network that can sort any bitonic sequence of 0<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s and 1<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s can sort any bitonic sequence of arbitrary numbers.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0925_1934">28.4 A merging network<a name="0925_1934"></h1><P>
+<a name="0925_1930"><a name="0925_1931"><a name="0925_1932"><a name="0925_1933">Our sorting network will be constructed from <I><B>merging networks</I></B>, which are networks that can merge two sorted input sequences into one sorted output sequence. We modify <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] to create the merging network <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>]. As with the bitonic sorter, we shall prove the correctness of the merging network only for inputs that are zero-one sequences. Exercise 28.4-1 asks you to show how the proof can be extended to arbitrary input values.<P>
+The merging network is based on the following intuition. Given two sorted sequences, if we reverse the order of the second sequence and then concatenate the two sequences, the resulting sequence is bitonic. For example, given the sorted zero-one sequences <I>X</I> = 00000111 and <I>Y</I> = 00001111, we reverse <I>Y</I> to get <I>Y</I><SUP>R</SUP> = 11110000. Concatenating <I>X </I>and <I>Y</I><SUP>R</SUP> yields 0000011111110000, which is bitonic. Thus, to merge the two input sequences <I>X</I> and <I>Y</I>, it suffices to perform a bitonic sort on <I>X </I>concatenated with <I>Y</I><SUP>R</sup>.<P>
+We can construct <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>] by modifying the first half-cleaner of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>]. The key is to perform the reversal of the the second half of the inputs implicitly. Given two sorted sequences <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I>/2</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>/2+1</SUB>, <I>a<SUB>n</I>/2+2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> to be merged, we want the effect of bitonically sorting the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I>/2</SUB>, <I>a</I><SUB>n</SUB>, <I>a<SUB>n-</I>1</SUB>,<SUB> . . . </SUB>,<SUB> </SUB><I>a<SUB>n</I>/2+1</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Since the half-cleaner of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] compares inputs <I>i</I> and <I>n</I>/2 + <I>i</I>, for <I>i</I> = 1, 2, . . . , <I>n</I>/2, we make the first stage of the merging network compare inputs <I>i</I> and <I>n</I> - <I>i</I> + 1. Figure 28.10 shows the correspondence. The only subtlety is that the order of the outputs from the bottom of the first stage of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>] are reversed compared with the order of outputs from an ordinary half-cleaner. Since the reversal of a bitonic sequence is bitonic, however, the top and bottom outputs of the first stage of the merging network satisfy the properties in Lemma 28.3, and thus the top and bottom can be bitonically sorted in parallel to produce the sorted output of the merging network.<P>
+<img src="647_a.gif"><P>
+<h4><a name="0925_1935">Figure 28.10 Comparing the first stage of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[n] with <FONT FACE="Courier New" SIZE=2>HALF-CLEANER</FONT>[n], for n = 8. (a) The first stage of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[n] transforms the two monotonic input sequences <IMG SRC="../IMAGES/lftwdchv.gif">a<SUB>1</SUB>, a<SUB>2</SUB>, . . . , a<SUB>n/2</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">a<SUB>n/2+1</SUB>, a<SUB>n/2+2</SUB>, . . . , a<SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> into two bitonic sequences <IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>1</SUB>, b<SUB>2</SUB>, . . . , b<SUB>n/2</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>n/2+1</SUB>, b<SUB>n/2+2</SUB>, . . . , b<SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. (b) The equivalent operation for <FONT FACE="Courier New" SIZE=2>HALF-CLEANER</FONT>[n]. The bitonic input sequence <IMG SRC="../IMAGES/lftwdchv.gif">a<SUB>1</SUB>, a<SUB>2</SUB>, . . . , a<SUB>n/2-1</SUB>, a<SUB>n/2</SUB>, a<SUB>n</SUB>, a<SUB>n-1</SUB>, . . . , a<SUB>n/2+2</SUB>, a<SUB>n/2+1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is transformed into the two bitonic sequences <IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>1</SUB>, b<SUB>2</SUB>, . . . , b<SUB>n/2</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>n</SUB>, b<SUB>n-1</SUB>, . . . , b<SUB>n/2+1</SUB><IMG SRC="../IMAGES/wdrtchv.gif">.<a name="0925_1935"></sub></sup></h4><P>
+<img src="647_b.gif"><P>
+<h4><a name="0925_1936">Figure 28.11 A network that merges two sorted input sequences into one sorted output sequence. The network <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[n] can be viewed as <FONT FACE="Courier New" SIZE=2>BITONIC-SORTER</FONT>[n] with the first half-cleaner altered to compare inputs i and n - i + 1 for i = 1, 2, . . . , n/2. Here, n = 8. (a) The network decomposed into the first stage followed by two parallel copies of <FONT FACE="Courier New" SIZE=2>BITONIC-SORTER</FONT>[n/2]. (b) The same network with the recursion unrolled. Sample zero-one values are shown on the wires, and the stages are shaded.<a name="0925_1936"></sub></sup></h4><P>
+The resulting merging network is shown in Figure 28.11. Only the first stage of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>] is different from <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>]. Consequently, the depth of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>] is lg <I>n</I>, the same as that of <FONT FACE="Courier New" SIZE=2>BITONIC</FONT>-<FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>].<P>
+
+
+
+
+
+<h2><a name="0926_1936">Exercises<a name="0926_1936"></h2><P>
+<a name="0926_1937">28.4-1<a name="0926_1937"><P>
+<a name="0926_1934">Prove an analog of the zero-one principle for merging networks. Specifically, show that a comparison network that can merge any two monotonically increasing sequences of 0's and 1's can merge any two monotonically increasing sequences of arbitrary numbers.<P>
+<a name="0926_1938">28.4-2<a name="0926_1938"><P>
+How many different zero-one input sequences must be applied to the input of a comparison network to verify that it is a merging network?<P>
+<a name="0926_1939">28.4-3<a name="0926_1939"><P>
+Show that any network that can merge 1 item with <I>n</I> - 1 items to produce a sorted sequence of length <I>n</I> must have depth at least lg <I>n</I>.<P>
+<a name="0926_193a">28.4-4<a name="0926_193a"><P>
+<a name="0926_1935">Consider a merging network with inputs <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>, for <I>n</I> an exact power of 2, in which the two monotonic sequences to be merged are <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>3</SUB>, . . . , <I>a<SUB>n-</I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>2</SUB>, <I>a</I><SUB>4</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Prove that the number of comparators in this kind of merging network is <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>). Why is this an interesting lower bound? (<I>Hint:</I> Partition the comparators into three sets.)<P>
+<a name="0926_193b">28.4-5<a name="0926_193b"><P>
+Prove that any merging network, regardless of the order of inputs, requires <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) comparators.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0927_1939">28.5 A sorting network<a name="0927_1939"></h1><P>
+<a name="0927_1936"><a name="0927_1937"><a name="0927_1938">We now have all the necessary tools to construct a network that can sort any input sequence. The sorting network <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] uses the merging network to implement a parallel version of merge sort from Section 1.3.1. The construction and operation of the sorting network are illustrated in Figure 28.12.<P>
+Figure 28.12(a) shows the recursive construction of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>]. The <I>n </I>input elements are sorted by using two copies of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>/2] recursively to sort (in parallel) two subsequences of length <I>n</I>/2 each. The two resulting sequences are then merged by <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>]. The boundary case for the recursion is when <I>n</I> = 1, in which case we can use a wire to sort the 1-element sequence, since a 1-element sequence is already sorted. Figure 28.12(b) shows the result of unrolling the recursion, and Figure 28.12(c) shows the actual network obtained by replacing the <FONT FACE="Courier New" SIZE=2>MERGER</FONT> boxes in Figure 28.12(b) with the actual merging networks.<P>
+<img src="649_a.gif"><P>
+<h4><a name="0927_193a">Figure 28.12 The sorting network <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[n] constructed by recursively combining merging networks. (a) The recursive construction. (b) Unrolling the recursion. (c) Replacing the <FONT FACE="Courier New" SIZE=2>MERGER</FONT> boxes with the actual merging networks. The depth of each comparator is indicated, and sample zero-one values are shown on the wires.<a name="0927_193a"></sub></sup></h4><P>
+Data pass through lg <I>n</I> stages in the network <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>]. Each of the individual inputs to the network is already a sorted 1-element sequence. The first stage of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] consists of <I>n</I>/2 copies of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[2] that work in parallel to merge pairs of 1-element sequences to produce sorted sequences of length 2. The second stage consists of <I>n</I>/4 copies of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[4] that merge pairs of these 2-element sorted sequences to produce sorted sequences of length 4. In general, for <I>k</I> = 1, 2, . . . , lg <I>n</I>, stage <I>k</I> consists of <I>n</I>/2<I><SUP>k</I></SUP> copies of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[2<I><SUP>k</I></SUP>] that merge pairs of the 2<I><SUP>k</I>-1</SUP>-element sorted sequences to produce sorted sequences of length 2<I><SUP>k</I></SUP>. At the final stage, one sorted sequence consisting of all the input values is produced. This sorting network can be shown by induction to sort zero-one sequences, and consequently, by the zero-one principle (Theorem 28.2), it can sort arbitrary values.<P>
+We can analyze the depth of the sorting network recursively. The depth <I>D</I>(<I>n</I>) of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] is the depth <I>D</I>(<I>n</I>/2) of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>/2] (there are two copies of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>/2], but they operate in parallel) plus the depth lg <I>n</I> of <FONT FACE="Courier New" SIZE=2>MERGER</FONT>[<I>n</I>]. Consequently, the depth of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] is given by the recurrence<P>
+<img src="650_a.gif"><P>
+whose solution is <I>D(n)</I> = <IMG SRC="../IMAGES/bound.gif">(lg<SUP>2</SUP> <I>n</I>). Thus, we can sort <I>n</I> numbers in parallel in <I>O</I>(lg<SUP>2</SUP> <I>n</I>) time.<P>
+
+
+
+
+
+<h2><a name="0928_193c">Exercises<a name="0928_193c"></h2><P>
+<a name="0928_193d">28.5-1<a name="0928_193d"><P>
+<a name="0928_1939"><a name="0928_193a">How many comparators are there in <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>]?<P>
+<a name="0928_193e">28.5-2<a name="0928_193e"><P>
+<a name="0928_193b">Show that the depth of <FONT FACE="Courier New" SIZE=2>SORTER</FONT>[<I>n</I>] is exactly (lg <I>n</I>)(lg<I>n</I> + 1)/2.<P>
+<a name="0928_193f">28.5-3<a name="0928_193f"><P>
+Suppose we modify a comparator to take two sorted lists of length <I>k</I> as inputs, merge them, and output the largest <I>k</I> to its &quot;max&quot; output and the smallest <I>k</I> to its &quot;min&quot; output. Show that any sorting network on <I>n</I> inputs with comparators modified in this fashion can sort <I>nk</I> numbers, assuming that each input to the network is a sorted list of length <I>k</I>.<P>
+<a name="0928_1940">28.5-4<a name="0928_1940"><P>
+Suppose that we have 2<I>n</I> elements <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a</I><SUB>2<I>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and wish to partition them into the <I>n</I> smallest and the <I>n</I> largest. Prove that we can do this in constant additional depth after separately sorting <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>,<I>a</I><SUB>2</SUB>, . . . , <I>a</I><SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>+1</SUB>, <I>a<SUB>n</I>+2</SUB>, . . . , <I>a</I><SUB>2<I>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="0928_1941">28.5-5<a name="0928_1941"><P>
+Let <I>S</I>(<I>k</I>) be the depth of a sorting network with <I>k</I> inputs, and let <I>M</I>(<I>k</I>) be the depth of a merging network with 2<I>k</I> inputs. Suppose that we have a sequence of <I>n</I> numbers to be sorted and know that every number is within <I>k</I> positions of its correct position in the sorted order. Show that we can sort the <I>n</I> numbers in depth <I>S</I>(<I>k</I>) + 2<I>M</I>(<I>k</I>).<P>
+<a name="0928_1942">28.5-6<a name="0928_1942"><P>
+We can sort the elements of an <I>m</I> X <I>m</I> matrix by repeating the following procedure <I>k</I> times:<P>
+1.     Sort each odd-numbered row into monotonically increasing order.<P>
+2.     Sort each even-numbered row into monotonically decreasing order.<P>
+3.     Sort each column into monotonically increasing order.<P>
+How many iterations <I>k</I> are required for this procedure to sort, and what is the pattern of the sorted output?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0929_1947">Problems<a name="0929_1947"></h1><P>
+<a name="0929_1948">28-1 Transposition sorting networks<a name="0929_1948"><P>
+<a name="0929_193c"><a name="0929_193d">A comparison network is a <I><B>transposition network</I></B> if each comparator connects adjacent lines, as in the network in Figure 28.3.<P>
+<I><B>a.</I></B>     Show that any transposition network with <I>n</I> inputs that sorts has <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) comparators.<P>
+<I><B>b.</I></B>     Prove that a transposition network with <I>n</I> inputs is a sorting network if and only if it sorts the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>n</I>, <I>n</I>- 1, . . . , 1<IMG SRC="../IMAGES/wdrtchv.gif">. (<I>Hint</I>: Use an induction argument analogous to the one in the proof of Lemma 28.1.)<P>
+<a name="0929_193e"><a name="0929_193f"><a name="0929_1940">An <I><B>odd-even sorting network</I></B> on <I>n</I> inputs <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> has <I>n</I> levels of comparators. Figure 28.13 shows an odd-even transposition network on 8 inputs. As can be seen in the figure, for <I>i</I> = 2, 3, . . . , <I>n</I> - 1 and <I>d</I> = 1, 2, . . . , <I>n</I>, line <I>i</I> is connected by a depth-<I>d</I> comparator to line <I>j</I> = <I>i</I> + (-1)<I><SUP>i</I>+<I>d</I></SUP> if 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>.<P>
+<I><B>c.</I></B>     Prove that the family of odd-even sorting networks is indeed a family of sorting networks.<P>
+<a name="0929_1949">28-2 Batcher's odd-even merging network<a name="0929_1949"><P>
+<a name="0929_1941"><a name="0929_1942"><a name="0929_1943"><a name="0929_1944">In Section 28.4, we saw how to construct a merging network based on bitonic sorting. In this problem, we shall construct an <I><B>odd-even merging network</I></B>. We assume that <I>n</I> is an exact power of 2, and we wish to merge the sorted sequence of elements on lines <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> with those on lines <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>+1</SUB>, <I>a<SUB>n</I>+2</SUB>, . . . , <I>a</I><SUB>2<I>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. We recursively construct two odd-even merging networks that merge sorted subsequences in parallel. The first merges the sequence on lines <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>3</SUB>, . . . , <I>a<SUB>n</I>-1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> with the sequence on lines <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>+1</SUB>, <I>a<SUB>n</I>+3</SUB>, . . . , <I>a</I><SUB>2<I>n-</I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> (the odd elements). The second merges <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>2</SUB>, <I>a</I><SUB>4</SUB>, . . . , <I>a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> with <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>+2</SUB>, <I>a<SUB>n</I>+4</SUB>, . . . , <I>a</I><SUB>2<I>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> (the even elements). To combine the two sorted subsequences, we put a comparator between <I>a</I><SUB>2<I>i</I>-1</SUB> and <I>a</I><SUB>2<I>i</I></SUB> for <I>i</I> = 1, 2, . . . , <I>n</I>.<P>
+<I><B>a.</I></B>     Draw a 2<I>n</I>-input merging network for<I> n </I>= 4.<P>
+<img src="651_a.gif"><P>
+<h4><a name="0929_194a">Figure 28.13 An odd-even sorting network on 8 inputs.<a name="0929_194a"></sub></sup></h4><P>
+<img src="652_a.gif"><P>
+<h4><a name="0929_194b">Figure 28.14 Permutation networks. (a) The permutation network P<SUB>2</SUB>, which consists of a single switch that can be set in either of the two ways shown. (b) The recursive construction of P<SUB>8</SUB> from 8 switches and two P<SUB>4</SUB>'s. The switches and P<SUB>4</SUB>'s are set to realize the permutation <IMG SRC="../IMAGES/piuc.gif"> = <IMG SRC="../IMAGES/lftwdchv.gif">4, 7, 3, 5, 1, 6, 8, 2<IMG SRC="../IMAGES/wdrtchv.gif">.<a name="0929_194b"></sub></sup></h4><P>
+<I><B>b.</I></B>     Use the zero-one principle to prove that any 2<I>n</I>-input odd-even merging network is indeed a merging network.<P>
+<I><B>c.</I></B>     What is the depth of a 2<I>n</I>-input odd-even merging network? What is its size?<P>
+<a name="0929_194c">28-3 Permutation networks<a name="0929_194c"><P>
+<a name="0929_1945"><a name="0929_1946">A <I><B>permutation network</I></B> on<I> n </I>inputs and <I>n</I> outputs has switches that allow it to connect its inputs to its outputs according to any of the <I>n</I>! possible permutations. Figure 28.14(a) shows the 2-input, 2-output permutation network <I>P</I><SUB>2</SUB>, which consists of a single switch that can be set either to feed its inputs straight through to its outputs or to cross them.<P>
+<I><B>a.</I></B>     Argue that if we replace each comparator in a sorting network with the switch of Figure 28.14(a), the resulting network is a permutation network. That is, for any permutation <IMG SRC="../IMAGES/piuc.gif">, there is a way to set the switches in the network so that input <I>i</I> is connected to output <IMG SRC="../IMAGES/piuc.gif">(<I>i</I>).<P>
+Figure 28.14(b) shows the recursive construction of an 8-input, 8-output permutation network <I>P</I><SUB>8</SUB> that uses two copies of <I>P</I><SUB>4</SUB> and 8 switches. The switches have been set to realize the permutation <IMG SRC="../IMAGES/piuc.gif"> = <IMG SRC="../IMAGES/lftwdchv.gif">4, 7, 3, 5, 1, 6, 8, 2<IMG SRC="../IMAGES/wdrtchv.gif">, which requires (recursively) that the top <I>P</I><SUB>4</SUB> realize <IMG SRC="../IMAGES/lftwdchv.gif">4, 2, 3, 1<IMG SRC="../IMAGES/wdrtchv.gif"> and the bottom <I>P</I><SUB>4</SUB> realize <IMG SRC="../IMAGES/lftwdchv.gif">2, 3, 1, 4<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<I><B>b.</I></B>     Show how to realize the permutation <IMG SRC="../IMAGES/lftwdchv.gif">5, 3, 4, 6, 1, 8, 2, 7<IMG SRC="../IMAGES/wdrtchv.gif"> on <I>P</I><SUB>8</SUB> by drawing the switch settings and the permutations performed by the two <I>P</I><SUB>4</SUB>'s.<P>
+Let<I> n </I>be an exact power of 2. Define <I>P<SUB>n</I></SUB> recursively in terms of two <I>P<SUB>n</I>/2</SUB><FONT FACE="CG Times (W1)" SIZE=1>'</FONT>s in a manner similar to the way we defined <I>P</I><SUB>8</SUB>.<P>
+<I><B>c.</I></B>      Describe an <I>O</I>(<I>n</I>)-time (ordinary random-access machine) algorithm that sets the <I>n</I> switches connected to the inputs and outputs of <I>P<SUB>n</I></SUB> and specifies the permutations that must be realized by each <I>P<SUB>n</I>/2</SUB> in order to accomplish any given <I>n</I>-element permutation. Prove that your algorithm is correct.<P>
+<I><B>d.</I></B>     What are the depth and size of <I>P<SUB>n</I></SUB>? How long does it take on an ordinary random-access machine to compute all switch settings, including those within the <I>P<SUB>n</I>/2</SUB><FONT FACE="CG Times (W1)" SIZE=1>'</FONT>s?<P>
+<I><B>e.</I></B>     Argue that for <I>n</I> &gt; 2, any permutation network--not just <I>P<SUB>n</I></SUB>--must realize some permutation by two distinct combinations of switch settings.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Knuth [123] contains a discussion of sorting networks and charts their history. They apparently were first explored in 1954 by P. N. Armstrong, R. J. Nelson, and D. J. O'Connor. In the early 1960's, K. E. Batcher discovered the first network capable of merging two sequences of <I>n</I> numbers in <I>O</I>(lg <I>n</I>) time. He used odd-even merging (see Problem 28-2), and he also showed how this technique could be used to sort<I> n </I>numbers in <I>O</I>(lg<SUP>2</SUP> <I>n</I>) time. Shortly afterwards, he discovered an <I>O</I>(lg <I>n</I>)-depth bitonic sorter similar to the one presented in Section 28.3. Knuth attributes the zero-one principle to W. G. Bouricius (1954), who proved it in the context of decision trees.<P>
+<a name="092a_1947"><a name="092a_1948">For a long time, the question remained open as to whether a sorting network with depth <I>O</I>(lg <I>n</I>) exists. In 1983, the answer was shown to be a somewhat unsatisfying yes. The AKS sorting network (named after its developers, Ajtai, Koml&oacute;s, and Szemer&eacute;di [8]) can sort <I>n</I> numbers in depth <I>O</I>(lg <I>n</I>) using <I>O</I>(<I>n</I> lg <I>n</I>) comparators. Unfortunately, the constants hidden by the <I>O</I>-notation are quite large (many, many thousands), and thus it cannot be considered practical.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap29.htm">Chapter 29</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

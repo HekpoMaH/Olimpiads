@@ -1,0 +1,53 @@
+ /*
+ TASK: festa
+ LANG: C++
+ */
+#include<math.h>
+#include<iostream.h>
+ main()
+ {
+  int v,g,n;
+  int b;
+   cout<<"Broi na horata v grada: ";
+    cin>>b;
+ int c;
+ cout<<"ako nqma zazselvane natisnete0";
+
+   cin>>c;
+   v=(b+c);
+
+
+    cout<< "momenten broi hora v grada"<<v;
+ int s;
+  cout<<"ako nqma izselvane molq natisnete 0";
+    cin>>s;
+   g=(v-s);
+     cout<<"momenten broi hora sled zaselvane"<<g;
+
+    int k;
+    cout<<"jelana suma ot kmeta";
+    cin>>k;
+    int j;
+     cout<<"mqsto na praznika :";
+      cin>>j;
+
+
+
+      int m;
+      m=(g*j);
+      cout<<"prihodi ot praznika    ob6to="<<m;
+      int q;
+      q=(m-k);
+      cout<<"razlika ejdu jelanite i polu4enite pari:  "<<q;
+
+
+      return 0;
+      }
+
+
+
+
+
+
+
+

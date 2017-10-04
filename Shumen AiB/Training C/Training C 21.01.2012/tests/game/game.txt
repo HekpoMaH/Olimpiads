@@ -1,0 +1,16 @@
+12 yes
+1
+12 yes
+2
+12 yes
+3
+12 yes
+4
+13 yes
+5
+13 yes
+6
+13 yes
+7
+13 yes
+8

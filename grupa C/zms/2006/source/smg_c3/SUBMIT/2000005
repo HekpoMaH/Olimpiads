@@ -1,0 +1,182 @@
+/*
+TASK: REBUS
+LANG: C
+*/
+
+#include <stdio.h>
+
+typedef long long type;
+
+int is_letter(char c) {
+	if (c >= 'A' && c <= 'Z') {
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+type eval(char side[], int replacements[]) {
+	type final = 0,temp = 0;
+	int sign = 1;
+	int i = 0;
+	while (1) {
+		if (is_letter(side[i])) {
+			temp *= 10;
+			temp += replacements[side[i]];
+		} else {
+			if (sign == 1) {
+				final += temp;
+			} else {
+				final -= temp;
+			}
+			temp = 0;
+			if (side[i] != '\0') {
+				if (side[i] == '+') {
+					sign = 1;
+				} else {
+					sign = -1;
+				}
+			} else {
+				break;
+			}
+		}
+		i++;
+	}
+	return final;
+}
+
+char left_side[2002],right_side[2002];
+char nums[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int replacements[255];
+char not_null[10] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+int not_null_i = 0;
+int nums_i = 0;
+
+void start_it(int filled) {
+	int j,v,min;
+	if (filled == nums_i) {
+		if (eval(left_side, replacements) == eval(right_side, replacements)) {
+			j = 0;
+			int nums_i_c = nums_i;
+			while (j < nums_i_c) {
+				v = 0;
+				min = 0;
+				while (v < nums_i) {
+					if (nums[v] < nums[min]) {
+						min = v;
+					}
+					v++;
+				}
+				printf("%c=%i\n", nums[min], replacements[nums[min]]);
+				v = min;
+				nums_i--;
+				while (v < nums_i) {
+					nums[v] = nums[v+1];
+					v++;
+				}
+				j++;
+			}
+			exit(0);
+		}
+	} else {
+		int i = 0,j;
+		while (i < 10) {
+			j = 1;
+			if (i == 0) {
+				j = 0;
+				while (j < not_null_i) {
+					if (not_null[j] == nums[filled]) {
+						j = -1;
+						break;
+					}
+					j++;
+				}
+			}
+			if (j != -1) {
+				j = 0;
+				while (j < filled) {
+					if (replacements[nums[j]] == i) {
+						j = -1;
+						break;
+					}
+					j++;
+				}
+				if (j != -1) {
+					replacements[nums[filled]] = i;
+					start_it(filled+1);
+				}
+			}
+			i++;
+		}
+	}
+}
+
+int main() {
+	char temp;
+	int i = 0,k = 0,j;
+	while (1) {
+		scanf("%c", &temp);
+		if (temp != '\n' && temp != '\0') {
+			if (is_letter(temp)) {
+				j = 0;
+				while (j < nums_i) {
+					if (nums[j] == temp) {
+						j = -1;
+						break;
+					}
+					j++;
+				}
+				if (j != -1) {
+					nums[nums_i++] = temp;
+				}
+				if (!k) {
+					if (!is_letter(left_side[i-1])) {
+						j = 0;
+						while (j < not_null_i) {
+							if (not_null[j] == temp) {
+								j = -1;
+								break;
+							}
+							j++;
+						}
+						if (j != -1) {
+							not_null[not_null_i++] = temp;
+						}
+					}
+				} else {
+					if (!is_letter(right_side[i-1])) {
+						j = 0;
+						while (j < not_null_i) {
+							if (not_null[j] == temp) {
+								j = -1;
+								break;
+							}
+							j++;
+						}
+						if (j != -1) {
+							not_null[not_null_i++] = temp;
+						}
+					}
+				}
+			}
+			if (temp != '=') {
+				if (!k) {
+					left_side[i++] = temp;
+				} else {
+					right_side[i++] = temp;
+				}
+			} else {
+				if (k == 0) {
+					k = 1;
+					left_side[i] = '\0';
+					i = 0;
+				}
+			}
+		} else {
+			right_side[i] = '\0';
+			break;
+		}
+	}
+	start_it(0);
+	return 0;
+}

@@ -1,0 +1,26 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+long b,c,d,e,n,i,m,br;
+vector<pair<pair<long, long>, pair<long, long> > > a;
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for(i=1; i<=n; i++)
+    {
+             scanf("%d%d%d%d",&b,&c,&d,&e);
+             a.push_back(make_pair(make_pair(d,c),make_pair(e,b)));
+             br+=e;
+    }
+    if(br<m) {cout<<-1<<endl; system ("pause"); return 0;}
+    br=0;
+    sort(a.begin(),a.end());
+    for(i=0; i<=n-1; i++)
+    {
+             if((a[i].second).first>(a[i].first).second&&m>=(a[i].first).second) {if(m>=(a[i].second).first) {br+=(a[i].second).first*(a[i].first).first; m-=(a[i].second).first;} else {br+=((a[i].second).first-m)*(a[i].first).first; m=0; break;}}
+             else if(m<(a[i].first).second) {br+=m*(a[i].second).second;}
+    }
+    printf("%d\n",br);
+//    system ("pause");
+    return 0;
+}

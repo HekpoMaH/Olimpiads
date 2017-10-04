@@ -1,0 +1,70 @@
+/*
+TASK:school
+LANG:C++
+*/
+
+#include <iostream>
+using namespace std;
+
+void Read();
+void Solve();
+void Deikstra(int x);
+
+int N,M;
+int R[501][501];
+int C[501];
+
+int main()
+{
+	Read();
+	Solve();
+
+	return 0;
+}
+
+void Read()
+{
+	cin>>N>>M;
+
+	for(int i=0;i<M;i++)
+	{
+		int x,y;
+		cin>>x>>y;
+		R[x][y]=R[y][x]=1;
+	}
+}
+
+void Solve()
+{
+	int flag=0,broi=0;
+
+	while(!flag)
+	{
+		flag=1;
+		for(int i=1;i<=N;i++)
+			if(!C[i]) {Deikstra(i); flag=0; broi++;}
+	}
+
+	cout<<broi<<endl;
+}
+
+void Deikstra(int x)
+{
+	int V[500],Last[500],cv=x;
+	int i,j;
+	for(i=1;i<=N;i++) {V[i]=0; Last[i]=1000;}
+	Last[x]=0;
+
+	while(1)
+	{
+		V[cv]=1;
+		for(j=1;j<=N;j++)
+			if( ((R[cv][j]+Last[cv])<Last[j]) && (R[cv][j])) Last[j]=(R[cv][j]+Last[cv]);
+		int minv=1000,minc=1,flag=0;
+		for(j=1;j<=N;j++)
+			if( (V[j]==0)&&(Last[j]<minv) ) {minv=Last[j]; minc=j; flag=1; cv=j;}
+		if(!flag) break;
+	}
+	
+	for(i=1;i<=N;i++) if(Last[i]!=1000) C[i]=1;
+}

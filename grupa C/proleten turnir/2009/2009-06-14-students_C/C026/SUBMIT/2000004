@@ -1,0 +1,89 @@
+#include<iostream>
+#include<queue>
+#include<vector>
+using namespace std;
+struct kr 
+{
+       int p1;
+       int p2;
+};
+vector<int> v[207];
+queue<kr> qq;
+int n,m,s,info,pesho,gosho,used[211][211],br=0,vi[203],vi2[205];
+void read ()
+{
+    int i,j,x,y;
+    cin>>n>>m;
+    for(i=1;i<=m;i++)
+    {
+                     cin>>x>>y;
+                     v[x].push_back(y);
+                     v[y].push_back(x);
+    }
+    cin>>x;pesho=x;
+    cin>>x;s=x;
+    cin>>x;gosho=x;
+    cin>>x;info=x;
+}
+void bfs (int x, int y)
+{
+     int i,k,j,lll=0;
+     kr f1,f2,f3;
+     used[x][y]=1;
+     vi[x]=1;
+     vi2[y]=1;
+     f1.p1=x;
+     f1.p2=y;
+     qq.push(f1);
+     while(!qq.empty())
+     {
+                       
+                      f2=qq.front();
+                      qq.pop();
+                      if(f2.p1==f2.p2)br++;
+                      else
+                      {
+                      if((f2.p1!=pesho&&f2.p1!=s&&f2.p2!=gosho&&f2.p2!=info)||(lll==0))
+                      {lll=1;
+                      //cout<<f2.p1<<' '<<f2.p2<<endl;
+                      for(i=0;i<v[f2.p1].size();i++)
+                      {
+                                       for(j=0;j<v[f2.p2].size();j++)
+                                         {
+                                                                 //if(v[f2.p1][i]==4&&v[f2.p2][j]==4) cout<<"SS"<<endl;   
+                                                                 if(used[v[f2.p1][i]][v[f2.p2][j]]==0/*&&vi[v[f2.p1][i]]==0&&vi2[v[f2.p2][j]]==0*/) 
+                                                                 {
+                                                                                                       f3.p1=v[f2.p1][i];
+                                                                                                       f3.p2=v[f2.p2][j];
+                                                                                                       qq.push(f3);
+                                                                                                       //cout<<f3.p1<<' '<<f3.p2<<endl;
+                                                                                                       used[v[f2.p1][i]][v[f2.p2][j]]=1;
+                                                                                                       
+                                                                 }
+                                         }
+                                         //for(i=0;i<n;i++)cout<<vi[i]<<' ';cout<<endl;
+                                         //for(i=0;i<n;i++)cout<<vi2[i]<<' ';cout<<endl;
+                                         for(i=0;i<v[f2.p1].size();i++) vi[v[f2.p1][i]]=1;
+                                         for(j=0;j<v[f2.p2].size();j++)vi2[v[f2.p2][j]]=1;
+                      }
+                      }
+                      //else {break;}
+                      }
+     }
+}
+void wr ()
+{
+     for(int i=0;i<n;i++)
+     {
+             for(int j=0;j<v[i].size();j++)cout<<i<<' '<<v[i][j]<<endl;
+     }
+}
+int main ()
+{
+    read ();
+    used [pesho][gosho]=1;
+    bfs (pesho , gosho );
+    //wr();
+    cout<<br<<endl;
+  
+}

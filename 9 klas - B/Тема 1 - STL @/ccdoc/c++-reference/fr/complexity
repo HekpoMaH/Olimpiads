@@ -1,0 +1,111 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr"
+ lang="fr" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>fr:complexity</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-12-27T09:46:55-0800" />
+<meta name="keywords" content="fr,complexity" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/fr/complexity?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=fr" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/fr/complexity" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/fr/complexity" />
+<link rel="canonical" href="complexity" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='fr';var JSINFO = {"id":"fr:complexity","namespace":"fr"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="complexite_des_algorithmes" id="complexite_des_algorithmes">Complexité des algorithmes</a></h2>
+<div class="level2">
+
+<p>
+
+La vitesse d&#039;exécution d&#039;un algorithme est évaluée en fonction de sa complexité. Chaque type de complexité est fonction du nombre d&#039;éléments qui devra être traité. Ces évaluations donnent le temps d&#039;exécution moyen de l&#039;algorithme s&#039;il est appliqué un grand nombre de fois.
+Les complexités présentées ci dessous sont classée de la plus lente à la plus rapide. <code>N</code> représente le nombre d&#039;éléments à traiter.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Complexité</th><th class="col1">Vitesse</th><th class="col2">Description</th><th class="col3">Formulation</th><th class="col4">Exemple</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">Factorielle</td><td class="col1">très lent</td><td class="col2">temps d&#039;exécution proportionnel à N<sup>N</sup></td><td class="col3 centeralign">  N!  </td><td class="col4">Résolution par recherche exhaustive du problème du voyageur de commerce.</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">Exponentielle</td><td class="col1">lent</td><td class="col2">temps d&#039;exécution proportionnel à une valeur donnée à la puissance N</td><td class="col3 centeralign">  K<sup>N</sup>  </td><td class="col4">Résolution par recherche exhaustive du Rubik&#039;s Cube.</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">Polynomiale</td><td class="col1">moyen</td><td class="col2">temps d&#039;exécution proportionnel à N à une puissance donnée</td><td class="col3 centeralign">  N<sup>K</sup>  </td><td class="col4">Tris par comparaison, comme le tri à bulle (N<sup>2</sup>).</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">Quasi-linéaire</td><td class="col1">assez rapide</td><td class="col2">temps d&#039;exécution intermédiaire entre linéaire et polynomial</td><td class="col3 centeralign">  N * log(N)  </td><td class="col4">Tris quasi-linéaires, comme le Quicksort.</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">Linéaire</td><td class="col1">rapide</td><td class="col2">temps d&#039;exécution proportionnel à N</td><td class="col3 centeralign">  N  </td><td class="col4">Itération sur un tableau.</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">Logarithmique</td><td class="col1">très rapide</td><td class="col2">temps d&#039;exécution moyen proportionnel au logarithme de N</td><td class="col3 centeralign">  log(N)  </td><td class="col4">Recherche dans un arbre binaire.</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">Constante</td><td class="col1">le plus rapide</td><td class="col2">temps d&#039;exécution donné, quel que soit le nombre d&#039;éléments</td><td class="col3 centeralign">  1  </td><td class="col4">Recherche par index dans un tableau.</td>
+	</tr>
+</table>
+
+<p>
+
+Remarque: Chacune des équations dans la colonne “Formulation” est une borne sur le temps d&#039;exécution, donnée à une constante multiplicative près.
+</p>
+
+</div>
+<!-- SECTION "Complexité des algorithmes" [1-1673] -->
+<h3><a name="analyse_de_la_complexite" id="analyse_de_la_complexite">Analyse de la complexité</a></h3>
+<div class="level3">
+
+<p>
+
+Une opération donnée peut avoir des complexités algorithmique différente selon les données qu&#039;elle doit traiter ou leur ordre. Les méthodes d&#039;analyse sont les suivantes :
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">Nom</th><th class="col1">Description</th><th class="col2">Exemple</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">Cas favorable</td><td class="col1">La durée de l&#039;opération correspond à son minimum théorique.</td><td class="col2">Le tri à bulle peut s&#039;exécuter en temps linéaire si les éléments à trier sont déjà dans l&#039;ordre.</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">Cas moyen</td><td class="col1">C&#039;est la durée moyenne de l&#039;opération pour un type des données quelconques.</td><td class="col2"> Le Quicksort a, en général, une complexité en N * log(N).</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">Cas défavorable</td><td class="col1">La durée de l&#039;opération correspond à son maximum théorique.</td><td class="col2">Dans le pire des cas, Quicksort a une complexité en N<sup>2</sup>.</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">Cas défavorable amorti</td><td class="col1">C&#039;est le cas défavorable appliqué sur une infinité de jeux de données en entrée.</td><td class="col2"> vector::push_back() a une complexité constante (K) pour le cas défavorable amorti.</td>
+	</tr>
+</table>
+
+<p>
+
+Le choix de l&#039;algorithme doit s&#039;effectuer en fonction des cas que le programme est susceptible de rencontrer. Par exemple, une application qui doit se protéger d&#039;entrées malveillantes devra éviter une implémentation naïve de Quicksort, dont la complexité dans le pire des cas est N<sup>2</sup>, même si c&#039;est la plus rapide dans le cas moyen.
+
+</p>
+
+</div>
+<!-- SECTION "Analyse de la complexité" [1674-] --></div>
+</body>
+</html>

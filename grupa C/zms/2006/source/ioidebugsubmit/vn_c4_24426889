@@ -1,0 +1,63 @@
+/*
+TASK: PHONE
+LANG: c++
+*/
+#include <stdio.h>
+#include <string.h>
+int n,o[104][104],l[104][11],k=0;
+float m[104],s;
+char pn[104][10];
+void start(int x)
+     {
+      int i,j;
+      float min;
+      if(k==1)return;
+      if(x==n+1){k=1;return;}
+      for(i=1;i<=n+2;i++)
+                         if(o[x][i]==1){min=m[i-1];break;}
+      for(i=1;i<=n+2;i++)
+                         if(o[x][i]==1&&m[i]<min)min=m[i-1];
+      for(i=1;i<=n+2;i++)
+                               if(o[x][i]==1&&m[i-1]==min){o[x][i]=0;o[i][x]=0;s+=m[i-1];start(i);}
+      }
+void check(int x)
+     {
+      int i,j,k,br,p=1;
+      for(i=1;i<=n+1;i++)
+                       {
+                        if(x==i)i++;
+                        for(j=0;j<strlen(pn[i]);j++)
+                                              for(k=1;k<=l[x][0]+1;k++)
+                                                      {
+                                                       if(pn[i][j]-'0'==l[x][k])break;
+                                                       else if(k==l[x][0]+1){i++;j=-1;p=0;break;}
+                                                       }
+
+                        if(p==1)o[x+1][i+1]=o[i+1][x+1]=1;
+                        }
+      return;
+      }
+int main ()
+{
+int i,j,t;
+scanf("%d",&n);
+for(i=0;i<=n;i++)
+                 {
+                  getchar();
+                  scanf("%s%f%d",&pn[i],&m[i],&l[i][0]);
+                  for(j=1;j<=l[i][0];j++)
+                                  scanf("%d",&l[i][j]);
+                  }
+scanf("%s",&pn[n+1]);
+l[n+1][0]=10;
+for(i=0;i<10;i++)
+                 l[n+1][i+1]=i;
+for(i=0;i<=n+2;i++)o[0][i]=o[i][0]=o[n+3][i]=o[i][n+3]=-1;
+for(i=0;i<=n;i++)
+                 check(i);
+s=m[0];
+start(1);
+printf("%.2f",s);
+return 0;
+}
+

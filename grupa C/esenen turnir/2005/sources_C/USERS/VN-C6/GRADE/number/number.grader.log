@@ -1,0 +1,37 @@
+task : number
+language : C
+compile time : 258
+data_num : 10
+input : data/number.01.in, output :./tmp/result.execute, sol : data/number.01.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 1
+input : data/number.02.in, output :./tmp/result.execute, sol : data/number.02.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 9
+input : data/number.03.in, output :./tmp/result.execute, sol : data/number.03.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 109
+input : data/number.04.in, output :./tmp/result.execute, sol : data/number.04.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.05.in, output :./tmp/result.execute, sol : data/number.05.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.06.in, output :./tmp/result.execute, sol : data/number.06.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.07.in, output :./tmp/result.execute, sol : data/number.07.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.08.in, output :./tmp/result.execute, sol : data/number.08.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.09.in, output :./tmp/result.execute, sol : data/number.09.sol
+signal : 9, exit_code : 0
+Execute return value : -1
+input : data/number.10.in, output :./tmp/result.execute, sol : data/number.10.sol
+signal : 9, exit_code : 0
+Execute return value : -1

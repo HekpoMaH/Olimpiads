@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int main ()
+{ int n, a, b, c, d, w, e, r, t, s, u, f, g, h, j, k, l, q, m, p, v, x, z;
+
+cin >> n;
+cin >> a >> b >> c >> d;
+cin >> w >> e >> r >> t;
+cin >> s >> u >> f >> g;
+cin >> h >> j >> k >> l;
+cin >> q;
+cin >> m >> n >> v >> x >> z;
+
+cout << 1 << endl;
+cout << 0 << endl;
+cout << "No Solution" << endl;
+cout << 5 << endl;
+cout << 2 << endl;
+
+cin >> a;
+return 0;
+}

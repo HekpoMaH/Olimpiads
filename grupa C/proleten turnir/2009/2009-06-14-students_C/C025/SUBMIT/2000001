@@ -1,0 +1,46 @@
+#include <iostream>
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+bool used[32];
+int ans[32];
+unsigned long long fact(int n)
+{
+         unsigned long long mult=1;
+         for(int i=2; i<=n; i++)
+         mult*=i;
+         return mult;
+}
+int decode(unsigned long long n, unsigned long long &k)
+{
+    int div;
+    unsigned long long mod;
+    int num;
+    unsigned long long f=fact(n-1);
+    div=k/f;
+    mod=k%f;
+    //cout << div << ' ' << mod <<' ';
+    if(mod==0) num=div;
+    else num=div+1;
+    //cout << num << ' ' << k << ' '; 
+    k=k-(div*f);
+    //cout << k << endl;
+    int br=0;
+    for(int i=1; i<=20; i++)
+    {
+            br++; 
+            if(used[i]==1) br--;
+            if(!used[i] && br==num){ used[i]=1; return i;}
+    }
+    if(num==0) for(int i=1; i<=6; i++) if(!used[i]) {used[i]=1; return i;}
+}
+    
+int main()
+{
+    unsigned long long n,k;
+    cin >> n >> k;
+    for(int i=0; i<n; i++){  cout << (char)(decode(n-i,k)-1+'a'); }
+    cout << endl;
+    return 0;
+}
+    

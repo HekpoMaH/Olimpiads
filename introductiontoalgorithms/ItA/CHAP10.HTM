@@ -1,0 +1,213 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 10: MEDIANS AND ORDER STATISTICS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="partiii.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap09.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0797_13a1">CHAPTER 10: MEDIANS AND ORDER STATISTICS<a name="0797_13a1"></h1><P>
+<a name="0797_139c"><a name="0797_139d"><a name="0797_139e"><a name="0797_139f">The <I>i</I>th <I><B>order statistic</I></B> of a set of <I>n</I> elements is the <I>i</I>th smallest element. For example, the <I><B>minimum</I></B> of a set of elements is the first order statistic (<I>i</I> = 1), and the <I><B>maximum</I></B> is the <I>n</I>th order statistic (<I>i</I> = <I>n</I>). A <I><B>median</I></B>, informally, is the &quot;halfway point&quot; of the set. When <I>n</I> is odd, the median is unique, occurring at <I>i</I> = (<I>n</I> + 1)/2. When <I>n</I> is even, there are two medians, occurring at <I>i</I> = <I>n</I>/2 and <I>i</I> = <I>n</I>/2 + 1. Thus, regardless of the parity of <I>n</I>, medians occur at <I>i</I> = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>(<I>n</I> + 1)/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> and <I>i</I> = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>(<I>n</I> + 1)/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+<a name="0797_13a0">This chapter addresses the problem of selecting the <I>i</I>th order statistic from a set of <I>n</I> distinct numbers. We assume for convenience that the set contains distinct numbers, although virtually everything that we do extends to the situation in which a set contains repeated values. The <I><B>selection problem</I></B> can be specified formally as follows:<P>
+<B>Input: </B>A set <I>A</I> of <I>n</I> (distinct) numbers and a number <I>i</I>, with 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>.<P>
+<B>Output: </B>The element <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> that is larger than exactly <I>i</I> -1 other elements of <I>A</I>.<P>
+The selection problem can be solved in <I>O</I>(<I>n </I>lg <I>n</I>) time, since we can sort the numbers using heapsort or merge sort and then simply index the <I>i</I>th element in the output array. There are faster algorithms, however.<P>
+In Section 10.1, we examine the problem of selecting the minimum and maximum of a set of elements. More interesting is the general selection problem, which is investigated in the subsequent two sections. Section 10.2 analyzes a practical algorithm that achieves an <I>O</I>(<I>n</I>) bound on the running time in the average case. Section 10.3 contains an algorithm of more theoretical interest that achieves the <I>O</I>(<I>n</I>) running time in the worst case.<P>
+
+
+
+
+
+<h1><a name="0799_13a4">10.1 Minimum and maximum<a name="0799_13a4"></h1><P>
+<a name="0799_13a1"><a name="0799_13a2">How many comparisons are necessary to determine the minimum of a set of <I>n</I> elements? We can easily obtain an upper bound of <I>n</I> - 1 comparisons: examine each element of the set in turn and keep track of the smallest element seen so far. In the following procedure, we assume that the set resides in array <I>A</I>, where <I>length</I>[<I>A</I>] = <I>n</I>.<P>
+<pre><a name="0799_13a3">MINIMUM (<I>A</I>)</sub></sup></pre><P>
+<pre>1  <I>min</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[1]</sub></sup></pre><P>
+<pre>2  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>length</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>3        <B>do if</B> <I>min</I> &gt; <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>4              <B>then</B> <I>min</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>5  <B>return</B> <I>min</I></sub></sup></pre><P>
+Finding the maximum can, of course, be accomplished with <I>n</I> - 1 comparisons as well.<P>
+Is this the best we can do? Yes, since we can obtain a lower bound of <I>n</I> - 1 comparisons for the problem of determining the minimum. Think of any algorithm that determines the minimum as a tournament among the elements. Each comparison is a match in the tournament in which the smaller of the two elements wins. The key observation is that every element except the winner must lose at least one match. Hence, <I>n</I> - 1 comparisons are necessary to determine the minimum, and the algorithm <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> is optimal with respect to the number of comparisons performed.<P>
+An interesting fine point of the analysis is the determination of the expected number of times that line 4 is executed. Problem 6-2 asks you to show that this expectation is <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>).<P>
+
+
+
+
+
+<h2>Simultaneous minimum and maximum</h2><P>
+In some applications, we must find both the minimum and the maximum of a set of <I>n</I> elements. For example, a graphics program may need to scale a set of (<I>x, y</I>) data to fit onto a rectangular display screen or other graphical output device. To do so, the program must first determine the minimum and maximum of each coordinate.<P>
+It is not too difficult to devise an algorithm that can find both the minimum and the maximum of <I>n</I> elements using the asymptotically optimal <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>) number of comparisons. Simply find the minimum and maximum independently, using <I>n</I> - 1 comparisons for each, for a total of 2<I>n</I> - 2 comparisons.<P>
+In fact, only 3<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> comparisons are necessary to find both the minimum and the maximum. To do this, we maintain the minimum and maximum elements seen thus far. Rather than processing each element of the input by comparing it against the current minimum and maximum, however, at a cost of two comparisons per element, we process elements in pairs. We compare pairs of elements from the input first with <I>each other</I>, and then compare the smaller to the current minimum and the larger to the current maximum, at a cost of three comparisons for every two elements.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="079b_0001">Exercises<a name="079b_0001"></h2><P>
+<a name="079b_0002">10.1-1<a name="079b_0002"><P>
+Show that the second smallest of <I>n</I> elements can be found with <I>n</I>+ <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> - 2 comparisons in the worst case. (<I>Hint:</I> Also find the smallest element.)<P>
+<a name="079b_0003">10.1-2<a name="079b_0003"><P>
+Show that <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>3<I>n</I>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> - 2 comparisons are necessary in the worst case to find both the maximum and minimum of <I>n</I> numbers. (<I>Hint:</I> Consider how many numbers are potentially either the maximum or minimum, and investigate how a comparison affects these counts.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="079c_13a9">10.2 Selection in expected linear time<a name="079c_13a9"></h1><P>
+<a name="079c_13a4"><a name="079c_13a5"><a name="079c_13a6"><a name="079c_13a7">The general selection problem appears more difficult than the simple problem of finding a minimum, yet, surprisingly, the asymptotic running time for both problems is the same: <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). In this section, we present a divide-and-conquer algorithm for the selection problem. The algorithm <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is modeled after the quicksort algorithm of Chapter 8. As in quicksort, the idea is to partition the input array recursively. But unlike quicksort, which recursively processes both sides of the partition, <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> only works on one side of the partition. This difference shows up in the analysis: whereas quicksort has an expected running time of <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>), the expected time of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> uses the procedure <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> introduced in Section 8.3. Thus, like <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>QUICKSORT</FONT>, it is a randomized algorithm, since its behavior is determined in part by the output of a random-number generator. The following code for <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> returns the <I>i</I>th smallest element of the array <I>A</I>[<I>p . . r</I>].<P>
+<pre>RANDOMIZED-SELECT(<I>A, p, r, i</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>p</I> = <I>r</I></sub></sup></pre><P>
+<pre>2      <B>then return</B> <I>A</I>[<I>p</I>]</sub></sup></pre><P>
+<pre>3  <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> RANDOMIZED-PARTITION(<I>A, p, r</I>)</sub></sup></pre><P>
+<pre>4  <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>q</I> - <I>p</I> + 1</sub></sup></pre><P>
+<pre>5  if <I>i </I><IMG SRC="../IMAGES/lteq12.gif"> <I>k</I></sub></sup></pre><P>
+<pre>6      <B>then return</B> RANDOMIZED-SELECT(<I>A, p, q, i</I>)</sub></sup></pre><P>
+<pre>7      <B>else return</B> RANDOMIZED-SELECT(<I>A, q</I> + 1<I>, r, i </I>-<I> </I>k<I>)</I></sub></sup></pre><P>
+After <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> is executed in line 3 of the algorithm, the array A[<I>p .. r</I>] is partitioned into two nonempty subarrays <I>A</I>[<I>p .. q</I>] and <I>A</I>[<I>q + </I>1 <I>.. r</I>] such that each element of <I>A</I>[<I>p .. q</I>] is less than each element of <I>A</I>[<I>q + </I>1 <I>.. r</I>]. Line 4 of the algorithm computes the number <I>k</I> of elements in the subarray <I>A</I>[<I>p .. q</I>]. The algorithm now determines in which of the two subarrays <I>A</I>[<I>p .. q</I>] and <I>A</I>[<I>q + </I>1 <I>.. r</I>] the <I>i</I>th smallest element lies. If <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I>, then the desired element lies on the low side of the partition, and it is recursively selected from the subarray in line 6. If <I>i</I> &gt; <I>k</I>, however, then the desired element lies on the high side of the partition. Since we already know <I>k</I> values that are smaller than the <I>i</I>th smallest element of <I>A</I>[<I>p .. r</I>]--namely, the elements of <I>A</I>[<I>p .. q</I>]--the desired element is the (<I>i - k</I>)th smallest element of <I>A</I>[<I>q + </I>1 <I>.. r</I>], which is found recursively in line 7.<P>
+<a name="079c_13a8">The worst-case running time for <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>), even to find the minimum, because we could be extremely unlucky and always partition around the largest remaining element. The algorithm works well in the average case, though, and because it is randomized, no particular input elicits the worst-case behavior.<P>
+We can obtain an upper bound <I>T</I>(<I>n</I>) on the expected time required by <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> on an input array of <I>n</I> elements as follows. We observed in Section 8.4 that the algorithm <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> produces a partition whose low side has 1 element with probability 2/<I>n</I> and <I>i</I> elements with probability 1/<I>n</I> for <I>i</I> = 2, 3, . . . , <I>n</I> - 1. Assuming that <I>T</I>(<I>n</I>) is monotonically increasing, in the worst case <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> is always unlucky in that the <I>i</I>th element is determined to be on the larger side of the partition. Thus, we get the recurrence<P>
+<img src="188_a.gif"><P>
+The second line follows from the first since max(1, <I>n</I> - 1 ) = <I>n</I> - 1 and<P>
+<img src="188_b.gif"><P>
+If <I>n</I> is odd, each term <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>), <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> + 1), . . . ,<I>T</I>(<I>n</I> - 1) appears twice in the summation, and if <I>n</I> is even, each term <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> + 1), <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> + 2), . . . , <I>T</I>(<I>n</I> - 1) appears twice and the term <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>) appears once. In either case, the summation of the first line is bounded from above by the summation of the second line. The third line follows from the second since in the worst case <I>T</I>(<I>n</I> - 1) = <I>O</I>(<I>n</I><SUP>2</SUP>), and thus the term <img src="188_c.gif"> can be absorbed by the term <I>O</I>(<I>n</I>).<P>
+We solve the recurrence by substitution. Assume that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> for some constant <I>c</I> that satisfies the initial conditions of the recurrence. Using this inductive hypothesis, we have<P>
+<img src="189_a.gif"><P>
+since we can pick <I>c</I> large enough so that <I>c</I>(<I>n</I>/4 + 1/2) dominates the <I>O</I>(<I>n</I>) term.<P>
+Thus, any order statistic, and in particular the median, can be determined on average in linear time.<P>
+
+
+
+
+
+<h2><a name="079d_13aa">Exercises<a name="079d_13aa"></h2><P>
+<a name="079d_13ab">10.2-1<a name="079d_13ab"><P>
+<a name="079d_13a9">Write an iterative version of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>.<P>
+<a name="079d_13ac">10.2-2<a name="079d_13ac"><P>
+Suppose we use <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> to select the minimum element of the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">3, 2, 9, 0, 7, 5, 4, 8, 6, 1<IMG SRC="../IMAGES/wdrtchv.gif">. Describe a sequence of partitions that results in a worst-case performance of <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>.<P>
+<a name="079d_13ad">10.2-3<a name="079d_13ad"><P>
+Recall that in the presence of equal elements, the <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>PARTITION</FONT> procedure partitions the subarray <I>A</I>[<I>p . . r</I>] into two nonempty subarrays <I>A</I>[<I>p . . q</I>] and <I>A</I>[<I>q + </I>1 <I>. . r</I>] such that each element in <I>A</I>[<I>p . . q</I>] is less than <I>or equal to</I> every element in <I>A</I>[<I>q + </I>1 . <I>. r</I>]. If equal elements are present, does the <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> procedure work correctly?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="079e_13ae">10.3 Selection in worst-case linear time<a name="079e_13ae"></h1><P>
+<a name="079e_13aa">We now examine a selection algorithm whose running time is <I>O</I>(<I>n</I>) in the worst case. Like <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT>, the algorithm <FONT FACE="Courier New" SIZE=2>SELECT</FONT> finds the desired element by recursively partitioning the input array. The idea behind the algorithm, however, is to <I>guarantee</I> a good split when the array is partitioned. <FONT FACE="Courier New" SIZE=2>SELECT</FONT> uses the deterministic partitioning algorithm P<FONT FACE="Courier New" SIZE=2>ARTITION </FONT>from quicksort (see Section 8.1), modified to take the element to partition around as an input parameter.<P>
+<img src="190_a.gif"><P>
+<h4><a name="079e_13af">Figure 10.1 Analysis of the algorithm <FONT FACE="Courier New" SIZE=2>SELECT</FONT>. The n elements are represented by small circles, and each group occupies a column. The medians of the groups are whitened, and the median-of-medians x is labeled. Arrows are drawn from larger elements to smaller, from which it can be seen that 3 out of every group of 5 elements to the right of x are greater than x, and 3 out of every group of 5 elements to the left of x are less than x. The elements greater than x are shown on a shaded background.<a name="079e_13af"></sub></sup></h4><P>
+<a name="079e_13ab">The <FONT FACE="Courier New" SIZE=2>SELECT</FONT> algorithm determines the <I>i</I>th smallest of an input array of <I>n</I> elements by executing the following steps.<P>
+1.     Divide the <I>n</I> elements of the input array into <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n/5</I><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> groups of 5 elements each and at most one group made up of the remaining <I>n</I> mod 5 elements.<P>
+2.     Find the median of each of the <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n/5</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> groups by insertion sorting the elements of each group (of which there are 5 at most) and taking its middle element. (If the group has an even number of elements, take the larger of the two medians.)<P>
+3.     Use <FONT FACE="Courier New" SIZE=2>SELECT</FONT> recursively to find the median <I>x</I> of the <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n/5</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> medians found in step 2.<P>
+4.     Partition the input array around the median-of-medians <I>x</I> using a modified version of <FONT FACE="Courier New" SIZE=2>PARTITION</FONT>. Let <I>k</I> be the number of elements on the low side of the partition, so that <I>n - k</I> is the number of elements on the high side.<P>
+5.     Use <FONT FACE="Courier New" SIZE=2>SELECT</FONT> recursively to find the <I>i</I>th smallest element on the low side if <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I>, or the (<I>i</I> - <I>k</I>)th smallest element on the high side if <I>i</I> &gt; <I>k</I>.<P>
+To analyze the running time of <FONT FACE="Courier New" SIZE=2>SELECT</FONT>, we first determine a lower bound on the number of elements that are greater than the partitioning element <I>x</I>. Figure 10.1 is helpful in visualizing this bookkeeping. At least half of the medians found in step 2 are greater than or equal to the median-of-medians <I>x</I>. Thus, at least half of the     <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n/5</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> groups contribute 3 elements that are greater than <I>x</I>, except for the one group that has fewer than 5 elements if 5 does not divide <I>n</I> exactly, and the one group containing <I>x </I>itself. Discounting these two groups, it follows that the number of elements greater than <I>x</I> is at least<P>
+<img src="191_a.gif"><P>
+Similarly, the number of elements that are less than <I>x</I> is at least 3<I>n</I>/10 - 6. Thus, in the worst case, <FONT FACE="Courier New" SIZE=2>SELECT</FONT> is called recursively on at most 7<I>n</I>/10 + 6 elements in step 5.<P>
+We can now develop a recurrence for the worst-case running time <I>T</I>(<I>n</I>) of the algorithm <FONT FACE="Courier New" SIZE=2>SELECT</FONT>. Steps 1, 2, and 4 take <I>O</I>(<I>n</I>) time. (Step 2 consists of <I>O</I>(<I>n</I>) calls of insertion sort on sets of size <I>O</I>(1).) Step 3 takes time <I>T</I>(<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n/5</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>), and step 5 takes time at most <I>T</I>(7<I>n </I>/ 10 + 6), assuming that <I>T</I> is monotonically increasing. Note that 7<I>n </I>/ 10 + 6 &lt; <I>n</I> for <I>n</I> &gt; 20 and that any input of 80 or fewer elements requires <I>O</I>(1) time. We can therefore obtain the recurrence<P>
+<img src="191_b.gif"><P>
+We show that the running time is linear by substitution. Assume that <I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I> for some constant <I>c</I> and all <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> 80. Substituting this inductive hypothesis into the right-hand side of the recurrence yields<P>
+<pre><I>T</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c </I><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I>/5<IMG SRC="../IMAGES/hfbrur14.gif"> + <I>c</I>(7<I>n</I>/10 + 6) + <I>O</I>(<I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I>/5 + <I>c</I> + 7<I>cn</I>/10 + 6<I>c</I> + <I>O</I>(<I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> 9<I>cn</I>/10 + 7<I>c</I> + <I>O</I>(<I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> <I>cn</I>,</sub></sup></pre><P>
+since we can pick <I>c</I> large enough so that <I>c</I>(<I>n </I>/ 10 - 7) is larger than the function described by the <I>O</I>(<I>n</I>) term for all <I>n</I> &gt; 80. The worst-case running time of <FONT FACE="Courier New" SIZE=2>SELECT</FONT> is therefore linear.<P>
+<a name="079e_13ac"><a name="079e_13ad">As in a comparison sort (see Section 9.1), <FONT FACE="Courier New" SIZE=2>SELECT</FONT> and <FONT FACE="Courier New" SIZE=2>RANDOMIZED</FONT>-<FONT FACE="Courier New" SIZE=2>SELECT</FONT> determine information about the relative order of elements only by comparing elements. Thus, the linear-time behavior is not a result of assumptions about the input, as was the case for the sorting algorithms in Chapter 9. Sorting requires <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> 1g <I>n</I>) time in the comparison model, even on average (see Problem 9-1), and thus the method of sorting and indexing presented in the introduction to this chapter is asymptotically inefficient.<P>
+
+
+
+
+
+<h2><a name="079f_13b2">Exercises<a name="079f_13b2"></h2><P>
+<a name="079f_13b3">10.3-1<a name="079f_13b3"><P>
+<a name="079f_13ae">In the algorithm <FONT FACE="Courier New" SIZE=2>SELECT</FONT>, the input elements are divided into groups of 5. Will the algorithm work in linear time if they are divided into groups of 7? How about groups of 3?<P>
+<a name="079f_13b4">10.3-2<a name="079f_13b4"><P>
+<a name="079f_13af">Analyze <FONT FACE="Courier New" SIZE=2>SELECT</FONT> to show that the number of elements greater than the median-of-medians <I>x</I> and the number of elements less than <I>x</I> is at least <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/4<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> if <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 38.<P>
+<a name="079f_13b5">10.3-3<a name="079f_13b5"><P>
+<a name="079f_13b0">Show how quicksort can be made to run in <I>O</I>(<I>n </I>1g <I>n</I>) time in the worst case.<P>
+<a name="079f_13b6">10.3-4<a name="079f_13b6"><P>
+Suppose that an algorithm uses only comparisons to find the <I>i</I>th smallest element in a set of <I>n</I> elements. Show that it can also find the <I>i</I> - 1 smaller elements and the <I>n</I> - <I>i</I> larger elements without performing any additional comparisons.<P>
+<a name="079f_13b7">10.3-5<a name="079f_13b7"><P>
+Given a "black-box" worst-case linear-time median subroutine, give a simple, linear-time algorithm that solves the selection problem for an arbitrary order statistic.<P>
+<a name="079f_13b8">10.3-6<a name="079f_13b8"><P>
+<a name="079f_13b1">The <I>k</I>th <I><B>quantiles </I></B>of an <I>n</I>-element set are the <I>k</I> - 1 order statistics that divide the sorted set into <I>k</I> equal-sized sets (to within 1). Give an <I>O</I>(<I>n </I>1g <I>k</I>)-time algorithm to list the <I>k</I>th quantiles of a set.<P>
+<a name="079f_13b9">10.3-7<a name="079f_13b9"><P>
+Describe an <I>O</I>(<I>n</I>)-time algorithm that, given a set <I>S</I> of <I>n </I>distinct numbers and a positive intege<I>r k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, determines the <I>k</I> numbers in <I>S</I> that are closest to the median of <I>S</I>.<P>
+<a name="079f_13ba">10.3-8<a name="079f_13ba"><P>
+Let <I>X</I>[1 . . <I>n</I>] and <I>Y</I>[1 . . <I>n</I>] be two arrays, each containing <I>n</I> numbers already in sorted order. Give an <I>O</I>(1g <I>n</I>)-time algorithm to find the median of all 2<I>n</I> elements in arrays <I>X</I> and <I>Y</I>.<P>
+<a name="079f_13bb">10.3-9<a name="079f_13bb"><P>
+Professor Olay is consulting for an oil company, which is planning a large pipeline running east to west through an oil field of <I>n</I> wells. From each well, a spur pipeline is to be connected directly to the main pipeline along a shortest path (either north or south), as shown in Figure 10.2. Given <I>x</I>- and <I>y</I>-coordinates of the wells, how should the professor pick the optimal location of the main pipeline (the one that minimizes the total length of the spurs)? Show that the optimal location can be determined in linear time.<P>
+<img src="193_a.gif"><P>
+<h4><a name="079f_13bc">Figure 10.2 We want to determine the position of the east-west oil pipeline that minimizes the total length of the north-south spurs.<a name="079f_13bc"></sub></sup></h4><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07a0_13b7">Problems<a name="07a0_13b7"></h1><P>
+<a name="07a0_13b8">10-1     Largest i numbers in sorted order<a name="07a0_13b8"><P>
+Given a set of <I>n</I> numbers, we wish to find the <I>i</I> largest in sorted order using a comparison-based algorithm. Find the algorithm that implements each of the following methods with the best asymptotic worst-case running time, and analyze the running times of the methods in terms of <I>n</I> and <I>i</I>.<P>
+<I><B>a.     </I></B>Sort the numbers and list the <I>i</I> largest.<P>
+<I><B>b.     </I></B>Build a priority queue from the numbers and call <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT> <I>i </I>times.<P>
+<I><B>c.     </I></B>Use an order-statistic algorithm to find the <I>i</I>th largest number, partition, and sort the <I>i</I> largest numbers.<P>
+<a name="07a0_13b9">10-2     Weighted median<a name="07a0_13b9"><P>
+<a name="07a0_13b2"><a name="07a0_13b3"><a name="07a0_13b4"><a name="07a0_13b5">For <I>n</I> distinct elements <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB> with positive weights <I>w</I><SUB>1</SUB>, <I>w</I><SUB>2</SUB>, . . . , <I>w<SUB>n</SUB> </I>such that <img src="193_b.gif"> the <I><B>weighted median</I></B> is the element <I>x<SUB>k</I></SUB> satisfying<P>
+<img src="193_c.gif"><P>
+<I><B>a.     </I></B>Argue that the median of <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB> is the weighted median of the <I>x<SUB>i </I></SUB>with weights <I>w<SUB>i</I></SUB> = 1 / <I>n</I> for <I>i</I> = 1, 2, . . . , <I>n</I>.<P>
+<I><B>b.     </I></B>Show how to compute the weighted median of <I>n</I> elements in <I>O</I>(<I>n </I>1g <I>n</I>) worst-case time using sorting.<P>
+<I><B>c.     </I></B>Show how to compute the weighted median in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) worst-case time using a linear-time median algorithm such as <FONT FACE="Courier New" SIZE=2>SELECT</FONT> from Section 10.3.<P>
+<a name="07a0_13b6">The<I> <B>post-office location problem</I></B><I> </I>is defined as follows. We are given <I>n </I>points <I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>n</I></SUB> with associated weights <I>w</I><SUB>1</SUB>, <I>w</I><SUB>2</SUB>, . . . , <I>w<SUB>n</I></SUB>. We wish to find a point <I>p</I> (not necessarily one of the input points) that minimizes the sum <img src="194_a.gif">, where <I>d</I>(<I>a</I>, <I>b</I>) is the distance between points <I>a</I> and <I>b</I>. <P>
+<I><B>d.     </I></B>Argue that the weighted median is a best solution for the 1-dimensional post-office location problem, in which points are simply real numbers and the distance between points <I>a</I> and <I>b</I> is <I>d</I>(<I>a</I>, <I>b</I>) = |<I>a</I> - <I>b|.</I><P>
+<I><B>e.     </I></B>Find the best solution for the 2-dimensional post-office location problem, in which the points are (<I>x</I>, <I>y</I>) coordinate pairs and the distance between points <I>a</I> = (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>) and <I>b</I> = (<I>x</I><SUB>2</SUB>, <I>y</I><SUB>2</SUB>) is the <I><B>Manhattan distance:</I></B> <I>d</I>(<I>a</I>, <I>b</I>) = |<I>x</I><SUB>1</SUB> - <I>x<SUB>2</I></SUB>| + |<I>y</I><SUB>1</SUB> - <I>y<SUB>2</I></SUB>|.<P>
+<a name="07a0_13ba">10-3     Small order statistics<a name="07a0_13ba"><P>
+The worst-case number <I>T</I>(<I>n</I>) of comparisons used by <FONT FACE="Courier New" SIZE=2>SELECT</FONT> to select the <I>i</I>th order statistic from <I>n</I> numbers was shown to satisfy <I>T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), but the constant hidden by the <IMG SRC="../IMAGES/bound.gif">-notation is rather large. When <I>i</I> is small relative to <I>n</I>, we can implement a different procedure that uses <FONT FACE="Courier New" SIZE=2>SELECT</FONT> as a subroutine but makes fewer comparisons in the worst case.<P>
+<I><B>a.     </I></B>Describe an algorithm that uses <I>U<SUB>i</I></SUB>(<I>n</I>) comparisons to find the <I>i</I>th smallest of <I>n</I> elements, where <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n </I>/ 2 and<P>
+<img src="194_b.gif"><P>
+(<I>Hint:</I> Begin with <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n </I></FONT>/ 2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> disjoint pairwise comparisons, and recurse on the set containing the smaller element from each pair.)<P>
+<I><B>b.     </I></B>Show that <I>U<SUB>i</I></SUB>(<I>n</I>) = <I>n</I> + <I>O</I>(<I>T</I>(2<I>i</I>)1g(<I>n </I>/ <I>i</I>)).<P>
+<I><B>c.     </I></B>Show that if <I>i</I> is a constant, then <I>U<SUB>i</I></SUB>(<I>n</I>) = <I>n</I> + <I>O</I>(1g <I>n</I>).<P>
+<I><B>d.     </I></B>Show that if <I>i</I> = <I>n </I>/ <I>k</I> for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 2, then <I>U<SUB>i</I></SUB>(<I>n</I>) = <I>n</I> + <I>O</I>(<I>T</I>(2<I>n </I>/ <I>k</I>) 1g <I>k</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The worst-case median-finding algorithm was invented by Blum, Floyd, Pratt, Rivest, and Tarjan [29]. The fast average-time version is due to Hoare [97]. Floyd and Rivest [70] have developed an improved average-time version that partitions around an element recursively selected from a small sample of the elements.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="partiii.htm">Part III</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,31 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+    int l,n,p[102],r[102],q[102],f[102];
+    cin>>n>>l;
+    int s=0;
+    for(int i=0;i<n;i++){
+            cin>>p[i]>>r[i]>>q[i]>>f[i];s+=f[i];}
+    if(s<l){cout<<"-1"<<endl;return 0;}
+    for(int i=0;i<n;i++)
+    for(int j=0;j<n-1;j++)
+    {
+            if(q[j]>q[j+1]){swap(p[j],p[j+1]);swap(r[j],r[j+1]);swap(q[j],q[j+1]);swap(f[j],f[j+1]);}else
+            if(q[j]==q[j+1] && r[j]>r[j+1]){swap(p[j],p[j+1]);swap(r[j],r[j+1]);swap(q[j],q[j+1]);swap(f[j],f[j+1]);}else
+            if(q[j]==q[j+1] && p[j]>p[j+1]){swap(p[j],p[j+1]);swap(r[j],r[j+1]);swap(q[j],q[j+1]);swap(f[j],f[j+1]);}
+    }
+    int k=0;s=0;
+    while(l!=0)
+    {
+               if(f[k]>=l){if(l>=r[k]){s+=l*p[k];l=0;}
+                                              else
+                                              if(l<r[k]){s+=min(l*p[k],r[k]*q[k]);l=0;}}
+               else
+               if(f[k]<l){s+=f[k]*q[k];l=l-f[k];}
+               k++;
+    }
+    cout<<s<<endl;
+    return 0;
+}
+                                              

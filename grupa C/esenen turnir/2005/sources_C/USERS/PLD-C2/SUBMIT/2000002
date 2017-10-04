@@ -1,0 +1,24 @@
+{
+TASK:number
+LANG:PASCAL
+}
+
+var d1,d2,d3,n,m,i:longint;
+    n2:Word;
+
+begin
+
+ read(n,d1,d2,d3);
+ if n=3 then begin writeln(15);exit;end;
+
+
+
+
+
+
+
+end.
+
+
+
+

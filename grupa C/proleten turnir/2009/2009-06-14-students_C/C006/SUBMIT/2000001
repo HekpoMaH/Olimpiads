@@ -1,0 +1,61 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+int main()
+{
+    int L,N,i,P[100000],R[100000],Q[100000],F[100000],sum=0,min=100,mini=100,minj=100,minq=100,j;
+    //P - za 1 m.   za R m. po Q pari   F- koli4estvo kabeli v magazina
+    cin>>N>>L;
+    for(i=1;i<=N;i++)
+    {
+        cin>>P[i]>>R[i]>>Q[i]>>F[i];
+        sum=sum+F[i];
+    }
+    if(sum<L)
+    {
+         cout<<-1<<endl;
+         return 0;
+    }
+    sum=999;
+    for(i=1;i<=N;i++)
+    {
+        if(F[i]>=L)
+        {
+             if(R[i]<=L)
+             {
+                  if(sum>Q[i]*L)
+                       sum=Q[i]*L;
+             }
+        }
+        else
+        {
+            for(j=1;j<=N;j++)
+            {
+                if(L>R[j])
+                    if(L-R[j]<min)
+                    {
+                          min=L-R[j];
+                          mini=j;
+                    }
+                if(Q[j]<minq)
+                {
+                    minq=Q[j];
+                    minj=j;
+                }    
+            }
+            if(min>minq)
+            {
+                if(L-F[mini]>=R[minj])
+                {
+                     if(sum>F[i]*Q[i]+Q[i]*(L-F[mini]))
+                          sum=F[i]*Q[i]+Q[i]*(L-F[mini]);
+                }
+                else
+                     if(sum>F[i]*Q[i]+P[i]*(L-F[mini]))
+                          sum=F[i]*Q[i]+P[i]*(L-F[mini]);
+            }
+        }
+    }
+    cout<<sum<<endl;
+}

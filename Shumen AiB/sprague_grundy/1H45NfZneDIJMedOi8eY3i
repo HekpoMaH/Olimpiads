@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
+<!--[if IE 9 ]><html class="ie ie9" lang="en"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--><html lang="en"> <!--<![endif]-->
+<head>
+	<meta charset="utf-8">
+	<title>Reason To Live by Kiss on Spotify</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=9"><script type="text/javascript">window.NREUM||(NREUM={}),__nr_require=function(t,n,e){function r(e){if(!n[e]){var o=n[e]={exports:{}};t[e][0].call(o.exports,function(n){var o=t[e][1][n];return r(o?o:n)},o,o.exports)}return n[e].exports}if("function"==typeof __nr_require)return __nr_require;for(var o=0;o<e.length;o++)r(e[o]);return r}({D5DuLP:[function(t,n){function e(t,n){var e=r[t];return e?e.apply(this,n):(o[t]||(o[t]=[]),void o[t].push(n))}var r={},o={};n.exports=e,e.queues=o,e.handlers=r},{}],handle:[function(t,n){n.exports=t("D5DuLP")},{}],G9z0Bl:[function(t,n){function e(){var t=l.info=NREUM.info;if(t&&t.agent&&t.licenseKey&&t.applicationID&&p&&p.body){l.proto="https"===f.split(":")[0]||t.sslForHttp?"https://":"http://",i("mark",["onload",a()]);var n=p.createElement("script");n.src=l.proto+t.agent,p.body.appendChild(n)}}function r(){"complete"===p.readyState&&o()}function o(){i("mark",["domContent",a()])}function a(){return(new Date).getTime()}var i=t("handle"),u=window,p=u.document,s="addEventListener",c="attachEvent",f=(""+location).split("?")[0],l=n.exports={offset:a(),origin:f,features:[]};p[s]?(p[s]("DOMContentLoaded",o,!1),u[s]("load",e,!1)):(p[c]("onreadystatechange",r),u[c]("onload",e)),i("mark",["firstbyte",a()])},{handle:"D5DuLP"}],loader:[function(t,n){n.exports=t("G9z0Bl")},{}]},{},["G9z0Bl"]);</script>
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+	<meta name="apple-itunes-app" content="app-id=324684580">
+
+		<meta property="og:site_name" content="Spotify">
+	<meta property="fb:app_id" content="174829003346">
+    	<meta property="og:title" content="Reason To Live">
+	<meta property="og:description" content="Reason To Live, a song by Kiss on Spotify.">
+	<meta property="og:url" content="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i">
+	<meta property="og:image" content="http://o.scdn.co/image/a59a70282bcbb383096c55c62fba3ed9ffc79348">
+	<meta property="og:type" content="music.song">
+	<meta property="og:audio" content="spotify:track:1H45NfZneDIJMedOi8eY3i">
+	<meta property="og:audio:type" content="audio/vnd.facebook.bridge">
+	<meta property="music:duration" content="239">
+	<meta property="music:album" content="http://open.spotify.com/album/2uwnqD7UXuGP2SQ7GXFyK5">
+	<meta property="music:album:track" content="2">
+	<meta property="music:musician" content="http://open.spotify.com/artist/07XSN3sPlIlB2L2XNcTwJw">
+	<meta property="music:release_date" content="2014-05-30">
+	<meta property="music:preview_url:type" content="audio/mpeg">
+	<meta property="music:preview_url:url" content="http://d318706lgtcm8e.cloudfront.net/mp3-preview/5f72edce91ba4f448a9120b0e1f8710322660416">
+	<meta property="music:preview_url:secure_url" content="https://d318706lgtcm8e.cloudfront.net/mp3-preview/5f72edce91ba4f448a9120b0e1f8710322660416">
+	<meta property="twitter:card" content="summary">
+	<meta property="twitter:url" content="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i">
+	<meta property="twitter:image" content="http://o.scdn.co/cover/a59a70282bcbb383096c55c62fba3ed9ffc79348">
+	<meta property="twitter:description" content="A song by Kiss on Spotify.">
+	<meta property="twitter:title" content="♪ Reason To Live">
+	<meta property="twitter:site" content="@spotify">
+	<meta property="twitter:app:id:iphone" content="324684580">
+	<meta property="twitter:app:id:ipad" content="324684580">
+	<meta property="twitter:app:id:googleplay" content="com.spotify.music">
+	<meta property="twitter:app:name:iphone" content="Spotify">
+	<meta property="twitter:app:name:ipad" content="Spotify">
+	<meta property="twitter:app:name:googleplay" content="Spotify">
+	<meta property="twitter:app:url:iphone" content="spotify:track:1H45NfZneDIJMedOi8eY3i">
+	<meta property="twitter:app:url:ipad" content="spotify:track:1H45NfZneDIJMedOi8eY3i">
+	<meta property="twitter:app:url:googleplay" content="spotify:track:1H45NfZneDIJMedOi8eY3i">
+	<meta property="og:restrictions:country:allowed" content="AD">
+
+	<meta property="og:restrictions:country:allowed" content="AG">
+
+	<meta property="og:restrictions:country:allowed" content="AR">
+
+	<meta property="og:restrictions:country:allowed" content="AT">
+
+	<meta property="og:restrictions:country:allowed" content="AU">
+
+	<meta property="og:restrictions:country:allowed" content="BB">
+
+	<meta property="og:restrictions:country:allowed" content="BE">
+
+	<meta property="og:restrictions:country:allowed" content="BG">
+
+	<meta property="og:restrictions:country:allowed" content="BO">
+
+	<meta property="og:restrictions:country:allowed" content="BR">
+
+	<meta property="og:restrictions:country:allowed" content="BS">
+
+	<meta property="og:restrictions:country:allowed" content="BZ">
+
+	<meta property="og:restrictions:country:allowed" content="CH">
+
+	<meta property="og:restrictions:country:allowed" content="CL">
+
+	<meta property="og:restrictions:country:allowed" content="CN">
+
+	<meta property="og:restrictions:country:allowed" content="CO">
+
+	<meta property="og:restrictions:country:allowed" content="CR">
+
+	<meta property="og:restrictions:country:allowed" content="CY">
+
+	<meta property="og:restrictions:country:allowed" content="CZ">
+
+	<meta property="og:restrictions:country:allowed" content="DK">
+
+	<meta property="og:restrictions:country:allowed" content="DM">
+
+	<meta property="og:restrictions:country:allowed" content="DO">
+
+	<meta property="og:restrictions:country:allowed" content="EC">
+
+	<meta property="og:restrictions:country:allowed" content="EE">
+
+	<meta property="og:restrictions:country:allowed" content="ES">
+
+	<meta property="og:restrictions:country:allowed" content="FI">
+
+	<meta property="og:restrictions:country:allowed" content="FR">
+
+	<meta property="og:restrictions:country:allowed" content="GB">
+
+	<meta property="og:restrictions:country:allowed" content="GD">
+
+	<meta property="og:restrictions:country:allowed" content="GR">
+
+	<meta property="og:restrictions:country:allowed" content="GT">
+
+	<meta property="og:restrictions:country:allowed" content="GY">
+
+	<meta property="og:restrictions:country:allowed" content="HK">
+
+	<meta property="og:restrictions:country:allowed" content="HN">
+
+	<meta property="og:restrictions:country:allowed" content="HR">
+
+	<meta property="og:restrictions:country:allowed" content="HT">
+
+	<meta property="og:restrictions:country:allowed" content="HU">
+
+	<meta property="og:restrictions:country:allowed" content="ID">
+
+	<meta property="og:restrictions:country:allowed" content="IE">
+
+	<meta property="og:restrictions:country:allowed" content="IL">
+
+	<meta property="og:restrictions:country:allowed" content="IN">
+
+	<meta property="og:restrictions:country:allowed" content="IS">
+
+	<meta property="og:restrictions:country:allowed" content="IT">
+
+	<meta property="og:restrictions:country:allowed" content="JM">
+
+	<meta property="og:restrictions:country:allowed" content="JP">
+
+	<meta property="og:restrictions:country:allowed" content="KN">
+
+	<meta property="og:restrictions:country:allowed" content="LC">
+
+	<meta property="og:restrictions:country:allowed" content="LI">
+
+	<meta property="og:restrictions:country:allowed" content="LT">
+
+	<meta property="og:restrictions:country:allowed" content="LU">
+
+	<meta property="og:restrictions:country:allowed" content="LV">
+
+	<meta property="og:restrictions:country:allowed" content="MC">
+
+	<meta property="og:restrictions:country:allowed" content="MT">
+
+	<meta property="og:restrictions:country:allowed" content="MY">
+
+	<meta property="og:restrictions:country:allowed" content="NI">
+
+	<meta property="og:restrictions:country:allowed" content="NL">
+
+	<meta property="og:restrictions:country:allowed" content="NO">
+
+	<meta property="og:restrictions:country:allowed" content="NZ">
+
+	<meta property="og:restrictions:country:allowed" content="PA">
+
+	<meta property="og:restrictions:country:allowed" content="PE">
+
+	<meta property="og:restrictions:country:allowed" content="PH">
+
+	<meta property="og:restrictions:country:allowed" content="PL">
+
+	<meta property="og:restrictions:country:allowed" content="PT">
+
+	<meta property="og:restrictions:country:allowed" content="PY">
+
+	<meta property="og:restrictions:country:allowed" content="RO">
+
+	<meta property="og:restrictions:country:allowed" content="RU">
+
+	<meta property="og:restrictions:country:allowed" content="SE">
+
+	<meta property="og:restrictions:country:allowed" content="SG">
+
+	<meta property="og:restrictions:country:allowed" content="SI">
+
+	<meta property="og:restrictions:country:allowed" content="SK">
+
+	<meta property="og:restrictions:country:allowed" content="SV">
+
+	<meta property="og:restrictions:country:allowed" content="TH">
+
+	<meta property="og:restrictions:country:allowed" content="TR">
+
+	<meta property="og:restrictions:country:allowed" content="TT">
+
+	<meta property="og:restrictions:country:allowed" content="TW">
+
+	<meta property="og:restrictions:country:allowed" content="UA">
+
+	<meta property="og:restrictions:country:allowed" content="UY">
+
+	<meta property="og:restrictions:country:allowed" content="VC">
+
+	<meta property="og:restrictions:country:allowed" content="ZA">
+
+	<meta property="og:restrictions:country:allowed" content="CA">
+
+	<meta property="og:restrictions:country:allowed" content="MX">
+
+	<meta property="og:restrictions:country:allowed" content="US">
+
+	<meta property="og:restrictions:country:allowed" content="DE">
+
+
+	<meta property="al:android:app_name" content="Spotify">
+	<meta property="al:android:package" content="com.spotify.music">
+	<meta property="al:android:url" content="spotify://track/1H45NfZneDIJMedOi8eY3i">
+	<meta property="al:ios:app_name" content="Spotify">
+	<meta property="al:ios:app_store_id" content="324684580">
+	<meta property="al:ios:url" content="spotify://track/1H45NfZneDIJMedOi8eY3i">
+	<meta property="description" content="Reason To Live, a song by Kiss on Spotify. Don&#39;t have Spotify? Get it at Spotify.com – it&#39;s free!">
+
+	<link rel="alternate" href="android-app://com.spotify.music/spotify/track/1H45NfZneDIJMedOi8eY3i" />
+
+	<link rel="stylesheet" media="screen" type="text/css" href="//open.spotify.com/static/m/style.216980f.css">
+<!--[if lt IE 9]>
+	<script src="http://open.spotify.com/static/m/script.ie.65812f3.js"></script>
+<![endif]-->
+<link rel="icon" href="http://d2c87l0yth4zbw.cloudfront.net/i/_global/favicon.png">
+<!--[if IE]><link rel="shortcut icon" href="http://d2c87l0yth4zbw.cloudfront.net/i/_global/favicon.ico"><![endif]-->
+</head>
+<body id="body" class="m-zz ">
+    <!-- Google Tag Manager -->
+    <noscript><iframe src="//www.googletagmanager.com/ns.html?id=GTM-7BJJ"
+    height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <script>
+    dataLayer = [];
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+    j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+    '//www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','GTM-7BJJ');
+    </script>
+    <!-- End Google Tag Manager -->
+
+	<header>
+		<div id="header">
+			<div class="container">
+				<div class="sixteen columns clearfix">
+					<div class="three columns alpha">
+						<a class="logo" href="http://spotify.com" target="_blank">
+							<div class="spotify-logo"></div>
+						</a>
+					</div>
+					<div class="ten columns empty"></div>
+					<div class="three columns omega">
+						<a href="http://www.spotify.com/download" class="button-download header-download download-link new-user">Get Spotify</a>
+					</div>
+				</div>
+			</div>
+		</div>
+			</header>
+	<div id="main" >
+		<div class="container">
+			<div class="sixteen columns clearfix" itemscope itemtype="http://schema.org/MusicGroup">
+										<div class="one-third column alpha large-image-column">
+					<div class="album-cover-art">
+												<img itemprop="image" src="http://o.scdn.co/300/a59a70282bcbb383096c55c62fba3ed9ffc79348" border="0" alt="Reason To Live" id="big-cover"/>
+												<a class="play-pause-btn" href="spotify:track:1H45NfZneDIJMedOi8eY3i">Play / Pause</a>					</div>
+
+										<div class="social-buttons">
+						<a href="#" data-url="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i" class="share-button fb-button">
+							<span class="spoticon-facebook-16"></span>Share
+						</a>
+						<a href="#" data-url="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i" class="share-button twitter-button">
+							<span class="spoticon-twitter-16"></span>Share
+						</a>
+					</div>
+					
+					<div class="new-user"><a id="confirm-spotified" class="button-open click-if-you-have" href="spotify:track:1H45NfZneDIJMedOi8eY3i">I have Spotify</a></div>
+				</div>
+				<div class="two-thirds column omega">
+					<div class="player-header">
+						<div class="album-cover-art mobile">
+													<img src="http://o.scdn.co/300/a59a70282bcbb383096c55c62fba3ed9ffc79348" border="0" alt="Reason To Live"/>
+							<a class="play-pause-btn" href="spotify:track:1H45NfZneDIJMedOi8eY3i">Play / Pause</a>
+												</div>
+
+											<div class="social-buttons">
+						<a href="#" data-url="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i" class="share-button fb-button">
+							<span class="spoticon-facebook-16"></span>Share
+						</a>
+						<a href="#" data-url="http://open.spotify.com/track/1H45NfZneDIJMedOi8eY3i" class="share-button twitter-button">
+							<span class="spoticon-twitter-16"></span>Share
+						</a>
+					</div>
+					
+
+						<div class="page-icon" id="track-icon"></div>
+						<h1 itemprop="name">Reason To Live</h1>
+						<h2>by <a href="/artist/07XSN3sPlIlB2L2XNcTwJw">Kiss</a></h2>					</div>
+					<h3>Tracks in <a href="/album/2uwnqD7UXuGP2SQ7GXFyK5">KISS 40</a></h3>										<div class="player">
+								<ul id="tracks" itemscope itemprop="tracks">
+	<li class="first single-track" data-id="0beuS4wyuPUXWLkQyG7BEu" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">01</span>
+		<a href="#" class="play-track" data-id="0beuS4wyuPUXWLkQyG7BEu"></a>
+		<a href="/track/0beuS4wyuPUXWLkQyG7BEu" itemprop="url">
+			<span class="track" itemprop="name">Nothin&#039; To Lose</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0beuS4wyuPUXWLkQyG7BEu">
+			<span class="duration"><meta itemprop="duration" content="PT3M23S"/>03:23</span>
+		</a>
+	</li>
+	<li class="odd single-track" data-id="1MWjOqfDDrYE72S7RoaTBF" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">02</span>
+		<a href="#" class="play-track" data-id="1MWjOqfDDrYE72S7RoaTBF"></a>
+		<a href="/track/1MWjOqfDDrYE72S7RoaTBF" itemprop="url">
+			<span class="track" itemprop="name">Let Me Go, Rock &#039;N Roll</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/1MWjOqfDDrYE72S7RoaTBF">
+			<span class="duration"><meta itemprop="duration" content="PT2M14S"/>02:14</span>
+		</a>
+	</li>
+	<li class=" single-track" data-id="6QtoxaQxjwzW0BYMwCKj34" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">03</span>
+		<a href="#" class="play-track" data-id="6QtoxaQxjwzW0BYMwCKj34"></a>
+		<a href="/track/6QtoxaQxjwzW0BYMwCKj34" itemprop="url">
+			<span class="track" itemprop="name">C&#039;mon And Love Me</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6QtoxaQxjwzW0BYMwCKj34">
+			<span class="duration"><meta itemprop="duration" content="PT2M55S"/>02:55</span>
+		</a>
+	</li>
+	<li class="odd single-track" data-id="4V1N8exmJ7v6IQyK0TuYRY" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">04</span>
+		<a href="#" class="play-track" data-id="4V1N8exmJ7v6IQyK0TuYRY"></a>
+		<a href="/track/4V1N8exmJ7v6IQyK0TuYRY" itemprop="url">
+			<span class="track" itemprop="name">Rock And Roll All Nite - Live From Detroit, MI/1975</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/4V1N8exmJ7v6IQyK0TuYRY">
+			<span class="duration"><meta itemprop="duration" content="PT3M59S"/>03:59</span>
+		</a>
+	</li>
+	<li class=" single-track" data-id="34T8igDHfuDvnym55CPqg9" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">05</span>
+		<a href="#" class="play-track" data-id="34T8igDHfuDvnym55CPqg9"></a>
+		<a href="/track/34T8igDHfuDvnym55CPqg9" itemprop="url">
+			<span class="track" itemprop="name">God Of Thunder - Demo Version</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/34T8igDHfuDvnym55CPqg9">
+			<span class="duration"><meta itemprop="duration" content="PT2M55S"/>02:55</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="7pJT3GYAU81iLPhyuqsuMu" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">06</span>
+		<a href="#" class="play-track" data-id="7pJT3GYAU81iLPhyuqsuMu"></a>
+		<a href="/track/7pJT3GYAU81iLPhyuqsuMu" itemprop="url">
+			<span class="track" itemprop="name">Beth</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/7pJT3GYAU81iLPhyuqsuMu">
+			<span class="duration"><meta itemprop="duration" content="PT2M45S"/>02:45</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="0ekpPuVOvb81QH5YtCec0P" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">07</span>
+		<a href="#" class="play-track" data-id="0ekpPuVOvb81QH5YtCec0P"></a>
+		<a href="/track/0ekpPuVOvb81QH5YtCec0P" itemprop="url">
+			<span class="track" itemprop="name">Hard Luck Woman</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0ekpPuVOvb81QH5YtCec0P">
+			<span class="duration"><meta itemprop="duration" content="PT3M32S"/>03:32</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="4MB8OuqW61xB5iiKwiY2C6" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">08</span>
+		<a href="#" class="play-track" data-id="4MB8OuqW61xB5iiKwiY2C6"></a>
+		<a href="/track/4MB8OuqW61xB5iiKwiY2C6" itemprop="url">
+			<span class="track" itemprop="name">Reputation - Demo</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/4MB8OuqW61xB5iiKwiY2C6">
+			<span class="duration"><meta itemprop="duration" content="PT5M39S"/>05:39</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="6KyxfxD22pKQt2giZyDcVG" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">09</span>
+		<a href="#" class="play-track" data-id="6KyxfxD22pKQt2giZyDcVG"></a>
+		<a href="/track/6KyxfxD22pKQt2giZyDcVG" itemprop="url">
+			<span class="track" itemprop="name">Christine Sixteen</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6KyxfxD22pKQt2giZyDcVG">
+			<span class="duration"><meta itemprop="duration" content="PT3M11S"/>03:11</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="5bQ2TfVTkmVdI8jbSB8PT8" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">10</span>
+		<a href="#" class="play-track" data-id="5bQ2TfVTkmVdI8jbSB8PT8"></a>
+		<a href="/track/5bQ2TfVTkmVdI8jbSB8PT8" itemprop="url">
+			<span class="track" itemprop="name">Shout It Out Loud - Live At The L.A. Forum/1977/Edited</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/5bQ2TfVTkmVdI8jbSB8PT8">
+			<span class="duration"><meta itemprop="duration" content="PT3M25S"/>03:25</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="1Jc1bkfzS2RqYn8WNJ9tTi" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">11</span>
+		<a href="#" class="play-track" data-id="1Jc1bkfzS2RqYn8WNJ9tTi"></a>
+		<a href="/track/1Jc1bkfzS2RqYn8WNJ9tTi" itemprop="url">
+			<span class="track" itemprop="name">Strutter &#039;78</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/1Jc1bkfzS2RqYn8WNJ9tTi">
+			<span class="duration"><meta itemprop="duration" content="PT3M40S"/>03:40</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="0dAxTHwTssWpuenr5AgvOG" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">12</span>
+		<a href="#" class="play-track" data-id="0dAxTHwTssWpuenr5AgvOG"></a>
+		<a href="/track/0dAxTHwTssWpuenr5AgvOG" itemprop="url">
+			<span class="track" itemprop="name">You Matter To Me</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0dAxTHwTssWpuenr5AgvOG">
+			<span class="duration"><meta itemprop="duration" content="PT3M14S"/>03:14</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="7LRscvbhTQkxkJSRveLhpl" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">13</span>
+		<a href="#" class="play-track" data-id="7LRscvbhTQkxkJSRveLhpl"></a>
+		<a href="/track/7LRscvbhTQkxkJSRveLhpl" itemprop="url">
+			<span class="track" itemprop="name">Radioactive</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/7LRscvbhTQkxkJSRveLhpl">
+			<span class="duration"><meta itemprop="duration" content="PT3M51S"/>03:51</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="7MOQhDY1AJ4KgxeLo7WE2v" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">14</span>
+		<a href="#" class="play-track" data-id="7MOQhDY1AJ4KgxeLo7WE2v"></a>
+		<a href="/track/7MOQhDY1AJ4KgxeLo7WE2v" itemprop="url">
+			<span class="track" itemprop="name">New York Groove</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/7MOQhDY1AJ4KgxeLo7WE2v">
+			<span class="duration"><meta itemprop="duration" content="PT2M59S"/>02:59</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="0K8goyCKL5ki3GSDCp7dIO" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">15</span>
+		<a href="#" class="play-track" data-id="0K8goyCKL5ki3GSDCp7dIO"></a>
+		<a href="/track/0K8goyCKL5ki3GSDCp7dIO" itemprop="url">
+			<span class="track" itemprop="name">Hold Me, Touch Me (Think Of Me When We&#039;re Apart)</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0K8goyCKL5ki3GSDCp7dIO">
+			<span class="duration"><meta itemprop="duration" content="PT3M39S"/>03:39</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="6GdQ6NcRkEZLh60lya4TbA" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">16</span>
+		<a href="#" class="play-track" data-id="6GdQ6NcRkEZLh60lya4TbA"></a>
+		<a href="/track/6GdQ6NcRkEZLh60lya4TbA" itemprop="url">
+			<span class="track" itemprop="name">I Was Made For Lovin&#039; You - Single Mix</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6GdQ6NcRkEZLh60lya4TbA">
+			<span class="duration"><meta itemprop="duration" content="PT4M1S"/>04:01</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="1KtvkLXVFwLpYNdTOMDzff" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">17</span>
+		<a href="#" class="play-track" data-id="1KtvkLXVFwLpYNdTOMDzff"></a>
+		<a href="/track/1KtvkLXVFwLpYNdTOMDzff" itemprop="url">
+			<span class="track" itemprop="name">Shandi</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/1KtvkLXVFwLpYNdTOMDzff">
+			<span class="duration"><meta itemprop="duration" content="PT3M34S"/>03:34</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="0QTSc3WeXLxBB46UNW94ZX" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">18</span>
+		<a href="#" class="play-track" data-id="0QTSc3WeXLxBB46UNW94ZX"></a>
+		<a href="/track/0QTSc3WeXLxBB46UNW94ZX" itemprop="url">
+			<span class="track" itemprop="name">A World Without Heroes</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0QTSc3WeXLxBB46UNW94ZX">
+			<span class="duration"><meta itemprop="duration" content="PT2M37S"/>02:37</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="4OBp1BJsQff3sPcV1j5JUG" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">19</span>
+		<a href="#" class="play-track" data-id="4OBp1BJsQff3sPcV1j5JUG"></a>
+		<a href="/track/4OBp1BJsQff3sPcV1j5JUG" itemprop="url">
+			<span class="track" itemprop="name">I Love It Loud</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/4OBp1BJsQff3sPcV1j5JUG">
+			<span class="duration"><meta itemprop="duration" content="PT4M12S"/>04:12</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="2wL2PiHRmORSUP60YWpbI0" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">20</span>
+		<a href="#" class="play-track" data-id="2wL2PiHRmORSUP60YWpbI0"></a>
+		<a href="/track/2wL2PiHRmORSUP60YWpbI0" itemprop="url">
+			<span class="track" itemprop="name">Down On Your Knees</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/2wL2PiHRmORSUP60YWpbI0">
+			<span class="duration"><meta itemprop="duration" content="PT3M27S"/>03:27</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="5eF49WYlqTmolVsYxfDkcO" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">21</span>
+		<a href="#" class="play-track" data-id="5eF49WYlqTmolVsYxfDkcO"></a>
+		<a href="/track/5eF49WYlqTmolVsYxfDkcO" itemprop="url">
+			<span class="track" itemprop="name">Lick It Up</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/5eF49WYlqTmolVsYxfDkcO">
+			<span class="duration"><meta itemprop="duration" content="PT3M53S"/>03:53</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="2F3RoahIpQmCNv5veGKvsu" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">22</span>
+		<a href="#" class="play-track" data-id="2F3RoahIpQmCNv5veGKvsu"></a>
+		<a href="/track/2F3RoahIpQmCNv5veGKvsu" itemprop="url">
+			<span class="track" itemprop="name">Heaven&#039;s On Fire</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/2F3RoahIpQmCNv5veGKvsu">
+			<span class="duration"><meta itemprop="duration" content="PT3M17S"/>03:17</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="0J5HkXGkcnoo2Y4QCNFx75" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">23</span>
+		<a href="#" class="play-track" data-id="0J5HkXGkcnoo2Y4QCNFx75"></a>
+		<a href="/track/0J5HkXGkcnoo2Y4QCNFx75" itemprop="url">
+			<span class="track" itemprop="name">Tears Are Falling</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0J5HkXGkcnoo2Y4QCNFx75">
+			<span class="duration"><meta itemprop="duration" content="PT3M52S"/>03:52</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="1H45NfZneDIJMedOi8eY3i" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">24</span>
+		<a href="#" class="play-track" data-id="1H45NfZneDIJMedOi8eY3i"></a>
+		<a href="/track/1H45NfZneDIJMedOi8eY3i" itemprop="url">
+			<span class="track" itemprop="name">Reason To Live</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/1H45NfZneDIJMedOi8eY3i">
+			<span class="duration"><meta itemprop="duration" content="PT3M59S"/>03:59</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="3Vdt5YfYF9byasoY8ycidG" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">25</span>
+		<a href="#" class="play-track" data-id="3Vdt5YfYF9byasoY8ycidG"></a>
+		<a href="/track/3Vdt5YfYF9byasoY8ycidG" itemprop="url">
+			<span class="track" itemprop="name">Let&#039;s Put The X In Sex</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/3Vdt5YfYF9byasoY8ycidG">
+			<span class="duration"><meta itemprop="duration" content="PT3M48S"/>03:48</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="6Q2QVIxO8MN8hqDQhCjgVU" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">26</span>
+		<a href="#" class="play-track" data-id="6Q2QVIxO8MN8hqDQhCjgVU"></a>
+		<a href="/track/6Q2QVIxO8MN8hqDQhCjgVU" itemprop="url">
+			<span class="track" itemprop="name">Forever</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6Q2QVIxO8MN8hqDQhCjgVU">
+			<span class="duration"><meta itemprop="duration" content="PT3M51S"/>03:51</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="24ACVkOwl3CUiKfolOYSm8" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">27</span>
+		<a href="#" class="play-track" data-id="24ACVkOwl3CUiKfolOYSm8"></a>
+		<a href="/track/24ACVkOwl3CUiKfolOYSm8" itemprop="url">
+			<span class="track" itemprop="name">God Gave Rock &#039;N&#039; Roll To You II</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/24ACVkOwl3CUiKfolOYSm8">
+			<span class="duration"><meta itemprop="duration" content="PT5M20S"/>05:20</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="5liSFmIPLx3Cv9C56Dkm7Y" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">28</span>
+		<a href="#" class="play-track" data-id="5liSFmIPLx3Cv9C56Dkm7Y"></a>
+		<a href="/track/5liSFmIPLx3Cv9C56Dkm7Y" itemprop="url">
+			<span class="track" itemprop="name">Unholy - Live/1992</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/5liSFmIPLx3Cv9C56Dkm7Y">
+			<span class="duration"><meta itemprop="duration" content="PT3M31S"/>03:31</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="7dbLTWcwT9PYDeS7Xv0Na8" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">29</span>
+		<a href="#" class="play-track" data-id="7dbLTWcwT9PYDeS7Xv0Na8"></a>
+		<a href="/track/7dbLTWcwT9PYDeS7Xv0Na8" itemprop="url">
+			<span class="track" itemprop="name">Do You Love Me - Live From MTV Unplugged/1995</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/7dbLTWcwT9PYDeS7Xv0Na8">
+			<span class="duration"><meta itemprop="duration" content="PT3M14S"/>03:14</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="0PGAcsPCidFsJs0o4PetBg" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">30</span>
+		<a href="#" class="play-track" data-id="0PGAcsPCidFsJs0o4PetBg"></a>
+		<a href="/track/0PGAcsPCidFsJs0o4PetBg" itemprop="url">
+			<span class="track" itemprop="name">Room Service - Live In Davenport, Iowa/1975</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0PGAcsPCidFsJs0o4PetBg">
+			<span class="duration"><meta itemprop="duration" content="PT3M37S"/>03:37</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="2BKBGJEgr0G4LQMwjMMzXQ" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">31</span>
+		<a href="#" class="play-track" data-id="2BKBGJEgr0G4LQMwjMMzXQ"></a>
+		<a href="/track/2BKBGJEgr0G4LQMwjMMzXQ" itemprop="url">
+			<span class="track" itemprop="name">Jungle - Radio Edit</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/2BKBGJEgr0G4LQMwjMMzXQ">
+			<span class="duration"><meta itemprop="duration" content="PT4M53S"/>04:53</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="0I2qrkTypg7mtbZO4QtC7Y" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">32</span>
+		<a href="#" class="play-track" data-id="0I2qrkTypg7mtbZO4QtC7Y"></a>
+		<a href="/track/0I2qrkTypg7mtbZO4QtC7Y" itemprop="url">
+			<span class="track" itemprop="name">Psycho Circus - Album Version Without Intro</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0I2qrkTypg7mtbZO4QtC7Y">
+			<span class="duration"><meta itemprop="duration" content="PT4M50S"/>04:50</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="2oFIN2C7qCYXnG1sfzM01l" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">33</span>
+		<a href="#" class="play-track" data-id="2oFIN2C7qCYXnG1sfzM01l"></a>
+		<a href="/track/2oFIN2C7qCYXnG1sfzM01l" itemprop="url">
+			<span class="track" itemprop="name">Nothing Can Keep Me From You</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/2oFIN2C7qCYXnG1sfzM01l">
+			<span class="duration"><meta itemprop="duration" content="PT4M4S"/>04:04</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="1hv13txjAZhiQ1mcBdyXKu" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">34</span>
+		<a href="#" class="play-track" data-id="1hv13txjAZhiQ1mcBdyXKu"></a>
+		<a href="/track/1hv13txjAZhiQ1mcBdyXKu" itemprop="url">
+			<span class="track" itemprop="name">Detroit Rock City - Live/2003</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/1hv13txjAZhiQ1mcBdyXKu">
+			<span class="duration"><meta itemprop="duration" content="PT4M43S"/>04:43</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="4LsAuTiloE6GNhJcy11n9y" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">35</span>
+		<a href="#" class="play-track" data-id="4LsAuTiloE6GNhJcy11n9y"></a>
+		<a href="/track/4LsAuTiloE6GNhJcy11n9y" itemprop="url">
+			<span class="track" itemprop="name">Deuce - Live From Burgettstown, PA /2004</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/4LsAuTiloE6GNhJcy11n9y">
+			<span class="duration"><meta itemprop="duration" content="PT3M51S"/>03:51</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="6ChM4hMIqpBuCZFq1mmmcP" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">36</span>
+		<a href="#" class="play-track" data-id="6ChM4hMIqpBuCZFq1mmmcP"></a>
+		<a href="/track/6ChM4hMIqpBuCZFq1mmmcP" itemprop="url">
+			<span class="track" itemprop="name">Firehouse - Live At B.C. Place Stadium, Vancouver/1999</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6ChM4hMIqpBuCZFq1mmmcP">
+			<span class="duration"><meta itemprop="duration" content="PT3M51S"/>03:51</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="0nS10lOxcMs5d8yNsEqBTx" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">37</span>
+		<a href="#" class="play-track" data-id="0nS10lOxcMs5d8yNsEqBTx"></a>
+		<a href="/track/0nS10lOxcMs5d8yNsEqBTx" itemprop="url">
+			<span class="track" itemprop="name">Modern Day Delilah</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/0nS10lOxcMs5d8yNsEqBTx">
+			<span class="duration"><meta itemprop="duration" content="PT3M36S"/>03:36</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="6UZ6g7t5bZc63WRphfeUYb" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">38</span>
+		<a href="#" class="play-track" data-id="6UZ6g7t5bZc63WRphfeUYb"></a>
+		<a href="/track/6UZ6g7t5bZc63WRphfeUYb" itemprop="url">
+			<span class="track" itemprop="name">Cold Gin - Live From Detroit, MI/2009</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/6UZ6g7t5bZc63WRphfeUYb">
+			<span class="duration"><meta itemprop="duration" content="PT5M30S"/>05:30</span>
+		</a>
+	</li>
+	<li class="hidden_track  single-track" data-id="45Py7RyH1hvqJgN0sNG3yM" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">39</span>
+		<a href="#" class="play-track" data-id="45Py7RyH1hvqJgN0sNG3yM"></a>
+		<a href="/track/45Py7RyH1hvqJgN0sNG3yM" itemprop="url">
+			<span class="track" itemprop="name">Crazy Crazy Nights - Live/2010</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/45Py7RyH1hvqJgN0sNG3yM">
+			<span class="duration"><meta itemprop="duration" content="PT4M8S"/>04:08</span>
+		</a>
+	</li>
+	<li class="hidden_track odd single-track" data-id="5IgcqFfyt2MiRr57kkrBZQ" itemscope itemtype="http://schema.org/MusicRecording">
+		<span class="order">40</span>
+		<a href="#" class="play-track" data-id="5IgcqFfyt2MiRr57kkrBZQ"></a>
+		<a href="/track/5IgcqFfyt2MiRr57kkrBZQ" itemprop="url">
+			<span class="track" itemprop="name">Hell Or Hallelujah</span>
+		</a>
+		<span class="popularity_graph"><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span><span class=""></span></span>
+		<a href="/track/5IgcqFfyt2MiRr57kkrBZQ">
+			<span class="duration"><meta itemprop="duration" content="PT4M7S"/>04:07</span>
+		</a>
+	</li>
+</ul>
+					</div>
+										<div id="player-tools" class="player-tools clearfix">
+																		<div class="see-all">
+							<a href="#" id="see-all-tracks">See all 40 tracks</a>
+						</div>
+																	</div>
+
+					<div class="two-thirds column clearfix alpha omega related-content-container" id="related_content">
+						<h3 class="related-content-header">Other albums by <a href="/artist/07XSN3sPlIlB2L2XNcTwJw">Kiss</a></h3>
+	<div class="one-third column alpha center">
+			<div class="related-left-column one">
+			<a class="album-cover-art" href="/album/0bZ77Skt3E6AyezDNpY2Qt"><img src="http://o.scdn.co/140/c4e0142bcd9736fb6f90afc0323ae8bfcaa14d0c" border="0" alt="Alive: The Millennium Concert"/></a>
+			<h3 class="related-content-album"><a href="/album/0bZ77Skt3E6AyezDNpY2Qt">Alive: The Millennium Concert</a></h3>
+			<span class="related-content-year">2005</span>
+		</div>
+			<div class="related-right-column two">
+			<a class="album-cover-art" href="/album/1ge77RWfTDv0faDfB1tOyB"><img src="http://o.scdn.co/140/7e579135a5a2d8b8b984846b8885066e72e30d4a" border="0" alt="Alive III"/></a>
+			<h3 class="related-content-album"><a href="/album/1ge77RWfTDv0faDfB1tOyB">Alive III</a></h3>
+			<span class="related-content-year">1993</span>
+		</div>
+	</div>
+<div class="one-third column omega center">
+			<div class="related-left-column three">
+			<a class="album-cover-art" href="/album/7j2bCsZXZqwkXJ0pI9o5aA"><img src="http://o.scdn.co/140/2973a1bf0e495e3b8396250abee01999fd017c00" border="0" alt="Smashes, Thrashes And Hits"/></a>
+			<h3 class="related-content-album"><a href="/album/7j2bCsZXZqwkXJ0pI9o5aA">Smashes, Thrashes And Hits</a></h3>
+			<span class="related-content-year">1912</span>
+		</div>
+			<div class="related-right-column four">
+			<a class="album-cover-art" href="/album/4hyvcxr2GvWEoHmEpm7aIN"><img src="http://o.scdn.co/140/5da9f39a22661b32d14a534106304f5da0f12fe4" border="0" alt="The Best Of Kiss Vol. 3 20th Century Masters The Millennium Collection"/></a>
+			<h3 class="related-content-album"><a href="/album/4hyvcxr2GvWEoHmEpm7aIN">The Best Of Kiss Vol. 3 20th Century Masters The Millennium Collection</a></h3>
+			<span class="related-content-year">2006</span>
+		</div>
+	</div>
+					</div>
+
+									</div>
+						</div>
+		</div>
+	</div>
+	<footer>
+		<div id="footer" class="new-user">
+			<div class="container">
+				<div class="sixteen columns clearfix">
+					<div id="pre-download" class="new-user">
+						<h2 class="world-of-music center">You're only one click away from <em>a world of music!</em></h2>
+						<a href="http://www.spotify.com/download" class="button-download footer-button new-user download-link">Get Spotify</a>
+					</div>
+					<p class="tos center new-user">By clicking the "Get Spotify" button you agree to Spotify's <a href="http://www.spotify.com/legal/end-user-agreement/" target="_blank">terms and conditions</a></p>
+				</div>
+			</div>
+		</div>
+	</footer>
+	<div id="fb-root"></div>
+		<iframe src="https://open.spotify.com/remote" style="width:0px; height:0px;" frameborder="0" hspace="0" id='remote'></iframe>
+	
+	<script>
+		var downloadLinks = {"windows":"http:\/\/download.spotify.com\/SpotifySetup.exe","mac":"http:\/\/download.spotify.com\/SpotifyInstaller.zip","ios":"http:\/\/itunes.apple.com\/app\/spotify\/id324684580","android":"http:\/\/play.google.com\/store\/apps\/details?id=com.spotify.music","kindlefire":"http:\/\/www.amazon.com\/Spotify-Kindle-Fire-Edition\/dp\/B008RBZA4A","blackberry":"http:\/\/appworld.blackberry.com\/webstore\/content\/118611","default":"http:\/\/www.spotify.com\/download"};
+		var shareLinks = {"facebook":"https:\/\/www.facebook.com\/sharer\/sharer.php?u={{url}}","twitter":"https:\/\/twitter.com\/share?url={{url}}&text={{text}}"};
+	</script>
+			<script src="//open.spotify.com/static/m/script.http.57a127d.js"></script>
+		<script>
+		var autoplay = false;
+
+		var social = new SocialHelper(174829003346);
+    	social.init();
+
+	    var client = new ClientCheck();
+		client.init();
+				var messenger = new Messenger(client)
+			</script>
+
+	<script type="text/javascript">window.NREUM||(NREUM={});NREUM.info={"beacon":"beacon-5.newrelic.com","licenseKey":"74a85ac4f8","applicationID":"1037698","transactionName":"ZVZXNhFWDxFSVBZQDlwcYBAKGAgMV1IaFxFaQw==","queueTime":0,"applicationTime":80,"ttGuid":"","agentToken":"","userAttributes":"","errorBeacon":"bam.nr-data.net","agent":"js-agent.newrelic.com\/nr-411.min.js"}</script></body>
+</html>

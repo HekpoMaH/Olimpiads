@@ -1,0 +1,41 @@
+/*
+TASK: school
+LANG: C
+*/
+#include<stdio.h>
+#define max 500
+    int G[max+1][max+1],queue[max+1],M,N,p,used[max+1]={0};
+void BFS(int v){
+    int i,j,u,level,first=-1,last;
+    queue[0]=v;
+    used[v]=1;
+    level=last=1;
+    while(first<last-1){
+     for(i=first+1;i<level;i++){
+      first++;
+      u=queue[i];
+      used[u]=1;
+      for(j=0;j<N;j++){
+       if(G[u][j] && !used[j]){
+        queue[last]=j;
+        last++;
+}
+}
+}
+     level=last;
+}
+}
+int main(){
+    int i,j,a,b;
+    scanf("%d%d",&N,&M);
+    for(i=0;i<M;i++){
+     scanf("%d%d",&a,&b);
+     G[a-1][b-1]=1;
+     G[b-1][a-1]=1;
+}
+    for(i=0;i<N;i++)
+     if(!used[i]){p++;BFS(i);}
+    printf("%d\n",p);
+return 0;
+}
+

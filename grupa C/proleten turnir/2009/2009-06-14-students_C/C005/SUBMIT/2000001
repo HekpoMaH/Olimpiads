@@ -1,0 +1,77 @@
+#include<vector>
+#include<iostream>
+#include<cmath>
+#include<algorithm>
+#include<string>
+using namespace std;
+#define ull unsigned long long
+
+vector<ull> choose;
+vector<ull> ans;
+ull full[24];
+
+ull K,N;
+
+ull fac(ull num)
+{
+    ull tmp=1;
+    while(num>0)
+    {
+      tmp*=num;
+      num--;
+    }
+    return tmp;
+}
+
+void del(ull ref)
+{
+    int q;
+    swap(choose[ref],choose[choose.size()-1]);
+    choose.pop_back();
+    
+    for(q=0;q<choose.size();q++)full[q]=choose[q];
+    sort(full,full+choose.size());
+    for(q=0;q<choose.size();q++)choose[q]=full[q];
+}
+
+
+void solve(ull pfix)
+{
+    
+   ull sz,add;
+   sz=choose.size();
+   add=fac(sz-1) -1;
+   if(sz==0)return;
+   if(sz==1){ans.push_back(choose[0]); return;}
+   
+   for(int q=0;q<sz;q++)
+   {
+     if(K<=pfix+add)
+     {
+         
+        ans.push_back(choose[q]);
+        del(q);
+        solve(pfix);
+        break;
+     }
+     else pfix+=add+1;
+   }
+    
+}
+
+
+
+int main()
+{
+    int i;
+    string txt="";
+    cin>>N>>K;
+    for(i=1;i<=N;i++)choose.push_back(i);
+    solve(1);
+    
+    
+    for(i=0;i<ans.size();i++)txt+=(char)ans[i]+96;
+    cout<<txt<<endl;
+    return 0;
+}
+

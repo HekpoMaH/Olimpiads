@@ -1,0 +1,73 @@
+/*
+TASK:number
+LANG:C++
+*/
+
+#include <iostream.h>
+
+int n,x,y,z,br,k;
+char m[20];
+
+void read()
+{
+	cin>>n>>x>>y>>z;
+}
+
+void rec(int a,int pos)
+{
+	int g;
+	int i;
+	k=a%10+'0';
+	m[pos]=k;
+	k=a/10+'0';
+	m[pos+1]=k;
+	if(pos==n-2)
+	{
+		br++;
+		m[pos+1]=0;
+		return;
+	}
+	g=99/x;
+	pos++;
+	for(i=1;i<=g;i++)
+	{
+		if(i*x%10==(m[pos])-'0')rec(i*x,pos);
+	}
+	g=99/y;
+	for(i=1;i<=g;i++)
+	{
+		if(i*y%10==(m[pos])-'0')rec(i*y,pos);
+	}
+	g=99/z;
+	for(i=1;i<=g;i++)
+	{
+		if(i*z%10==(m[pos])-'0')rec(i*z,pos);
+	}
+	pos--;
+	m[pos]=0;
+	m[pos+1]=0;
+}
+
+int main()
+{
+	int g;
+	int i;
+	read();
+	g=99/x;
+	for(i=1;i<=g;i++)
+	{
+		rec(i*x,0);
+	}
+	g=99/y;
+	for(i=1;i<=g;i++)
+	{
+		rec(i*y,0);
+	}
+	g=99/z;
+	for(i=1;i<=g;i++)
+	{
+		rec(i*z,0);
+	}
+	cout<<br<<endl;
+	return 0;
+}

@@ -1,0 +1,40 @@
+/*
+TASK: phone
+LANG: C
+*/
+#include<stdio.h>
+#include<string.h>
+    int m1[103][10],m2[102][10],n;
+    float sum[102],d[102];
+void f(int k){
+    int i,j;
+    for(i=1;i<=n+1;i++){
+     for(j=0;j<10;j++){
+      if(m2[k][j]==0 && m1[i][j])break;
+}
+     if(j==10 && d[i]>d[k]+sum[k]){d[i]=d[k]+sum[k];f(i);}
+}
+}
+int main(){
+    int i,j,len,x,tmp;
+    char s[50];
+    scanf("%d",&n);
+    for(i=0;i<=n;i++){
+     scanf("%s",&s);
+     len=strlen(s);
+     for(j=0;j<len;j++)m1[i][s[j]-'0']=1;
+     scanf("%f",&sum[i]);
+     scanf("%d",&tmp);
+     for(j=0;j<tmp;j++){
+      scanf("%d",&x);
+      m2[i][x]=1;
+}
+}
+    scanf("%s",&s);
+    len=strlen(s);
+     for(j=0;j<len;j++)m1[n+1][s[j]-'0']=1;
+    for(j=1;j<=n+1;j++)d[j]=1200;
+    f(0);
+    printf("%.2f\n",d[n+1]);
+return 0;
+}

@@ -1,0 +1,51 @@
+#include<iostream>
+#include<cmath>
+#include<vector>
+#include<queue>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstdio>
+using namespace std;
+int i,j,z,n,k,a[1111][1111],b[1111][1111],bb[1111][1111],x,y,d;
+queue<int> q;
+void pyhni (int x1,int y1)
+{
+    if (x1>0 && x1<=n && y1>0 && y1<=n)
+    {
+        if (b[x1][y1]>b[x][y]+1 || b[x1][y1]==0 || bb[x1][y1]+1!=i)
+        {
+            q.push(x1);
+            q.push(y1);
+            b[x1][y1]=b[x][y]+1;
+            bb[x1][y1]=i-1;
+        }
+    }
+}
+int main()
+{
+    scanf ("%d",&n);
+    for (i=1;i<=n;i++)
+    {
+        for (j=1;j<=n;j++)
+        {
+            scanf ("%d",&a[i][j]);
+        }
+    }
+    scanf ("%d",&k);
+    for (i=1;i<=k;i++)
+    {
+        scanf("%d",&d);
+        b[1][n]=1;
+        q.push(1);
+        q.push(n);
+        bb[1][n]=i-1;
+        /*
+        while (!q.empty())
+        {
+
+        }
+        */
+    }
+    return 0;
+}

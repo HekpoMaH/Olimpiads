@@ -1,0 +1,74 @@
+/*
+TASK:cross
+LANG:C++
+*/
+#include<cstdio>
+#include<vector>
+using namespace std;
+bool mat1[220][220];
+bool used[220];
+int a,b,c,d,n,m,rez;
+vector< int > mat[220];
+vector <int> tmp;
+void DFS2(int x)
+{
+    if(x==d)
+    {
+        int k=tmp.size();
+        for(int i=0;i<k;i++)
+        if(mat1[tmp[i]][i]==1) rez++;
+    }
+    int k=mat[x].size(),l;
+    for(int i=0;i<k;i++)
+    if(!used[mat[x][i]])
+    {
+        used[mat[x][i]]=1;
+        tmp.push_back(mat[x][i]);
+        DFS2(mat[x][i]);
+        tmp.pop_back();
+        used[mat[x][i]]=0;
+    }
+} 
+void DFS1(int x)
+{
+    if(x==b)
+    {
+        int k=tmp.size();
+        for(int i=0;i<k;i++)
+        mat1[tmp[i]][i]=1;
+    }
+    int k=mat[x].size(),l;
+    for(int i=0;i<k;i++)
+    if(!used[mat[x][i]])
+    {
+        used[mat[x][i]]=1;
+        tmp.push_back(mat[x][i]);
+        DFS1(mat[x][i]);
+        tmp.pop_back();
+        used[mat[x][i]]=0;
+    }
+} 
+               
+int main()
+{
+    int k,l;
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<m;i++)
+    {
+        scanf("%d%d",&l,&k);
+        mat[l].push_back(k);
+        mat[k].push_back(l);
+    }
+    used[a]=1;
+    tmp.push_back(a);
+    DFS1(a);
+    tmp.pop_back();
+    used[a]=0;
+        
+    used[c]=1;
+    tmp.push_back(c);
+    DFS2(c);
+    tmp.pop_back();
+    used[c]=0;
+    printf("%d\n",rez);
+}

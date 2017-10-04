@@ -1,0 +1,59 @@
+{
+TASK: MORSE
+LANG: PASCAL
+}
+program morse;
+var s:string;
+    i,l:integer;
+begin
+readln(s);
+l:=length(s);
+for i:=1 to l do
+ begin
+  case s[i] of
+  ' ':write('.-.-.');
+  'a','A':write('.-');
+  'b','B':write('-...');
+  'c','C':write('-.-.');
+  'd','D':write('-..');
+  'e','E':write('.');
+  'f','F':write('..-.');
+  'g','G':write('--.');
+  'h','H':write('....');
+  'i','I':write('..');
+  'j','J':write('.---');
+  'k','K':write('-.-');
+  'l','L':write('.-..');
+  'm','M':write('--');
+  'n','N':write('-.');
+  'o','O':write('---');
+  'p','P':write('.--.');
+  'q','Q':write('--.-');
+  'r','R':write('.-.');
+  's','S':write('...');
+  't','T':write('-');
+  'u','U':write('..-');
+  'v','V':write('...-');
+  'w','W':write('.--');
+  'x','X':write('-..-');
+  'y','Y':write('-.--');
+  'z','Z':write('--..');
+  '1':write('.----');
+  '2':write('..---');
+  '3':write('...--');
+  '4':write('....-');
+  '5':write('.....');
+  '6':write('-....');
+  '7':write('--...');
+  '8':write('---..');
+  '9':write('----.');
+  '0':write('-----');
+  '.':write('.-.-.-');
+  ',':write('--..--');
+  '-':write('-..-.');
+  '?':write('..--..');
+  end;
+  write(' ');
+ end;
+ write('...-.-');
+end.

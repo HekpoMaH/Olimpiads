@@ -1,0 +1,103 @@
+{
+TASK: phone
+LANG: PASCAL
+}
+{$A+,B-,D+,E+,F-,G-,I+,L+,N-,O-,P-,Q-,R+,S+,T-,V+,X+,Y+}
+{$M 65384,0,655360}
+const MaxN=102;                     { Maximum number of users }
+      InfiniteRate=maxint;          { A rate value bigger than the maximum }
+
+type TPhoneUser=record
+                  Num:string;       { Phone number }
+                  Butt:set of char; { Set of buttons that work }
+                  Rate:real;        { Price for outgoing call }
+                end;
+
+var a:array [1..MaxN] of TPhoneUser;       { Info about all users }
+    b:array [1..MaxN,1..MaxN] of integer;  { Currently found rates }
+    n:byte;                                { Number of users }
+
+procedure Read_Data;
+{ Reads the input data }
+var i,j,k,l:byte;
+    c:string;
+
+  procedure ReadString(var s:string);
+  { Reads the phone number as string }
+    var c:char;
+    begin
+      s:='';
+      read(c);
+      while c in ['0'..'9'] do
+      begin
+        s:=s+c;
+        read(c);
+      end;
+    end;
+
+begin
+n:=0;
+readln(n);
+fillchar(a,sizeof(a),0);
+inc(n); { Include Sladkodumcho }
+for i:=1 to n do
+  begin
+    ReadString(a[i].Num);           { Reads the phone number }
+    read(a[i].Rate);                { Reads the rate }
+    a[i].Butt:=[];                  { Reads the buttons into a set }
+    read(k);
+    for j:=1 to k do
+      begin
+        read(l);
+        str(l,c);
+        include(a[i].Butt,c[1]);
+      end;
+    readln;
+  end;
+inc(n);                         { Include Barboranka }
+ReadString(a[n].Num);           { Reads Barboranka's number }
+end;
+
+procedure Find_Path;
+var i,j,k:byte;
+
+  function CanCall(x,y:byte):boolean;
+  { Checks if user X is able to call user Y }
+    var i:byte;
+        bool:boolean;
+    begin
+      bool:=true;
+      for i:=1 to length(a[y].Num) do
+        if not ((a[y].Num[i]) in (a[x].Butt)) then bool:=false;
+      CanCall:=bool;
+    end;
+
+begin
+{ Set rates between all the users }
+for i:=1 to n-1 do
+  for j:=1 to n do
+    if CanCall(i,j)
+      then b[i,j]:=round(a[i].Rate*100)
+      else b[i,j]:=InfiniteRate;
+{ Checks for a better rate from user I to user J through user K }
+for i:=n-1 downto 1 do
+  for j:=2 to n do
+    if (i<>j) then
+      for k:=2 to n-1 do
+        if (i<>k) and (k<>j)
+           and (b[i,k]<InfiniteRate)
+           and (b[k,j]<InfiniteRate) then
+             if (b[i,k]+b[k,j]<b[i,j]) then
+               b[i,j]:=b[i,k]+b[k,j];
+end;
+
+procedure Show_Result;
+begin
+writeln((b[1,n]/100):0:2);
+end;
+
+begin
+Read_Data;
+Find_Path;
+Show_Result;
+end.

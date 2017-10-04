@@ -1,0 +1,71 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="jp"
+ lang="jp" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>jp:c:date:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-11-08T04:51:09-0800" />
+<meta name="keywords" content="jp,c,date,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/jp/c/date/start?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=jp:c:date" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/jp/c/date/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/jp/c/date/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='jp:c:date';var JSINFO = {"id":"jp:c:date:start","namespace":"jp:c:date"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h1><a name="標準c_時間_日付" id="標準c_時間_日付">標準C 時間 &amp; 日付</a></h1>
+<div class="level1">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"><a href="asctime" class="wikilink1" title="jp:c:date:asctime">asctime</a></td><td class="col1">テキストバージョンの時刻を返却します</td>
+	</tr>
+	<tr class="row1">
+		<td class="col0"><a href="clock" class="wikilink1" title="jp:c:date:clock">clock</a></td><td class="col1">プログラムが動作している時間を返却します</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"><a href="ctime" class="wikilink1" title="jp:c:date:ctime">ctime</a></td><td class="col1">指定された書式バージョンの時刻を返却します</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"><a href="difftime" class="wikilink1" title="jp:c:date:difftime">difftime</a></td><td class="col1">2つの時刻の差分を返却します</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"><a href="gmtime" class="wikilink1" title="jp:c:date:gmtime">gmtime</a></td><td class="col1">GMT(Greenwich Mean Time)現在時へのポインタを返却します</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"><a href="localtime" class="wikilink1" title="jp:c:date:localtime">localtime</a></td><td class="col1">現在時へのポインタを返却します</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"><a href="mktime" class="wikilink1" title="jp:c:date:mktime">mktime</a></td><td class="col1">与えられた時刻のカレンダーバージョンを返却します</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"><a href="setlocale" class="wikilink1" title="jp:c:date:setlocale">setlocale</a></td><td class="col1">現在のロケールを設定します</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"><a href="strftime" class="wikilink1" title="jp:c:date:strftime">strftime</a></td><td class="col1">日時の個々の要素を返却します</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"><a href="time" class="wikilink1" title="jp:c:date:time">time</a></td><td class="col1">システムの現在のカレンダー時刻を返却します</td>
+	</tr>
+</table>
+
+</div>
+</div>
+</body>
+</html>

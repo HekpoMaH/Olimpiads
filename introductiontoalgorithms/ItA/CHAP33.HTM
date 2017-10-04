@@ -1,0 +1,1210 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 33: NUMBER-THEORETIC ALGORITHMS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap34.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap32.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="099d_1b31">CHAPTER 33: NUMBER-THEORETIC ALGORITHMS<a name="099d_1b31"></h1><P>
+Number theory was once viewed as a beautiful but largely useless subject in pure mathematics. Today number-theoretic algorithms are used widely, due in part to the invention of cryptographic schemes based on large prime numbers. The feasibility of these schemes rests on our ability to find large primes easily, while their security rests on our inability to factor the product of large primes. This chapter presents some of the number theory and associated algorithms that underlie such applications.<P>
+Section 33.1 introduces basic concepts of number theory, such as divisibility, modular equivalence, and unique factorization. Section 33.2 studies one of the world's oldest algorithms: Euclid's algorithm for computing the greatest common divisor of two integers. Section 33.3 reviews concepts of modular arithmetic. Section 33.4 then studies the set of multiples of a given number <I>a</I>, modulo<I> n</I>, and shows how to find all solutions to the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"> <I>b</I> (mod <I>n</I>) by using Euclid's algorithm. The Chinese remainder theorem is presented in Section 33.5. Section 33.6 considers powers of a given number <I>a</I>, modulo <I>n</I>, and presents a repeated-squaring algorithm for efficiently computing <I>a<SUP>b</I></SUP> mod <I>n</I>, given <I>a</I>, <I>b</I>, and<I> n</I>. This operation is at the heart of efficient primality testing. Section 33.7 then describes the RSA public-key cryptosystem. Section 33.8 describes a randomized primality test that can be used to find large primes efficiently, an essential task in creating keys for the RSA cryptosystem. Finally, Section 33.9 reviews a simple but effective heuristic for factoring small integers. It is a curious fact that factoring is one problem people may wish to be intractable, since the security of RSA depends on the difficulty of factoring large integers.<P>
+Size of inputs and cost of arithmetic computations<P>
+<a name="099d_1b2f">Because we shall be working with large integers, we need to adjust how we think about the size of an input and about the cost of elementary arithmetic operations.<P>
+<a name="099d_1b30">In this chapter, a &quot;large input<FONT FACE="CG Times (W1)" SIZE=2>&quot;</FONT> typically means an input containing <FONT FACE="CG Times (W1)" SIZE=2>&quot;</FONT>large integers&quot; rather than an input containing "many integers<FONT FACE="CG Times (W1)" SIZE=2>"</FONT> (as for sorting). Thus, we shall measure the size of an input in terms of the <I>number of bits</I> required to represent that input, not just the number of integers in the input. An algorithm with integer inputs <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>k</I></SUB> is a <I><B>polynomial-time algorithm</I> </B>if it runs in time polynomial in lg <I>a</I><SUB>1</SUB>, lg <I>a</I><SUB>2</SUB>, . . . , lg<I> a<SUB>k</I></SUB>, that is, polynomial in the lengths of its binary-encoded inputs.<P>
+In most of this book, we have found it convenient to think of the elementary arithmetic operations (multiplications, divisions, or computing remainders) as primitive operations that take one unit of time. By counting the number of such arithmetic operations an algorithm performs, we have a basis for making a reasonable estimate of the algorithm's actual running time on a computer. Elementary operations can be time-consuming, however, when their inputs are large. It thus becomes convenient to measure how many <I><B>bit operations</I> </B>a number-theoretic algorithm requires. In this model, a multiplication of two <IMG SRC="../IMAGES/beta14.gif">-bit integers by the ordinary method uses <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>2</SUP>) bit operations. Similarly, the operation of dividing a <IMG SRC="../IMAGES/beta14.gif"><I></I>-bit integer by a shorter integer, or the operation of taking the remainder of a <IMG SRC="../IMAGES/beta14.gif"><I></I>-bit integer when divided by a shorter integer, can be performed in time <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>2</SUP>) by simple algorithms. (See Exercise 33.1-11.) Faster methods are known. For example, a simple divide-and-conquer method for multiplying two <IMG SRC="../IMAGES/beta14.gif"><I>-</I>bit integers has a running time of <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>lg<FONT FACE="Times New Roman" SIZE=1>2 3</FONT></SUP>), and the fastest known method has a running time of <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"><I> </I>lg <IMG SRC="../IMAGES/beta14.gif"><I> </I>lg lg <IMG SRC="../IMAGES/beta14.gif"><I></I>). For practical purposes, however, the <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>2</SUP>) algorithm is often best, and we shall use this bound as a basis for our analyses.<P>
+In this chapter, algorithms are generally analyzed in terms of both the number of arithmetic operations and the number of bit operations they require.<P>
+
+
+
+
+
+<h1><a name="099f_0001">33.1 Elementary number-theoretic notions<a name="099f_0001"></h1><P>
+This section provides a brief review of notions from elementary number theory concerning the set<B> Z </B>= {. . . , -2, -1, 0, 1, 2, . . .} of integers and the set<B> N</B> = {0, 1, 2, . . .} of natural numbers.<P>
+
+
+
+
+
+<h2>Divisibility and divisors</h2><P>
+<a name="09a0_1b31"><a name="09a0_1b32">The notion of one integer being divisible by another is a central one in the theory of numbers. The notation<I> d | a</I> (read &quot;<I>d</I> <I><B>divides</I> </B><I>a</I>&quot;) means that <I>a</I> = <I>kd</I> for some integer<I> k</I>. Every integer divides 0. If <I>a</I> &gt; 0 and <I>d</I> <I>| a</I>, then <I>|d| <IMG SRC="../IMAGES/lteq12.gif"> </I>|a|. If <I>d</I> <I>|</I> <I>a</I>, then we also say that <I>a</I> is a <I><B>multiple</I></B> of <I>d</I>. If <I>d</I> does not divide <I>a</I>, we write <img src="802_a.gif">.<P>
+<a name="09a0_1b33">If <I>d</I> <I>|</I> <I>a</I> and <I>d</I> <IMG SRC="../IMAGES/gteq.gif"> 0, we say that <I>d</I> is a <I><B>divisor</I> </B>of<I> a</I>. Note that<I> d</I> <I>|</I> <I>a</I> if and only if -<I>d</I> <I>|</I> <I>a</I>, so that no generality is lost by defining the divisors to be nonnegative, with the understanding that the negative of any divisor of <I>a </I>also divides <I>a.</I> A divisor of an integer <I>a</I> is at least 1 but not greater than <I>|a|</I>. For example, the divisors of 24 are 1, 2, 3, 4, 6, 8, 12, and 24.<P>
+<a name="09a0_1b34"><a name="09a0_1b35">Every integer<I> a </I>is divisible by the<I><B> trivial divisors</I></B> 1 and <I>a</I>. Nontrivial divisors of<I> a</I> are also called <I><B>factors</I></B> of <I>a</I>. For example, the factors of 20 are 2, 4, 5, and 10.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Prime and composite numbers</h2><P>
+<a name="09a1_1b36">An integer <I>a</I> &gt; 1 whose only divisors are the trivial divisors 1 and <I>a</I> is said to be a<I><B> prime </I></B>number (or, more simply, a<I><B> prime</I></B>). Primes have many special properties and play a critical role in number theory. The small primes, in order, are<P>
+<pre>2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59,... .</sub></sup></pre><P>
+<a name="09a1_1b37">Exercise 33.1-1 asks you to prove that there are infinitely many primes. An integer <I>a</I> &gt; 1 that is not prime is said to be a<I><B> composite </I></B>number (or, more simply, a <I><B>composite</I></B>). For example, 39 is composite because 3 <I>|</I> 39. The integer 1 is said to be a<B> </B><I><B>unit</I> </B>and is neither prime nor composite. Similarly, the integer 0 and all negative integers are neither prime nor composite.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The division theorem, remainders, and modular equivalence</h2><P>
+<a name="09a2_1b38"><a name="09a2_1b39">Given an integer <I>n</I>, the integers can be partitioned into those that are multiples of <I>n </I>and those that are not multiples of<I> n</I>. Much number theory is based upon a refinement of this partition obtained by classifying the nonmultiples of<I> n</I> according to their remainders when divided by <I>n. </I>The following theorem is the basis for this refinement. The proof of this theorem will not be given here (see, for example, Niven and Zuckerman [151]).<P>
+<a name="09a2_1b42">Theorem 33.1<a name="09a2_1b42"><P>
+For any integer <I>a</I> and any positive integer<I> n</I>, there are unique integers <I>q </I>and<I> r</I> such that 0 <IMG SRC="../IMAGES/lteq12.gif"><I> r</I> &lt; <I>n</I> and <I>a</I> = <I>qn</I> + <I>r.     </I> <P>
+<a name="09a2_1b3a"><a name="09a2_1b3b"><a name="09a2_1b3c">The value<I> q </I>= <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I>/</FONT><I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is the <I><B>quotient</I></B> of the division. The value<I> r</I> = <I>a</I> mod <I>n</I> is the <I><B>remainder</I> </B>(or <I><B>residue</I></B>) of the division. We have that <I>n</I> <I>| </I><I>a </I>if and only if <I>a</I> mod <I>n</I> = 0. It follows that<P>
+<pre><I>a</I> = <IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I>/<I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <I>n</I> + (<I>a</I> mod <I>n</I>)</sub></sup></pre><P>
+<h4><a name="09a2_1b43">(33.1)<a name="09a2_1b43"></sub></sup></h4><P>
+or<P>
+<pre><I>a</I> mod <I>n</I> = <I>a</I> - <IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I>/<I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <I>n</I> .</sub></sup></pre><P>
+<h4><a name="09a2_1b44">(33.2)<a name="09a2_1b44"></sub></sup></h4><P>
+<a name="09a2_1b3d"><a name="09a2_1b3e">Given a well-defined notion of the remainder of one integer when divided by another, it is convenient to provide special notation to indicate equality of remainders. If (<I>a</I> mod <I>n</I>) = (<I>b</I> mod<I> n</I>), we write<I> a </I><IMG SRC="../IMAGES/equiv10.gif"> <I>b </I>(mod <I>n</I>) and say that <I>a</I> is <I><B>equivalent</I> </B>to<I> b,</I> modulo<I> n</I>. In other words,<I> a</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>b </I>(mod<I> n</I>) if <I>a</I> and<I> b</I> have the same remainder when divided by<I> n. </I>Equivalently, <I>a </I><IMG SRC="../IMAGES/equiv10.gif"> <I>b</I> (mod <I>n</I>) if and only if <I>n</I> <I>|</I> (<I>b</I> - <I>a</I>). We write <I>a</I> <img src="804_a.gif"> <I>b</I> (mod <I>n</I>) if <I>a</I> is not equivalent to <I>b</I>, modulo <I>n</I>. For example, 61 <IMG SRC="../IMAGES/equiv10.gif"> 6 (mod 11). Also, -13 <IMG SRC="../IMAGES/equiv10.gif"> 22 <IMG SRC="../IMAGES/equiv10.gif"> 2 (mod 5).<P>
+<a name="09a2_1b3f"><a name="09a2_1b40"><a name="09a2_1b41">The integers can be divided into <I>n </I>equivalence classes according to their remainders modulo <I>n</I>. The <I><B>equivalence class modulo n</I> </B>containing an integer <I>a</I> is<P>
+<pre>[<I>a</I>]<I><SUB>n</I></SUB> = {<I>a </I>+ <I>kn </I>: <I>k</I> <IMG SRC="../IMAGES/memof12.gif"><I><B> Z</I></B>} .</sub></sup></pre><P>
+For example, [3]<SUB>7</SUB> = {. . . , -11, -4, 3, 10, 17, . . .}; other denotations for this set are [-4]<SUB>7</SUB> and [10]<SUB>7</SUB>. Writing <I>a </I><I><IMG SRC="../IMAGES/memof12.gif"> </I>[<I>b</I>]<I><SUB>n</I></SUB> is the same as writing<I> a</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>b </I>(mod <I>n</I>). The set of all such equivalence classes is<P>
+<pre><I><B>Z</I></B><I><SUB>n </I></SUB>= {[<I>a</I>]<I><SUB>n </I></SUB>: 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>a </I><IMG SRC="../IMAGES/lteq12.gif"> <I>n </I>- 1}.</sub></sup></pre><P>
+<h4><a name="09a2_1b45">(33.3)<a name="09a2_1b45"></sub></sup></h4><P>
+One often sees the definition<P>
+<pre><I><B>Z</I></B><I><SUB>n</I></SUB> = {0, 1,...,<I> n</I> - 1},</sub></sup></pre><P>
+<h4><a name="09a2_1b46">(33.4)<a name="09a2_1b46"></sub></sup></h4><P>
+which should be read as equivalent to equation (33.3) with the understanding that 0 represents [0]<I><SUB>n</I></SUB>, 1 represents [1]<I><SUB>n</I></SUB>, and so on; each class is represented by its least nonnegative element. The underlying equivalence classes must be kept in mind, however. For example, a reference to - 1 as a member of <I><B>Z</I></B><I><SUB>n</I></SUB> is a reference to [<I>n</I> - 1]<I><SUB>n</I></SUB>, since - 1 <IMG SRC="../IMAGES/equiv10.gif"><I> n </I>- 1 (mod <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Common divisors and greatest common divisors</h2><P>
+<a name="09a3_1b42"><a name="09a3_1b43">If <I>d</I> is a divisor of <I>a</I> and also a divisor of <I>b</I>, then <I>d </I>is a<I><B> common divisor </I></B>of <I>a</I> and <I>b</I>. For example, the divisors of 30 are 1, 2, 3, 5, 6, 10, 15, and 30, and so the common divisors of 24 and 30 are 1, 2, 3, and 6. Note that 1 is a common divisor of any two integers.<P>
+An important property of common divisors is that<P>
+<pre><I>d</I> <I>| </I>a<I> and </I>d<I> </I>| <I>b</I> implies <I>d</I> <I>| (</I>a<I> + </I>b<I>) and </I>d<I> </I>| (<I>a</I> - <I>b</I>).</sub></sup></pre><P>
+<h4><a name="09a3_1b46">(33.5)<a name="09a3_1b46"></sub></sup></h4><P>
+More generally, we have that<P>
+<pre><I>d</I> <I>| </I>a<I> and </I>d<I> </I>| <I>b</I> implies<I> d</I> <I>| (</I>ax<I> + </I>by<I>)</I></sub></sup></pre><P>
+<h4><a name="09a3_1b47">(33.6)<a name="09a3_1b47"></sub></sup></h4><P>
+for any integers <I>x </I>and <I>y</I>. Also, if <I>a</I> <I>| </I><I>b</I>, then either <I>|a| <IMG SRC="../IMAGES/lteq12.gif"></I> <I>|b|</I> or <I>b</I> = 0, which implies that<P>
+<pre><I>a</I> <I>| </I>b<I> and </I>b<I> </I>| <I>a</I> implies <I>a</I> = <IMG SRC="../IMAGES/plmi12.gif"><I>b</I>.</sub></sup></pre><P>
+<h4><a name="09a3_1b48">(33.7)<a name="09a3_1b48"></sub></sup></h4><P>
+<a name="09a3_1b44"><a name="09a3_1b45">The <I><B>greatest common divisor</I></B> of two integers <I>a</I> and <I>b</I>, not both zero, is the largest of the common divisors of <I>a</I> and <I>b</I>; it is denoted gcd(<I>a</I>, <I>b</I>). For example, gcd(24, 30) = 6, gcd(5, 7) = 1, and gcd(0, 9) = 9. If <I>a</I> and <I>b</I> are not both 0, then gcd(<I>a, b</I>) is an integer between 1 and min(<I>|a|, </I>|b|). We define gcd(0, 0) to be 0; this definition is necessary to make standard properties of the gcd function (such as equation (33.11) below) universally valid.<P>
+The following are elementary properties of the gcd function:<P>
+<pre>gcd(<I>a,b</I>) = gcd(<I>b,a</I>),</sub></sup></pre><P>
+<h4><a name="09a3_1b49">(33.8)<a name="09a3_1b49"></sub></sup></h4><P>
+<pre>gcd(<I>a,b</I>) = gcd(-<I>a,b</I>),</sub></sup></pre><P>
+<h4><a name="09a3_1b4a">(33.9)<a name="09a3_1b4a"></sub></sup></h4><P>
+<pre>gcd(<I>a,b</I>) = gcd(<I>|a| , </I>|b|),</sub></sup></pre><P>
+<h4><a name="09a3_1b4b">(33.10)<a name="09a3_1b4b"></sub></sup></h4><P>
+<pre>gcd(<I>a,</I>0) = <I>|a|,</I></sub></sup></pre><P>
+<h4><a name="09a3_1b4c">(33.11)<a name="09a3_1b4c"></sub></sup></h4><P>
+<pre>gcd(<I>a,ka</I>) = <I>|a|       for any </I>k<I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B>.</I></sub></sup></pre><P>
+<h4><a name="09a3_1b4d">(33.12)<a name="09a3_1b4d"></sub></sup></h4><P>
+<a name="09a3_1b4e">Theorem 33.2<a name="09a3_1b4e"><P>
+If <I>a</I> and <I>b</I> are any integers, not both zero, then gcd(<I>a, b</I>) is the smallest positive element of the set {<I>ax</I> + <I>by </I>: <I>x, y</I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B>}of linear combinations of <I>a</I> and <I>b</I>.<P>
+<I><B>Proof     </I></B>Let <I>s</I> be the smallest positive such linear combination of <I>a</I> and <I>b</I>, and let <I>s</I> = <I>ax</I> + <I>by</I> for some <I>x, y</I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B>. Let <I>q</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I></FONT>/<I>s</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>. Equation (33.2) then implies<P>
+<pre><I>a</I> mod <I>s</I>  =  <I>a</I> - <I>qs</I></sub></sup></pre><P>
+<pre>=  <I>a</I> - <I>q</I>(<I>ax</I> + <I>by</I>)</sub></sup></pre><P>
+<pre>=  <I>a</I>(1 - <I>qx</I>) + <I>b</I>(-<I>qy</I>),</sub></sup></pre><P>
+and thus <I>a</I> mod <I>s</I> is a linear combination of <I>a</I> and <I>b</I> as well. But, since <I>a</I> mod <I>s</I> &lt; <I>s</I>, we have that <I>a</I> mod <I>s</I> = 0, because <I>s</I> is the smallest positive such linear combination. Therefore, <I>s</I> <I>| </I>a<I> and, by analogous reasoning, </I>s<I> </I>| <I>b</I>. Thus, <I>s</I> is a common divisor of <I>a</I> and <I>b</I>, and so gcd(<I>a, b</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>s</I>. Equation (33.6) implies that gcd(<I>a, b</I>) <I>| s, since gcd(</I>a, b<I>) divides both </I>a<I> and </I>b<I> and </I>s<I> is a linear combination of </I>a<I> and </I>b<I>. But gcd(</I>a, b<I>) </I>| <I>s</I> and <I>s</I> &gt; 0 imply that gcd(<I>a, b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>s</I>. Combining gcd(<I>a, b</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>s</I> and gcd(<I>a, b</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>s</I> yields gcd(<I>a, b</I>) = <I>s</I>; we conclude that <I>s</I> is the greatest common divisor of <I>a</I> and <I>b</I>.      <P>
+<a name="09a3_1b4f">Corollary 33.3<a name="09a3_1b4f"><P>
+For any integers <I>a</I> and <I>b</I>, if <I>d</I> <I>| </I>a<I> and </I>d<I> </I>| <I>b</I> then <I>d</I> <I>| gcd(</I>a, b<I>) .</I><P>
+<I><B>Proof     </I></B>This corollary follows from equation (33.6), because gcd(<I>a, b</I>) is a linear combination of <I>a</I> and <I>b</I> by Theorem 33.2.      <P>
+<a name="09a3_1b50">Corollary 33.4<a name="09a3_1b50"><P>
+For all integers <I>a</I> and <I>b</I> and any nonnegative integer <I>n</I>,<P>
+<pre>gcd(<I>an, bn</I>) = <I>n</I> gcd(<I>a, b</I>).</sub></sup></pre><P>
+<I><B>Proof     </I></B>If <I>n</I> = 0, the corollary is trivial. If <I>n</I> &gt; 0, then gcd(<I>an</I>, <I>bn</I>) is the smallest positive element of the set {<I>anx</I> + <I>bny</I>}, which is <I>n</I> times the smallest positive element of the set {<I>ax + by</I>}.      <P>
+<a name="09a3_1b51">Corollary 33.5<a name="09a3_1b51"><P>
+For all positive integers <I>n, a</I>, and <I>b</I>, if <I>n</I> <I>| </I>ab<I> and gcd(</I>a, n<I>) = 1, then </I>n<I> </I>| <I>b</I>.<P>
+<I><B>Proof     </I></B>The proof is left as Exercise 33.1-4.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Relatively prime integers</h2><P>
+<a name="09a4_1b46">Two integers <I>a, b</I> are said to be <I><B>relatively prime</I> </B>if their only common divisor is 1, that is, if gcd(<I>a, b</I>) = 1. For example, 8 and 15 are relatively prime, since the divisors of 8 are 1, 2, 4, and 8, while the divisors of 15 are 1, 3, 5, and 15. The following theorem states that if two integers are each relatively prime to an integer <I>p</I>, then their product is relatively prime to <I>p</I>.<P>
+<a name="09a4_1b48">Theorem 33.6<a name="09a4_1b48"><P>
+For any integers <I>a, b</I>, and <I>p</I>, if gcd(<I>a, p</I>) = 1 and gcd(<I>b, p</I>) = 1, then gcd(<I>ab</I>, <I>p</I>) = 1.<P>
+<I><B>Proof     </I></B>It follows from Theorem 33.2 that there exist integers <I>x</I>, <I>y</I>, <I>x</I>'<I>, and </I>y<I>'</I> such that<P>
+<pre><I>ax </I>+ <I>py</I>  =  1,</sub></sup></pre><P>
+<pre><I>bx</I>' <I>+ </I>py<I>'</I>  =  1.</sub></sup></pre><P>
+Multiplying these equations and rearranging, we have<P>
+<pre>ab(xx') + p(ybx' + y'ax + pyy') = 1.</sub></sup></pre><P>
+Since 1 is thus a positive linear combination of <I>ab</I> and <I>p</I>, an appeal to Theorem 33.2 completes the proof.      <P>
+<a name="09a4_1b47">We say that integers <I>n</I><SUB>1</SUB>, <I>n</I><SUB>2</SUB>, . . ., <I>n<SUB>k</I></SUB> are <I><B>pairwise relatively prime</I></B> if, whenever <I>i</I> <IMG SRC="../IMAGES/noteq.gif"> <I>j</I>, we have gcd(<I>n<SUB>i</I></SUB>, <I>n<SUB>j</I></SUB>) = 1.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Unique factorization</h2><P>
+An elementary but important fact about divisibility by primes is the following.<P>
+<a name="09a5_1b4a">Theorem 33.7<a name="09a5_1b4a"><P>
+For all primes <I>p </I>and all integers <I>a, b,</I> if <I>p | </I>ab<I>, then </I>p | <I>a</I> or <I>p</I> <I>| </I>b<I>.</I><P>
+<I><B>Proof     </I></B>Assume for the purpose of contradiction that <I>p</I> <I>| </I><I>ab</I> but that <img src="806_a.gif">. Thus, gcd(<I>a, p</I>) = 1 and gcd(<I>b, p</I>) = 1, since the only divisors of <I>p</I> are 1 and <I>p, </I>and by assumption<I> p </I>divides neither <I>a</I> nor <I>b</I>. Theorem 33.6 then implies that gcd(<I>ab, p</I>) = 1, contradicting our assumption that <I>p</I> | <I>ab</I>, since <I>p</I> | <I>ab</I> implies gcd(<I>ab</I>, <I>p</I>) = <I>p</I>. This contradiction completes the proof.      <P>
+A consequence of Theorem 33.7 is that an integer has a unique factorization into primes.<P>
+<a name="09a5_1b4b">Theorem 33.8<a name="09a5_1b4b"><P>
+<a name="09a5_1b48"><a name="09a5_1b49">A composite integer <I>a</I> can be written in exactly one way as a product of the form<P>
+<img src="807_a.gif"><P>
+where the <I>p<SUB>i</SUB> </I>are prime, <I>p</I><SUB>1</SUB> &lt; <I>p</I><SUB>2</SUB> &lt; . . . &lt; <I>p<SUB>r</I></SUB>, and the <I>e<SUB>i</SUB> </I>are positive integers.<P>
+<I><B>Proof     </I></B>The proof is left Exercise 33.1-10.      <P>
+As an example, the number 6000 can be uniquely factored as 2<SUP>4.</SUP>3<SUP>.</SUP>5<SUP>3</SUP>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09a6_1b4f">Exercises<a name="09a6_1b4f"></h2><P>
+<a name="09a6_1b50">33.1-1<a name="09a6_1b50"><P>
+Prove that there are infinitely many primes. (<I>Hint</I>: Show that none of the primes <I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>k</I></SUB> divide (<I>p</I><SUB>1</SUB><I>p</I><SUB>2 . . . </SUB><I>p<SUB>k</I></SUB>) + 1.)<P>
+<a name="09a6_1b51">33.1-2<a name="09a6_1b51"><P>
+Prove that if <I>a</I> | <I>b</I> and <I>b</I> | <I>c</I>, then <I>a</I> | <I>c</I>.<P>
+<a name="09a6_1b52">33.1-3<a name="09a6_1b52"><P>
+Prove that if <I>p </I>is prime and 0 &lt; <I>k</I> &lt; <I>p</I>, then gcd (<I>k</I>, <I>p</I>) = 1.<P>
+<a name="09a6_1b53">33.1-4<a name="09a6_1b53"><P>
+Prove Corollary 33.5.<P>
+<a name="09a6_1b54">33.1-5<a name="09a6_1b54"><P>
+Prove that if <I>p</I> is prime and 0 &lt;<I> k</I> &lt; <I>p</I>, then <img src="807_b.gif">. Conclude that for all integers <I>a</I>, <I>b</I>, and primes <I>p</I>,<P>
+<pre>(<I>a</I> + <I>b</I>)<I><SUP>p</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>a<SUP>p</I></SUP> + <I>b<SUP>p</I></SUP> (mod <I>p</I>).</sub></sup></pre><P>
+<a name="09a6_1b55">33.1-6<a name="09a6_1b55"><P>
+Prove that if <I>a</I> and <I>b </I>are any integers such that <I>a</I> <I>| </I>b<I> and </I>b<I> &gt; 0, then</I><P>
+<pre>(<I>x</I> mod <I>b</I>) mod <I>a</I> = <I>x </I>mod <I>a</I></sub></sup></pre><P>
+for any <I>x</I>. Prove, under the same assumptions, that<P>
+<pre><I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>y </I>(mod <I>b</I>) implies <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>y</I> (mod <I>a</I>)</sub></sup></pre><P>
+for any integers <I>x</I> and <I>y</I>.<P>
+<a name="09a6_1b56">33.1-7<a name="09a6_1b56"><P>
+<a name="09a6_1b4a"><a name="09a6_1b4b"><a name="09a6_1b4c"><a name="09a6_1b4d">For any integer <I>k</I> &gt; 0, we say that an integer <I>n</I> is a <I><B>kth power</I></B> if there exists an integer <I>a</I> such that <I>a<SUP>k</I></SUP> = <I>n</I>. We say that <I>n</I> &gt; 1 is a <I><B>nontrivial power</I></B> if it is a <I>k</I>th power for some integer <I>k</I> &gt; 1. Show how to determine if a given <IMG SRC="../IMAGES/beta14.gif"><I>-</I>bit integer <I>n</I> is a nontrivial power in time polynomial in <IMG SRC="../IMAGES/beta14.gif"><I>.</I><P>
+<a name="09a6_1b57">33.1-8<a name="09a6_1b57"><P>
+Prove equations (33.8)--(33.12).<P>
+<a name="09a6_1b58">33.1-9<a name="09a6_1b58"><P>
+Show that the gcd operator is associative. That is, prove that for all integers <I>a</I>, <I>b</I>, and <I>c</I>,<P>
+<pre>gcd(<I>a</I>, gcd(<I>b</I>, <I>c</I>)) = gcd(gcd(<I>a</I>, <I>b</I>), <I>c</I>) .</sub></sup></pre><P>
+<a name="09a6_1b59">33.1-10<a name="09a6_1b59"><P>
+Prove Theorem 33.8.<P>
+<a name="09a6_1b5a">33.1-11<a name="09a6_1b5a"><P>
+Give efficient algorithms for the operations of dividing a <IMG SRC="../IMAGES/beta14.gif"><I>-bit integer by a shorter integer and of taking the remainder of a <IMG SRC="../IMAGES/beta14.gif"></I>-bit integer when divided by a shorter integer. Your algorithms should run in time <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP>2</SUP>).</I><P>
+<a name="09a6_1b5b">33.1-12<a name="09a6_1b5b"><P>
+<a name="09a6_1b4e">Give an efficient algorithm to convert a given <IMG SRC="../IMAGES/beta14.gif"><I>-</I>bit (binary) integer to a decimal representation. Argue that if multiplication or division of integers whose length is at most <IMG SRC="../IMAGES/beta14.gif"><I> takes time </I>M<I>(<IMG SRC="../IMAGES/beta14.gif"></I>), then binary-to-decimal conversion can be performed in time <IMG SRC="../IMAGES/bound.gif">(<I>M</I>(<IMG SRC="../IMAGES/beta14.gif"><I>) lg <IMG SRC="../IMAGES/beta14.gif"></I>). (<I>Hint</I>: Use a divide-and-conquer approach, obtaining the top and bottom halves of the result with separate recursions.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09a7_1b52">33.2 Greatest common divisor<a name="09a7_1b52"></h1><P>
+<a name="09a7_1b4f"><a name="09a7_1b50">In this section, we use Euclid's algorithm to compute the greatest common divisor of two integers efficiently. The analysis of running time brings up a surprising connection with the Fibonacci numbers, which yield a worst-case input for Euclid's algorithm.<P>
+We restrict ourselves in this section to nonnegative integers. This restriction is justified by equation (33.10), which states that gcd(<I>a</I>,<I>b</I>) = gcd(|<I>a</I>|, |<I>b</I>|).<P>
+In principle, we can compute gcd(<I>a</I>, <I>b</I>) for positive integers <I>a</I> and <I>b</I> from the prime factorizations of <I>a</I> and <I>b</I>. Indeed, if<P>
+<img src="808_a.gif"><P>
+<h4><a name="09a7_1b53">(33.13)<a name="09a7_1b53"></sub></sup></h4><P>
+<h4><a name="09a7_1b54">(33.14)<a name="09a7_1b54"></sub></sup></h4><P>
+with zero exponents being used to make the set of primes <I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>r</I></SUB> the same for both <I>a</I> and <I>b</I>, then<P>
+<img src="809_a.gif"><P>
+<h4><a name="09a7_1b55">(33.15)<a name="09a7_1b55"></sub></sup></h4><P>
+As we shall show in Section 33.9, the best algorithms to date for factoring do not run in polynomial time. Thus, this approach to computing greatest common divisors seems unlikely to yield an efficient algorithm.<P>
+Euclid's algorithm for computing greatest common divisors is based on the following theorem.<P>
+<a name="09a7_1b56">Theorem 33.9<a name="09a7_1b56"><P>
+<a name="09a7_1b51">For any nonnegative integer <I>a</I> and any positive integer <I>b</I>,<P>
+<pre>gcd(<I>a</I>,<I>b</I>) = gcd(<I>b</I>,<I>a</I> mod <I>b</I>) .</sub></sup></pre><P>
+<I><B>Proof     </I></B>We shall show that gcd (<I>a</I>, <I>b</I>) and gcd (<I>b</I>, <I>a</I> mod <I>b</I>) divide each other, so that by equation (33.7) they must be equal (since they are both nonnegative).<P>
+We first show that gcd (<I>a</I>, <I>b</I>) | gcd(<I>b</I>, <I>a</I> mod <I>b</I>). If we let <I>d</I> = gcd (<I>a</I>, <I>b</I>), then <I>d</I> | <I>a</I> and <I>d</I> | <I>b</I>. By equation (33.2), (<I>a</I> mod <I>b</I>) = <I>a </I>- <I>qb</I>, where <I>q</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>a/b<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>. Since (<I>a</I> mod <I>b</I>) is thus a linear combination of <I>a</I> and <I>b</I>, equation (33.6) implies that <I>d</I> | (<I>a</I> mod <I>b</I>). Therefore, since <I>d</I> | <I>b</I> and <I>d</I> | (<I>a</I> mod <I>b</I>), Corollary 33.3 implies that <I>d</I> | gcd(<I>b</I>, <I>a</I> mod <I>b</I>) or, equivalently, that<P>
+<pre>gcd(<I>a</I>, <I>b</I>) | gcd(<I>b</I>, <I>a</I> mod <I>b</I>).</sub></sup></pre><P>
+<h4><a name="09a7_1b57">(33.16)<a name="09a7_1b57"></sub></sup></h4><P>
+Showing that gcd (<I>b</I>, <I>a</I> mod <I>b</I>) | gcd(<I>a</I>, <I>b</I>) is almost the same. If we now let <I>d </I>= gcd(<I>b</I>, <I>a</I> mod <I>b</I>), then <I>d</I> | <I>b</I> and <I>d</I> | (<I>a</I> mod <I>b</I>). Since <I>a</I> = <I>qb</I> + (<I>a</I> mod <I>b</I>), where <I>q</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I></FONT>/<I>b</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, we have that <I>a </I>is a linear combination of <I>b</I> and (<I>a</I> mod <I>b</I>). By equation (33.6), we conclude that <I>d</I> | <I>a</I>. Since <I>d</I> | <I>b</I> and <I>d</I> | <I>a</I>, we have that <I>d</I> | gcd(<I>a</I>, <I>b</I>) by Corollary 33.3 or, equivalently, that<P>
+<pre>gcd (<I>b</I>,<I>a</I> mod <I>b</I>) | gcd(<I>a</I>,<I>b</I>).</sub></sup></pre><P>
+<h4><a name="09a7_1b58">(33.17)<a name="09a7_1b58"></sub></sup></h4><P>
+Using equation (33.7) to combine equations (33.16) and (33.17) completes the proof.      <P>
+
+
+
+
+
+<h2>Euclid's algorithm</h2><P>
+The following gcd algorithm is described in the <I>Elements</I> of Euclid (<I>circa</I> 300 <FONT FACE="Courier New" SIZE=2>B.C</FONT>.), although it may be of even earlier origin. It is written as a recursive program based directly on Theorem 33.9. The inputs <I>a</I> and<I> b</I> are arbitrary nonnegative integers.<P>
+<pre><a name="09a8_1b52">EUCLID (<I>a</I>, <I>b</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>b</I> = 0</sub></sup></pre><P>
+<pre>2      <B>then return</B> <I>a</I></sub></sup></pre><P>
+<pre>3      <B>else return</B> EUCLID(<I>b</I>,<I>a</I> mod <I>b</I>)</sub></sup></pre><P>
+As an example of the running of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>, consider the computation of gcd (30,21):<P>
+<pre>EUCLID(30, 21)  =  EUCLID(21, 9)</sub></sup></pre><P>
+<pre>=  EUCLID(9, 3)</sub></sup></pre><P>
+<pre>=  EUCLID(3, 0)</sub></sup></pre><P>
+<pre>=  3 .</sub></sup></pre><P>
+In this computation, there are three recursive invocations of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>.<P>
+The correctness of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> follows from Theorem 33.9 and the fact that if the algorithm returns <I>a </I>in line 2, then<I> b</I> = 0, so equation (33.11) implies that gcd(<I>a</I>, <I>b</I>) = gcd(<I>a</I>, 0) = <I>a</I>. The algorithm cannot recurse indefinitely, since the second argument strictly decreases in each recursive call. Therefore, <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> always terminates with the correct answer.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The running time of Euclid's algorithm</h2><P>
+We analyze the worst-case running time of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> as a function of the size of <I>a</I> and <I>b</I>. We assume with little loss of generality that <I>a</I> &gt; <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 0. This assumption can be justified by the observation that if <I>b</I> &gt; <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 0, then E<FONT FACE="Courier New" SIZE=2>uclid</FONT> (<I>a</I>, <I>b</I>) immediately makes the recursive call <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> (<I>b</I>, <I>a</I>). That is, if the first argument is less than the second argument, <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> spends one recursive call swapping its arguments and then proceeds. Similarly, if <I>b</I> = <I>a</I> &gt; 0, the procedure terminates after one recursive call, since <I>a</I> mod <I>b</I> = 0.<P>
+The overall running time of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> is proportional to the number of recursive calls it makes. Our analysis makes use of the Fibonacci numbers <I>F<SUB>k</I></SUB>, defined by the recurrence (2.13).<P>
+<a name="09a9_1b54">Lemma 33.10<a name="09a9_1b54"><P>
+If <I>a</I> &gt; <I>b </I><IMG SRC="../IMAGES/gteq.gif"> 0 and the invocation <FONT FACE="Courier New" SIZE=2>Euclid</FONT>(<I>a</I>, <I>b</I>) performs <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1 recursive calls, then <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I>+2</SUB> and <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I>+l</SUB>.<P>
+<I><B>Proof     </I></B>The proof is by induction on<I> k</I>. For the basis of the induction, let <I>k</I> = 1. Then, <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 1 = <I>F</I><SUB>2</SUB>, and since <I>a</I> &gt;<I> b</I>, we must have <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> 2 = <I>F</I><SUB>3</SUB>. Since <I>b</I> &gt; (<I>a</I> mod <I>b</I>), in each recursive call the first argument is strictly larger than the second; the assumption that<I> a</I> &gt; <I>b</I> therefore holds for each recursive call.<P>
+Assume inductively that the lemma is true if <I>k</I> - 1 recursive calls are made; we shall then prove that it is true for <I>k</I> recursive calls. Since <I>k</I> &gt; 0, we have <I>b</I> &gt; 0, and <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> (<I>a</I>, <I>b</I>) calls <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> (<I>b</I>, <I>a</I> mod <I>b</I>) recursively, which in turn makes <I>k</I> - 1 recursive calls. The inductive hypothesis then implies that<I> b</I> <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I>+ 1</SUB> (thus proving part of the lemma), and (<I>a</I> mod <I>b</I>) <IMG SRC="../IMAGES/gteq.gif"> <I>F<SUB>k</I></SUB>. We have<P>
+<pre><I>b</I> + (<I>a</I> mod <I>b</I>)  =  <I>b</I> + (<I>a</I> - <IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I>/<I>b</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <I>b</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif">  <I>a</I>,</sub></sup></pre><P>
+since <I>a</I> &gt; <I>b</I> &gt; 0 implies <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I></FONT>/<I>b</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> <IMG SRC="../IMAGES/gteq.gif"> 1. Thus,<P>
+<pre><I>a  </I><IMG SRC="../IMAGES/gteq.gif">  <I>b </I>+ (<I>a</I> mod <I>b</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  <I>F<SUB>k </I>+ 1</SUB> + <I>F<SUB>k</I></sub></sup></pre><P>
+<pre>=  <I>F<SUB>k</I>+2</SUB> .      </sub></sup></pre><P>
+The following theorem is an immediate corollary of this lemma.<P>
+<a name="09a9_1b55">Theorem 33.11<a name="09a9_1b55"><P>
+<a name="09a9_1b53">For any integer <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1, if <I>a</I> &gt; <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 0 and <I>b</I> &lt; <I>F<SUB>k</I>+1</SUB>, then the invocation <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> (<I>a</I>, <I>b</I>) makes fewer than<I> k</I> recursive calls.      <P>
+We can show that the upper bound of Theorem 33.11 is the best possible. Consecutive Fibonacci numbers are a worst-case input for <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>. Since <FONT FACE="Courier New" SIZE=2>Euclid</FONT> (<I>F</I><SUB>3</SUB>, <I>F</I><SUB>2</SUB>) makes exactly one recursive call, and since for<I> k</I> <IMG SRC="../IMAGES/gteq.gif"> 2 we have <I>F<SUB>k</I>+1</SUB> mod <I>F<SUB>k</I></SUB> = <I>F<SUB>k-</I>1</SUB>, we also have<P>
+<pre>gcd(<I>F<SUB>k</I>+1</SUB>,<I>F<SUB>k</I></SUB>)  =  gcd(<I>F<SUB>k</I></SUB>, (<I>F<SUB>k</I>+1</SUB> mod <I>F<SUB>k</I></SUB>))</sub></sup></pre><P>
+<pre>=  gcd(<I>F<SUB>k</I></SUB>,<I> F<SUB>k</I>-1</SUB>) .</sub></sup></pre><P>
+Thus, <FONT FACE="Courier New" SIZE=2>Euclid</FONT>(<I>F<SUB>k</I>+1</SUB>,<I>F<SUB>k</I></SUB>) recurses <I>exactly k</I> - 1 times, meeting the upper bound of Theorem 33.11.<P>
+Since <I>F<SUB>k</I></SUB> is approximately <img src="811_a.gif">, where <IMG SRC="../IMAGES/phicap12.gif"> is the golden ratio <img src="811_b.gif"> defined by equation (2.14), the number of recursive calls in <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> is <I>O</I>(lg <I>b</I>). (See Exercise 33.2-5 for a tighter bound.) It follows that if <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> is applied to two <IMG SRC="../IMAGES/beta14.gif"><I></I>-bit numbers, then it will perform <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I></I>) arithmetic operations and <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>3</SUP>) bit operations (assuming that multiplication and division of <IMG SRC="../IMAGES/beta14.gif"><I></I>-bit numbers take <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>2</SUP>) bit operations). Problem 33-2 asks you to show an <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>2</SUP>) bound on the number of bit operations.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The extended form of Euclid's algorithm</h2><P>
+We now rewrite Euclid's algorithm to compute additional useful information. Specifically, we extend the algorithm to compute the integer coefficients <I>x</I> and <I>y</I> such that<P>
+<pre><I>d</I> = gcd(<I>a</I>,<I>b</I>) = <I>ax</I> + <I>by </I>.</sub></sup></pre><P>
+<h4><a name="09aa_1b55">(33.18)<a name="09aa_1b55"></sub></sup></h4><P>
+Note that<I> x</I> and <I>y</I> may be zero or negative. We shall find these coefficients useful later for the computation of modular multiplicative inverses. The<P>
+<pre><I>a   b  </I><IMG SRC="../IMAGES/hfbrdl12.gif"><B><I>a</I></B>/<B><I>b</I><IMG SRC="../IMAGES/hfbrdr12.gif">  </B><I>d   x     y</I></sub></sup></pre><P>
+<pre><I>-------------------------</I></sub></sup></pre><P>
+<pre>99  78   1    3  -11   14</sub></sup></pre><P>
+<pre>78  21   3    3   3   -11</sub></sup></pre><P>
+<pre>21  15   1    3   -2   3</sub></sup></pre><P>
+<pre>15   6   2    3   1    -2</sub></sup></pre><P>
+<pre> 6   3   2    3   0    1</sub></sup></pre><P>
+<pre> 3   0   --    3   1    0</sub></sup></pre><P>
+<h4><a name="09aa_1b56">Figure 33.1 An example of the operation of <FONT FACE="Courier New" SIZE=2>EXTENDED-EUCLID</FONT> on the inputs 99 and 78. Each line shows for one level of the recursion: the values of the inputs a and b, the computed value <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><FONT FACE="Times New Roman" SIZE=2>a/b<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT></FONT></FONT>, and the values d, x, and y returned. The triple (d,x,y) returned becomes the triple (d',x',y') used in the computation at the next higher level of recursion. The call <FONT FACE="Courier New" SIZE=2>EXTENDED-EUCLID</FONT>(99, 78) returns (3, -11, 14), so gcd(99, 78) = 3 and gcd(99, 78) = 3 = 99 <SUP>.</SUP> (-11) + 78 <IMG SRC="../IMAGES/dot10.gif"> 14.<a name="09aa_1b56"></sub></sup></h4><P>
+procedure <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> takes as input an arbitrary pair of integers and returns a triple of the form (<I>d</I>, <I>x</I>, y) that satisfies equation (33.18).<P>
+<pre><a name="09aa_1b54">EXTENDED-EUCLID(<I>a</I>,<I> b</I>)</sub></sup></pre><P>
+<pre>1  <B>f</B> <I>b </I>= 0</sub></sup></pre><P>
+<pre>2     <B>then return</B> (<I>a</I>, 1, 0)</sub></sup></pre><P>
+<pre>3  (<I>d</I>'<I>,</I>x<I>'</I>,<I>y</I>'<I>)</I> <I><IMG SRC="../IMAGES/arrlt12.gif"></I> EXTENDED-EUCLID(<I>b</I>, <I>a</I> mod <I>b</I>)</sub></sup></pre><P>
+<pre>4  (<I>d</I>,<I>x</I>,<I>y</I>) <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d</I>'<I>,</I>y<I>'</I>,<I>x</I>'<I> - <IMG SRC="../IMAGES/hfbrdl12.gif"></I>a<I>/</I>b<I><IMG SRC="../IMAGES/hfbrdr12.gif"> </I>y<I>')</I></sub></sup></pre><P>
+<pre>5  <B>return</B> (<I>d</I>,<I>x</I>,<I>y</I>)</sub></sup></pre><P>
+Figure 33.1 illustrates the execution of <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> with the computation of gcd(99,78).<P>
+The <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-E<FONT FACE="Courier New" SIZE=2>UCLID </FONT>procedure is a variation of the <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> procedure. Line 1 is equivalent to the test &quot;<I>b</I> = 0&quot; in line 1 of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>. If <I>b</I> = 0, then <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> returns not only <I>d </I>= <I>a </I>in line 2, but also the coefficients<I> x </I>= 1 and <I>y</I> = 0, so that <I>a</I> = <I>ax</I> + <I>by.</I> If <I>b </I><IMG SRC="../IMAGES/noteq.gif"> 0, <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> first computes (<I>d</I>'<I>, </I>x<I>'</I>, <I>y</I>') such that <I>d</I>' = gcd(<I>b</I>, <I>a</I> mod <I>b</I>) and<P>
+<pre><I>d</I>' = <I>bx</I>' + (<I>a</I> mod <I>b</I>)<I>y</I>' .</sub></sup></pre><P>
+<h4><a name="09aa_1b57">(33.19)<a name="09aa_1b57"></sub></sup></h4><P>
+As for <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>, we have in this case <I>d</I> = <I>gcd(</I>a<I>, </I>b<I>) = </I><I>d</I>'<I> = gcd(</I>b<I>, </I>a<I> mod </I>b<I>)</I>. To obtain <I>x</I> and <I>y</I> such that <I>d</I> = <I>ax</I> + <I>by</I>, we start by rewriting equation (33.19) using the equation <I>d</I> = <I>d</I><I>'</I> and equation (33.2):<P>
+<pre><I>d  </I>=  <I>bx</I>'<I> + (</I>a<I> - <IMG SRC="../IMAGES/hfbrdl12.gif"></I>a<I>/</I>b<I><IMG SRC="../IMAGES/hfbrdr12.gif"> </I>b<I>)</I>y<I>'</I></sub></sup></pre><P>
+<pre>= <I>ay</I>' + <I>b</I>(<I>x</I>' - <IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I>/<I>b</I><IMG SRC="../IMAGES/hfbrdr12.gif"> <I>y</I>') .</sub></sup></pre><P>
+Thus, choosing <I>x</I> = <I>y</I>'<I> and y = </I>x<I>'</I> - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>a</I></FONT>/<I>b</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> <I>y</I><I>'</I> satisfies the equation <I>d</I> = <I>ax</I> + <I>by</I>, proving the correctness of <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>.<P>
+Since the number of recursive calls made in <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> is equal to the number of recursive calls made in <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>, the running times of <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> and <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> are the same, to within a constant factor. That is, for <I>a</I> &gt; <I>b</I> &gt; 0, the number of recursive calls is <I>O</I>(lg <I>b</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09ab_1b58">Exercises<a name="09ab_1b58"></h2><P>
+<a name="09ab_1b59">33.2-1<a name="09ab_1b59"><P>
+Prove that equations (33.13)--(33.14) imply equation (33.15).<P>
+<a name="09ab_1b5a">33.2-2<a name="09ab_1b5a"><P>
+Compute the values (<I>d, x, y</I>) that are output by the invocation E<FONT FACE="Courier New" SIZE=2>XTENDED-</FONT><FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(899, 493).<P>
+<a name="09ab_1b5b">33.2-3<a name="09ab_1b5b"><P>
+Prove that for all integers <I>a, k</I>, and <I>n</I>,<P>
+<pre>gcd(<I>a, n</I>) = gcd(<I>a</I> + <I>kn, n</I>).</sub></sup></pre><P>
+<a name="09ab_1b5c">33.2-4<a name="09ab_1b5c"><P>
+Rewrite <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> in an iterative form that uses only a constant amount of memory (that is, stores only a constant number of integer values).<P>
+<a name="09ab_1b5d">33.2-5<a name="09ab_1b5d"><P>
+If <I>a</I> &gt; <I>b</I> <IMG SRC="../IMAGES/gteq.gif"> 0, show that the invocation <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(<I>a, b</I>) makes at most 1 + log<IMG SRC="../IMAGES/phicap12.gif"><SUB><I>b</I> recursive calls. Improve this bound to 1 +log</SUB><FONT FACE="Courier New" SIZE=2><SUB><IMG SRC="../IMAGES/phicap12.gif"></FONT></SUB>(<I>b</I>/gcd(<I>a, b</I>)).<P>
+<a name="09ab_1b5e">33.2-6<a name="09ab_1b5e"><P>
+What does <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(<I>F<SUB>k </I>+ 1</SUB>, <I>F<SUB>k</I></SUB>) return? Prove your answer correct.<P>
+<a name="09ab_1b5f">33.2-7<a name="09ab_1b5f"><P>
+Verify the output (<I>d, x, y</I>) of <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(<I>a, b</I>) by showing that if d <FONT FACE="Times New Roman" SIZE=2>|</FONT> <I>a, d</I> <FONT FACE="Times New Roman" SIZE=2>|</FONT> <I>b</I>, and <I>d</I> = <I>ax </I>+ <I>by</I>, then <I>d</I> = gcd(<I>a, b</I>).<P>
+<a name="09ab_1b60">33.2-8<a name="09ab_1b60"><P>
+<a name="09ab_1b55">Define the gcd function for more than two arguments by the recursive equation gcd(<I>a</I><SUB>0</SUB>, <I>a</I><SUB>l</SUB>, . . . , <I><SUB>n</I></SUB>) = gcd(<I>a</I><SUB>0</SUB>, gcd(<I>a</I><SUB>1</SUB>, . . . , <I>a</I><SUB>n</SUB>)). Show that gcd  returns the same answer independent of the order in which its arguments are specified. Show how to find <I>x</I><SUB>0</SUB>,<SUB> </SUB><I>x</I><SUB>1</SUB>, . . . . , <I>x<SUB>n</I></SUB> such that gcd(<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a</I><SUB>n</SUB>) = <I>a</I><SUB>0</SUB><I>x</I><SUB>0 </SUB>+ <I>a</I><SUB>1</SUB><I>x</I><SUB>1</SUB> + <SUP>. . .</SUP><FONT FACE="Times New Roman" SIZE=1> </FONT> + <I>a<SUB>n</SUB>x<SUB>n</I></SUB>. Show that the number of divisions performed by your algorithm is <I>O</I>(<I>n</I> + 1g(max<I><SUB>i</I></SUB>, <I>a<SUB>i</I></SUB>)).<P>
+<a name="09ab_1b61">33.2-9<a name="09ab_1b61"><P>
+<a name="09ab_1b56"><a name="09ab_1b57">Define lcm(<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>) to be the <I><B>least common multiple </I></B>of the integers <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>, that is, the least nonnegative integer that is a multiple of each <I>a<SUB>i</I></SUB>. Show how to compute lcm(<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>) efficiently using the (two-argument) gcd operation as a subroutine.<P>
+<a name="09ab_1b62">33.2-10<a name="09ab_1b62"><P>
+Prove that <I>n</I><SUB>1</SUB>, <I>n</I><SUB>2</SUB>, <I>n</I><SUB>3</SUB>, and <I>n</I><SUB>4</SUB> are pairwise relatively prime if and only if gcd(<I>n</I><SUB>1</SUB><I>n</I><SUB>2</SUB>, <I>n</I><SUB>3</SUB><I>n</I><SUB>4</SUB>) = gcd(<I>n</I><SUB>1</SUB><I>n</I><SUB>3</SUB>, <I>n</I><SUB>2</SUB><I>n</I><SUB>4</SUB>) = 1. Show more generally that <I>n</I><SUB>1</SUB>, <I>n</I><SUB>2</SUB>, . . . , <I>n<SUB>k</I></SUB> are pairwise relatively prime if and only if a set of <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg <I>k<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I> </I>pairs of numbers derived from the <I>n<SUB>i</I></SUB> are relatively prime.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09ac_1b5a">33.3 Modular arithmetic<a name="09ac_1b5a"></h1><P>
+<a name="09ac_1b58"><a name="09ac_1b59">Informally, we can think of modular arithmetic as arithmetic as usual over the integers, except that if we are working modulo <I>n</I>, then every result <I>x</I> is replaced by the element of {0, 1, . . . , <I>n</I> - 1} that is equivalent to <I>x</I>, modulo <I>n</I> (that is, <I>x</I> is replaced by <I>x</I> mod <I>n</I>). This informal model is sufficient if we stick to the operations of addition, subtraction, and multiplication. A more formal model for modular arithmetic, which we now give, is best described within the framework of group theory.<P>
+
+
+
+
+
+<h2>Finite groups</h2><P>
+<a name="09ad_1b5a"><a name="09ad_1b5b">A <I><B>group</I></B> (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) is a set <I>S</I> together with a binary operation <IMG SRC="../IMAGES/xor14.gif"> defined on <I>S </I>for which the following properties hold.<P>
+<a name="09ad_1b5c">1.     <B>Closure:</B> For all <I>a, b </I><IMG SRC="../IMAGES/memof12.gif"> <I>S</I>, we have <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="09ad_1b5d">2.     <B>Identity:</B> There is an element <I>e </I><IMG SRC="../IMAGES/memof12.gif"> S<I> such that </I>e<I> <IMG SRC="../IMAGES/xor14.gif"> </I>a<I> = </I>a<I> <IMG SRC="../IMAGES/xor14.gif"> </I>e<I> = </I>a<I> for all </I>a<I> <IMG SRC="../IMAGES/memof12.gif"> </I>S<I>.</I><P>
+<a name="09ad_1b5e">3.     <B>Associativity:</B> For all <I>a, b, c </I><IMG SRC="../IMAGES/memof12.gif"><I> S</I>, we have (<I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I>) <IMG SRC="../IMAGES/xor14.gif"> <I>c</I> = <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> (<I>b</I> <IMG SRC="../IMAGES/xor14.gif"> c).<P>
+<a name="09ad_1b5f">4.     <B>Inverses:</B> For each <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>, there exists a unique element <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> such that <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I> = <I>b</I> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I> = <I>e</I>.<P>
+<a name="09ad_1b60"><a name="09ad_1b61"><a name="09ad_1b62">As an example, consider the familiar group (<B>Z</B>, +) of the integers <B>Z</B> under the operation of addition: 0 is the identity, and the inverse of <I>a</I> is -<I>a</I>. If a group (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) satisfies the <I><B>commutative law</I></B> <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I> = <I>b</I> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I> for all <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>, then it is an <I><B>abelian group.</I></B> If a group (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) satisfies <I>|S| &lt; <IMG SRC="../IMAGES/infin.gif">, then it is a </I><B>finite group.<I></B></I><P>
+<P>
+
+
+
+
+
+
+
+<h2>The groups defined by modular addition and multiplication</h2><P>
+We can form two finite abelian groups by using addition and multiplication modulo <I>n</I>, where <I>n</I> is a positive integer. These groups are based on the equivalence classes of the integers modulo <I>n</I>, defined in Section 33.1.<P>
+To define a group on <B>Z</B><I><SUB>n</I></SUB>, we need to have suitable binary operations, which we obtain by redefining the ordinary operations of addition and multiplication. It is easy to define addition and multiplication operations for <B>Z</B><I><SUB>n</I></SUB>, because the equivalence class of two integers uniquely determines the equivalence class of their sum or product. That is, if <I>a</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>a</I>' (mod <I>n</I>) and <I>b</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>b</I>'<SUB> (mod <I>n</I>), then<P>
+<pre><I>a</I> + <I>b  </I><IMG SRC="../IMAGES/equiv10.gif">  <I>a</I>'<SUB> + <I>b</I>'</SUB>  (mod <I>n</I>) ,</sub></sup></pre><P>
+<pre><I>ab  </I><IMG SRC="../IMAGES/equiv10.gif">  <I>a</I>'<SUB><I>b</I>'</SUB>    (mod <I>n</I>) .</sub></sup></pre><P>
+<pre>+<B><SUB>6 </SUB></B>0  1  2  3  4  5    <B><IMG SRC="../IMAGES/dot10.gif"></B><SUB>15   </SUB><B>1   2   4   7   8   11   13   14</B></sub></sup></pre><P>
+<pre>--------------------   -------------------------------------</sub></sup></pre><P>
+<pre>0  0  1  2  3  4  5     1   1   2   4   7   8   11   13   14</sub></sup></pre><P>
+<pre>1  0  2  3  4  5  0     2   2   4   8  14   1    7   11   13</sub></sup></pre><P>
+<pre>2  0  3  4  5  0  1     4   4   8   1  13   2   14    7   11</sub></sup></pre><P>
+<pre>3  0  4  5  0  1  2     7   7  14  13   4  11    2    1    8</sub></sup></pre><P>
+<pre>4  0  5  0  1  2  3     8   8   1   2  11   4   13   14    7</sub></sup></pre><P>
+<pre>5  5  0  1  2  3  4    11  11   7  14   2  13    1    8    4</sub></sup></pre><P>
+<pre>                       13  13  11   7   1  14    8    4    2</sub></sup></pre><P>
+<pre>                       14  14  13  11   8   7    4    2    1</sub></sup></pre><P>
+<pre>        (a)                            (b)</sub></sup></pre><P>
+<h4><a name="09ae_1b6c">Figure 33.2 Two finite groups. Equivalence classes are denoted by their representative elements. (a) The group (Z<SUB>6</SUB><FONT FACE="Times New Roman" SIZE=2>, +<SUB>6</SUB><FONT FACE="Times New Roman" SIZE=2>). (b) The group </FONT><img src="815_a.gif"><a name="09ae_1b6c"></FONT></sub></sup></h4><P>
+<a name="09ae_1b63"><a name="09ae_1b64"><a name="09ae_1b65">Thus, we define addition and multiplication modulo <I>n</I>, denoted +<I><SUB>n</I></SUB> and <SUP>.</SUP><I><SUB>n</I></SUB>, as follows:<P>
+<pre>[<I>a</I>]<I><SUB>n</I></SUB> + <I><SUB>n</I></SUB> [<I>b</I>]<I><SUB>n  </I></SUB>=  [<I>a</I> + <I>b</I>]<I><SUB>n </I></SUB>,</sub></sup></pre><P>
+<pre>[<I>a</I>]<I>n</I> <IMG SRC="../IMAGES/dot10.gif"> <I>n</I>[<I>b</I>]<I>n  </I>=  [<I>ab</I>]<I><SUB>n</SUB> .</I></sub></sup></pre><P>
+(Subtraction can be similarly defined on <B>Z</B><I><SUB>n</I></SUB> by [<I>a</I>]<I><SUB>n</I> - <I>n</I></SUB> [<I>b</I>]<I><SUB>n</I></SUB> = [<I>a - b</I>]<I><SUB>n</I></SUB>, but division is more complicated, as we shall see.) These facts justify the common and convenient practice of using the least nonnegative element of each equivalence class as its representative when performing computations in <B>Z</B><I><SUB>n</I></SUB>. Addition, subtraction, and multiplication are performed as usual on the representatives, but each result <I>x</I> is replaced by the representative of its class (that is, by <I>x</I> mod <I>n</I>).<P>
+<a name="09ae_1b66"><a name="09ae_1b67"><a name="09ae_1b68">Using this definition of addition modulo <I>n</I>, we define the <I><B>additive group modulo n</I></B> as (<B>Z</B><I><SUB>n</I></SUB>, + <I><SUB>n</I></SUB>). This size of the additive group modulo <I>n </I>is <I>|<B>Z</B></I><SUB>n</SUB>| = <I>n</I>. Figure 33.2(a) gives the operation table for the group (<B>Z</B><SUB>6</SUB>, + <SUB>6</SUB>).<P>
+<a name="09ae_1b6d">Theorem 33.12<a name="09ae_1b6d"><P>
+The system (<B>Z</B><I><SUB>n,</I></SUB> + <I><SUB>n</I></SUB>) is a finite abelian group.<P>
+<I><B>Proof     </I></B>Associativity and commutativity of +<I><SUB>n</I></SUB> follow from the associativity and commutativity of +:<P>
+<pre>([<I>a</I>]<I><SUB>n</I></SUB> + <I><SUB>n</I></SUB>[<I>b</I>]<I><SUB>n</I></SUB>) +<I><SUB>n</I></SUB>[<I>c</I>]<I><SUB>n  </I></SUB>=  [(<I>a</I> + <I>b</I>) + <I>c</I>]<I><SUB>n</I></sub></sup></pre><P>
+<pre>=  [<I>a </I>+ (<I>b </I>+ <I>c</I>)]<I><SUB>n</I></sub></sup></pre><P>
+<pre>=  [<I>a</I>]<I><SUB>n</I> </SUB> + <I><SUB>n</I></SUB>([<I>b</I>]<I><SUB>n</I></SUB> + <I><SUB>n</I></SUB>[<I>c</I>]<I><SUB>n</I></SUB>),</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre>[<I>a</I>]<I><SUB>n</I></SUB> + <I><SUB>n</I></SUB>[<I>b</I>]<I><SUB>n  </I></SUB>=  [<I>a</I> + <I>b</I>]<I><SUB>n</I></sub></sup></pre><P>
+<pre>=  [<I>b</I> + <I>a</I>]<I><SUB>n</I></sub></sup></pre><P>
+<pre>=  [<I>b</I>]<I><SUB>n</I></SUB> + <I><SUB>n</I></SUB>[<I>a</I>]<I><SUB>n </SUB>.</I></sub></sup></pre><P>
+The identity element of (<B>Z</B><I><SUB>n</I></SUB>,+<I><SUB>n</I></SUB>) is 0 (that is, [0]<I><SUB>n</I></SUB>). The (additive) inverse of an element <I>a</I> (that is, [<I>a</I>]<I><SUB>n</I></SUB>) is the element -<I>a</I> (that is, [-<I>a</I>]<I><SUB>n</I></SUB> or [<I>n - a</I>]<I><SUB>n</I></SUB>), since [<I>a</I>]<I><SUB>n</I></SUB> +<I>n</I> [-<I>a</I>]<I><SUB>n</I></SUB>=[<I>a </I>- <I>a</I>]<I><SUB>n</I></SUB>=[0]<I><SUB>n</I></SUB>.      <P>
+<a name="09ae_1b69">Using the definition of multiplication modulo <I>n</I>, we define the<I><B> multiplicative group modulo n</I></B> as <img src="816_a.gif">. The elements of this group are the set <img src="816_b.gif"> of elements in <B>Z</B><I><SUB>n</I></SUB> that are relatively prime to <I>n</I>:<P>
+<img src="816_c.gif"><P>
+To see that <img src="816_d.gif"> is well defined, note that for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>a</I> &lt; <I>n</I>, we have <I>a</I> <IMG SRC="../IMAGES/equiv10.gif"> (<I>a</I>+<I>kn</I>) (mod <I>n</I>) for all integers <I>k</I>. By Exercise 33.2-3, therefore, gcd(<I>a, n</I>) = 1 implies gcd(<I>a</I>+<I>kn, n</I>) = 1 for all integers <I>k</I>. Since [<I>a</I>]<I><SUB>n</I></SUB> = {<I>a</I> + <I>kn </I>: <I>k</I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B>}, the set <img src="816_e.gif"> is well defined. An example of such a group is<P>
+<img src="816_f.gif"><P>
+where the group operation is multiplication modulo 15. (Here we denote an element [<I>a</I>]<SUB>15</SUB> as <I>a</I>.) Figure 33.2(b) shows the group <img src="816_g.gif">. For example, 8 <FONT FACE="Times New Roman" SIZE=1><IMG SRC="../IMAGES/dot12.gif"></FONT> 11 <IMG SRC="../IMAGES/equiv10.gif"> 13 (mod 15), working in <img src="816_h.gif">. The identity for this group is 1.<P>
+<a name="09ae_1b6e">Theorem 33.13<a name="09ae_1b6e"><P>
+The system <img src="816_i.gif"> is a finite abelian group.<P>
+<I><B>Proof     </I></B>Theorem 33.6 implies that <img src="816_j.gif"> is closed. Associativity and commutativity can be proved for <SUP>.</SUP><I><SUB>n</I></SUB> as they were for +<I><SUB>n</I></SUB> in the proof of Theorem 33.12. The identity element is [1]<I><SUB>n</I></SUB>. To show the existence of inverses, let <I>a</I> be an element of <img src="816_k.gif"> and let (<I>d, x, y</I>) be the output of <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(<I>a, n</I>). Then <I>d</I> = 1, since <I>a</I> <IMG SRC="../IMAGES/memof12.gif"><img src="816_l.gif">, and<P>
+<pre><I>ax </I>+ <I>ny </I>= 1</sub></sup></pre><P>
+or, equivalently,<P>
+<pre><I>ax</I> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>).</sub></sup></pre><P>
+Thus, [<I>x</I>]<I><SUB>n</I></SUB> is a multiplicative inverse of [<I>a</I>]<I><SUB>n</I></SUB>, modulo <I>n</I>. The proof that inverses are uniquely defined is deferred until Corollary 33.26.      <P>
+When working with the groups (<B>Z</B><I><SUB>n</SUB>,+<SUB>n</I></SUB>) and (<B>Z</B><I><SUB>n</I></SUB>, <FONT FACE="Times New Roman" SIZE=1><IMG SRC="../IMAGES/dot12.gif"><I><SUB>n</I></FONT></SUB>) in the remainder of this chapter, we follow the convenient practice of denoting equivalence classes by their representative elements and denoting the operations +<I><SUB>n</I></SUB> and <SUP>.</SUP><I><SUB>n</I></SUB> by the usual arithmetic notations + and <FONT FACE="Times New Roman" SIZE=1><IMG SRC="../IMAGES/dot12.gif"></FONT> (or juxtaposition) respectively. Also, equivalences modulo <I>n</I> may also be interpreted as equations in <B>Z</B><I><SUB>n</I></SUB>. For example, the following two statements are equivalent:<P>
+<pre><I>ax  </I><IMG SRC="../IMAGES/equiv10.gif">  <I>b</I> (mod <I>n</I>) ,</sub></sup></pre><P>
+<pre>[<I>a</I>]<I><SUB>n </I></SUB> <I><SUB>n</I></SUB> [<I>x</I>]<I><SUB>n  </I></SUB>=  [<I>b</I>]<I><SUB>n </I></SUB>.</sub></sup></pre><P>
+As a further convenience, we sometimes refer to a group (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) merely as <I>S</I> when the operation is understood from context. We may thus refer to the groups (<B>Z</B><I><SUB>n</I></SUB>, + <I><SUB>n</I></SUB>) and <img src="817_a.gif"> as Z<I><SUB>n</I></SUB> and <img src="817_b.gif"> respectively.<P>
+The (multiplicative) inverse of an element <I>a</I> is denoted (<I>a<SUP>-1</SUP> mod <SUB>n</I></SUB>). Division in <img src="817_c.gif"><I> </I>is defined by the equation <I>a</I>/<I>b</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>ab<SUP>-</I>1</SUP> (mod <I>n</I>). For example, in <img src="817_d.gif"> we have that 7<I><SUP>-</I>1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 13 (mod 15), since 7 . 13 <IMG SRC="../IMAGES/equiv10.gif"> 91 <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod 15), so that 4/7 <IMG SRC="../IMAGES/equiv10.gif"> 4 . 13 <IMG SRC="../IMAGES/equiv10.gif"> 7 (mod 15).<P>
+<a name="09ae_1b6a"><a name="09ae_1b6b">The size of <img src="817_e.gif"> is denoted <IMG SRC="../IMAGES/phicap12.gif"> (<I>n</I>). This function, known as <I><B>Euler's phi function</I></B>, satisfies the equation<P>
+<img src="817_f.gif"><P>
+<h4><a name="09ae_1b6f">(33.20)<a name="09ae_1b6f"></sub></sup></h4><P>
+where <I>p</I> runs over all the primes dividing <I>n</I> (including <I>n</I> itself, if <I>n</I> is prime). We shall not prove this formula here. Intuitively, we begin with a list of the <I>n</I> remainders {0, 1, . . . , <I>n</I> - 1 } and then, for each prime <I>p</I> that divides <I>n</I>, cross out every multiple of <I>p</I> in the list. For example, since the prime divisors of 45 are 3 and 5,<P>
+<img src="817_g.gif"><P>
+If <I>p</I> is prime, then <img src="817_h.gif">, and<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>p</I>) = <I>p </I>- 1.</sub></sup></pre><P>
+<h4><a name="09ae_1b70">(33.21)<a name="09ae_1b70"></sub></sup></h4><P>
+If <I>n</I> is composite, then <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>) &lt; <I>n</I> - 1.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Subgroups</h2><P>
+<a name="09af_1b6c">If (<I>S, </I><IMG SRC="../IMAGES/xor14.gif">) is a group, <I>S</I>' <IMG SRC="../IMAGES/rgtubar.gif"> <I>S</I>, and (<I>S</I>', <IMG SRC="../IMAGES/xor14.gif">) is also a group, then (<I>S</I>', <IMG SRC="../IMAGES/xor14.gif">) is said to be a <I><B>subgroup</I></B> of (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">). For example, the even integers form a subgroup of the integers under the operation of addition. The following theorem provides a useful tool for recognizing subgroups.<P>
+<a name="09af_1b6f">Theorem 33.14<a name="09af_1b6f"><P>
+If (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) is a finite group and <I>S</I>' is any subset of <I>S</I> such that <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>' for all <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>', then (<I>S</I>',<IMG SRC="../IMAGES/xor14.gif">) is a subgroup of (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">).<P>
+<I><B>Proof     </I></B>The proof is left as Exercise 33.3-2.      <P>
+For example, the set {0, 2, 4, 6} forms a subgroup of <B>Z</B><SUB>8</SUB>,since it is closed under the operation + (that is, it is closed under +<SUB>8</SUB>).<P>
+The following theorem provides an extremely useful constraint on the size of a subgroup.<P>
+<a name="09af_1b70">Theorem 33.15<a name="09af_1b70"><P>
+<a name="09af_1b6d">If (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) is a finite group and (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) is a subgroup of (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">), then |<I>S</I><I>'</I>| is a divisor of |<I>S|.     </I> <P>
+<a name="09af_1b6e"><I>A </I>subgroup<I> S</I>' of a group <I>S</I> is said to be a <I><B>proper</I></B> subgroup if <I>S</I>' <IMG SRC="../IMAGES/noteq.gif"> <I>S</I>. The following corollary will be used in our analysis of the Miller-Rabin primality test procedure in Section 33.8.<P>
+<a name="09af_1b71">Corollary 33.16<a name="09af_1b71"><P>
+If <I>S</I>' is a proper subgroup of a finite group <I>S</I>, then |<I>S</I>'<I>| </I><IMG SRC="../IMAGES/lteq12.gif"> |<I>S|/2.      </I><P>
+<P>
+
+
+
+
+
+
+
+<h2>Subgroups generated by an element</h2><P>
+Theorem 33.14 provides an interesting way to produce a subgroup of a finite group (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">): choose an element <I>a</I> and take all elements that can be generated from <I>a</I> using the group operation. Specifically, define <I>a</I><SUP>(k)</SUP> for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1 by<P>
+<img src="818_a.gif"><P>
+For example, if we take <I>a</I> = 2 in the group <I>Z</I><SUB>6</SUB>, the sequence <I>a</I><SUP>(1)</SUP>, <I>a</I><SUP>(2)</SUP>, . . . is<P>
+<pre>2, 4, 0, 2, 4, 0, 2, 4, 0,... .</sub></sup></pre><P>
+In the group <B>Z</B><I><FONT FACE="Courier New" SIZE=2>n,</I></FONT> we have <I>a</I><SUP>(<I>k</I>)</SUP> = <I>ka</I> mod <I>n</I>, and in the group <img src="818_b.gif">, we have <I>a</I><SUP>(k)</SUP> = <I>a<SUP>k</I></SUP> mod <I>n</I>. The <I><B>subgroup generated by a</I></B>, denoted <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> or (<IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"><I>, <IMG SRC="../IMAGES/xor14.gif">), is defined by</I><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> = {<I>a</I><SUP>(<I>k</I>)</SUP>: <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1}.</sub></sup></pre><P>
+<a name="09b0_1b6f">We say that <I>a</I> <I><B>generates</I></B> the subgroup <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> or that <I>a</I> is a <I><B>generator</I></B> of <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">. Since <I>S</I> is finite, <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> is a finite subset of <I>S</I>, possibly including all of <I>S</I>. Since the associativity of <IMG SRC="../IMAGES/xor14.gif"> implies<P>
+<pre><I>a</I><SUP>(<I>i</I>) </SUP><IMG SRC="../IMAGES/xor14.gif"> <I>a</I><SUP>(<I>j</I>)</SUP> = <I>a</I><SUP>(<I>i</I>+<I>j</I>)</SUP>,</sub></sup></pre><P>
+<IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> is closed and therefore, by Theorem 33.14, <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> is a subgroup of <I>S</I>. For example, in <B>Z</B><SUB>6</SUB>,we have<P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">0<IMG SRC="../IMAGES/wdrtchv.gif">  =  {0} ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">1<IMG SRC="../IMAGES/wdrtchv.gif">  =  {0, 1, 2, 3, 4, 5} ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">2<IMG SRC="../IMAGES/wdrtchv.gif">  =  {0, 2, 4} .</sub></sup></pre><P>
+Similarly, in <img src="818_c.gif">, we have<P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">1<IMG SRC="../IMAGES/wdrtchv.gif">  =  {1} ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">2<IMG SRC="../IMAGES/wdrtchv.gif">  =  {1, 2, 4} ,</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif">3<IMG SRC="../IMAGES/wdrtchv.gif">  =  {1, 2, 3, 4, 5, 6} .</sub></sup></pre><P>
+<a name="09b0_1b70">The<I> <B>order</I></B> of <I>a</I> (in the group <I>S</I>), denoted ord(<I>a</I>), is defined as the least <I>t</I> &gt; 0 such that <I>a<SUP>(t</I>)</SUP> = <I>e</I>.<P>
+<a name="09b0_1b71">Theorem 33.17<a name="09b0_1b71"><P>
+For any finite group (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif">) and any <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>, the order of an element is equal to the size of the subgroup it generates, or ord(<I>a</I>) = <FONT FACE="Times New Roman" SIZE=3>|<IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">|</FONT>.<P>
+<I><B>Proof     </I></B>Let <I>t</I> = ord(<I>a</I>). Since <I>a</I><SUP>(<I>t</I>)</SUP> = <I>e</I> and <I>a</I><SUP>(<I>t+k)</I></SUP> = <I>a</I><SUP>(<I>t</I>)</SUP> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I><SUP>(<I>k</I>)</SUP> = <I>a</I><SUP>(<I>k</I>)</SUP> for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1, if i &gt; <I>t</I>, then <I>a</I><SUP>(<I>i</I>)</SUP> = <I>a</I><SUP>(<I>j</I>)</SUP> for some <I>j &lt; i</I>. Thus, no new elements are seen after <I>a</I><SUP>(<I>t</I>)</SUP>, and <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"><I> = {</I>a<I><SUP>(1)</SUP>,</I>a<I><SUP>(2)</SUP>,...,</I>a<I><SUP>(</I>t<I>)</SUP>}. To show that <IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/lftwdchv.gif"></I>a<I><IMG SRC="../IMAGES/wdrtchv.gif"></I><IMG SRC="../IMAGES/sglvrt.gif"><I> = </I>t<I>, suppose for the purpose of contradiction that </I>a<I><SUP>(</I>i<I>)</SUP> = </I>a<I><SUP>(</I>j<I>)</SUP> for some </I>i, j<I> satisfying 1 <IMG SRC="../IMAGES/lteq12.gif"> </I>i<I> &lt; </I>j <I><IMG SRC="../IMAGES/lteq12.gif"> t</I>. Then, <I>a</I><SUP>(<I>i+k</I>)</SUP> = <I>a</I><SUP>(<I>j+k</I>)</SUP> for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0. But this implies that <I>a</I><SUP>(<I>i+(t-j</I>))</SUP> = <I>a</I><SUP>(<I>j</I>+(<I>t-j</I>))</SUP> = <I>e</I>, a contradiction, since <I>i + </I>(<I>t - j</I>)<I> &lt; t</I> but <I>t</I> is the least positive value such that <I>a</I><SUP>(<I>t</I>)</SUP> = <I>e</I>. Therefore, each element of the sequence <I>a</I><SUP>(1)</SUP>,<I>a</I><SUP>(2<I>)</I>, . . . , </SUP>a<SUP>(<I>t</I>)</SUP> is distinct, and <IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/lftwdchv.gif">a<IMG SRC="../IMAGES/wdrtchv.gif"><IMG SRC="../IMAGES/sglvrt.gif"> = <I>t</I>.      <P>
+<a name="09b0_1b72">Corollary 33.18<a name="09b0_1b72"><P>
+The sequence <I>a</I><SUP>(1)</SUP><I>, a</I><SUP>(2)</SUP>, . . . is periodic with period <I>t</I> = ord(<I>a</I>); that is, <I>a</I><SUP>(<I>i</I>)</SUP> = <I>a</I><SUP>(<I>j</I>)</SUP> if and only if <I>i </I><IMG SRC="../IMAGES/equiv10.gif"> <I>j</I> (mod <I>t</I>).      <P>
+It is consistent with the above corollary to define <I>a</I><SUP>(0) </SUP>as <I>e</I> and <I>a</I><SUP>(<I>i</I>)</SUP> as <I>a</I><SUP>(<I>i</I> mod<I> t</I>)</SUP> for all integers <I>i</I>.<P>
+<a name="09b0_1b73">Corollary 33.19<a name="09b0_1b73"><P>
+If (<I>S</I>, <IMG SRC="../IMAGES/xor14.gif"> ) is a finite group with identity <I>e</I>, then for all <I>a </I><IMG SRC="../IMAGES/memof12.gif"> S<I>,</I><P>
+<pre>a<SUP>(|S|)</SUP> = e.</sub></sup></pre><P>
+<I><B>Proof     </I></B>Lagrange's theorem implies that ord(<I>a</I>) <I>| </I>|S|, and so <I>|S| <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod</I> t<I>), where </I>t = <I></I>ord<I>(a</I>).      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09b1_0001">Exercises<a name="09b1_0001"></h2><P>
+<a name="09b1_0002">33.3-1<a name="09b1_0002"><P>
+Draw the group operation tables for the groups (<B>Z</B><SUB>4</SUB>, +<SUB>4</SUB>) and <img src="819_a.gif">. Show that these groups are isomorphic by exhibiting a one-to-one correspondence <IMG SRC="../IMAGES/alpha12.gif"> between their elements such that <I>a + b </I><IMG SRC="../IMAGES/equiv10.gif"> c<I> (mod 4) if and only if <IMG SRC="../IMAGES/alpha12.gif">(</I>a<I>). <IMG SRC="../IMAGES/alpha12.gif">(</I>b<I>) <IMG SRC="../IMAGES/equiv10.gif"> <IMG SRC="../IMAGES/alpha12.gif">(</I>c<I>) (mod 5).</I><P>
+<a name="09b1_0003">33.3-2<a name="09b1_0003"><P>
+Prove Theorem 33.14.<P>
+<a name="09b1_0004">33.3-3<a name="09b1_0004"><P>
+Show that if <I>p</I> is prime and <I>e</I> is a positive integer, then<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>p<SUP>e</I></SUP>) = <I>p<SUP>e-</I>1</SUP><I>(p</I> - 1) .</sub></sup></pre><P>
+<a name="09b1_0005">33.3-4<a name="09b1_0005"><P>
+Show that for any <I>n &gt; </I>1 and for any<I> </I><img src="820_a.gif"><I>,</I> the function<I> f<SUB>a:</I> </SUB><img src="820_b.gif"> defined by <I>f<SUB>a</I></SUB>(<I>x</I>)<I> = ax</I> mod <I>n</I> is a permutation of <img src="820_c.gif"><I><SUB>.</I><P>
+<a name="09b1_0006">33.3-5<a name="09b1_0006"><P>
+List all of the subgroups of <B>Z</B><SUB>9</SUB> and of <img src="820_d.gif">.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09b2_1b77">33.4 Solving modular linear equations<a name="09b2_1b77"></h1><P>
+<a name="09b2_1b71"><a name="09b2_1b72"><a name="09b2_1b73">We now consider the problem of finding solutions to the equation<P>
+<pre><I>ax</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>b</I> (mod <I>n</I>),</sub></sup></pre><P>
+<h4><a name="09b2_1b78">(33.22)<a name="09b2_1b78"></sub></sup></h4><P>
+where <I>n</I> &gt; 0, an important practical problem. We assume that <I>a, b</I>, and <I>n</I> are given, and we are to find the <I>x</I>'s, modulo <I>n</I>, that satisfy equation (33.22). There may be zero, one, or more than one such solution.<P>
+Let <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> denote the subgroup of <B>Z</B><I><SUB>n</I></SUB> generated by <I>a</I>. Since <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> = {<I>a</I><SUP>(<I>x</I>)</SUP>: <I>x &gt; </I>0}<I> = </I>{<I>ax </I>mod<I> n: x &gt; </I>0}, equation (33.22) <I></I>has a solution if and only if <I>b </I><IMG SRC="../IMAGES/memof12.gif"> <I><IMG SRC="../IMAGES/lftwdchv.gif"></I>a<I><IMG SRC="../IMAGES/wdrtchv.gif">. Lagrange's theorem (Theorem 33.15) tells us that </I>|<IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"><I>| must be a divisor of </I>n<I>. The following theorem gives us a precise characterization of <IMG SRC="../IMAGES/lftwdchv.gif"></I>a<I><IMG SRC="../IMAGES/wdrtchv.gif"></I>.<P>
+<a name="09b2_1b79">Theorem 33.20<a name="09b2_1b79"><P>
+For any positive integers <I>a</I> and <I>n</I>, if <I>d</I> = gcd(<I>a, n</I>), then<P>
+<pre><IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>d</I><IMG SRC="../IMAGES/wdrtchv.gif"> = {0, <I>d</I>, 2<I>d</I>,..., ((<I>n/d</I>)- l)<I>d</I>},</sub></sup></pre><P>
+<h4><a name="09b2_1b7a">(33.23)<a name="09b2_1b7a"></sub></sup></h4><P>
+and thus<P>
+<pre><I>|<IMG SRC="../IMAGES/lftwdchv.gif"></I>a<I><IMG SRC="../IMAGES/wdrtchv.gif"></I>| = <I>n/d .</I></sub></sup></pre><P>
+<B>Proof     </B>We begin by showing that d <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif">a<IMG SRC="../IMAGES/wdrtchv.gif">. Observe that <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT> <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(a, n) produces integers x' and y' such that ax' + ny' = d. Thus, ax' <IMG SRC="../IMAGES/equiv10.gif"> d (mod n), so that d <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif">a<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+Since <I>d </I><IMG SRC="../IMAGES/memof12.gif"><I> </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">, it follows that every multiple of <I>d</I> belongs to <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">, because a multiple of a multiple of <I>a</I> is a multiple of <I>a</I>. Thus, <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> contains every element in {0, <I>d, </I>2<I>d</I>, . . . ,((<I>n/d ) - </I>l<I> )d</I>}. That is, <IMG SRC="../IMAGES/lftwdchv.gif"><I>d</I><IMG SRC="../IMAGES/wdrtchv.gif"> <IMG SRC="../IMAGES/rgtubar.gif"> <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> .<P>
+We now show that <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> <IMG SRC="../IMAGES/rgtubar.gif"> <IMG SRC="../IMAGES/lftwdchv.gif"><I>d</I><IMG SRC="../IMAGES/wdrtchv.gif">. If <I>m </I><IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">, then <I>m = ax</I> mod <I>n</I> for some integer <I>x</I>, and so <I>m = ax + ny</I> for some integer <I>y</I>. However, <I>d | a</I> and <I>d</I> <I>| </I>n<I>, and so </I>d | m<I> by equation (33.6). Therefore, </I>m <I><IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif"></I>d<I><IMG SRC="../IMAGES/wdrtchv.gif">.</I><P>
+Combining these results, we have that <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>d</I><IMG SRC="../IMAGES/wdrtchv.gif">. To see that <I>|<IMG SRC="../IMAGES/lftwdchv.gif"></I>(<I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"><I>| = n</I>/<I>d</I>, observe that there are exactly <I>n</I>/<I>d</I> multiples of <I>d</I> between 0 and <I>n</I> - 1, inclusive.      <P>
+<a name="09b2_1b7b">Corollary 33.21<a name="09b2_1b7b"><P>
+The equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b </I>(mod <I>n</I>) is solvable for the unknown <I>x</I> if and only if gcd(<I>a, n</I>) <I>| </I>b<I>.      </I><P>
+<a name="09b2_1b7c">Corollary 33.22<a name="09b2_1b7c"><P>
+The equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b</I> (mod <I>n</I>) either has <I>d</I> distinct solutions modulo <I>n</I>, where <I>d</I> = gcd(<I>a, n</I>), or it has no solutions.<P>
+<I><B>Proof     </I></B>If <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b</I> (mod <I>n</I>) has a solution, then <I>b </I><IMG SRC="../IMAGES/memof12.gif"> <I></I><IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">. The sequence <I>ai</I> mod <I>n, for i</I> = 0,1, . . . , is periodic with period <I>|</I><IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"><I>| = n/d</I>, by Corollary 33.18. If <I>b </I><IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif">, then <I>b</I> appears exactly <I>d</I> times in the sequence <I>ai </I>mod<I> n</I>, for <I>i = 0,</I>1, . . . , <I>n</I> - 1, since the length-(<I>n/d</I>) block of values ( <I>a</I>) is repeated exactly <I>d</I> times as <I>i</I> increases from 0 to <I>n</I> - 1. The indices <I>x </I>of these <I>d</I> positions are the solutions of the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"> b <I>(mod</I> n<I>).      </I><P>
+<a name="09b2_1b7d">Theorem 33.23<a name="09b2_1b7d"><P>
+Let d = gcd(a, n), and suppose that d = ax' + ny' for some integers x' and y' (for example, as computed by <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT> <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>). If d | b, then the equation ax <IMG SRC="../IMAGES/equiv10.gif"> b (mod n) has as one of its solutions the value x<SUB>0</SUB>, where<P>
+<pre>x<SUB>0 </SUB>= x'(b/d) mod n.</sub></sup></pre><P>
+<I><B>Proof</I>     </B>Since <I>ax</I>' <IMG SRC="../IMAGES/equiv10.gif"> <I>d</I> (mod <I>n</I>), we have<P>
+<pre><I>ax</I><SUB>0</SUB>  <IMG SRC="../IMAGES/equiv10.gif">  <I>ax</I>'<I>(</I>b/d<I>)  (mod </I>n<I>)</I></sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>d</I>(<I>b/d</I>)    (mod<I> n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>b         </I>(mod<I> n</I>) ,</sub></sup></pre><P>
+and thus <I>x</I><SUB>0</SUB> is a solution to <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b (mod n</I>).      <P>
+<a name="09b2_1b7e">Theorem 33.24<a name="09b2_1b7e"><P>
+Suppose that the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b </I>(mod<I> n</I>) is solvable (that is, <I>d | b</I>, where <I>d = </I>gcd(<I>a, n</I>)) and that <I>x</I><SUB>0</SUB> is any solution to this equation. Then, this equation has exactly <I>d</I> distinct solutions, modulo <I>n</I>, given by <I>x<SUB>i</SUB> = x</I><SUB>0</SUB><I> + i</I>(<I>n/d</I>) for <I>i</I> = 1, 2, . . . , <I>d</I> - 1.<P>
+<I><B>Proof     </I></B>Since <I>n/d</I> &gt; 0 and 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I>( <I>n/d</I>) &lt; <I>n</I> for <I>i</I> = 0, 1, . . . , <I>d</I> - 1, the values <I><FONT FACE="Times New Roman" SIZE=3>x</I><SUB>0</SUB><I>,<FONT FACE="Times New Roman" SIZE=3>x</I><SUB>1</FONT></SUB>, . . . , <I><FONT FACE="Times New Roman" SIZE=3>x<SUB>d-</I>1</FONT></SUB> are all distinct, modulo <I>n</I>. By the periodicity of the sequence <I>ai</I> mod <I>n</I> (Corollary 33.18), if <I><FONT FACE="Times New Roman" SIZE=3>x</I><SUB>0</FONT></SUB> is a solution of <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b </I>(mod <I>n</I>), then every <I><FONT FACE="Times New Roman" SIZE=3>x<SUB>i</I></FONT></SUB> is a solution. By Corollary 33.22, there are exactly <I>d</I> solutions, so that <I><FONT FACE="Times New Roman" SIZE=3>x</I><SUB>0</SUB><I>,<FONT FACE="Times New Roman" SIZE=3>x</I><SUB>l</FONT></SUB>, . . . , <I><FONT FACE="Times New Roman" SIZE=3>x<SUB>d-</I>1</FONT></SUB> must be all of them.      </FONT></FONT><P>
+We have now developed the mathematics needed to solve the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b</I> (mod <I>n</I>); the following algorithm prints all solutions to this equation. The inputs <I>a</I> and <I>b</I> are arbitrary integers, and <I>n</I> is an arbitrary positive integer.<P>
+<pre><a name="09b2_1b74">MODULAR-LINEAR-EQUATION-SOLVER(<I>a,b,n</I>)</sub></sup></pre><P>
+<pre>1  (<I>d,x',y</I>'<I>) <IMG SRC="../IMAGES/arrlt12.gif"> EXTENDED-EUCLID(</I>a,n<I>)</I></sub></sup></pre><P>
+<pre>2  <B>if</B> <I>d | b</I></sub></sup></pre><P>
+<pre>3      <B>then</B> <I>x</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I>'(<I>b</I>/<I>d</I>) mod n</sub></sup></pre><P>
+<pre>4           <B>for </B><I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>d</I> - 1</sub></sup></pre><P>
+<pre>5                <B>do</B> print (<I>x</I><SUB>0</SUB><I> + i</I>(<I>n/d</I>)) mod <I>n</I></sub></sup></pre><P>
+<pre>6      <B>else</B> print "no solutions"</sub></sup></pre><P>
+As an example of the operation of this procedure, consider the equation 14<I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> 30 (mod 100) (here, <I>a</I> = 14, <I>b</I> = 30, and <I>n</I> = 100). Calling <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> in line 1, we obtain (<I>d, x, y</I>) = (2,-7,1). Since 2 <IMG SRC="../IMAGES/sglvrt.gif"> 30, lines 3-5 are executed. In line 3, we compute <I>x</I><SUB>0</SUB> = (-7)(15) mod 100 = 95. The loop on lines 4-5 prints the two solutions: 95 and 45.<P>
+<a name="09b2_1b75"><a name="09b2_1b76">The procedure <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>LINEAR</FONT>-<FONT FACE="Courier New" SIZE=2>EQUATION</FONT>-<FONT FACE="Courier New" SIZE=2>SOLVER</FONT> works as follows. Line 1 computes <I>d</I> = gcd(<I>a, n</I>) as well as two values <I>x</I>'<I>' and </I>y<I>'</I>' such that <I>d = ax</I>' + ny<I>'</I>, demonstrating that <I>x</I>'<I>' is a solution to the equation </I>ax<I>' </I><IMG SRC="../IMAGES/equiv10.gif"><I> d</I> (mod <I>n</I>). If <I>d</I> does not divide <I>b</I>, then the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b</I> (mod <I>n</I>) has no solution, by Corollary 33.21. Line 2 checks if <I>d </I><IMG SRC="../IMAGES/sglvrt.gif"><I> b</I>; if not, line 6 reports that there are no solutions. Otherwise, line 3 computes a solution <I>x</I><SUB>0</SUB> to equation (33.22), in accordance with Theorem 33.23. Given one solution, Theorem 33.24 states that the other <I>d</I> - 1 solutions can be obtained by adding multiples of (<I>n/d</I>), modulo <I>n</I>. The <B>for</B> loop of lines 4-5 prints out all <I>d</I> solutions, beginning with <I>x</I><SUB>0</SUB> and spaced (<I>n/d</I>) apart, modulo <I>n</I>.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>LINEAR</FONT>-<FONT FACE="Courier New" SIZE=2>EQUATION</FONT>-<FONT FACE="Courier New" SIZE=2>SOLVER</FONT> is <I>O(</I>lg <I>n</I> + gcd(<I>a,n</I>)) arithmetic operations, since <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT> takes O<I>(</I>lg <I>n</I>) arithmetic operations, and each iteration of the <B>for</B> loop of lines 4-5 takes a constant number of arithmetic operations.<P>
+The following corollaries of Theorem 33.24 give specializations of particular interest.<P>
+<a name="09b2_1b7f">Corollary 33.25<a name="09b2_1b7f"><P>
+For any <I>n</I> &gt; 1, if gcd(<I>a,n</I>) = 1, then the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> b </I>(mod<I> n</I>) has a unique solution modulo <I>n</I>.      <P>
+If <I>b</I> = 1, a common case of considerable interest, the <I>x</I> we are looking for is a <I><B>multiplicative inverse</I></B> of <I>a</I>, modulo <I>n</I>.<P>
+<a name="09b2_1b80">Corollary 33.26<a name="09b2_1b80"><P>
+For any <I>n &gt; </I>1, if gcd(<I>a, n</I>) = 1, then the equation<P>
+<pre><I>ax</I> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>)</sub></sup></pre><P>
+<h4><a name="09b2_1b81">(33.24)<a name="09b2_1b81"></sub></sup></h4><P>
+has a unique solution, modulo <I>n</I>. Otherwise, it has no solution.      <P>
+Corollary 33.26 allows us to use the notation (<I>a<SUP>-1</I></SUP> mod <I>n</I>) to refer to <I>the</I> multiplicative inverse of <I>a</I>, modulo <I>n</I>, when <I>a</I> and <I>n</I> are relatively prime. If gcd(<I>a, n</I>) = 1, then one solution to the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> </I>1<I> </I>(mod <I>n</I>) is the integer <I>x</I> returned by <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>, since the equation<P>
+<pre>gcd(a, n) = 1 = ax + ny</sub></sup></pre><P>
+implies <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> </I>1 (mod<I> n</I>). Thus, (<I>a</I><SUP>-1</SUP><I> </I>mod<I> n</I>) can be computed efficiently using <FONT FACE="Courier New" SIZE=2>EXTENDED</FONT>-<FONT FACE="Courier New" SIZE=2>EUCLID</FONT>.<P>
+
+
+
+
+
+<h2><a name="09b3_1b78">Exercises<a name="09b3_1b78"></h2><P>
+<a name="09b3_1b79">33.4-1<a name="09b3_1b79"><P>
+Find all solutions to the equation 35<I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> 10 (mod 50).<P>
+<a name="09b3_1b7a">33.4-2<a name="09b3_1b7a"><P>
+Prove that the equation <I>ax </I><IMG SRC="../IMAGES/equiv10.gif"><I> ay </I>(mod<I> n</I>) implies <I>x </I><IMG SRC="../IMAGES/equiv10.gif"><I> y</I> (mod <I>n</I>) whenever gcd(<I>a, n</I>) = 1. Show that the condition gcd(<I>a, n</I>) = 1 is necessary by supplying a counterexample with gcd(<I>a, n</I>) &gt; 1.<P>
+<a name="09b3_1b7b">33.4-3<a name="09b3_1b7b"><P>
+Consider the following change to line 3 of <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>LINEAR</FONT>-<FONT FACE="Courier New" SIZE=2>EQUATiON</FONT>-<FONT FACE="Courier New" SIZE=2>SOLVER</FONT>:<P>
+<pre>3  <B>then</B> <I>x</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I>'(<I>b/d</I>) mod (<I>n/d</I>)</sub></sup></pre><P>
+Will this work? Explain why or why not.<P>
+<a name="09b3_1b7c">33.4-4<a name="09b3_1b7c"><P>
+<a name="09b3_1b77">Let <I>f</I>(<I>x</I>)<I> </I><IMG SRC="../IMAGES/equiv10.gif"><I> f</I><SUB>0</SUB><I> + f<SUB>1</SUB>x + + f<SUB>t</SUB>x + . . . + f<SUB>t</SUB>x<SUP>t</SUP> </I>(mod<I> p</I>) be a polynomial of degree <I>t</I>, with coefficients <I>f<SUB>i</I></SUB> drawn from <B>Z</B><I><SUB>p</I></SUB>, where <I>p</I> is prime. We say that <I>a </I><IMG SRC="../IMAGES/memof12.gif"><I> </I><B>Z</B><I><SUB>p</I></SUB> is a <I><B>zero</I></B> of <I>f</I> if <I>f</I>(<I>a</I>)<I> </I><IMG SRC="../IMAGES/equiv10.gif"><I> </I>0<I> </I>(mod<I> p</I>). Prove that if <I>a</I> is a zero of <I>f</I>, then <I>f </I>(<I>x</I>)<I> </I><IMG SRC="../IMAGES/equiv10.gif"><I> </I>(<I>x - a</I>)<I>g</I>(<I>x</I>)<I> </I>(mod<I> p</I>) for some polynomial <I>g(x</I>) of degree <I>t</I> - 1. Prove by induction on <I>t</I> that a polynomial <I>f </I>(<I>x</I>) of degree <I>t</I> can have at most <I>t</I> distinct zeros modulo a prime <I>p</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09b4_1b79">33.5 The Chinese remainder theorem<a name="09b4_1b79"></h1><P>
+<a name="09b4_1b78">Around <FONT FACE="Courier New" SIZE=2>A.D.</FONT> 100, the Chinese mathematician <img src="823_a.gif"> solved the problem of finding those integers <I>x</I> that leave remainders 2, 3, and 2 when divided by 3, 5, and 7 respectively. One such solution is <I>x</I> = 23; all solutions are of the form 23 + 105<I>k</I> for arbitrary integers <I>k</I>. The "Chinese remainder theorem" provides a correspondence between a system of equations modulo a set of pairwise relatively prime moduli (for example, 3, 5, and 7) and an equation modulo their product (for example, 105).<P>
+The Chinese remainder theorem has two major uses. Let the integer <I>n = n</I><SUB>l<I> </SUB>n</I><SUB>2 . . . </SUB><I>n<SUB>k</I></SUB>, where the factors <I>n<SUB>i</I></SUB> are pairwise relatively prime. First, the Chinese remainder theorem is a descriptive "structure theorem" that describes the structure of <B>Z</B><I><SUB>n</I></SUB> as identical to that of the Cartesian product <B>Z</B><I><SUB>n</I>1 </SUB><FONT FACE="Times New Roman" SIZE=3>X<B>Z</B><I><SUB>n</I>2 </SUB><FONT FACE="Times New Roman" SIZE=3>X<SUB> . . . </SUB>X<SUB> </SUB><B>Z</B><I><SUB>nk</I></FONT></SUB> with componentwise addition and multiplication modulo <I>n<SUB>i</I></FONT></SUB> in the <I>i</I>th component. Second, this description can often be used to yield efficient algorithms, since working in each of the systems <B>Z</B><I><SUB>ni</I> </SUB>can be more efficient (in terms of bit operations) than working modulo <I>n</I>.<P>
+<a name="09b4_1b7a">Theorem 33.27<a name="09b4_1b7a"><P>
+Let <I>n = n</I><SUB>1<I> </SUB>n</I><SUB>2 . . . </SUB><I>n<SUB>k</I></SUB>, where the <I>n<SUB>i</I></SUB> are pairwise relatively prime. Consider the correspondence<P>
+<pre>a <IMG SRC="../IMAGES/dblarr12.gif"> (a<SUB>l</SUB>, a<SUB>2</SUB>, . . . , a<SUB>k),</sub></sup></pre><P>
+<h4><a name="09b4_1b7b">(33.25)<a name="09b4_1b7b"></sub></sup></h4><P>
+where a <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B><FONT FACE="Courier New" SIZE=2>n</FONT>, a<FONT FACE="Courier New" SIZE=2>i</FONT> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B><FONT FACE="Courier New" SIZE=2>n<SUB>i</FONT></SUB>, and<P>
+<pre>a<SUB>i</SUB> = a mod n<SUB>i</sub></sup></pre><P>
+for <I>i = </I>1, 2, . . . , <I>k</I>. Then, mapping (33.25) is a one-to-one correspondence (bijection) between <B>Z</B><I><SUB>n</I></SUB> and the Cartesian product <B>Z</B><I><SUB>n</I>i</SUB><FONT FACE="Times New Roman" SIZE=3>X<B>Z</B><I><SUB>n</I>2</FONT></SUB> <FONT FACE="Times New Roman" SIZE=3>X</FONT> . . . <FONT FACE="Times New Roman" SIZE=3>X<I> </I><B>Z</B><I><SUB>nk</I></FONT></SUB>. Operations performed on the elements of <B>Z</B><I><SUB>n</I></SUB> can be equivalently performed on the corresponding <I>k</I>-tuples by performing the operations independently in each coordinate position in the appropriate system. That is, if<P>
+<pre><I>a  </I><IMG SRC="../IMAGES/dblarr12.gif">  (<I>a</I><SUB>l</SUB>, <I>a</I><SUB>2, . . . , </SUB><I>a<SUB>k</I></SUB>) ,</sub></sup></pre><P>
+<pre><I>b  </I><IMG SRC="../IMAGES/dblarr12.gif">  (<I>b</I><SUB>1</SUB>, <I>b</I><SUB>2</SUB>, . . . , <I>b</I><SUB>k</SUB>) ,</sub></sup></pre><P>
+then<P>
+<pre>(<I>a</I> + b) mod <I>n</I> <IMG SRC="../IMAGES/dblarr12.gif"> ((<I>a</I><SUB>l</SUB> + <I>b</I><SUB>l</SUB>) mod <I>n</I><SUB>1</SUB>, . . . , (<I>a<SUB>k</I> + </SUB><I>b<SUB>k</I></SUB>) mod <I>n<SUB>k</I></SUB>) ,</sub></sup></pre><P>
+<h4><a name="09b4_1b7c">(33.26)<a name="09b4_1b7c"></sub></sup></h4><P>
+<pre>(<I>a</I> - b) mod <I>n</I> <IMG SRC="../IMAGES/dblarr12.gif"> ((<I>a</I><SUB>l</SUB> - <I>b</I><SUB>l</SUB>) mod <I>n</I><SUB>l</SUB>, . . . , (<I>a<SUB>k</I></SUB> - <I>b<SUB>k</I></SUB>) mod <I>n<SUB>k</I></SUB>) ,</sub></sup></pre><P>
+<h4><a name="09b4_1b7d">(33.27)<a name="09b4_1b7d"></sub></sup></h4><P>
+<pre>(<I>ab</I>) mod <I>n</I> <IMG SRC="../IMAGES/dblarr12.gif"><SUB> (<I>a</I></SUB>1<SUB><I>b</I></SUB>1<SUB><I> </I>mod <I>n</I></SUB>l<SUB>, . . . , <I>a</SUB>k<SUB>b</SUB>k</I><SUB> mod <I>n</SUB>k</I><SUB>) .</sub></sup></pre><P>
+<h4><a name="09b4_1b7e">(33.28)<a name="09b4_1b7e"></sub></sup></h4><P>
+<I><B>Proof     </I></B>Transforming between the two representations is quite straight-forward. Going from <I>a </I>to (<I>a</I><SUB>l</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>k</I></SUB>) requires only <I>k</I> divisions. Computing <I>a</I> from inputs (<I>a</I><SUB>l</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>k</I></SUB>) is almost as easy, using the following formula. Let <I>m<SUB>i </I></SUB>=<I><SUB> </SUB>n/n<SUB>i</SUB> </I>for<I> i = </I>1,2, . . . , <I>k</I>. Note that <I>m<SUB>i</I> </SUB>=<SUB> </SUB><I>n</I><SUB>l</SUB><I>n</I><SUB>2</SUB> . . . <SUB> </SUB><I>n<SUB>i</I>-l</SUB><I>n<SUB>i</I>+l</SUB> . . . <SUB> </SUB><I>n<SUB>k</I></SUB>, so that <I>m<SUB>i</I> </SUB><IMG SRC="../IMAGES/equiv10.gif"><SUB> 0</SUB> (mod <I>n<SUB>j</I></SUB>) for all <I>j</I> <IMG SRC="../IMAGES/noteq.gif"> <I>i</I>. Then, letting<P>
+<pre><I>c<SUB>i</I></SUB> = <I>m<SUB>i</I></SUB>(<I>m<SUB>j</I></SUB><SUP>-l</SUP><SUB> </SUB>mod <I>n<SUB>i</I></SUB>)</sub></sup></pre><P>
+<h4><a name="09b4_1b7f">(33.29)<a name="09b4_1b7f"></sub></sup></h4><P>
+for <I>i = </I>1, 2, . . . , <I>k</I>, we have<P>
+<pre><I>a</I> <IMG SRC="../IMAGES/equiv10.gif"> (<I>a</I><SUB>l</SUB><I>c</I><SUB>1</SUB> + <I>a</I><SUB>2</SUB><I>c</I><SUB>2</SUB> + . . . + <I>a<SUB>k</SUB>c<SUB>k</I></SUB>) (mod <I>n</I>) .</sub></sup></pre><P>
+<h4><a name="09b4_1b80">(33.30)<a name="09b4_1b80"></sub></sup></h4><P>
+Equation 33.29 is well defined, since <I>m<SUB>i </I></SUB>and <I>n<SUB>i</I> </SUB>are relatively prime (by Theorem 33.6), and so Corollary 33.26 implies that (<I>m<SUB>i</I></SUB><SUP>-l</SUP><SUB> </SUB>mod <I>n<SUB>i</I></SUB>) is defined. To verify equation (33.30), note that <I>c<SUB>j </I></SUB><IMG SRC="../IMAGES/equiv10.gif"><I><SUB> </SUB>m<SUB>j</SUB> </I><IMG SRC="../IMAGES/equiv10.gif"><I> </I>0<I> </I>(mod<I> n<SUB>i</SUB>) </I>if<I> j </I><IMG SRC="../IMAGES/noteq.gif"> i<I>, and that </I>c<SUB>i</SUB> <I><IMG SRC="../IMAGES/equiv10.gif"> </I>1<I> </I>(mod<I> n<SUB>i</I></SUB>). Thus, we have the correspondence<P>
+<pre><I>c<SUB>i </I></SUB><IMG SRC="../IMAGES/dblarr12.gif"> (0, 0, . . . , 0, 1, 0, . . . , 0) ,</sub></sup></pre><P>
+a vector that has 0's everywhere except in the <I>i</I>th coordinate, where it has a 1. The <I>c<SUB>i</I></SUB> thus form a &quot;basis&quot; for the representation, in a certain sense. For each <I>i</I>, therefore, we have<P>
+<img src="825_a.gif"><P>
+Since we can transform in both directions, the correspondence is one-to-one. Equations (33.26)--(33.28) follow directly from Exercise 33.1-6, since <I>x</I> mod <I>n<SUB>i</I></SUB> = (<I>x</I> mod <I>n</I>) mod <I>n<SUB>i</I></SUB> for any <I>x</I> and <I>i</I> = 1, 2, . . . , <I>k</I>.      <P>
+The following corollaries will be used later in this chapter.<P>
+<a name="09b4_1b81">Corollary 33.28<a name="09b4_1b81"><P>
+If <I>n</I><SUB>1</SUB>, <I>n</I><SUB>2</SUB>, . . . , <I>n<SUB>k</I></SUB> are pairwise relatively prime and <I>n</I> = <I>n</I><SUB>1</SUB><I>n</I><SUB>2</SUB>...<I>n<SUB>k</I></SUB>, then for any integers <I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>k</I></SUB>, the set of simultaneous equations<P>
+<pre><I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>a<SUB>i  </I></SUB> (mod <I>n<SUB>i</I></SUB>),</sub></sup></pre><P>
+for <I>i</I> = 1, 2, . . . , <I>k</I>, has a unique solution modulo <I>n</I> for the unknown <I>x</I>.      <P>
+<a name="09b4_1b82">Corollary 33.29<a name="09b4_1b82"><P>
+If <I>n</I><SUB>1</SUB>, <I>n</I><SUB>2</SUB>, . . . , <I>n<SUB>k</I></SUB> are pairwise relatively prime and <I>n</I> = <I>n</I><SUB>1 </SUB><I>n</I><SUB>2 </SUB>. . . <I>n<SUB>k</I></SUB>, then for all integers <I>x</I> and <I>a</I>,<P>
+<pre><I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>a</I>  (mod <I>n<SUB>i</I></SUB>)</sub></sup></pre><P>
+for <I>i</I> = 1, 2, . . . , <I>k</I> if and only if<P>
+<pre><I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>a</I>  (mod <I>n</I>) .      </sub></sup></pre><P>
+As an example of the Chinese remainder theorem, suppose we are given the two equations<P>
+<pre><I>a  </I><IMG SRC="../IMAGES/equiv10.gif">  2  (mod 5) ,</sub></sup></pre><P>
+<pre><I>a  </I><IMG SRC="../IMAGES/equiv10.gif">  3  (mod 13) ,</sub></sup></pre><P>
+so that <I>a</I><SUB>1</SUB> = 2, <I>n</I><SUB>1</SUB> = <I>m</I><SUB>2</SUB> = 5, <I>a</I><SUB>2</SUB> = 3, and <I>n</I><SUB>2</SUB> = <I>m</I><SUB>1</SUB> = 13, and we wish to compute <I>a</I> mod 65, since <I>n</I> = 65. Because 13<SUP>-1 </SUP><IMG SRC="../IMAGES/equiv10.gif"> 2 (mod 5) and 5<SUP>-1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 8 (mod 13), we have<P>
+<pre><I>c</I><SUB>1  </SUB>=  13(2 mod 5)  =  26 ,</sub></sup></pre><P>
+<pre><I>c</I><SUB>2  </SUB>=  5(8 mod 13)  =  40 ,</sub></sup></pre><P>
+and<P>
+<pre><I>a  </I><IMG SRC="../IMAGES/equiv10.gif">   2 <SUP>.</SUP> 26 + 3 <IMG SRC="../IMAGES/dot10.gif"> 40  (mod 65)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  52 + 120         (mod 65)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  42               (mod 65) .</sub></sup></pre><P>
+<pre>    0   1   2   3   4   5   6   7   8   9  10  11  12</sub></sup></pre><P>
+<pre>------------------------------- ---------------------</sub></sup></pre><P>
+<pre>0   0  40  15  55  30   5  45  20  60  35  10  50  25</sub></sup></pre><P>
+<pre>1  26   1  41  16  56  31   6  46  21  61  36  11  51</sub></sup></pre><P>
+<pre>2  52  27   2  42  17  57  32   7  47  22  62  37  12</sub></sup></pre><P>
+<pre>3  13  53  28   3  43  18  58  33   8  48  23  63  38</sub></sup></pre><P>
+<pre>4  39  14  54  29   4  44  19  59  34   9  49  24  64</sub></sup></pre><P>
+<h4><a name="09b4_1b83">Figure 33.3 An illustration of the Chinese remainder theorem for n<SUB>1</SUB> = 5 and n<SUB>2</SUB> = 13. For this example, c<SUB>1</SUB> = 26 and c<SUB>2</SUB> = 40. In row i, column j is shown the value of a, modulo 65, such that (a mod 5) = i and (a mod 13) = j. Note that row 0, column 0 contains a 0. Similarly, row 4, column 12 contains a 64 (equivalent to - 1). Since c<SUB>1</SUB> = 26, moving down a row increases a by 26. Similarly, c<SUB>2</SUB> = 40 means that moving right a column increases a by 40. Increasing a by 1 corresponds to moving diagonally downward and to the right, wrapping around from the bottom to the top and from the right to the left.<a name="09b4_1b83"></sub></sup></h4><P>
+See Figure 33.3 for an illustration of the Chinese remainder theorem, modulo 65.<P>
+Thus, we can work modulo <I>n</I> by working modulo <I>n</I> directly or by working in the transformed representation using separate modulo <I>n<SUB>i </I></SUB>computations, as convenient. The computations are entirely equivalent.<P>
+
+
+
+
+
+<h2><a name="09b5_0001">Exercises<a name="09b5_0001"></h2><P>
+<a name="09b5_0002">33.5-1<a name="09b5_0002"><P>
+Find all solutions to the equations <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> 4 (mod 5) and <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> 5  (mod 11).<P>
+<a name="09b5_0003">33.5-2<a name="09b5_0003"><P>
+Find all integers <I>x</I> that leave remainders 1, 2, 3, 4, 5 when divided by 2, 3, 4, 5, 6, respectively.<P>
+<a name="09b5_0004">33.5-3<a name="09b5_0004"><P>
+Argue that, under the definitions of Theorem 33.27, if gcd(<I>a, n</I>) = 1, then<P>
+<img src="826_a.gif"><P>
+<a name="09b5_0005">33.5-4<a name="09b5_0005"><P>
+Under the definitions of Theorem 33.27, prove that the number of roots of the equation <I>f</I>(<I>x</I>) <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <I>n</I>) is equal to the product of the number of roots of each the equations <I>f</I>(<I>x</I>) <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <I>n</I><SUB>1</SUB>), <I>f</I>(<I>x</I>) <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <I>n</I><SUB>2</SUB>), . . . , <I>f</I>(<I>x</I>) <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <I>n<SUB>k</I></SUB>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09b6_1b82">33.6 Powers of an element<a name="09b6_1b82"></h1><P>
+<a name="09b6_1b79">Just as it is natural to consider the multiples of a given element <I>a</I>, modulo <I>n</I>, it is often natural to consider the sequence of powers of <I>a</I>, modulo <I>n</I>, where <img src="827_a.gif">:<P>
+<pre><I>a</I><SUP>0</SUP>,<I>a</I><SUP>1</SUP>,<I>a</I><SUP>2</SUP>,<I>a</I><SUP>3</SUP>,... ,</sub></sup></pre><P>
+<h4><a name="09b6_1b83">(33.31)<a name="09b6_1b83"></sub></sup></h4><P>
+modulo <I>n</I>. Indexing from 0, the 0th value in this sequence is <I>a</I><SUP>0</SUP> mod <I>n</I> = 1, and the <I>i</I>th value is <I>a<SUP>i</I></SUP> mod <I>n</I>. For example, the powers of 3 modulo 7 are<P>
+<pre><I>    i     </I><B>0  1  2  3  4  5  6  7  8  9  10  11  ...</B></sub></sup></pre><P>
+<pre>---------------------------------------------------</sub></sup></pre><P>
+<pre>3<I><SUP>i</I></SUP> mod 7  1  3  2  6  4  5  1  3  2  6   4   5  ...</sub></sup></pre><P>
+whereas the powers of 2 modulo 7 are<P>
+<pre><I>    i    </I><B> 0  1  2  3  4  5  6  7  8  9  10  11  ...</B></sub></sup></pre><P>
+<pre>---------------------------------------------------</sub></sup></pre><P>
+<pre>2<I><SUP>i</I></SUP> mod 7  1  2  4  1  2  4  1  2  4  1   2   4  ...</sub></sup></pre><P>
+In this section, let <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><IMG SRC="../IMAGES/wdrtchv.gif"> denote the subgroup of <img src="827_b.gif"> generated by <I>a</I>, and let ord<I><SUB>n</I></SUB> (<I>a</I>) (the &quot;order of <I>a</I>, modulo <I>n</I>&quot;) denote the order of <I>a</I> in <img src="827_c.gif">. For example, <IMG SRC="../IMAGES/lftwdchv.gif">2<IMG SRC="../IMAGES/wdrtchv.gif"> = {1, 2, 4} in <img src="827_d.gif">, and ord<SUB>7 </SUB>(2) = 3. Using the definition of the Euler phi function <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>) as the size of <img src="827_e.gif"> (see Section 33.3), we now translate Corollary 33.19 into the notation of <img src="827_f.gif"> to obtain Euler's theorem and specialize it to <img src="827_g.gif">, where <I>p</I> is prime, to obtain Fermat's theorem.<P>
+<a name="09b6_1b84">Theorem 33.30<a name="09b6_1b84"><P>
+<a name="09b6_1b7a">For any integer <I>n</I> &gt; 1,<P>
+<img src="827_h.gif"><P>
+<h4><a name="09b6_1b85">(33.32)<a name="09b6_1b85"></sub></sup></h4><P>
+      <P>
+<a name="09b6_1b86">Theorem 33.31<a name="09b6_1b86"><P>
+<a name="09b6_1b7b">If <I>p</I> is prime, then<P>
+<img src="827_i.gif"><P>
+<h4><a name="09b6_1b87">(33.33)<a name="09b6_1b87"></sub></sup></h4><P>
+<I><B>Proof     </I></B>By equation (33.21), <IMG SRC="../IMAGES/phicap12.gif">(<I>p</I>) = <I>p</I> - 1 if <I>p</I> is prime.      <P>
+This corollary applies to every element in <B>Z</B><I><SUB>p</I></SUB> except 0, since <img src="827_j.gif">. For all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B><I><SUB>p</I></SUB>, however, we have <I>a<SUP>p</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>a</I> (mod <I>p</I>) if <I>p</I> is prime.<P>
+<a name="09b6_1b7c"><a name="09b6_1b7d">If <img src="827_k.gif">, then every element in <img src="827_l.gif"> is a power of <I>g</I>, modulo <I>n</I>, and we say that g is a <I><B>primitive root</I></B><I> </I>or a <I><B>generator</I></B> of <img src="827_m.gif">. For example, 3 is a primitive root, modulo 7. If <img src="827_n.gif"> possesses a primitive root, we say that the group <img src="827_o.gif"> is <I><B>cyclic</I></B>. We omit the proof of the following theorem, which is proven by Niven and Zuckerman [151].<P>
+<a name="09b6_1b88">Theorem 33.32<a name="09b6_1b88"><P>
+The values of <I>n</I> &gt; 1 for which <img src="828_a.gif"> is cyclic are 2, 4, <I>p<SUP>e</I></SUP>, and 2<I>p<SUP>e</I></SUP>, for all odd primes <I>p</I> and all positive integers <I>e</I>.      <P>
+<a name="09b6_1b7e"><a name="09b6_1b7f">If <I>g</I> is a primitive root of <img src="828_b.gif"> and <I>a</I> is any element of <img src="828_c.gif">, then there exists a <I>z</I> such that <I>g<SUP>z</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>a</I> (mod <I>n</I>). This <I>z</I> is called the <I><B>discrete logarithm</I></B> or <I><B>index</I></B> of <I>a</I>, modulo <I>n</I>, to the base <I>g</I>; we denote this value as ind<I><SUB>n,g</I></SUB>(<I>a</I>).<P>
+<a name="09b6_1b89">Theorem 33.33<a name="09b6_1b89"><P>
+<a name="09b6_1b80">If <I>g</I> is a primitive root of <img src="828_d.gif">, then the equation <I>g<SUP>x</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>g<SUP>y</I></SUP> (mod <I>n</I>) holds if and only if the equation <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>y</I> (mod <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)) holds.<P>
+<I><B>Proof     </I></B>Suppose first that <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>y</I> (mod <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)). Then, <I>x</I> = <I>y</I> + <I>k</I><IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>) for some integer <I>k</I>. Therefore,<P>
+<pre><I>g<SUP>x  </I></SUP><IMG SRC="../IMAGES/equiv10.gif">  <I>g<SUP>y+k</I></SUP><IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)        <SUP>(mod <I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>g<SUP>y</I></SUP> <IMG SRC="../IMAGES/dot10.gif"> (<I>g</I><SUP></SUP><IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)<SUP>)<I></SUP>k  </I><SUP>(mod <I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>g<SUP>y</SUP> </I><IMG SRC="../IMAGES/dot10.gif"> l<I><SUP>k        </I></SUP>(mod <I>n</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>g<SUP>y              </I></SUP>(mod <I>n</I>).</sub></sup></pre><P>
+Conversely, suppose that <I>g<SUP>x</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>g<SUP>y</I></SUP> (mod <I>n</I>). Because the sequence of powers of <I>g</I> generates every element of <IMG SRC="../IMAGES/lftwdchv.gif"><I>g</I><IMG SRC="../IMAGES/wdrtchv.gif"><I> and |<IMG SRC="../IMAGES/lftwdchv.gif"></I>g<I><IMG SRC="../IMAGES/wdrtchv.gif">| = <IMG SRC="../IMAGES/phicap12.gif">(</I>n<I>), Corollary 33.18 implies that the sequence of powers of </I>g<I> is periodic with period <IMG SRC="../IMAGES/phicap12.gif"></I>(<I>n</I>). Therefore, if <I>g<SUP>x</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>g<SUP>y</I></SUP> (mod <I>n</I>), then we must have <I>x</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>y </I>(mod <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)).      <P>
+Taking discrete logarithms can sometimes simplify reasoning about a modular equation, as illustrated in the proof of the following theorem.<P>
+<a name="09b6_1b8a">Theorem 33.34<a name="09b6_1b8a"><P>
+If <I>p</I> is an odd prime and <I>e</I> <IMG SRC="../IMAGES/gteq.gif"> 1, then the equation<P>
+<pre><I>x</I><SUP>2</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>p<SUP>e</I></SUP>)</sub></sup></pre><P>
+<h4><a name="09b6_1b8b">(33.34)<a name="09b6_1b8b"></sub></sup></h4><P>
+has only two solutions, namely <I>x</I> = 1 and <I>x</I> = - 1.<P>
+<I><B>Proof     </I></B>Let <I>n</I> = <I>p<SUP>e</I></SUP>. Theorem 33.32 implies that <img src="828_e.gif"> has a primitive root <I>g</I>. Equation (33.34) can be written<P>
+<pre>(<I>g</I><SUP>ind</SUP><I><SUB>n,g</I></SUB><SUP>(<I>x</I>)</SUP>)<SUP>2</SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>g</I><SUP>ind</SUP><I><SUB>n,g</I></SUB><SUP>(l) </SUP> (mod <I>n</I>) .</sub></sup></pre><P>
+<h4><a name="09b6_1b8c">(33.35)<a name="09b6_1b8c"></sub></sup></h4><P>
+After noting that ind<I><SUB>n,g</I></SUB>(1) = 0, we observe that Theorem 33.33 implies that equation (33.35) is equivalent to<P>
+<pre>2 <IMG SRC="../IMAGES/dot10.gif"> ind<I><SUB>n,g</I></SUB> (<I>x</I>) <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)) .</sub></sup></pre><P>
+<h4><a name="09b6_1b8d">(33.36)<a name="09b6_1b8d"></sub></sup></h4><P>
+To solve this equation for the unknown ind<I><SUB>n,g</I></SUB>(<I>x</I>), we apply the methods of Section 33.4. Letting <I>d</I> = gcd(2, <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>)) = gcd(2, (<I>p</I> - 1)<I>p<SUP>e-</I>1</SUP>) = 2, and noting that <I>d</I> | 0, we find from Theorem 33.24 that equation (33.36) has exactly <I>d</I> = 2 solutions. Therefore, equation (33.34) has exactly 2 solutions, which are <I>x</I> = 1 and <I>x</I> = - 1 by inspection.      <P>
+<a name="09b6_1b81">A number <I>x</I> is a <I><B>nontrivial square root of 1, modulo n</I></B>, if it satisfies the equation <I>x</I><SUP>2</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>) but <I>x</I> is equivalent to neither of the two "trivial" square roots: 1 or -1, modulo <I>n</I>. For example, 6 is a nontrivial square root of 1, modulo 35. The following corollary to Theorem 33.34 will be used in the correctness proof for the Miller-Rabin primality-testing procedure in Section 33.8.<P>
+<a name="09b6_1b8e">Corollary 33.35<a name="09b6_1b8e"><P>
+If there exists a nontrivial square root of 1, modulo <I>n</I>, then <I>n</I> is composite.<P>
+<I><B>Proof     </I></B>This corollary is just the contrapositive to Theorem 33.34. If there exists a nontrivial square root of 1, modulo <I>n</I>, then <I>n</I> can't be a prime or a power of a prime.      <P>
+
+
+
+
+
+<h2>Raising to powers with repeated squaring</h2><P>
+<a name="09b7_1b82"><a name="09b7_1b83"><a name="09b7_1b84"><a name="09b7_1b85">A frequently occurring operation in number-theoretic computations is raising one number to a power modulo another number, also known as <I><B>modular exponentiation</I></B>. More precisely, we would like an efficient way to compute <I>a<SUP>b</I></SUP> mod <I>n</I>, where <I>a</I> and <I>b</I> are nonnegative integers and <I>n</I> is a positive integer. Modular exponentiation is also an essential operation in many primality-testing routines and in the RSA public-key cryptosystem. The method of <I><B>repeated squaring</I></B> solves this problem efficiently using the binary representation of <I>b</I>.<P>
+Let <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>k</I></SUB>, <I>b<SUB>k</I>-1</SUB>, . . . , <I>b</I><SUB>1</SUB>,<I>b</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> be the binary representation of <I>b</I>. (That is, the binary representation is <I>k</I> + 1 bits long, <I>b<SUB>k</I></SUB> is the most significant bit, and <I>b</I><SUB>0</SUB> is the least significant bit.) The following procedure computes <I>a<SUP>c</I></SUP> mod <I>n </I>as <I>c</I> is increased by doublings and incrementations from 0 to <I>b</I>.<P>
+<pre><a name="09b7_1b86">MODULAR-EXPONENTIATION(<I>a,b,n</I>)</sub></sup></pre><P>
+<pre>1  <I>c</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2  <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>3  let <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>k</I></SUB>, <I>b<SUB>k</I>-1</SUB>, . . . , <I>b</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> be the binary representation of <I>b</I></sub></sup></pre><P>
+<pre>4  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> <B>downto</B> 0</sub></sup></pre><P>
+<pre>5       <B>do</B> <I>c</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2<I>c</I></sub></sup></pre><P>
+<pre>6          <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d </I><IMG SRC="../IMAGES/dot10.gif"> d<I>) mod </I>n</sub></sup></pre><P>
+<pre>7          <B>if</B> <I>b<SUB>i</I></SUB> = 1</sub></sup></pre><P>
+<pre>8             <B>then</B> <I>c</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>c</I> + 1</sub></sup></pre><P>
+<pre>9                  <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d </I><IMG SRC="../IMAGES/dot10.gif"><I> a</I>) mod <I>n</I></sub></sup></pre><P>
+<pre>10 <B>return</B> <I>d</I></sub></sup></pre><P>
+Each exponent computed in a sequence is either twice the previous exponent or one more than the previous exponent; the binary representation<P>
+<pre><I>i   </I><B>9   8   7    6    5    4    3    2    1    0</B></sub></sup></pre><P>
+<pre>-------------------------------------------------</sub></sup></pre><P>
+<pre><I>b<SUB>i  </I></SUB>1   0   0    0    1    1    0    0    0    0</sub></sup></pre><P>
+<pre><I>c   </I>1   2   4    8    17   35   70  140  280  560</sub></sup></pre><P>
+<pre><I>d   </I>7  49  157  526  160  241  298  166   67   1</sub></sup></pre><P>
+<h4><a name="09b7_1b87">Figure 33.4 The results of <FONT FACE="Courier New" SIZE=2>MODULAR-EXPONENTIATION</FONT> when computing a<SUP>b</SUP> (mod n), where a = 7, b = 560 = <IMG SRC="../IMAGES/lftwdchv.gif">1000110000<IMG SRC="../IMAGES/wdrtchv.gif">, and n = 561. The values are shown after each execution of the for loop. The final result is 1.<a name="09b7_1b87"></sub></sup></h4><P>
+of <I>b</I> is read from right to left to control which operations are performed. Each iteration of the loop uses one of the identities<P>
+<pre><I>a</I><SUP>2c </SUP>mod <I>n  </I>=  (<I>a<SUP>c</I></SUP>)<SUP>2</SUP> mod <I>n </I>,</sub></sup></pre><P>
+<pre><I>a<SUP>2c</I>+l</SUP> mod <I>n  </I>=  <I>a</I> . (<I>a<SUP>c</I></SUP>)2 mod <I>n </I>,</sub></sup></pre><P>
+depending on whether <I>b<SUB>i</I></SUB> = 0 or 1, respectively. The essential use of squaring in each iteration explains the name "repeated squaring." Just after bit <I>b<SUB>i</I></SUB> is read and processed, the value of <I>c</I> is the same as the prefix <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>k</I></SUB>, <I>b<SUB>k-</I>1</SUB>, . . . , <I>b<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of the binary representation of <I>b</I>. As an example, for <I>a</I> = 7, <I>b</I> = 560, and <I>n</I> = 561, the algorithm computes the sequence of values modulo 561 shown in Figure 33.4; the sequence of exponents used is shown in row <I>c</I> of the table.<P>
+The variable <I>c</I> is not really needed by the algorithm but is included for explanatory purposes: the algorithm preserves the invariant that <I>d</I> = <I>a<SUP>c</I></SUP> mod <I>n</I> as it increases <I>c</I> by doublings and incrementations until <I>c</I> = <I>b</I>. If the inputs <I>a</I>, <I>b</I>, and <I>n</I> are <IMG SRC="../IMAGES/beta14.gif"><I></I>-bit numbers, then the total number of arithmetic operations required is <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I></I>) and the total number of bit operations required is <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>3</SUP>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09b8_0001">Exercises<a name="09b8_0001"></h2><P>
+<a name="09b8_0002">33.6-1<a name="09b8_0002"><P>
+Draw a table showing the order of every element in <img src="830_a.gif">. Pick the smallest primitive root <I>g</I> and compute a table giving ind<SUB>11,<I>g </I></SUB>(<I>x</I>) for all <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <img src="830_b.gif">.<P>
+<a name="09b8_0003">33.6-2<a name="09b8_0003"><P>
+Give a modular exponentiation algorithm that examines the bits of <I>b</I> from right to left instead of left to right.<P>
+<a name="09b8_0004">33.6-3<a name="09b8_0004"><P>
+Explain how to compute <I>a <SUP>-</I>1</SUP> mod <I>n</I> for any <img src="830_c.gif"> using the procedure <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>EXPONENTIATION</FONT>, assuming that you know <IMG SRC="../IMAGES/phicap12.gif">(<I>n</I>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09b9_1b8a">33.7 The RSA public-key cryptosystem<a name="09b9_1b8a"></h1><P>
+<a name="09b9_1b87"><a name="09b9_1b88"><a name="09b9_1b89">A public-key cryptosystem can be used to encrypt messages sent between two communicating parties so that an eavesdropper who overhears the encrypted messages will not be able to decode them. A public-key cryptosystem also enables a party to append an unforgeable "digital signature" to the end of an electronic message. Such a signature is the electronic version of a handwritten signature on a paper document. It can be easily checked by anyone, forged by no one, yet loses its validity if any bit of the message is altered. It therefore provides authentication of both the identity of the signer and the contents of the signed message. It is the perfect tool for electronically signed business contracts, electronic checks, electronic purchase orders, and other electronic communications that must be authenticated.<P>
+The RSA public-key cryptosystem is based on the dramatic difference between the ease of finding large prime numbers and the difficulty of factoring the product of two large prime numbers. Section 33.8 describes an efficient procedure for finding large prime numbers, and Section 33.9 discusses the problem of factoring large integers.<P>
+
+
+
+
+
+<h2>Public-key cryptosystems</h2><P>
+<a name="09ba_1b8a"><a name="09ba_1b8b"><a name="09ba_1b8c"><a name="09ba_1b8d">In a public-key cryptosystem, each participant has both a <I><B>public key</I></B> and a <I><B>secret key</I></B>. Each key is a piece of information. For example, in the RSA cryptosystem, each key consists of a pair of integers. The participants &quot;Alice&quot; and &quot;Bob&quot; are traditionally used in cryptography examples; we denote their public and secret keys as <I>P<SUB>A</I></SUB>, <I>S<SUB>A</I></SUB> for Alice and <I>P<SUB>B</I></SUB>, <I>S<SUB>B</I></SUB> for Bob.<P>
+Each participant creates his own public and secret keys. Each keeps his secret key secret, but he can reveal his public key to anyone or even publish it. In fact, it is often convenient to assume that everyone's public key is available in a public directory, so that any participant can easily obtain the public key of any other participant.<P>
+The public and secret keys specify functions that can be applied to any message. Let <img src="831_a.gif"> denote the set of permissible messages. For example, <img src="831_b.gif"> might be the set of all finite-length bit sequences. We require that the public and secret keys specify one-to-one functions from <img src="831_c.gif"> to itself. The function corresponding to Alice's public key <I>P<SUB>A</I></SUB> is denoted <I>P<SUB>A</I></SUB>( ), and the function corresponding to her secret key <I>S<SUB>A</I></SUB> is denoted <I>S<SUB>A</I></SUB>( ). The functions <I>P<SUB>A</I></SUB>( ) and <I>S<SUB>A</I></SUB>( ) are thus permutations of <img src="831_d.gif">. We assume that the functions <I>P<SUB>A</I></SUB>( ) and <I>S<SUB>A</I></SUB>( ) are efficiently computable given the corresponding key <I>P<SUB>A</I></SUB> or <I>S<SUB>A.</I><P>
+The public and secret keys for any participant are a &quot;matched pair&quot; in that they specify functions that are inverses of each other. That is,<P>
+<pre><I>M</I>  =  <I>S<SUB>A</I></SUB>(<I>P<SUB>A</I></SUB>(<I>M</I>)) ,</sub></sup></pre><P>
+<h4><a name="09ba_1b92">(33.37)<a name="09ba_1b92"></sub></sup></h4><P>
+<pre><I>M</I>  =  <I>P<SUB>A</I></SUB>(<I>S</I><SUB>A</SUB>(<I>M</I>))</sub></sup></pre><P>
+<h4><a name="09ba_1b93">(33.38)<a name="09ba_1b93"></sub></sup></h4><P>
+for any message <img src="832_a.gif">. Transforming <I>M</I> with the two keys <I>P<SUB>A</I></SUB> and <I>S<SUB>A</SUB> </I>successively, in either order, yields the message <I>M</I> back.<P>
+In a public-key cryptosystem, it is essential that no one but Alice be able to compute the function <I>S<SUB>A</I></SUB>( ) in any practical amount of time. The privacy of mail that is encrypted and sent to Alice and the authenticity of Alice's digital signatures rely on the assumption that only Alice is able to compute <I>S<SUB>A</I></SUB>( ). This requirement is why Alice keeps <I>S<SUB>A</I></SUB> secret; if she does not, she loses her uniqueness and the cryptosystem cannot provide her with unique capabilities. The assumption that only Alice can compute <I>S<SUB>A</I></SUB>( ) must hold even though everyone knows <I>P<SUB>A</I></SUB> and can compute <I>P<SUB>A</I></SUB>( ), the inverse function to <I>S<SUB>A</I></SUB>( ), efficiently. The major difficulty in designing a workable public-key cryptosystem is in figuring out how to create a system in which we can reveal a transformation <I>P<SUB>A</I></SUB>( ) without thereby revealing how to compute the corresponding inverse transformation <I>S<SUB>A</I></SUB>( ).<P>
+In a public-key cryptosystem, encryption works as follows. Suppose Bob wishes to send Alice a message <I>M</I> encrypted so that it will look like unintelligible gibberish to an eavesdropper. The scenario for sending the message goes as follows.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>Bob obtains Alice's public key <I>P<SUB>A</I></SUB> (from a public directory or directly from Alice).<P>
+<a name="09ba_1b8e"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>Bob computes the <I><B>ciphertext</I></B> <I>C</I> = <I>P<SUB>A</I></SUB>(<I>M</I>) corresponding to the message <I>M</I> and sends <I>C</I> to Alice.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>When Alice receives the ciphertext <I>C</I>, she applies her secret key <I>S<SUB>A</I></SUB> to retrieve the original message: <I>M</I> = <I>S<SUB>A</I></SUB>(<I>C</I>).<P>
+Figure 33.5 illustrates this process. Because <I>S<SUB>A</I></SUB>( ) and <I>P<SUB>A</I></SUB>( ) are inverse functions, Alice can compute <I>M</I> from <I>C</I>. Because only Alice is able to compute <I>S<SUB>A</I></SUB>( ), only Alice can compute <I>M</I> from <I>C</I>. The encryption of <I>M</I> using <I>P<SUB>A</I></SUB>( ) has protected <I>M</I> from disclosure to anyone except Alice.<P>
+Digital signatures are similarly easy to implement in a public-key cryptosystem. Suppose now that Alice wishes to send Bob a digitally signed response <I>M</I><I>'</I>. The digital-signature scenario proceeds as follows.<P>
+<a name="09ba_1b8f"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>Alice computes her <I><B>digital signature</I></B><I> </I><IMG SRC="../IMAGES/sum14.gif"><I></I> for the message<I> M</I>' using her secret key <I>S<SUB>A</I></SUB> and the equation <IMG SRC="../IMAGES/sum14.gif"><I> = </I>S<SUB>A<I></SUB>(</I>M<I>').</I><P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>Alice sends the message/signature pair (<I>M</I><I>',</I><IMG SRC="../IMAGES/sum14.gif"><I></I>) to Bob.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>When Bob receives (<I>M</I>',<IMG SRC="../IMAGES/sum14.gif"><I></I>), he can verify that it originated from Alice using Alice's public key by verifying the equation <I>M</I>' = <I>P<SUB>A</I></SUB>(<IMG SRC="../IMAGES/sum14.gif"><I></I>). (Presumably, <I>M</I>' contains Alice's name, so Bob knows whose public key to use.) If the equation holds, then Bob concludes that the message <I>M</I>' was actually signed by Alice. If the equation doesn't hold, Bob concludes either that the message <I>M</I>' or the digital signature <IMG SRC="../IMAGES/sum14.gif"> was corrupted by transmission errors or that the pair (<I>M</I>', <IMG SRC="../IMAGES/sum14.gif"><I></I>) is an attempted forgery.<P>
+<img src="833_a.gif"><P>
+<h4><a name="09ba_1b94">Figure 33.5 Encryption in a public key system. Bob encrypts the message M using Alice's public key P<SUB>A</SUB> and transmits the resulting ciphertext C = P<SUB>A</SUB>(M) to Alice. An eavesdropper who captures the transmitted ciphertext gains no information about M. Alice receives C and decrypts it using her secret key to obtain the original message M = S<SUB>A</SUB><FONT FACE="Times New Roman" SIZE=2>(C).<a name="09ba_1b94"></FONT></sub></sup></h4><P>
+<img src="833_b.gif"><P>
+<h4><a name="09ba_1b95">Figure 33.6 Digital signatures in a public-key system. Alice signs the message M' by appending her digital signature <IMG SRC="../IMAGES/sum14.gif"> = S<SUB>A</SUB><FONT FACE="Times New Roman" SIZE=2>(M') to it. She transmits the message/signature pair (M', <IMG SRC="../IMAGES/sum14.gif">) to Bob, who verifies it by checking the equation M' = P<SUB>A</SUB><FONT FACE="Times New Roman" SIZE=2>(<IMG SRC="../IMAGES/sum14.gif">). If the equation holds, he accepts (M',<IMG SRC="../IMAGES/sum14.gif">) as a message that has been signed by Alice.<a name="09ba_1b95"></FONT></FONT></sub></sup></h4><P>
+Figure 33.6 illustrates this process. Because a digital signature provides both authentication of the signer's identity and authentication of the contents of the signed message, it is analogous to a handwritten signature at the end of a written document.<P>
+<a name="09ba_1b90"><a name="09ba_1b91">An important property of a digital signature is that it is verifiable by anyone who has access to the signer's public key. A signed message can be verified by one party and then passed on to other parties who can also verify the signature. For example, the message might be an electronic check from Alice to Bob. After Bob verifies Alice's signature on the check, he can give the check to his bank, who can then also verify the signature and effect the appropriate funds transfer.<P>
+We note that a signed message is not encrypted; the message is &quot;in the clear&quot; and is not protected from disclosure. By composing the above protocols for encryption and for signatures, we can create messages that are both signed and encrypted. The signer first appends his digital signature to the message and then encrypts the resulting message/signature pair with the public key of the intended recipient. The recipient decrypts the received message with his secret key to obtain both the original message and its digital signature. He can then verify the signature using the public key of the signer. The corresponding combined process using paper-based systems is to sign the paper document and then seal the document inside a paper envelope that is opened only by the intended recipient.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The RSA cryptosystem</h2><P>
+In the <I><B>RSA public-key cryptosystem</I></B>, a participant creates his public and secret keys with the following procedure.<P>
+1.     Select at random two large prime numbers <I>p</I> and <I>q</I>. The primes <I>p</I> and <I>q </I>might be, say, 100 decimal digits each.<P>
+2.     Compute <I>n</I> by the equation <I>n</I> = <I>pq</I>.<P>
+3.     Select a small odd integer <I>e</I> that is relatively prime to <IMG SRC="../IMAGES/phicap12.gif"><I>(</I>n<I>), which, by equation (33.20), equals (</I>p<I>-1)(</I>q<I> - 1).</I><P>
+4.     Compute <I>d</I> as the multiplicative inverse of <I>e</I>, modulo <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>n</I>). (Corollary 33.26 guarantees that <I>d</I> exists and is uniquely defined.)<P>
+5.     Publish the pair <I>P</I> = (<I>e, n</I>,) as his <I><B>RSA public key</I></B>.<P>
+6.     Keep secret the pair <I>S</I> = (<I>d, n</I>) as his <I><B>RSA secret key</I></B>.<P>
+For this scheme, the domain <img src="834_a.gif"> is the set <B>Z</B><I><SUB>n</I></SUB>. The transformation of a message <I>M</I> associated with a public key <I>P</I> = (<I>e, n</I>) is<P>
+<pre><I>P</I>(<I>M</I>) = <I>M<SUP>e</I></SUP> (mod <I>n</I>) .</sub></sup></pre><P>
+<h4><a name="09bb_1b95">(33.39)<a name="09bb_1b95"></sub></sup></h4><P>
+The transformation of a ciphertext <I>C</I> associated with a secret key <I>S</I> = (<I>d, n</I>) is<P>
+<pre><I>S</I>(<I>C</I>) = <I>C<SUP>d</I></SUP> (mod <I>n</I>) .</sub></sup></pre><P>
+<h4><a name="09bb_1b96">(33.40)<a name="09bb_1b96"></sub></sup></h4><P>
+These equations apply to both encryption and signatures. To create a signature, the signer applies his secret key to the message to be signed, rather than to a ciphertext. To verify a signature, the public key of the signer is applied to it, rather than to a message to be encrypted.<P>
+The public-key and secret-key operations can be implemented using the procedure <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>EXPONENTIATION</FONT> described in Section 33.6. To analyze the running time of these operations, assume that the public key (<I>e,n</I>) and secret key (<I>d,n</I>) satisfy |<I>e</I>| = <I>O</I>(1), |<I>d</I>| = |<I>n</I>| = <IMG SRC="../IMAGES/beta14.gif"><I>. </I>Then, applying a public key requires <I>O</I>(1) modular multiplications and uses <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>2</SUP>) bit operations. Applying a secret key requires <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I></I>) modular multiplications, using <I>O</I>(<IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>3</SUP>) bit operations.<P>
+<a name="09bb_1b97">Theorem 33.36<a name="09bb_1b97"><P>
+The RSA equations (33.39) and (33.40) define inverse transformations of <B>Z</B><I><SUB>n</I></SUB> satisfying equations (33.37) and (33.38).<P>
+<I><B>Proof     </I></B>From equations (33.39) and (33.40), we have that for any <I>M</I> <IMG SRC="../IMAGES/memof12.gif"> <I>Z<SUB>n</I></SUB>,<P>
+<pre><I>P</I>(<I>S</I>(<I>M</I>))<I> = S</I>(<I>P</I>(<I>M</I>))<I> = M<SUP>ed</I></SUP> (mod <I>n</I>).</sub></sup></pre><P>
+Since <I>e</I> and <I>d</I> are multiplicative inverses modulo <FONT FACE="Times New Roman" SIZE=1><IMG SRC="../IMAGES/phiblk12.gif"><FONT FACE="Courier New" SIZE=2>(<I>n</I></FONT>) = (<I>p</I> - 1)(<I>q</I> - 1),</FONT><P>
+<pre><I>ed</I> = 1 + <I>k</I>(<I>p</I> - 1)(<I>q</I> - 1)</sub></sup></pre><P>
+for some integer <I>k</I>. But then, if <img src="835_a.gif"> (mod <I>p</I>), we have (using Theorem 33.31)<P>
+<pre><I>M<SUP>ed</SUP>  </I><IMG SRC="../IMAGES/equiv10.gif">  <I>M</I>(<I>M<SUP>p</I> - 1</SUP>)<I><SUP>k</I>(<I>q</I> - 1)  </SUP>(mod <I>p</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>M</I>(1)<I><SUP>k</I>(<I>q</I> - 1)       </SUP>(mod <I>p</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/equiv10.gif">  <I>M                </I>(mod <I>p</I>).</sub></sup></pre><P>
+Also, <I>M<SUP>ed</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>M</I> (mod <I>p</I>) if <I>M</I> <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <I>p</I>). Thus,<P>
+<pre><I>M<SUP>ed</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>M</I> (mod <I>p</I>)</sub></sup></pre><P>
+for all <I>M</I>. Similarly,<P>
+<pre><I>M<SUP>ed</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>M</I> (mod <I>q</I>)</sub></sup></pre><P>
+for all <I>M</I>. Thus, by Corollary 33.29 to the Chinese remainder theorem,<P>
+<pre><I>M<SUP>ed</I></SUP> <IMG SRC="../IMAGES/equiv10.gif"> <I>M</I> (mod <I>n</I>)</sub></sup></pre><P>
+for all <I>M</I>.      <P>
+The security of the RSA cryptosystem rests in large part on the difficulty of factoring large integers. If an adversary can factor the modulus <I>n</I> in a public key, then he can derive the secret key from the public key, using the knowledge of the factors <I>p</I> and <I>q</I> in the same way that the creator of the public key used them. So if factoring large integers is easy, then breaking the RSA cryptosystem is easy. The converse statement, that if factoring large integers is hard, then breaking RSA is hard, is unproven. After a decade of research, however, no easier method has been found to break the RSA public-key cryptosystem than to factor the modulus <I>n</I>. And as we shall see in Section 33.9, the factoring of large integers is surprisingly difficult. By randomly selecting and multiplying together two 100-digit primes, one can create a public key that cannot be &quot;broken&quot; in any feasible amount of time with current technology. In the absence of a fundamental breakthrough in the design of number-theoretic algorithms, the RSA cryptosystem is capable of providing a high degree of security in applications.<P>
+In order to achieve security with the RSA cryptosystem, however, it is necessary to work with integers that are 100-200 digits in length, since factoring smaller integers is not impractical. In particular, we must be able to find large primes efficiently, in order to create keys of the necessary length. This problem is addressed in Section 33.8.<P>
+For efficiency, RSA is often used in a &quot;hybrid&quot; or &quot;key-management&quot; mode with fast non-public-key cryptosystems. With such a system, the encryption and decryption keys are identical. If Alice wishes to send a long message <I>M</I> to Bob privately, she selects a random key <I>K</I> for the fast non-public-key cryptosystem and encrypts <I>M</I> using <I>K</I>, obtaining ciphertext <I>C</I>. Here, <I>C</I> is as long as <I>M</I>, but <I>K</I> is quite short. Then, she encrypts <I>K</I> using Bob's public RSA key. Since <I>K</I> is short, computing <I>P<SUB>B</I></SUB>(<I>K</I>) is fast (much faster than computing <I>P<SUB>B</I></SUB>(<I>M</I>)). She then transmits (<I>C, P<SUB>B</I></SUB>(<I>K</I>)) to Bob, who decrypts <I>P<SUB>B</I></SUB>(<I>K</I>)<FONT FACE="Courier New" SIZE=2> </FONT>to obtain <I>K</I> and then uses <I>K</I> to decrypt <I>C</I>, obtaining <I>M</I>.<P>
+<a name="09bb_1b92"><a name="09bb_1b93">A similar hybrid approach is often used to make digital signatures efficiently. In this approach, RSA is combined with a public <I><B>one-way hash function</I></B> <I>h</I>--a function that is easy to compute but for which it is computationally infeasible to find two messages <I>M</I> and <I>M</I>'<I> such that </I>h<I>(</I>M<I>) = </I>h<I>(</I>M<I>'</I>). The value <I>h(M)</I> is a short (say, 128-bit) &quot;fingerprint&quot; of the message <I>M</I>. If Alice wishes to sign a message <I>M</I>, she first applies <I>h</I> to <I>M</I> to obtain the fingerprint <I>h</I>(<I>M</I>), which she then signs with her secret key. She sends (<I>M, S<SUB>A</I></SUB>(<I>h</I>(<I>M</I>))) to Bob as her signed version of <I>M</I>. Bob can verify the signature by computing <I>h</I>(<I>M</I>) and verifying that <I>P<SUB>A</I></SUB> applied to <I>S<SUB>A</I></SUB>(<I>h</I>(<I>M</I>)) as received equals <I>h</I>(<I>M</I>). Because no one can create two messages with the same fingerprint, it is impossible to alter a signed message and preserve the validity of the signature.<P>
+<a name="09bb_1b94">Finally, we note that the use of <I><B>certificates</I></B> makes distributing public keys much easier. For example, assume there is a &quot;trusted authority&quot; <I>T</I> whose public key is known by everyone. Alice can obtain from <I>T</I> a signed message (her certificate) stating that &quot;Alice's public key is <I>P<SUB>A</I></SUB>&quot;. This certificate is &quot;self-authenticating&quot; since everyone knows <I>P<SUB>T</I></SUB>. Alice can include her certificate with her signed messages, so that the recipient has Alice's public key immediately available in order to verify her signature. Because her key was signed by <I>T</I>, the recipient knows that Alice's key is really Alice's.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09bc_0001">Exercises<a name="09bc_0001"></h2><P>
+<a name="09bc_0002">33.7-1<a name="09bc_0002"><P>
+Consider an RSA key set with <I>p</I> = 11, <I>q</I> = 29, <I>n</I> = 319, and <I>e</I> = 3. What value of <I>d</I> should be used in the secret key? What is the encryption of the message <I>M</I> = 100?<P>
+<a name="09bc_0003">33.7-2<a name="09bc_0003"><P>
+Prove that if Alice's public exponent <I>e</I> is 3 and an adversary obtains Alice's secret exponent <I>d</I>, then the adversary can factor Alice's modulus <I>n</I> in time polynomial in the number of bits in <I>n</I>. (Although you are not asked to prove it, you may be interested to know that this result remains true even if the condition <I>e</I> = 3 is removed. See Miller [147].)<P>
+<a name="09bc_0004">33.7-3<a name="09bc_0004"><P>
+Prove that RSA is multiplicative in the sense that<P>
+<pre><I>PA</I>(<I>M1</I>)<I>PA</I>(<I>M2</I>) <IMG SRC="../IMAGES/equiv10.gif"> <I>PA</I>(<I>M1M2</I>)<I> </I>(<I>mod n</I>) .</sub></sup></pre><P>
+Use this fact to prove that if an adversary had a procedure that could efficiently decrypt 1 percent of messages randomly chosen from Z<I><SUB>n</I></SUB> and encrypted with <I>P<SUB>A</I></SUB>, then he could employ a probabilistic algorithm to decrypt every message encrypted with <I>P<SUB>A</I></SUB> with high probability.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09bd_1b96">* 33.8 Primality testing<a name="09bd_1b96"></h1><P>
+<a name="09bd_1b95">In this section, we consider the problem of finding large primes. We begin with a discussion of the density of primes, proceed to examine a plausible (but incomplete) approach to primality testing, and then present an effective randomized primality test due to Miller and Rabin.<P>
+
+
+
+
+
+<h2>The density of prime numbers</h2><P>
+<a name="09be_1b96"><a name="09be_1b97"><a name="09be_1b98"><a name="09be_1b99"><a name="09be_1b9a">For many applications (such as cryptography), we need to find large "random" primes. Fortunately, large primes are not too rare, so that it is not too time-consuming to test random integers of the appropriate size until a prime is found. The <I><B>prime distribution function</I></B> <IMG SRC="../IMAGES/piuc.gif">(<I>n</I>) specifies the number of primes that are less than or equal to <I>n</I>. For example, <IMG SRC="../IMAGES/piuc.gif">(10) = 4, since there are 4 prime numbers less than or equal to 10, namely, 2, 3, 5, and 7. The prime number theorem gives a useful approximation to <IMG SRC="../IMAGES/piuc.gif">(<I>n</I>).<P>
+<a name="09be_1b9c">Theorem 33.37<a name="09be_1b9c"><P>
+<img src="837_a.gif"><P>
+The approximation <I>n</I>/ ln <I>n</I> gives reasonably accurate estimates of <IMG SRC="../IMAGES/piuc.gif">(<I>n</I>) even for small <I>n</I>. For example, it is off by less than 6% at <I>n</I> = 10<SUP>9</SUP>, where <IMG SRC="../IMAGES/piuc.gif">(<I>n</I>) = 50,847,478 and <I>n</I>/ ln <I>n</I> = 48,254,942. (To a number theorist, 10<SUP>9</SUP> is a small number.)<P>
+We can use the prime number theorem to estimate the probability that a randomly chosen integer <I>n</I> will turn out to be prime as 1/ ln <I>n</I>. Thus, we would need to examine approximately ln <I>n</I> integers chosen randomly near <I>n</I> in order to find a prime that is of the same length as <I>n</I>. For example, to find a 100-digit prime might require testing approximately ln 10<SUP>100</SUP> <IMG SRC="../IMAGES/approx18.gif"> 230 randomly chosen 100-digit numbers for primality. (This figure can be cut in half by choosing only odd integers.)<P>
+In the remainder of this section, we consider the problem of determining whether or not a large odd integer <I>n</I> is prime. For notational convenience, we assume that <I>n</I> has the prime factorization<P>
+<img src="838_a.gif"><P>
+<h4><a name="09be_1b9d">(33.41)<a name="09be_1b9d"></sub></sup></h4><P>
+where <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>p</I><SUB>1</SUB>, <I>p</I><SUB>2,</SUB>. . . ., <I>p<SUB>r</I></SUB> are the prime factors of <I>n</I>. Of course, <I>n</I> is prime if and only if <I>r</I> = 1 and <I>e</I><SUB>1</SUB> = 1.<P>
+<a name="09be_1b9b">One simple approach to the problem of testing for primality is <I><B>trial division</I></B>. We try dividing <I>n</I> by each integer <img src="838_b.gif">. (Again, even integers greater than 2 may be skipped.) It is easy to see that <I>n</I> is prime if and only if none of the trial divisors divides <I>n</I>. Assuming that each trial division takes constant time, the worst-case running time is <img src="838_c.gif">, which is exponential in the length of <I>n</I>. (Recall that if <I>n</I> is encoded in binary using <IMG SRC="../IMAGES/beta14.gif"> bits, then <IMG SRC="../IMAGES/beta14.gif"> = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n</I> + 1)<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>, and so <img src="838_d.gif">.) Thus, trial division works well only if <I>n</I> is very small or happens to have a small prime factor. When it works, trial division has the advantage that it not only determines whether <I>n</I> is prime or composite but actually determines the prime factorization if <I>n</I> is composite.<P>
+In this section, we are interested only in finding out whether a given number <I>n</I> is prime; if <I>n</I> is composite, we are not concerned with finding its prime factorization. As we shall see in Section 33.9, computing the prime factorization of a number is computationally expensive. It is perhaps surprising that it is much easier to tell whether or not a given number is prime than it is to determine the prime factorization of the number if it is not prime.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Pseudoprimality testing</h2><P>
+<a name="09bf_1b9c"><a name="09bf_1b9d"><a name="09bf_1b9e">We now consider a method for primality testing that &quot;almost works&quot; and in fact is good enough for many practical applications. A refinement of this method that removes the small defect will be presented later. Let <img src="838_e.gif"> denote the nonzero elements of<B> Z</B><I><SUB>n</I></SUB>:<P>
+<img src="838_f.gif"><P>
+If <I>n</I> is prime, then <img src="838_g.gif">.<P>
+We say that <I>n</I> is a <I><B>base-a pseudoprime</I></B> if <I>n</I> is composite and<P>
+<pre><I>a<SUP>n - </I>1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>).</sub></sup></pre><P>
+<h4><a name="09bf_1ba1">(33.42)<a name="09bf_1ba1"></sub></sup></h4><P>
+Fermat's theorem (Theorem 33.31) implies that if <I>n</I> is prime, then <I>n </I>satisfies equation (33.42) for every <I>a</I> in <img src="838_h.gif">. Thus, if we can find any <img src="838_i.gif"> such that <I>n</I> does <I>not</I> satisfy equation (33.42), then <I>n</I> is certainly composite. Surprisingly, the converse <I>almost</I> holds, so that this criterion forms an almost perfect test for primality. We test to see if <I>n</I> satisfies equation (33.42) for <I>a</I> = 2. If not, we declare <I>n</I> to be composite. Otherwise, we output a guess that <I>n</I> is prime (when, in fact, all we know is that <I>n</I> is either prime or a base-2 pseudoprime).<P>
+<a name="09bf_1b9f">The following procedure pretends in this manner to be checking the primality of <I>n</I>. It uses the procedure <FONT FACE="Courier New" SIZE=2>MODULAR</FONT>-<FONT FACE="Courier New" SIZE=2>EXPONENTIATION</FONT> from Section 33.6. The input <I>n </I>is assumed to be an integer larger than 2.<P>
+<img src="839_a.gif"><P>
+This procedure can make errors, but only of one type. That is, if it says that <I>n</I> is composite, then it is always correct. If it says that <I>n</I> is prime, however, then it makes an error only if <I>n</I> is a base-2 pseudoprime.<P>
+How often does this procedure err? Surprisingly rarely. There are only 22 values of <I>n</I> less than 10,000 for which it errs; the first four such values are 341, 561, 645, and 1105. It can be shown that the probability that this program makes an error on a randomly chosen <IMG SRC="../IMAGES/beta14.gif"><I>-bit number goes to zero as <IMG SRC="../IMAGES/beta14.gif"></I> <IMG SRC="../IMAGES/arrow12.gif"> <IMG SRC="../IMAGES/infin.gif">. Using more precise estimates due to Pomerance [157] of the number of base-2 pseudoprimes of a given size, we may estimate that a randomly chosen 50-digit number that is called prime by the above procedure has less than one chance in a million of being a base-2 pseudoprime, and a randomly chosen 100-digit number that is called prime has less than one chance in 10<SUP>13</SUP> of being a base-2 pseudoprime.<P>
+<a name="09bf_1ba0">Unfortunately, we cannot eliminate all the errors by simply checking equation (33.42) for a second base number, say <I>a</I> = 3, because there are composite integers <I>n</I> that satisfy equation (33.42) for<I> all</I> <img src="839_b.gif">. These integers are known as <I><B>Carmichael numbers</I></B>. The first three Carmichael numbers are 561, 1105, and 1729. Carmichael numbers are extremely rare; there are, for example, only 255 of them less than 100,000,000. Exercise 33.8-2 helps explain why they are so rare.<P>
+We next show how to improve our primality test so that it won't be fooled by Carmichael numbers.<P>
+<P>
+
+
+
+
+
+
+
+<h2>The Miller-Rabin randomized primality test</h2><P>
+<a name="09c0_1ba1"><a name="09c0_1ba2"><a name="09c0_1ba3">The Miller-Rabin primality test overcomes the problems of the simple test <FONT FACE="Courier New" SIZE=2>PSEUDOPRIME</FONT> with two modifications:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>It tries several randomly chosen base values <I>a</I> instead of just one base value.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>While computing each modular exponentiation, it notices if a nontrivial square root of 1, modulo <I>n</I>, is ever discovered. If so, it stops and outputs <FONT FACE="Courier New" SIZE=2>COMPOSITE</FONT>. Corollary 33.35 justifies detecting composites in this manner.<P>
+<a name="09c0_1ba4">The pseudocode for the Miller-Rabin primality test follows. The input <I>n</I> &gt; 2 is the odd number to be tested for primality, and <I>s</I> is the number of randomly chosen base values from <img src="839_c.gif"> to be tried. The code uses the random-number generator <FONT FACE="Courier New" SIZE=2>RANDOM</FONT> from Section 8.3: <FONT FACE="Courier New" SIZE=2>RANDOM</FONT>(1, <I>n</I> - 1) returns a randomly chosen integer <I>a</I> satisfying 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>a</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - 1. The code uses an auxiliary procedure <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> such that <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>(<I>a, n</I>) is <FONT FACE="Courier New" SIZE=2>TRUE</FONT> if and only if <I>a</I> is a "witness" to the compositeness of <I>n</I>--that is, if it is possible using <I>a</I> to prove (in a manner that we shall see) that <I>n</I> is composite. The test <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>(<I>a, n</I>) is similar to, but more effective than, the test<P>
+<img src="840_a.gif"><P>
+that formed the basis (using <I>a</I> = 2) for <FONT FACE="Courier New" SIZE=2>PSEUDOPRIME</FONT>. We first present and justify the construction of <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>, and then show how it is used in the Miller-Rabin primality test.<P>
+<pre><a name="09c0_1ba5">WITNESS(<I>a,n</I>)</sub></sup></pre><P>
+<pre>1   let <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>k</I></SUB>, <I>b<SUB>k-1</I></SUB>,..., <I>b<SUB>0</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I><SUB> be the binary representation of </I>n - <I>1</I></sub></sup></pre><P>
+<pre>2   <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>3   <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> <B>downto</B> 0</sub></sup></pre><P>
+<pre>4         <B>do</B> <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>d</I></sub></sup></pre><P>
+<pre>5            <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d</I> <IMG SRC="../IMAGES/dot10.gif"> <I>d</I>) mod <I>n</I></sub></sup></pre><P>
+<pre>6            <B>if</B> <I>d</I> = 1 and <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> 1 and <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>n </I>- 1</sub></sup></pre><P>
+<pre>7               <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>8            <B>if</B> <I>bi</I> = 1</sub></sup></pre><P>
+<pre>9               <B>then </B><I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> (<I>d</I> <IMG SRC="../IMAGES/dot10.gif"> <I>a</I>) mod <I>n</I></sub></sup></pre><P>
+<pre>10  <B>if</B> <I>d</I> <IMG SRC="../IMAGES/noteq.gif"> 1</sub></sup></pre><P>
+<pre>11      <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>12  <B>return</B> FALSE</sub></sup></pre><P>
+This pseudocode for <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> is based on the pseudocode of the procedure M<FONT FACE="Courier New" SIZE=2>ODULAR-</FONT><FONT FACE="Courier New" SIZE=2>EXPONENTIATION</FONT>. Line 1 determines the binary representation of <I>n </I>- 1, which will be used in raising <I>a</I> to the (<I>n </I>- 1)st power. Lines 3-9 compute <I>d</I> as <I>a<SUP>n-</I>1</SUP> mod <I>n</I>. The method used is identical to that employed by M<FONT FACE="Courier New" SIZE=2>ODULAR-</FONT><FONT FACE="Courier New" SIZE=2>EXPONENTIATION</FONT>. Whenever a squaring step is performed on line 5, however, lines 6-7 check to see if a nontrivial square root of 1 has just been discovered. If so, the algorithm stops and returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT>. Lines 10-11 return <FONT FACE="Courier New" SIZE=2>TRUE</FONT> if the value computed for <I>a<SUP>n - </I>1</SUP> mod <I>n</I> is not equal to 1, just as the <FONT FACE="Courier New" SIZE=2>PSEUDOPRIME</FONT> procedure returns <FONT FACE="Courier New" SIZE=2>COMPOSITE</FONT> in this case.<P>
+We now argue that if <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>(<I>a, n</I>) returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT>, then a proof that <I>n </I>is composite can be constructed using <I>a</I>.<P>
+If <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT> from line 11, then it has discovered that <I>d</I> = <I>a<SUP>n - </I>1</SUP> mod <I>n</I> <IMG SRC="../IMAGES/noteq.gif"> 1. If <I>n</I> is prime, however, we have by Fermat's theorem (Theorem 33.31) that <I>a<SUP>n</I>-1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>) for all <img src="840_b.gif">. Therefore, <I>n</I> cannot be prime, and the equation <I>a<SUP>n - </I>1</SUP> mod 1 <IMG SRC="../IMAGES/noteq.gif"> 1 is a proof of this fact.<P>
+If <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT> from line 7, then it has discovered that <I>x </I>is a nontrivial square root of 1, modulo <I>n</I>, since we have that <img src="840_c.gif"> (mod <I>n</I>) yet <I>x</I><SUP>2</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>). Corollary 33.35 states that only if <I>n</I> is composite can there be a nontrivial square root of 1 modulo <I>n</I>, so that a demonstration that <I>x</I> is a nontrivial square root of 1 modulo <I>n</I> is a proof that <I>n</I> is composite.<P>
+<a name="09c0_1ba6">This completes our proof of the correctness of <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>. If the invocation <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>(<I>a, n</I>) outputs <FONT FACE="Courier New" SIZE=2>TRUE</FONT>, then <I>n</I> is surely composite, and a proof that <I>n</I> is composite can be easily determined from <I>a</I> and <I>n</I>. We now examine the Miller-Rabin primality test based on the use of <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>.<P>
+<img src="841_a.gif"><P>
+The procedure <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> is a probabilistic search for a proof that <I>n</I> is composite. The main loop (beginning on line 1) picks <I>s</I> random values of <I>a</I> from <img src="841_b.gif"> (line 2). If one of the <I>a's</I> picked is a witness to the compositeness of<I> n</I>, then <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> outputs <FONT FACE="Courier New" SIZE=2>COMPOSITE</FONT> on line 4. Such an output is always correct, by the correctness of <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>. If no witness can be found in <I>s</I> trials, <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> assumes that this is because there are no witnesses to be found, and <I>n</I> is therefore prime. We shall see that this output is likely to be correct if <I>s</I> is large enough, but that there is a small chance that the procedure may be unlucky in its choice of <I>a</I>'s and that witnesses do exist even though none has been found.<P>
+To illustrate the operation of <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT>, let <I>n</I> be the Carmichael number 561. Supposing that <I>a</I> = 7 is chosen as a base, Figure 33.4 shows that <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> discovers a nontrivial square root of 1 in the last squaring step, since <I>a</I><SUP>280</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 67 (mod <I>n</I>) and <I>a</I><SUP>560</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>). Therefore, <I>a</I> = 7 is a witness to the compositeness of <I>n</I>, <FONT FACE="Courier New" SIZE=2>WITNESS</FONT>(7, <I>n</I>) returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT>, and <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> returns <FONT FACE="Courier New" SIZE=2>COMPOSITE</FONT>.<P>
+If <I>n</I> is a <IMG SRC="../IMAGES/beta14.gif"><I>-</I>bit number, <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> requires <I>O</I>(<I>s</I><IMG SRC="../IMAGES/beta14.gif"><I></I>) arithmetic operations and <I>O</I>(<I>s</I><IMG SRC="../IMAGES/beta14.gif"><I><SUP></I>3</SUP>) bit operations, since it requires asymptotically no more work than <I>s</I> modular exponentiations.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Error rate of the Miller-Rabin primality test</h2><P>
+<a name="09c1_1ba7">If <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> outputs <FONT FACE="Courier New" SIZE=2>PRIME</FONT>, then there is a small chance that it has made an error. Unlike <FONT FACE="Courier New" SIZE=2>PSEUDOPRIME</FONT>, however, the chance of error does not depend on <I>n</I>; there are no bad inputs for this procedure. Rather, it depends on the size of <I>s</I> and the &quot;luck of the draw&quot; in choosing base values <I>a</I>. Also, since each test is more stringent than a simple check of equation (33.42), we can expect on general principles that the error rate should be small for randomly chosen integers <I>n</I>. The following theorem presents a more precise argument.<P>
+<a name="09c1_1ba8">Theorem 33.38<a name="09c1_1ba8"><P>
+If <I>n</I> is an odd composite number, then the number of witnesses to the compositeness of <I>n</I> is at least (<I>n </I>- 1)/2.<P>
+<I><B>Proof     </I></B>The proof shows that the number of nonwitnesses is no more than (<I>n </I>- 1)/2, which implies the theorem.<P>
+We first observe that any nonwitness must be a member of <img src="842_a.gif">, since every nonwitness <I>a</I> satisfies <I>a<SUP>n </I>- 1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>), yet if gcd(<I>a, n</I>) = <I>d</I> &gt; 1, then there are no solutions <I>x</I> to the equation <I>ax</I> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>), by Corollary 33.21. (In particular, <I>x</I> = <I>a<SUP>n </I>- 2</SUP> is not a solution.) Thus every member of <img src="842_b.gif"> is a witness to the compositeness of <I>n</I>.<P>
+To complete the proof, we show that the nonwitnesses are all contained in a proper subgroup <I>B</I> of <img src="842_c.gif">. By Corollary 33.16, we then have <img src="842_d.gif">, we obtain |<I>B| <IMG SRC="../IMAGES/lteq12.gif"> (</I>n <I>- 1)/2. Therefore, the number of nonwitnesses is at most (</I>n <I>- 1)/2, so that the number of witnesses must be at least (</I>n <I>- 1)/2.</I><P>
+We now show how to find a proper subgroup <I>B</I> of <img src="842_e.gif"> containing all of the nonwitnesses. We break the proof into two cases.<P>
+<I>Case 1</I>: There exists an <img src="842_f.gif"> such that<P>
+<img src="842_g.gif"><P>
+<h4><a name="09c1_1ba9">(33.43)<a name="09c1_1ba9"></sub></sup></h4><P>
+Let <img src="842_h.gif">. Since <I>B</I> is closed under multiplication modulo <I>n</I>, we have that <I>B</I> is a subgroup of <img src="842_i.gif"> by Theorem 33.14. Note that every nonwitness belongs to <I>B</I>, since a nonwitness <I>a</I> satisfies <I>a<SUP>n </I>- 1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>). Since <img src="842_j.gif">, we have that <I>B</I> is a proper subgroup of <img src="842_k.gif">.<P>
+<I>Case 2</I>: For all <img src="842_l.gif">,<P>
+<pre><I>x<SUP>n </I>- 1</SUP> <IMG SRC="../IMAGES/equiv10.gif"> 1 (mod <I>n</I>).</sub></sup></pre><P>
+<h4><a name="09c1_1baa">(33.44)<a name="09c1_1baa"></sub></sup></h4><P>
+In this case, <I>n</I> cannot be a prime power. To see why, let <I>n</I> = <I>p<SUP>e</I></SUP>, where <I>p </I>is an odd prime and <I>e</I> &gt; 1. Theorem 33.32 implies that <img src="842_m.gif"> contains an element <I>g</I> such that <img src="842_n.gif">. But then equation (33.44) and the discrete logarithm theorem (Theorem 33.33, taking <I>y</I> = 0) imply that <I>n </I>- 1 <IMG SRC="../IMAGES/equiv10.gif"> 0 (mod <IMG SRC="../IMAGES/phicap12.gif"><I>(</I>n<I>)), or</I><P>
+<pre>(<I>p - </I>1) <I>p<SUP>e </I>- 1 </SUP>| <I>p<SUP>e </I></SUP>- 1.</sub></sup></pre><P>
+This condition fails for <I>e</I> &gt; 1, since the left-hand side is then divisible by <I>p</I> but the right-hand side is not. Thus, <I>n</I> is not a prime power.<P>
+Since <I>n</I> is not a prime power, we decompose it into a product <I>n</I><SUB>1</SUB><I>n</I><SUB>2</SUB>, where <I>n</I><SUB>1</SUB> and <I>n</I><SUB>2</SUB> are greater than 1 and relatively prime to each other. (There may be several ways to do this, and it doesn't matter which one we choose. For example, if <img src="842_o.gif">, then we can choose <img src="842_p.gif">.)<P>
+Define <I>t</I> and <I>u</I> so that <I><FONT FACE="Courier New" SIZE=2>n </I>- 1 = 2<I><SUP>t</SUP>u</I></FONT>, where <I>t</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and <I>u</I> is odd. For any <img src="842_q.gif">, consider the sequence<P>
+<pre>&acirc; = <IMG SRC="../IMAGES/lftwdchv.gif">a<SUP>u</SUP>, a<SUP>2u</SUP>, a<SUP>22u</SUP>, . . . , a<SUP>2tu</SUP><IMG SRC="../IMAGES/wdrtchv.gif"><SUP> ,</sub></sup></pre><P>
+<h4><a name="09c1_1bab">(33.45)<a name="09c1_1bab"></sub></sup></h4><P>
+where all elements are computed modulo <I>n</I>. Since 2<I><SUP>t</I> </SUP>| <I>n </I>- 1, the binary representation of <I>n</I> - 1 ends in <I>t</I> zeros, and the elements of <I>&acirc;</I> are the last <I>t </I>+ 1 values of <I>d</I> computed by <FONT FACE="Courier New" SIZE=2>WITNESS</FONT> during a computation of a<I><SUP>n</I>-1</SUP> mod <I>n</I>; the last <I>t</I> operations are squarings.<P>
+Now find a <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> {0, 1, . . . , <I>t</I>} such that there exists a <img src="843_a.gif"> such that <I>v<SUP>2<FONT FACE="Times New Roman" SIZE=1>ju </I></SUP><IMG SRC="../IMAGES/equiv10.gif"></FONT> -1 (mod <I>n</I>); <I>j</I> should be as large as possible. Such a <I>j</I> certainly exists since <I>u</I> is odd: we can choose <I>v</I> = - 1 and <I>j</I> = 0. Fix <IMG SRC="../IMAGES/upsil12.gif"><I></I> to satisfy the given condition. Let<P>
+<img src="843_b.gif"><P>
+Since <I>B</I> is closed under multiplication modulo <I>n</I>, it is a subgroup of <img src="843_c.gif">.<I><SUB> </I></SUB>Therefore, |<I>B</I><FONT FACE="CG Times (W1)" SIZE=2>|</FONT> divides <img src="843_d.gif">. Every nonwitness must be a member of <I>B</I>, since the sequence (33.45) produced by a nonwitness must either be all 1's or else contain a - 1 no later than the <I>j</I>th position, by the maximality of <I>j</I>.<P>
+We now use the existence of <I>v</I> to demonstrate that there exists a <img src="843_e.gif">. Since <I>v</I><SUP>2<I><FONT FACE="Times New Roman" SIZE=1>ju</I></FONT></SUP> <IMG SRC="../IMAGES/equiv10.gif"> -1 (mod <I>n</I>), we have <I>v</I><SUP>2<I><FONT FACE="Times New Roman" SIZE=1>ju </I></SUP><IMG SRC="../IMAGES/equiv10.gif"></FONT> -1 (mod <I>n</I><SUB>1</SUB>) by Corollary 33.29. By Corollary 33.28, there is a <I>w</I> simultaneously satisfying the equations<P>
+<pre><I>w  </I><IMG SRC="../IMAGES/equiv10.gif">  <I>v</I> (mod <I>n</I><SUB>1</SUB>) ,</sub></sup></pre><P>
+<pre><I>w  </I><IMG SRC="../IMAGES/equiv10.gif">  1 (mod <I>n</I><SUB>2</SUB>) .</sub></sup></pre><P>
+Therefore,<P>
+<pre><I>w</I><SUP>2<I>ju</I></SUP>  <IMG SRC="../IMAGES/equiv10.gif">  -1 (mod <I>n</I><SUB>1</SUB>) ,</sub></sup></pre><P>
+<pre><I>w</I><SUP>2<I>ju</I></SUP>  <IMG SRC="../IMAGES/equiv10.gif">  1 (mod <I>n</I><SUB>2</SUB>) .</sub></sup></pre><P>
+Together with Corollary 33.29, these equations imply that<P>
+<img src="843_f.gif"><P>
+<h4><a name="09c1_1bac">(33.46)<a name="09c1_1bac"></sub></sup></h4><P>
+and so <I>w</I> <IMG SRC="../IMAGES/notmem.gif"> <I>B</I>. Since <img src="843_g.gif">, we have that <img src="843_h.gif">. Thus, <img src="843_i.gif">. We conclude that <I>B</I> is a proper subgroup of <img src="843_j.gif">.<P>
+In either case, we see that the number of witnesses to the compositeness of <I>n</I> is at least (<I>n</I> - 1)/2.      <P>
+<a name="09c1_1bad">Theorem 33.39<a name="09c1_1bad"><P>
+For any odd integer <I>n</I> &gt; 2 and positive integer <I>s</I>, the probability that <FONT FACE="Courier New" SIZE=2>MILLER-</FONT><FONT FACE="Courier New" SIZE=2>RABIN</FONT>(<I>n, s</I>) errs is at most 2<SUP>-s</SUP>.<P>
+<I><B>Proof     </I></B>Using Theorem 33.38, we see that if <I>n</I> is composite, then each execution of the loop of lines 1-4 has a probability of at least 1/2 of discovering a witness <I>x</I> to the compositeness of <I>n</I>. <FONT FACE="Courier New" SIZE=2>MILLER-</FONT><FONT FACE="Courier New" SIZE=2>RABIN</FONT> only makes an error if it is so unlucky as to miss discovering a witness to the compositeness of <I>n</I> on each of the <I>s</I> iterations of the main loop. The probability of such a string of misses is at most 2<SUP>-s</SUP>.      <P>
+Thus, choosing <I>s</I> = 50 should suffice for almost any imaginable application. If we are trying to find large primes by applying <FONT FACE="Courier New" SIZE=2>MILLER-</FONT><FONT FACE="Courier New" SIZE=2>RABIN</FONT> to <I>randomly chosen</I> large integers, then it can be argued (although we won't do so here) that choosing a small value of <I>s</I> (say 3) is very unlikely to lead to erroneous results. That is, for a randomly chosen odd composite integer <I>n</I>, the expected number of nonwitnesses to the compositeness of <I>n </I>is likely to be much smaller than (<I>n</I> - 1)/2. If the integer <I>n</I> is not chosen randomly, however, the best that can be proven is that the number of nonwitnesses is at most (<I>n</I> - 1)/4, using an improved version of Theorem 33.39. Furthermore, there do exist integers <I>n</I> for which the number of nonwitnesses is (<I>n</I> - 1)/4.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09c2_1baa">Exercises<a name="09c2_1baa"></h2><P>
+<a name="09c2_1bab">33.8-1<a name="09c2_1bab"><P>
+Prove that if an integer <I>n</I> &gt; 1 is not a prime or a prime power, then there exists a nontrivial square root of 1 modulo <I>n</I>.<P>
+<a name="09c2_1bac">33.8-2<a name="09c2_1bac"><P>
+<a name="09c2_1ba8">It is possible to strengthen Euler's theorem slightly to the form<P>
+<img src="844_a.gif"><P>
+where <IMG SRC="../IMAGES/lambdauc.gif"><I>(</I>n<I>) is defined by</I><P>
+<img src="844_b.gif"><P>
+<h4><a name="09c2_1bad">(33.47)<a name="09c2_1bad"></sub></sup></h4><P>
+<a name="09c2_1ba9">Prove that <IMG SRC="../IMAGES/lambdauc.gif">(<I>n</I>) | <IMG SRC="../IMAGES/phicap12.gif"><I></I>(<I>n</I>). A composite number <I>n</I> is a Carmichael number if <IMG SRC="../IMAGES/lambdauc.gif">(<I>n</I>) <FONT FACE="CG Times (W1)" SIZE=2>|<I>n</I></FONT> - 1. The smallest Carmichael number is 561 = 3 <IMG SRC="../IMAGES/dot10.gif">11 <IMG SRC="../IMAGES/dot10.gif">17; here, <IMG SRC="../IMAGES/lambdauc.gif">(<I>n</I>) = 1cm(2, 10, 16) = 80, which divides 560. Prove that Carmichael numbers must be both &quot;square-free&quot; (not divisible by the square of any prime) and the product of at least three primes. For this reason, they are not very common.<P>
+<a name="09c2_1bae">33.8-3<a name="09c2_1bae"><P>
+Prove that if <I>x</I> is a nontrivial square root of 1, modulo <I>n</I>, then gcd(<I>x</I> - 1, <I>n</I>) and gcd(<I>x</I> + 1, <I>n</I>) are both nontrivial divisors of <I>n</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09c3_1bab">* 33.9 Integer factorization<a name="09c3_1bab"></h1><P>
+<a name="09c3_1baa">Suppose we have an integer <I>n</I> that we wish to <I><B>factor</I></B>, that is, to decompose into a product of primes. The primality test of the preceding section would tell us that <I>n</I> is composite, but it usually doesn't tell us the prime factors of <I>n</I>. Factoring a large integer <I>n</I> seems to be much more difficult than simply determining whether <I>n</I> is prime or composite. It is infeasible with today's supercomputers and the best algorithms to date to factor an arbitrary 200-decimal-digit number.<P>
+
+
+
+
+
+<h2>Pollard's rho heuristic</h2><P>
+<a name="09c4_1bab"><a name="09c4_1bac"><a name="09c4_1bad">Trial division by all integers up to <I>B</I> is guaranteed to factor completely any number up to <I>B</I><SUP>2</SUP>. For the same amount of work, the following procedure will factor any number up to <I>B</I><SUP>4</SUP> (unless we're unlucky). Since the procedure is only a heuristic, neither its running time nor its success is guaranteed, although the procedure is very effective in practice.<P>
+<pre><a name="09c4_1bae">POLLARD-RHO(<I>n</I>)</sub></sup></pre><P>
+<pre>1   <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>2   <I>x</I><SUB>1</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> RANDOM(0, <I>n</I> - 1)</sub></sup></pre><P>
+<pre>3   <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I><SUB>1</sub></sup></pre><P>
+<pre>4   <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2</sub></sup></pre><P>
+<pre>5   <B>while</B> TRUE</sub></sup></pre><P>
+<pre>6       <B>do</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i </I>+ l</sub></sup></pre><P>
+<img src="845_a.gif"><P>
+<pre>8          <I>d</I> <IMG SRC="../IMAGES/arrlt12.gif"> gcd(<I>y</I> - <I>x<SUB>i</I></SUB>, <I>n</I>)</sub></sup></pre><P>
+<pre>9          <B>if</B> <I>d</I> <IMG SRC="../IMAGES/noteq.gif"> 1 and <I>d</I> <IMG SRC="../IMAGES/noteq.gif"> <I>n</I></sub></sup></pre><P>
+<pre>10             <B>then</B> print <I>d</I></sub></sup></pre><P>
+<pre>11          <B>if</B> <I>i</I> = <I>k</I></sub></sup></pre><P>
+<pre>12             <B>then</B> <I>y</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x<SUB>i</I></sub></sup></pre><P>
+<pre>13                  <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2<I>k</I></sub></sup></pre><P>
+The procedure works as follows. Lines 1-2 initialize <I>i</I> to 1 and <I>x</I><SUB>1</SUB> to a randomly chosen value in <B>Z</B><I><SUB>n</I></SUB>. The <B>while</B> loop beginning on line 5 iterates forever, searching for factors of <I>n</I>. During each iteration of the <B>while</B> loop, the recurrence<P>
+<img src="845_b.gif"><P>
+<h4><a name="09c4_1bb0">(33.48)<a name="09c4_1bb0"></sub></sup></h4><P>
+is used on line 7 to produce the next value of <I>x<SUB>i </I></SUB>in the infinite sequence<P>
+<pre><I>x</I><SUB>1</SUB>,<I> x</I><SUB>2</SUB>,<I> x</I><SUB>3</SUB>,<I> x</I><SUB>4</SUB>,<I>... </I>;</sub></sup></pre><P>
+<h4><a name="09c4_1bb1">(33.49)<a name="09c4_1bb1"></sub></sup></h4><P>
+the value of <I>i</I> is correspondingly incremented on line 6. The code is written using subscripted variables <I>x<SUB>i</I></SUB> for clarity, but the program works the same if all of the subscripts are dropped, since only the most recent value of <I>x<SUB>i </I></SUB>need be maintained.<P>
+Every so often, the program saves the most recently generated <I>x<SUB>i</I></SUB> value in the variable <I>y</I>. Specifically, the values that are saved are the ones whose subscripts are powers of 2:<P>
+<pre><I>x</I><SUB>1</SUB>,<I> x</I><SUB>2</SUB>,<I> x</I><SUB>4</SUB>,<I> x</I><SUB>8</SUB>,<I> x</I><SUB>16</SUB>,... .</sub></sup></pre><P>
+Line 3 saves the value <I>x</I><SUB>1</SUB>, and line 12 saves <I>x<SUB>k</I></SUB> whenever <I>i</I> is equal to <I>k</I>. The variable <I>k</I> is initialized to 2 in line 4, and <I>k</I> is doubled in line 13 whenever <I>y</I> is updated. Therefore, <I>k</I> follows the sequence 1, 2, 4, 8, . . . and always gives the subscript of the next value <I>x<SUB>k</I></SUB> to be saved in <I>y</I>.<P>
+Lines 8-10 try to find a factor of <I>n</I>, using the saved value of <I>y</I> and the current value of <I>x<SUB>i</I></SUB>. Specifically, line 8 computes the greatest common divisor <I>d</I> = gcd(<I>y</I> - <I>x<SUB>i</I></SUB>, <I>n</I>). If <I>d</I> is a nontrivial divisor of <I>n</I> (checked in line 9), then line 10 prints <I>d</I>.<P>
+This procedure for finding a factor may seem somewhat mysterious at first. Note, however, that P<FONT FACE="Courier New" SIZE=2>OLLARD-</FONT><FONT FACE="Courier New" SIZE=2>RHO</FONT> never prints an incorrect answer; any number it prints is a nontrivial divisor of <I>n.</I> P<FONT FACE="Courier New" SIZE=2>OLLARD-</FONT><FONT FACE="Courier New" SIZE=2>RHO</FONT> may not print anything at all, though; there is no guarantee that it will produce any results. We shall see, however, that there is good reason to expect <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> to print a factor <I>p</I> of <I>n</I> after approximately <img src="846_a.gif"> iterations of the <B>while</B> loop. Thus, if <I>n</I> is composite, we can expect this procedure to discover enough divisors to factor <I>n</I> completely after approximately <I>n</I><SUP>1/4 </SUP>updates, since every prime factor <I>p</I> of <I>n</I> except possibly the largest one is less than <img src="846_b.gif">.<P>
+<a name="09c4_1baf">We analyze the behavior of this procedure by studying how long it takes a random sequence modulo <I>n</I> to repeat a value. Since <B>Z</B><I><SUB>n</I></SUB> is finite, and since each value in the sequence (33.49) depends only on the previous value, the sequence (33.49) eventually repeats itself. Once we reach an <I>x<SUB>i</SUB> </I>such that <I>x<SUB>i</I></SUB> = <I>x<SUB>j</I></SUB> for some <I>j</I> &lt; <I>i</I>, we are in a cycle, since <I>x<SUB>i</I>+1</SUB> = <I>x<SUB>j</I>+l</SUB>, <I>x<SUB>i</I>+2</SUB> = <I>x<SUB>j</I>+2</SUB>, and so on. The reason for the name "rho heuristic" is that, as Figure 33.7 shows, the sequence <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>j</I>-1</SUB> can be drawn as the "tail" of the rho, and the cycle <I>x<SUB>j</I></SUB>, <I>x<SUB>j</I>+l</SUB>, . . . , <I>x<SUB>i</I></SUB> as the "body" of the rho.<P>
+Let us consider the question of how long it takes for the sequence of <I>x<SUB>i </I></SUB>to repeat. This is not exactly what we need, but we shall then see how to modify the argument.<P>
+For the purpose of this estimation, let us assume that the function (<I>x</I><SUP>2</SUP> - 1) mod <I>n</I> behaves like a "random" function. Of course, it is not really random, but this assumption yields results consistent with the observed behavior of P<FONT FACE="Courier New" SIZE=2>OLLARD-</FONT><FONT FACE="Courier New" SIZE=2>RHO</FONT>. We can then consider each <I>x<SUB>i</I></SUB> to have been independently drawn from <B>Z</B><I><SUB>n</I></SUB> according to a uniform distribution on <B>Z</B><I><SUB>n.</I></SUB> By the birthday-paradox analysis of Section 6.6.1, the expected number of steps taken before the sequence cycles is <img src="846_c.gif">.<P>
+Now for the required modification. Let <I>p</I> be a nontrivial factor of <I>n </I>such that gcd(<I>p, n/p</I>) = 1. For example, if <I>n</I> has the factorization <img src="846_d.gif">, then we may take <I>p</I> to be <img src="846_e.gif">. (If <I>e</I><SUB>1</SUB> = 1, then <I>p</I> is just the smallest prime factor of <I>n</I>, a good example to keep in mind.) The sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>x<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> induces a corresponding sequence <img src="846_f.gif"> modulo <I>p</I>, where<P>
+<img src="846_g.gif"><P>
+for all <I>i</I>. Furthermore, it follows from the Chinese remainder theorem that<P>
+<img src="846_h.gif"><P>
+<h4><a name="09c4_1bb2">(33.50)<a name="09c4_1bb2"></sub></sup></h4><P>
+since<P>
+<pre>(<I>x</I> mod <I>n</I>) mod <I>p</I> = <I>x</I> mod <I>p </I>,</sub></sup></pre><P>
+by Exercise 33.1-6.<P>
+<img src="847_a.gif"><P>
+<h4><a name="09c4_1bb3">Figure 33.7 Pollard's rho heuristic. (a) The values produced by the recurrence <img src="847_b.gif"><FONT FACE="Times New Roman" SIZE=2> mod 1387, starting with x<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2> = 2. The prime factorization of 1387 is 19 <IMG SRC="../IMAGES/dot10.gif"> 73. The heavy arrows indicate the iteration steps that are executed before the factor 19 is discovered. The light arrows point to unreached values in the iteration, to illustrate the &quot;rho&quot; shape. The shaded values are the y values stored by <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Times New Roman" SIZE=2><FONT FACE="Courier New" SIZE=2>RHO<FONT FACE="Times New Roman" SIZE=2>. The factor 19 is discovered after x<SUB>7</SUB> = 177 is reached, when gcd(63 - 177,1387) = 19 is computed. The first x value that would be repeated is 1186, but the factor 19 is discovered before this value is reached. (b) The values produced by the same recurrence, modulo 19. Every value x<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> given in part (a) is equivalent, modulo 19, to the value</FONT> <img src="847_c.gif"><FONT FACE="Times New Roman" SIZE=2> shown here. For example, both x<SUB>4</SUB> = 63 and x<SUB>7</SUB><FONT FACE="Times New Roman" SIZE=2> = 177 are equivalent to 6, modulo 19. (c) The values produced by the same recurrence, modulo 73. Every value x<SUB>i</SUB> given in part (a) is equivalent, modulo 73, to the value </FONT><img src="847_d.gif"><FONT FACE="Times New Roman" SIZE=2> shown here. By the Chinese remainder theorem, each node in part (a) corresponds to a pair of nodes, one from part (b) and one from part (c).<a name="09c4_1bb3"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Reasoning as before, we find that the expected number of steps before the sequence <img src="848_a.gif"> repeats is <img src="848_b.gif">. If <I>p</I> is small compared to <I>n</I>, the sequence <img src="848_c.gif"> may repeat much more quickly than the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>x<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. Indeed, the <img src="848_d.gif"> sequence repeats as soon as two elements of the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>x<SUB>i</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> are merely equivalent modulo <I>p</I>, rather than equivalent modulo <I>n</I>. See Figure 33.7, parts (b) and (c), for an illustration.<P>
+Let <I>t</I> denote the index of the first repeated value in the <img src="848_e.gif"> sequence, and let <I>u</I> &gt; 0 denote the length of the cycle that has been thereby produced. That is, <I>t</I> and <I>u</I> &gt; 0 are the smallest values such that <img src="848_f.gif"> for all <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0. By the above arguments, the expected values of <I>t</I> and <I>u</I> are both <img src="848_g.gif">. Note that if <img src="848_h.gif">, then <I>p</I> | (<I>x<SUB>t+u+i</I></SUB> - <I>x<SUB>t+i</I></SUB>). Thus, gcd(<I>x<SUB>t+u+i</I></SUB> - <I>x<SUB>t+i,</SUB>n</I>) &gt; 1.<P>
+Therefore, once <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> has saved as <I>y</I> any value <I>x<SUB>k</I></SUB> such that <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> <I>t</I>, then <I>y</I> mod <I>p</I> is always on the cycle modulo <I>p</I>. (If a new value is saved as <I>y</I>, that value is also on the cycle modulo <I>p</I>.) Eventually, <I>k</I> is set to a value that is greater than <I>u</I>, and the procedure then makes an entire loop around the cycle modulo <I>p</I> without changing the value of <I>y</I>. A factor of <I>n</I> is then discovered when <I>x<SUB>i</I></SUB> &quot;runs into&quot; the previously stored value of <I>y</I>, modulo <I>p</I>, that is, when <I>x<SUB>i </I></SUB><IMG SRC="../IMAGES/equiv10.gif"> <I>y</I> (mod <I>p</I>).<P>
+Presumably, the factor found is the factor <I>p</I>, although it may occasionally happen that a multiple of <I>p</I> is discovered. Since the expected values of both <I>t</I> and <I>u</I> are <img src="848_i.gif">, the expected number of steps required to produce the factor <I>p</I> is <img src="848_j.gif">.<P>
+There are two reasons why this algorithm may not perform quite as expected. First, the heuristic analysis of the running time is not rigorous, and it is possible that the cycle of values, modulo <I>p</I>, could be much larger than <img src="848_k.gif">. In this case, the algorithm performs correctly but much more slowly than desired. In practice, this seems not to be an issue. Second, the divisors of <I>n</I> produced by this algorithm might always be one of the trivial factors 1 or <I>n</I>. For example, suppose that <I>n</I> = <I>pq</I>, where <I>p</I> and <I>q</I> are prime. It can happen that the values of <I>t</I> and <I>u</I> for <I>p</I> are identical with the values of <I>t</I> and <I>u</I> for <I>q</I>, and thus the factor <I>p</I> is always revealed in the same gcd operation that reveals the factor <I>q</I>. Since both factors are revealed at the same time, the trivial factor <I>pq</I> = <I>n</I> is revealed, which is useless. Again, this seems not to be a real problem in practice. If necessary, the heuristic can be restarted with a different recurrence of the form <img src="848_l.gif"> mod <I>n</I>. (The values <I>c</I> = 0 and <I>c</I> = 2 should be avoided for reasons we won't go into here, but other values are fine.)<P>
+Of course, this analysis is heuristic and not rigorous, since the recurrence is not really &quot;random.&quot; Nonetheless, the procedure performs well in practice, and it seems to be as efficient as this heuristic analysis indicates. It is the method of choice for finding small prime factors of a large number. To factor a <IMG SRC="../IMAGES/beta14.gif"><I>-</I>bit composite number <I>n</I> completely, we only need to find all prime factors less than <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I><SUP>1/2</SUP><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, and so we expect <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> to require at most <I>n</I><SUP>1/4</SUP> = 2<IMG SRC="../IMAGES/beta14.gif"><I></I>/4 arithmetic operations and at most <I>n</I><SUP><FONT FACE="Courier New" SIZE=2>1/4</FONT></SUP>, <IMG SRC="../IMAGES/beta14.gif"><I></I><SUP><FONT FACE="Courier New" SIZE=2>3</FONT></SUP> = 2<I><SUP><FONT FACE="Courier New" SIZE=2></I></SUP><IMG SRC="../IMAGES/beta14.gif"><I>/</I>4<IMG SRC="../IMAGES/beta14.gif"><I></I><SUP>3</FONT></SUP> bit operations. <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT>'s ability to find a small factor <I>p</I> of <I>n</I> with an expected number <img src="849_a.gif"> of arithmetic operations is often its most appealing feature.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09c5_1bb1">Exercises<a name="09c5_1bb1"></h2><P>
+<a name="09c5_1bb2">33.9-1<a name="09c5_1bb2"><P>
+<a name="09c5_1bb0">Referring to the execution history shown in Figure 33.7(a), when does <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> print the factor 73 of 1387?<P>
+<a name="09c5_1bb3">33.9-2<a name="09c5_1bb3"><P>
+Suppose that we are given a function <I>f </I>: <I><B>Z</I></B><I><SUB>n</SUB> </I><IMG SRC="../IMAGES/arrow12.gif"><I> <B>Z</I></B><I><SUB>n</I></SUB> and an initial value <I>x</I><SUB>0</SUB> <IMG SRC="../IMAGES/memof12.gif"><FONT FACE="Courier New" SIZE=2> <I><B>Z</I></B><I><SUB>n</I></FONT></SUB>. Define <I>x<SUB>i</I></SUB> = <I>f</I>(<I>x<SUB>i-</I>1</SUB>) for <I>i</I> = 1, 2, . . . . Let <I>t</I> and <I>u</I> &gt; 0 be the smallest values such that <I>x<SUB>t+i</I></SUB> = <I>x<SUB>t+u+i</I></SUB> for <I>i</I> = 0, 1, . . . . In the terminology of Pollard's rho algorithm, <I>t</I> is the length of the tail and <I>u</I> is the length of the cycle of the rho. Give an efficient algorithm to determine <I>t</I> and <I>u</I> exactly, and analyze its running time.<P>
+<a name="09c5_1bb4">33.9-3<a name="09c5_1bb4"><P>
+How many steps would you expect <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> to require to discover a factor of the form <I>p<SUP>e</I></SUP>, where <I>p</I> is prime and <I>e</I> &gt; 1?<P>
+<a name="09c5_1bb5">33.9-4<a name="09c5_1bb5"><P>
+One disadvantage of <FONT FACE="Courier New" SIZE=2>POLLARD</FONT>-<FONT FACE="Courier New" SIZE=2>RHO</FONT> as written is that it requires one gcd computation for each step of the recurrence. It has been suggested that we might batch the gcd computations by accumulating the product of several <I>x<SUB>i</I></SUB> in a row and then taking the gcd of this product with the saved <I>y</I>. Describe carefully how you would implement this idea, why it works, and what batch size you would pick as the most effective when working on a <IMG SRC="../IMAGES/beta14.gif">-bit number <I>n</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09c6_1bba">Problems<a name="09c6_1bba"></h1><P>
+<a name="09c6_1bbb">33-1 Binary gcd algorithm<a name="09c6_1bbb"><P>
+<a name="09c6_1bb1"><a name="09c6_1bb2">On most computers, the operations of subtraction, testing the parity (odd or even) of a binary integer, and halving can be performed more quickly than computing remainders. This problem investigates the <I><B>binary gcd</I> </B><I><B>algorithm</I></B>, which avoids the remainder computations used in Euclid's algorithm.<P>
+<I><B>a.     </I></B>Prove that if <I>a</I> and <I>b</I> are both even, then gcd(<I>a, b</I>) = 2 gcd(<I>a</I>/2, <I>b</I>/2).<P>
+<I><B>b.</I></B><I>     </I>Prove that if <I>a</I> is odd and <I>b</I> is even, then gcd(<I>a, b</I>) = gcd(<I>a</I>, <I>b</I>/2).<P>
+<I><B>c.     </I></B>Prove that if <I>a</I> and <I>b</I> are both odd, then gcd(<I>a, b</I>) = gcd((<I>a</I> - <I>b</I>)/2, <I>b</I>).<P>
+<I><B>d.     </I></B>Design an efficient binary gcd algorithm for input integers <I>a</I> and <I>b</I>, where <I>a</I> <IMG SRC="../IMAGES/gteq.gif"> <I>b</I>, that runs in <I>O</I>(lg(max(<I>a, b</I>))) time. Assume that each subtraction, parity test, and halving can be performed in unit time.<P>
+<a name="09c6_1bbc">33-2 Analysis of bit operations in Euclid's algorithm<a name="09c6_1bbc"><P>
+<a name="09c6_1bb3"><I><B>a.</I></B>     Show that using the ordinary &quot;paper and pencil&quot; algorithm for long division--dividing <I>a</I> by <I>b</I>, yielding a quotient <I>q</I> and remainder <I>r</I>--requires <I>O</I>((1 + lg <I>q</I>) lg <I>b</I>) bit operations.<P>
+<I><B>b.</I></B><I>     </I>Define <IMG SRC="../IMAGES/mu12.gif"><I>(</I>a, b<I>) = (1 + lg </I>a<I>)(1 + lg </I>b<I>). Show that the number of bit operations performed by <FONT FACE="Courier New" SIZE=2>EUCLID</FONT> in reducing the problem of computing gcd(</I>a, b<I>) to that of computing gcd(</I>b, a<I> mod </I>b<I>) is at most </I>c<I>(<IMG SRC="../IMAGES/mu12.gif"></I>(<I>a, b</I>) - <IMG SRC="../IMAGES/mu12.gif">(<I>b, a</I> mod <I>b</I>)) for some sufficiently large constant <I>c</I> &gt; 0.<P>
+<I><B>c.     </I></B>Show that <FONT FACE="Courier New" SIZE=2>EUCLID</FONT>(<I>a, b</I>) requires <I>O</I>(<IMG SRC="../IMAGES/mu12.gif"><I>(</I>a, b<I>)) bit operations in general and </I>O<I>(<IMG SRC="../IMAGES/beta14.gif"></I><SUP>2</SUP>) bit operations when applied to two <IMG SRC="../IMAGES/beta14.gif"><I>-bit inputs.</I><P>
+<a name="09c6_1bbd">33-3 Three algorithms for Fibonacci numbers<a name="09c6_1bbd"><P>
+<a name="09c6_1bb4">This problem compares the efficiency of three methods for computing the <I>n</I>th Fibonacci number F<I><SUB>n</I></SUB>, given <I>n</I>. Assume that the cost of adding, subtracting, or multiplying two numbers is <I>O</I>(1), independent of the size of the numbers.<P>
+<I><B>a.     </I></B>Show that the running time of the straightforward recursive method for computing <I>F<SUB>n</I> </SUB>based on recurrence (2.13) is exponential in <I>n</I>.<P>
+<I><B>b.     </I></B>Show how to compute <I>F<SUB>n</I></SUB> in <I>O</I>(<I>n</I>) time using memoization.<P>
+<I><B>c.     </I></B>Show how to compute <I>F<SUB>n</I></SUB> in <I>O</I>(lg <I>n</I>) time using only integer addition and multiplication. (<I>Hint:</I> Consider the matrix<P>
+<img src="850_a.gif"><P>
+and its powers.)<P>
+<I><B>d.     </I></B>Assume now that adding two <IMG SRC="../IMAGES/beta14.gif"><I>-bit numbers takes <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"></I>) time and that multiplying two <IMG SRC="../IMAGES/beta14.gif"><I>-bit numbers takes <IMG SRC="../IMAGES/bound.gif">(<IMG SRC="../IMAGES/beta14.gif"></I><SUP>2</SUP>) time. What is the running time of these three methods under this more reasonable cost measure for the elementary arithmetic operations?<P>
+<a name="09c6_1bbe">33-4 Quadratic residues<a name="09c6_1bbe"><P>
+<a name="09c6_1bb5"><a name="09c6_1bb6">Let <I>p</I> be an odd prime. A number <img src="850_b.gif"> is a <I><B>quadratic residue</I></B><I> </I>if the equation x<SUP>2</SUP> = <I>a</I> (mod <I>p</I>) has a solution for the unknown <I>x</I>.<P>
+<I><B>a</I></B><I>.     </I>Show that there are exactly (<I>p</I> - 1)/2 quadratic residues, modulo <I>p</I>.<P>
+<a name="09c6_1bb7"><a name="09c6_1bb8"><I><B>b.     </I></B>If <I>p</I> is prime, we define the <I><B>Legendre symbol</I></B> <img src="851_a.gif">, to be 1 if <I>a</I> is a quadratic residue modulo <I>p</I> and -1 otherwise. Prove that if <img src="851_b.gif">, then<P>
+<img src="851_c.gif"><P>
+Give an efficient algorithm for determining whether or not a given number <I>a</I> is a quadratic residue modulo <I>p</I>. Analyze the efficiency of your algorithm.<P>
+<a name="09c6_1bb9"><I><B>c.     </I></B>Prove that if <I>p</I> is a prime of the form 4<I>k</I> + 3 and <I>a</I> is a quadratic residue in <img src="851_d.gif">, then a<I><SUP>k</I>+l</SUP> mod <I>p</I> is a square root of <I>a</I>, modulo <I>p</I>. How much time is required to find the square root of a quadratic residue <I>a</I> modulo <I>p</I>?<P>
+<I><B>d</I>.</B>     Describe an efficient randomized algorithm for finding a nonquadratic residue, modulo an arbitrary prime <I>p</I>. How many arithmetic operations does your algorithm require on average?<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Niven and Zuckerman [151] provide an excellent introduction to elementary number theory. Knuth [122] contains a good discussion of algorithms for finding the greatest common divisor, as well as other basic number-theoretic algorithms. Riesel [168] and Bach [16] provide more recent surveys of computational number theory. Dixon [56] gives an overview of factorization and primality testing. The conference proceedings edited by Pomerance [159] contains several nice survey articles.<P>
+Knuth [122] discusses the origin of Euclid's algorithm. It appears in Book 7, Propositions 1 and 2, of the Greek mathematician Euclid's <I>Elements</I>, which was written around 300 <FONT FACE="Courier New" SIZE=2>B.C</FONT>. Euclid's description may have been derived from an algorithm due to Eudoxus around 375 <FONT FACE="Courier New" SIZE=2>B.C.</FONT> Euclid's algorithm may hold the honor of being the oldest nontrivial algorithm; it is rivaled only by the Russian peasant's algorithm for multiplication (see Chapter 29), which was known to the ancient Egyptians.<P>
+Knuth attributes a special case of the Chinese remainder theorem (Theorem 33.27) to the Chinese mathematician <img src="851_e.gif">, who lived sometime between 200 <FONT FACE="Courier New" SIZE=2>B.C</FONT>. and <FONT FACE="Courier New" SIZE=2>A.D</FONT>. 200--the date is quite uncertain. The same special case was given by the Greek mathematician Nichomachus around <FONT FACE="Courier New" SIZE=2>A.D</FONT>. 100. It was generalized by Chhin Chiu-Shao in 1247. The Chinese remainder theorem was finally stated and proved in its full generality by L. Euler in 1734.<P>
+<a name="09c7_1bba">The randomized primality-testing algorithm presented here is due to Miller [147] and Rabin [166]; it is the fastest randomized primality-testing algorithm known, to within constant factors. The proof of Theorem 33.39 is a slight adaptation of one suggested by Bach [15]. A proof of a stronger result for <FONT FACE="Courier New" SIZE=2>MILLER</FONT>-<FONT FACE="Courier New" SIZE=2>RABIN</FONT> was given by Monier[148, 149]. Randomization appears to be necessary to obtain a polynomial-time primality-testing algorithm. The fastest deterministic primality-testing algorithm known is the Cohen-Lenstra version [45] of the primality test by Adleman, Pomerance, and Rumely [3]. When testing a number <I>n</I> of length <IMG SRC="../IMAGES/hfbrul14.gif">lg(<I>n</I> + 1)<IMG SRC="../IMAGES/hfbrur14.gif"> for primality, it runs in (lg <I>n</I>)<I><SUP>O</I>(1g 1g 1g <I>n</I>)</SUP> time, which is just slightly superpolynomial.<P>
+The problem of finding large &quot;random&quot; primes is nicely discussed in an article by Beauchemin, Brassard, Cr&eacute;peau, Goutier, and Pomerance [20].<P>
+<a name="09c7_1bbb">The concept of a public-key cryptosystem is due to Diffie and Hellman [54]. The RSA cryptosystem was proposed in 1977 by Rivest, Shamir, and Adleman [169]. Since then, the field of cryptography has blossomed. In particular, many new techniques have been developed for proving cryptosystems to be secure. For example, Goldwasser and Micali [86] show that randomization can be an effective tool in the design of secure public-key encryption schemes. For signature schemes, Goldwasser, Micali, and Rivest [88] present a digital-signature scheme for which every conceivable type of forgery is provably as difficult as factoring. Recently, Goldwasser, Micali, and Rackoff [87] introduced a class of "zero-knowledge" encryption schemes for which it can be proven (under certain reasonable assumptions) that no party learns more than he is supposed to learn from a communication.<P>
+The rho heuristic for integer factoring was invented by Pollard [156]. The version presented here is a variant proposed by Brent [35].<P>
+<a name="09c7_1bbc"><a name="09c7_1bbd"><a name="09c7_1bbe">The best algorithms for factoring large numbers have a running time that grows roughly exponentially with the square root of the length of the number <I>n</I> to be factored. The quadratic-sieve factoring algorithm, due to Pomerance [158], is perhaps the most efficient such algorithm in general for large inputs. Although it is difficult to give a rigorous analysis of this algorithm, under reasonable assumptions we can derive a running-time estimate of <I>L</I>(<I>n</I>)<SUP>1+<I>o</I>(1)</SUP>, where <img src="852_a.gif">. The elliptic-curve method due to Lenstra [137] may be more effective for some inputs than the quadratic-sieve method, since, like Pollard's rho method, it can find a small prime factor <I>p</I> quite quickly. With this method, the time to find <I>p</I> is estimated to be <img src="852_b.gif">.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap34.htm">Chapter 34</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

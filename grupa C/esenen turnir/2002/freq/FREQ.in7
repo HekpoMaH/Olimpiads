@@ -1,0 +1,302 @@
+300
+microsoft visual basic for applications
+
+ additional information about data access components
+
+ functions broken because of vbdatabasecompare
+ dataaccesspage object  dataaccesspages collection code 
+ example
+
+ context property commandbar object
+ chart workspace object model office web components
+ selectionchange event office web components
+
+ getvalue method office web components
+ htmldata property office web components
+ keychar property office web components
+ recordsetlabel property office web components
+
+ value property office web components
+ default language for visual basic editor and microsoft 
+ script editor
+ new properties vba
+ use f to find next text occurrence in the code window
+ system event notification system
+
+ html reference documentation
+ internet explorer versions and editing html
+  topic not found  topic microsoft script editor
+  property cannot be set  when changing controlsource 
+ on data access page
+multilingual issues
+ general
+
+                code page of client machine must match code page of xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+                  server
+ create registry keys to temporarily enforce a code 
+ page during conversion
+ error messages appear in wrong language when using 
+ language pack
+ key assignment macros in autokeys macro group no 
+ longer work
+ message  database  msdb  cannot be opened 
+ cannot log on as  administrator  when modifying 
+ page connection string
+ nonu s   noneast asian  northwind sql project not 
+ advertised in the user interface
+ hyperlink to database object doesn t work with 
+ object type name in local language
+ righttoleft languages
+ printing in righttoleft languages
+ expression builder limitations for righttoleft 
+ languages
+ hijri database calendar in sample applications
+ input mask restrictions for righttoleft languages
+ hijri calendar support in data access pages and web 
+ pages 
+ viewing arabic data in microsoft replication 
+ conflict viewer and importexport wizards
+ asian languages
+ possible display problems when using multiple asian 
+ fonts
+installation
+turn off virus protection
+some virus protection programs can interfere with the 
+microsoft office or microsoft access sr stand
+alone version installation program  if you use a virus 
+protection program on your computer  turn it off before 
+installing  you can turn the virus protection program 
+back on after installation is complete  
+note if your virusprotection program starts 
+automatically when you start windows  you can turn it off 
+by restarting windows while holding down the shift key problems installing to a folder whose name contains 
+punctuation characters
+do not use a comma    single quotation mark    or 
+exclamation point   in the name of the folder where you 
+install access sr  it is recommended that you use the 
+default folder or use only letters and numbers in folder 
+names minimum system requirements for access sr
+microsoft access sr is included in the following 
+editions 
+  microsoft office professional
+  microsoft office premium
+  microsoft office developer
+to use access sr  you need 
+  pc with a pentium mhz or higher processor
+  microsoft windows or later operating system  or 
+ microsoft windows nt workstation operating system 
+ version   service pack or later
+  for windows or windows  
+ mb of ram for the operating system  plus an 
+ additional mb of ram for access
+  for windows nt workstation version   service pack 
+ or later 
+ mb of ram for the operating system  plus an 
+ additional mb of ram for access
+  available harddisk space for access sr number 
+ indicates typical installation  your harddisk usage 
+ will vary depending on configuration  choices made 
+ during custom installation might require more or less 
+ harddisk space  
+ typical installation  mb
+  available harddisk space for office numbers 
+ indicate typical installation  your harddisk usage 
+ will vary depending on configuration  choices made 
+ during custom installation might require more or less 
+ harddisk space  
+ mb for disc word  excel  outlook  powerpoint  
+ access
+  cdrom drive
+  vga or higher resolution monitor  super vga recommended
+  microsoft mouse  microsoft intellimouse  or 
+ compatible pointing device
+additional items or services required to use certain 
+features 
+  baud modem    or higher baud recommended
+  multimedia computer required to access sound and other 
+ multimedia effects
+  microsoft exchange client or microsoft outlook 
+ required to run office email
+  mb of additional memory required to run office email
+  some internet functionality might require internet 
+ access and payment of a separate fee to a service 
+ provider
+some features switch automatically to a different setting 
+during custom install
+during a custom installation  if you set access to  not 
+available  and then change certain features of access to 
+something other than  not available   some additional 
+features will also switch from  not available  to the new 
+setting you chose  the features affected are 
+help
+typical wizards
+additional wizards
+snapshot viewer
+database replication
+if you are trying to save space on your disk  try setting 
+access or the individual feature to  installed on first 
+use  instead  
+installing access sr on a network
+    to create an administrative installation point for 
+access sr 
+  create a share on a network server for the 
+ administrative installation point  the network share 
+ must have at least megabytes mb of available 
+ disk space  
+  on a computer that is running microsoft windows  
+ windows nt workstation or windows nt server and that 
+ has write permission to the share  connect to the 
+ server share  
+  on the start menu  click run  and then click browse  
+  on office disc in the cdrom drive  select setup exe 
+ and click open  
+  on the command line following setup exe  type 
+ a data msi 
+ and click ok  
+ for example  
+ e  setup exe a data msi 
+  when prompted  enter the organization name that you 
+ want to define for all users who install office from 
+ this location  
+  when prompted for the installation location  enter the 
+ server and share you created  
+for more information about network and administration 
+issues  see the office resource kit web site at  
+http www microsoft comofficeork
+prompt for cd key when installing from an administrative 
+installation 
+when you install access sr on your computer from an 
+administrative installation on a server  you might be 
+prompted for a cd key  this occurs if the system 
+administrator who created the administrative 
+installation did not enter the cd key to solve this problem  ask the system administrator to 
+create a new administrative installation and enter the cd 
+key in the first dialog box  after this has been done  
+you will not be prompted for the cd key when you install 
+access sr from this new administrative installation  
+message  file already in use  when running access sr 
+from a network
+if you are running access sr from the network  you 
+might receive the following message when you open an 
+access database 
+ could not use  admin   file already in use this message occurs when a user who has write permissions 
+to the network share opens an access database  subsequent 
+users who have only read permissions to that share 
+receive the message when they attempt to open an access 
+database  
+after you have run the administrative installation of 
+office or access sr  you can prevent this message 
+by setting the effective sharelevel permissions to read 
+permissions for all users who will run access sr from 
+the network server  if you are an administrator  you 
+might want to create a separate share to the same folder  
+and give any administrators full control permissions so 
+that they can maintain the files in this folder  however  
+all users should install office or access sr from 
+the share with read permissions  
+installing access sr over an access runtime 
+application
+if you are upgrading from access or office on a
+computer where you have installed an access runtime 
+application  the default installation location for office 
+ or access sr is 
+ c  program files officek
+installing office or access sr to this alternate 
+default location ensures that you keep the access 
+version of msaccess exe if it is needed by the runtime 
+application unexpected message during installation
+if you get an unexpected message during the installation 
+of office  and you get the same message when you try to 
+install office again  you can create a log file that will 
+be useful to microsoft product support services in 
+troubleshooting the problem  once you create the file  
+you will need to call microsoft product support services     to create the log file 
+ 
+  click the start button on the taskbar  and then click 
+ run   in the open box  type  
+ 
+  path  setup exe l v c  verboselog txt
+ 
+ where  path  is the location of setup exe  for 
+ example  if you are installing from a cdrom drive  
+ then the text you would type might look like 
+  d  setup exe l v c  verboselog txt
+   click ok  
+setup will start again and a log file called 
+verboselog txt will be created at the root of your c  
+drive installing access sr without removing the beta build 
+of office 
+when starting access sr  you might receive the 
+following message  
+ required registry information is missing and this 
+ application cannot run  please rerun setup to correct 
+ this problem  
+or  after a few seconds  the program might quit  
+you might experience either of the above if you installed 
+access sr without removing the beta build b of 
+microsoft office      to solve this problem  do the following to remove the 
+beta build of office  
+  click the start button on the taskbar  point to 
+ settings  and click control panel   doubleclick the addremove programs icon   in the list of installed programs  click microsoft 
+ office premium edition  this is the beta 
+ version of office    click addremove   click remove office   click yes to the prompt confirming that you want to 
+ remove access sr shortcut on the programs menu varies 
+according to your operating system 
+the access sr shortcut on the programs menu might have 
+the following problems  
+  it does not selfrepair the program  
+ this problem occurs because your operating system does 
+ not support windows installer shortcuts  only the 
+ following versions of microsoft windows support these 
+ shortcuts  
+   windows 
+   windows with internet explorer    service 
+ pack and active desktop installed
+   microsoft windows nt version with 
+ internet explorer    service pack   and 
+ active desktop installed  
+ note  if you install internet explorer on a computer 
+ that has windows or windows nt version with 
+ internet explorer    service pack   and active 
+ desktop installed  it will still support windows 
+ installer shortcuts  
+  it does not install the program on first use  
+ this problem occurs because installed on first use is 
+ not an option for access in the selecting features 
+ dialog box during setup  installed on first use is not 
+ an option because your operating system does not 
+ support windows installer shortcuts  the operating 
+ systems listed under   support windows installer 
+ shortcuts  
+  it does not display a path on the shortcut tab of the 
+ properties dialog box for the shortcut  
+ this indicates that the shortcut is a windows 
+ installer shortcut  windows installer shortcuts do not 
+ directly reference the path of the shortcut target  
+ instead  they contain a token that the windows 
+ installer resolves to the path of the shortcut 
+ target  the operating systems listed under item 
+ support windows installer shortcuts working with access sr displaying dates with fourdigit years 
+in access sr  you can specify that date fields and 
+controls display fourdigit years  this helps you to 
+ensure that the century of a particular date is correct  
+on the general tab of the options dialog box tools 
+menu  under use fourdigit year formatting  you can do 
+one of the following 
+  select the this database check box to display four
+ digit years at the database level in the current 
+ access database or access project 
+  select the all databases check box to display four
+ digit years at the application level in all access 
+ databases and access projects selecting one of these check boxes only changes how dates 
+are displayedit does not change the data itself  these 
+options override format property settings for individual 
+fields and controls euro symbol not printed correctly 
+although the euro symbol might be displayed correctly in 
+print preview  it might not print correctly  for example  
+it might not appear at all in the printout  or it might
+appear as another character  
+this behavior can occur if you are using a printer font 
+that does not support the euro  to resolve this problem  
+first try using a true type font that does support the 
+

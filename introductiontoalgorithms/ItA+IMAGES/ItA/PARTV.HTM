@@ -1,0 +1,38 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: PART V: Advanced Data Structures</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap19.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap18.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0850_0001"><a name="0850_0002">PART V: Advanced Data Structures<a name="0850_0002"></h1><P>
+
+
+
+
+
+<h1>Introduction</h1><P>
+<a name="0852_15fc">This part returns to the examination of data structures that support operations on dynamic sets but at a more advanced level than Part III. Two of the chapters, for example, make extensive use of the amortized analysis techniques we saw in Chapter 18.<P>
+Chapter 19 presents B-trees, which are balanced search trees designed to be stored on magnetic disks. Because magnetic disks operate much more slowly than random-access memory, we measure the performance of B-trees not only by how much computing time the dynamic-set operations consume but also by how many disk accesses are performed. For each B-tree operation, the number of disk accesses increases with the height of the B-tree, which is kept low by the B-tree operations.<P>
+Chapters 20 and 21 give implementations of mergeable heaps, which support the operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT>. The <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation unites, or merges, two heaps. The data structures in these chapters also support the operations <FONT FACE="Courier New" SIZE=2>DELETE</FONT> and <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>.<P>
+Binomial heaps, which appear in Chapter 20, support each of these operations in <I>O</I>(lg <I>n</I>) worst-case time, where <I>n</I> is the total number of elements in the input heap (or in the two input heaps together in the case of <FONT FACE="Courier New" SIZE=2>UNION</FONT>). It is when the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation must be supported that binomial heaps are superior to the binary heaps introduced in Chapter 7, because it takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)<I> </I>time to unite two binary heaps in the worst case<I>.</I><P>
+Fibonacci heaps, in Chapter 21, improve upon binomial heaps, at least in a theoretical sense. We use amortized time bounds to measure the performance of Fibonacci heaps. The operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT> take only<I> O</I>(1) actual and amortized time on Fibonacci heaps, and the operations <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> take <I>O</I>(lg <I>n</I>) amortized time. The most significant advantage of Fibonacci heaps, however, is that <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> takes only<I>O</I>(1) amortized time. The low amortized time of the <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT> operation is why Fibonacci heaps are at the heart of some of the asymptotically fastest algorithms to date for graph problems.<P>
+Finally, Chapter 22 presents data structures for disjoint sets. We have a universe of <I>n</I> elements that are grouped into dynamic sets. Initially, each element belongs to its own singleton set. The operation <FONT FACE="Courier New" SIZE=2>UNION</FONT> unites two sets, and the query <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> identifies the set that a given element is in at the moment. By representing each set by a simple rooted tree, we obtain surprisingly fast operations: a sequence of <I>m</I> operations runs in <I>O</I>(<I>m </I><IMG SRC="../IMAGES/alpha12.gif"><I> </I>(<I>m</I>, <I>n</I>)) time, where <IMG SRC="../IMAGES/alpha12.gif"><I> </I>(<I>m</I>, <I>n</I>) is an incredibly slowly growing function--as long as <I>n</I> is no more than the estimated number of atoms in the entire known universe, <IMG SRC="../IMAGES/alpha12.gif"><I> </I>(<I>m</I>, <I>n</I>) is at most 4. The amortized analysis that proves this time bound is as complex as the data structure is simple. Chapter 22 proves an interesting but somewhat simpler bound on the running time.<P>
+The topics covered in this part are by no means the only examples of &quot;advanced&quot; data structures. Other advanced data structures include the following.<P>
+<a name="0852_15fd"><a name="0852_15fe"><a name="0852_15ff"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>A data structure invented by van Emde Boas [194] supports the operations <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>MAXIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MAX</FONT>, <FONT FACE="Courier New" SIZE=2>PREDECESSOR</FONT>, and <FONT FACE="Courier New" SIZE=2>SUCCESSOR</FONT> in worst-case time <I>O</I>(lg lg <I>n</I>), subject to the restriction that the universe of keys is the set { 1, 2, . . . , <I>n</I>}.<P>
+<a name="0852_1600"><a name="0852_1601"><a name="0852_1602"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     <I><B>Dynamic trees</I></B></FONT>, introduced by Sleator and Tarjan [177] and discussed by Tarjan [188], maintain a forest of disjoint rooted trees. Each edge in each tree has a real-valued cost. Dynamic trees support queries to find parents, roots, edge costs, and the minimum edge cost on a path from a node up to a root. Trees may be manipulated by cutting edges, updating all edge costs on a path from a node up to a root, linking a root into another tree, and making a node the root of the tree it appears in. One implementation of dynamic trees gives an <I>O</I>(lg <I>n</I>) amortized time bound for each operation; a more complicated implementation yields <I>O</I>(lg <I>n</I>) worst-case time bounds.<P>
+<a name="0852_1603"><a name="0852_1604"><a name="0852_1605"><a name="0852_1606"><a name="0852_1607"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     <I><B>Splay trees,</I></B></FONT> developed by Sleator and Tarjan [178] and discussed by Tarjan [188], are a form of binary search tree on which the standard search-tree operations run in <I>O</I>(lg <I>n</I>) amortized time. One application of splay trees simplifies dynamic trees.<P>
+<a name="0852_1608"><a name="0852_1609"><a name="0852_160a"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     <I><B>Persistent</I></B></FONT> data structures allow queries, and sometimes updates as well, on past versions of a data structure. Driscoll, Sarnak, Sleator, and Tarjan [59] present techniques for making linked data structures persistent with only a small time and space cost. Problem 14-1 gives a simple example of a persistent dynamic set.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap19.htm">Chapter 19</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,29 @@
+#include<cstdio>
+int n,nm,res;
+int mas[2][1<<16];
+int main()
+{
+     scanf("%d",&n);
+     for(int i=1;i<=n;++i)
+     {
+          scanf("%d",&nm);
+          mas[0][nm]=i;
+     }
+     for(int i=1;i<=n;++i)
+     {
+          scanf("%d",&nm);
+          while(nm<=n)
+          {
+               nm=mas[0][nm];
+               // update res
+
+               while(nm<=n)
+               {
+                    ++mas[1][nm];
+                    nm+=nm&(-nm);
+               }
+          }
+     }
+     printf("%d\n",res);
+     return 0;
+}

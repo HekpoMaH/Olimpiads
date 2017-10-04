@@ -1,0 +1,38 @@
+#include<iostream>
+using namespace std;
+int n;
+int kv[50000];
+int iv[50000];
+int field[5000][5000];
+int br =0;
+int main()
+{
+    cin>>n;
+    for(int i=0;i<n;i++)
+    {
+        cin>>kv[i];
+    }
+    for(int i=0;i<n;i++)
+    {
+        cin>>iv[i];
+    }
+    for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+        {
+            field[kv[i]-1][kv[j]-1] = 1;
+        }
+    }
+   for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+        {
+            if(field[iv[i]-1][iv[j]-1] != 1)
+            {
+                ++br;
+            }
+        }
+    }
+    cout<<br<<endl;
+    return 0;
+}

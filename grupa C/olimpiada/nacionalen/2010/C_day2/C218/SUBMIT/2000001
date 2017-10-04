@@ -1,0 +1,29 @@
+#include<iostream>
+#include<string>
+#include<cmath>
+using namespace std;
+int main()
+{
+  string s;
+  char c;
+  getline(cin,s);
+  int n;
+  int sn=s.size();
+  n=sqrt(sn);
+  long long sum=0;
+  for(int i=0;i<sn;i++)if(s[i]>='0' && s[i]<='9')sum+=s[i]-'0';
+  long long k=sum%n;
+  long long  i=n*k;
+  while(s[i]>='A' && s[i]<='Z')
+  {
+    cout<<s[i];
+    if((int)(i+1)/n >(int)i/n)i++;else
+    if(i+n+1<sn)i+=n+1;else
+    i%=n;
+  }
+  cout<<endl;
+  return 0;
+}
+//RNLAJDSRGT5EO8OTHIKOLWOEKOLWOEKIMF!MOIL2A!
+//RNLAJDSRGT5EO8OTHIKOLWOEKIMF!MOIL2A!\
+//123456789012345678901234567890123456

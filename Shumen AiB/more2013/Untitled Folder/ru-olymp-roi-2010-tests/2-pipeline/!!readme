@@ -1,0 +1,12 @@
+cover_sm_greed1.java - жадность: делает безопасные операции, если их нет, то берет вершину максимальной степени 
+cover_sm_slow1.java - решение за 2 ^ n * m
+cover_sm_slow2.java - решение за n ^ k * m
+cover_sm_slow3.java - решение за 2 ^ k * n ^ 2
+
+
+
+Usage:
+!test.exe solution.exe - runs solution on all tests, generates answers or compares the result with existing answers
+read !test.ini for more data
+
+!val.bat - checks the correctness of all tests

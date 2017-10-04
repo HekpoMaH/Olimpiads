@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int main ()
+{ int n, x, a, b, c, g;
+  char N;
+
+cin >> N;
+cin >> n;
+cin >> N;
+cin >> a;
+cin >> N;
+cin >> b;
+cin >> N;
+cin >> c;
+
+//g = ((n N a N b) - 124)/ 4;
+
+cout << 13 << endl;
+
+return 0;
+}
+

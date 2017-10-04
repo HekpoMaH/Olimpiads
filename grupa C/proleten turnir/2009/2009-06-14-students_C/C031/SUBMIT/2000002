@@ -1,0 +1,62 @@
+/*
+TASK:kabel
+LANG:C++
+*/
+#include<iostream>
+
+using namespace std;
+int p[128],r[128],q[128],f[128];
+int main()
+{
+int i,j,n,l;
+cin>>n>>l;
+for(i=1;i<=n;i++)
+ scanf("%d%d%d%d",&p[i],&r[i],&q[i],&f[i]);
+int c=0;
+while(l>0)
+{
+ int m=5000,mi;         
+ for(i=1;i<=n;i++)
+ {
+  if(p[i]<m)
+  {
+   m=p[i]; 
+   mi=i; 
+  }
+  if(l>=r[i])
+   if(q[i]<m)
+   {
+    m=q[i];
+    mi=i;         
+   }                
+ }
+ //cout<<c<<' '<<m<<' '<<mi<<endl;
+ if(m==5000)
+ {
+  cout<<"-1"<<endl;          
+  //system("pause");
+  return 0;          
+ }
+ if(l<r[mi])
+ {
+  cout<<c+l*p[mi]<<endl;
+  //system("pause");
+  return 0;          
+ }
+ if(l<f[mi])
+ {
+  cout<<c+l*q[mi]<<endl;
+  //system("pause");
+  return 0;          
+ } 
+ l=l-f[mi];
+ //cout<<c<<endl;
+ c=c+q[mi]*f[mi];
+ //cout<<c<<endl;
+ p[mi]=6000;
+ q[mi]=6000;          
+}
+//system("pause");
+return 0;
+}
+

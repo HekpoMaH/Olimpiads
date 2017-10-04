@@ -1,0 +1,28 @@
+#include<iostream>
+using namespace std;
+long long m[100005];
+char c[100005];
+int main()
+{
+  long long i,x,n;
+  i=0;
+  while(1)
+  {
+    i++;
+    cin>>c[i]>>m[i];
+    if(c[i]=='=')
+      break;
+  }
+  n=i;
+  x=m[n];
+  for(i=n-1;i>=1;i--)
+  {
+    if(c[i]=='-')
+      x=x+m[i];
+    if(c[i]=='+')
+      x=x-m[i];
+    if(c[i]=='*')
+      x=x/m[i];
+  }
+  cout<<x<<endl;
+}

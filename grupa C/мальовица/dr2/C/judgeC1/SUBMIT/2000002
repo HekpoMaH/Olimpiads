@@ -1,0 +1,37 @@
+#include <cstdio>
+#include <string>
+#include <algorithm>
+#include <cstring>
+
+#define MAX 131072
+#define MOD 1000000007
+FILE *in; FILE *out;
+
+int dyn[MAX];
+int recurse(int n)
+{
+	if (n == 0) return 1;
+	if (n == 1 || n == 2) return 0;
+	if (dyn[n] != -1) return dyn[n];
+	
+	int ans = 0;
+	for (int i = 3; i <= n; i++)
+		{ans += recurse(n - i); if (ans >= MOD) ans -= MOD;}
+	
+	return dyn[n] = ans;
+}
+
+
+int main(void)
+{
+	in = stdin; out = stdout;
+//	in = fopen("partition.in", "rt"); out = fopen("partition.out", "wt");
+	
+	int n;
+	fscanf(in, "%d", &n);
+	
+	memset(dyn, -1, sizeof(dyn));
+	fprintf(out, "%d\n", recurse(n));
+	
+	return 0;
+}

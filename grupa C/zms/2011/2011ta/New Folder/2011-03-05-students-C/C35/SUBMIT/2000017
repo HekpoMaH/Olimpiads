@@ -1,0 +1,24 @@
+#include<stdio.h>
+int main() {
+    int n,k,i,j,l,res;
+    int a[1001][1001];
+    int min0[1000001];
+    scanf("%d",&n);
+    for(i=1;i<1000001;i++)
+        min0[i]=1000001;
+    for(i=0;i<n;i++)
+        for(j=0;j<n;j++) {
+            scanf("%d",&a[i][j]);
+            if(i+(n-1-j)<min0[a[i][j]])
+                min0[a[i][j]]=i+(n-1-j);
+        }
+    scanf("%d",&k);
+    for(i=0;i<k;i++) {
+        scanf("%d",&res);
+        if(min0[res]==1000001)
+            printf("No Solution\n");
+        else
+            printf("%d\n",min0[res]);
+    }
+    return 0;
+}

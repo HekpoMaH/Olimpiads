@@ -1,0 +1,108 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="jp"
+ lang="jp" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>jp:complexity</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-11-28T20:41:40-0800" />
+<meta name="keywords" content="jp,complexity" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/jp/complexity?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=jp" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/jp/complexity" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/jp/complexity" />
+<link rel="canonical" href="complexity" />
+<link rel="stylesheet" media="all" type="text/css" href="../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='jp';var JSINFO = {"id":"jp:complexity","namespace":"jp"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="時間計算量" id="時間計算量">時間計算量</a></h2>
+<div class="level2">
+
+<p>
+
+アルゴリズムはどれも異なる計算量を持ちます。Nサイズの入力が与えられたとすると、それらは以下のように表現されます:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">名前</th><th class="col1">早さ</th><th class="col2">概要</th><th class="col3">数式</th><th class="col4">例</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">階乗時間※1(factorial time)</td><td class="col1">より遅い</td><td class="col2">NのN乗に比例した時間を費やします(※2)</td><td class="col3 centeralign">  N!  </td><td class="col4">巡回セールスマン問題の総当たりによる解法</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">指数関数時間</td><td class="col1">遅い</td><td class="col2">定数のN乗に比例した時間を費やします</td><td class="col3 centeralign">  K<sup>N</sup>  </td><td class="col4">ルービックキューブの総当たりによる解法</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">多項式時間</td><td class="col1">早い</td><td class="col2">Nの定数乗に比例した時間を費します</td><td class="col3 centeralign">  N<sup>K</sup>  </td><td class="col4">比較ソート (バブル、挿入、選択ソート)</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">線形対数時間※1(linearithmic time)</td><td class="col1">より早い</td><td class="col2">多項式時間と線形時間の中間の時間を費やします</td><td class="col3 centeralign">  N * log(N)  </td><td class="col4">線形対数ソート※1 (クイックソート、ヒープソート、マージソート)</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0">線形時間</td><td class="col1">さらに早い</td><td class="col2">Nに直接比例した時間を費やします</td><td class="col3 centeralign">  K * N  </td><td class="col4">配列走査</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0">対数時間</td><td class="col1">とても早い</td><td class="col2">Nの対数に比例した時間を費やします</td><td class="col3 centeralign">  K * log(N)  </td><td class="col4">2分探索</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0">定数時間</td><td class="col1">最も早い</td><td class="col2">入力がどんなに大きくても固定の時間を費やします</td><td class="col3 centeralign">  K  </td><td class="col4">インデックスによる配列要素へのアクセス</td>
+	</tr>
+</table>
+
+<p>
+訳注：※1正確な数学用語求む ※2原文合ってますか？
+</p>
+
+</div>
+<!-- SECTION "時間計算量" [1-1381] -->
+<h3><a name="計算量解析" id="計算量解析">計算量解析</a></h3>
+<div class="level3">
+
+<p>
+
+異なる順序や集合の入力に対する操作は異なる計算量を持ちます。異なる時間計算量解析の手法は以下の通りです:
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<th class="col0">名前</th><th class="col1">概要</th><th class="col2">例</th>
+	</tr>
+	<tr class="row1">
+		<td class="col0">最善ケース</td><td class="col1">可能な限り高速に処理されるケース</td><td class="col2"> バブルソートの最善ケースの計算量はNです</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0">平均ケース</td><td class="col1">起こりうる大多数の事例と同等の時間で処理されるケース</td><td class="col2"> クイックソートの平均計算量はN * log(N)です</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0">最悪ケース</td><td class="col1">可能な限り低速で処理されるケース</td><td class="col2"> クイックソートの最悪ケースの計算量はN<sup>2</sup>です</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0">償却的な最悪ケース</td><td class="col1">果てしなく大きな入力を受け取ったときの平均最悪ケース</td><td class="col2"> vector::push_back()は償却的な最悪ケースの計算量はK(定数時間)です</td>
+	</tr>
+</table>
+
+<p>
+
+適切なアルゴリズムの選択は、どのようなケースとの遭遇をアプリケーションに期待しているかに依存します。たとえば、アプリケーションを悪意ある入力から守らなければならない場合、最悪ケースの計算量がN<sup>2</sup>の単純なクイックソート実装は避けられるでしょう。平均ケースの計算量が他のすべてのソートの中でもっとも早いものの一つであるにもかかわらずです。
+</p>
+
+</div>
+<!-- SECTION "計算量解析" [1382-] --></div>
+</body>
+</html>

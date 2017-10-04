@@ -1,0 +1,14 @@
+#include<iostream>
+using namespace std;
+int main()
+{
+  string s;
+  getline(cin,s);
+  unsigned long long n,k=1,q=0;
+  n=s.size()%1800000007;
+  sort(s.begin(),s.end());
+  for(int i=1;i<s.size();i++){if(s[i]=='0')q++;if(s[i]!=s[i-1])k++;}
+  if(s[0]=='0')q++;
+  cout<<k*n%1800000007+q<<endl;
+  return 0;
+}

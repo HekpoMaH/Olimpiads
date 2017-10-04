@@ -1,0 +1,21 @@
+10 yes
+1
+10 yes
+2
+10 yes
+3
+10 yes
+4
+10 yes
+5
+10 yes
+6
+10 yes
+7
+10 yes
+8
+10 yes
+9
+10 yes
+10
+

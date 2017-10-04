@@ -1,0 +1,74 @@
+#include<iostream>
+using namespace std;
+int n,a[64000],b[64000],br;
+void read()
+{
+
+    int i;
+    cin>>n;
+    for (i=0;i<n;i++)
+    cin>>a[i];
+    for (i=0;i<n;i++)
+    cin>>b[i];
+}
+int solve ()
+{
+
+    int i,j,k;
+    for (i=0;i<n;i++)
+    {
+
+        if (a[i]>a[i+1])
+        {
+
+            for (j=0;j<n;j++)
+            {
+
+                if (a[i]==b[j])
+                {
+
+                   for (k=0;k<n;k++)
+                   {
+
+                       if (a[i+1]==b[k])
+                       if (b[j]>b[k])
+                       br++;
+                   }
+                }
+            }
+        }
+        if (a[i]<a[i+1])
+        {
+
+            for (j=0;j<n;j++)
+            {
+
+                if (a[i]==b[j])
+                {
+
+                   for (k=0;k<n;k++)
+                   {
+
+                       if (a[i+1]==b[k])
+                       if (b[j]<b[k])
+                       br++;
+                   }
+                }
+            }
+        }
+
+    }
+    return br;
+}
+int main()
+{
+
+    read();
+    cout<<solve()<<endl;
+    return 0;
+}
+/*
+5
+3 1 2 5 4
+5 3 2 1 4
+*/

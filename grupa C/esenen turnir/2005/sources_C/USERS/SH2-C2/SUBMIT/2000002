@@ -1,0 +1,11 @@
+/*
+TASK:NUMBER
+LANG:C++
+*/
+#include<iostream.h>
+int n,d1,d2,d3;
+int main()
+{ cin>>n>>d1>>d2>>d3;
+cout<<n*5<<endl;
+return 0;
+}

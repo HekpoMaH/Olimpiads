@@ -1,0 +1,126 @@
+#include<iostream>
+using namespace std;
+
+int bk, a[111][111],m,n,k,r,s=0;
+int obh (int x, int y, int bk)
+{
+    if(bk==k)
+    {
+       a[x][y]=1;
+    }
+    else
+    {
+       if(x==1)
+       {
+          if(y==1)
+          {
+              obh(x+1,y,bk+1);
+              obh(x,y+1,bk+1);
+          }
+          else
+          {
+              if(y==n)
+              {
+                 obh(x+1,y,bk+1);
+                 obh(x,y-1,bk+1);
+              }
+              else
+              {
+                 obh(x+1,y,bk+1);
+                 obh(x,y-1,bk+1);
+                 obh(x,y+1,bk+1);
+              }
+          }
+       }
+       else
+       {
+          if(x==m)
+          {
+             if(y==1)
+             {
+                obh(x-1,y,bk+1);
+                obh(x,y+1,bk+1);
+             }
+             else
+             {
+                if(y==n)
+                {
+                   obh(x-1,y,bk+1);
+                   obh(x,y-1,bk+1);
+                }
+                else
+                {
+                   obh(x-1,y,bk+1);
+                   obh(x,y-1,bk+1);
+                   obh(x,y+1,bk+1);
+                }
+             }
+          }
+          else
+          {
+             if(y==1)
+             {
+                obh(x-1,y,bk+1);
+                obh(x+1,y,bk+1);
+                obh(x,y+1,bk+1);
+             }
+             else
+             {
+                if(y==n)
+                {
+                   obh(x+1,y,bk+1);
+                   obh(x-1,y,bk+1);
+                   obh(x,y-1,bk+1);
+                }
+                else
+                {
+                   obh(x+1,y,bk+1);
+                   obh(x-1,y,bk+1);
+                   obh(x,y-1,bk+1);
+                   obh(x,y+1,bk+1);
+                }
+             }
+          }
+       }
+    }
+}
+
+int main()
+{
+    int i,j,p;
+    cin>>m>>n>>r>>k;
+    for(i=1;i<=m;i++)
+    {
+       for(j=1;j<=n;j++)
+       {
+          a[i][j]==0;
+       }
+    }
+    p=0;
+    for(i=1;i<=m;i++)
+    {
+       for(j=1;j<=n;j++)
+       {
+           p++;
+           if(p==r)
+           {
+               obh(i,j,0);
+               break;
+           }
+       }
+    }
+    p=0;
+    for(i=1;i<=m;i++)
+    {
+       for(j=1;j<=n;j++)
+       {
+           p++;
+           if(a[i][j]==1)
+           {
+               s=s+p;
+           }
+       }
+    }
+    cout<<s<<endl;
+    return 0;
+}

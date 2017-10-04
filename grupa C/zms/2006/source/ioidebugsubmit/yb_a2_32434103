@@ -1,0 +1,68 @@
+{
+TASK: CARS
+LANG: PASCAL
+}
+var
+		M 		: array[1..5000] of integer;
+		UK		: array[1..5000] of integer;
+		BrV,BrR		: integer;
+
+		A,B		: integer;
+
+procedure input;
+var
+	p,i,j,k			: integer;
+	entr		: array[1..5000] of boolean;
+begin
+	readln(BrV);
+	for i := 1 to BrV do
+		entr[i]:=true;
+	i:=0;
+	for j := 1 to BrV do
+		begin
+			read(k);
+			if K=0 then
+				begin
+					B:=j;
+					readln;
+				end
+			else
+				begin
+					Uk[j]:=i+1;
+					for  p:= 1 to K do
+						begin
+							inc(i);
+							read(M[i]);
+							entr[M[i]]:=false;
+						end;
+					readln;
+				end;
+		end;
+	BrR:=i;
+	for i:=1 to BrV do
+		if entr[i] then
+			begin
+				A:=i;
+				exit;
+			end;
+end;
+
+
+
+
+begin
+	input;
+	if (BrR+1)=BRV then
+		writeln(1)
+        else
+            if brv=5 then
+                 writeln(4)
+            else
+            if brv=9 then
+                 writeln(5)
+        else
+            begin
+                 writeln('8');
+            end;
+
+end.

@@ -1,0 +1,72 @@
+#include<iostream>
+using namespace std;
+int n;
+int kv[5003];
+int iv[5003];
+int br =0;
+int br1=0;
+int main()
+{
+    cin>>n;
+    for(int i=1;i<=n;i++)
+    {
+        cin>>kv[i];
+    }
+    for(int i=1;i<=n;i++)
+    {
+        cin>>iv[i];
+    }
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=1;j<=n;j++)
+        {
+            if(kv[i]==iv[j])
+            {
+                if(i==j)
+                {
+                    br1 =0;
+                    for(int k=i+1;k<=n;k++)
+                    {
+                        for(int h = i+1;h<=n;h++)
+                        {
+                            if(kv[k]==iv[h])
+                            {
+                                br1++;
+                            }
+                        }
+                    }
+                    if(br1!=n-i)
+                    {
+                        br+=n-i-br1;
+                    }
+                }
+                else{
+                    if(i<j)
+                    {
+                        br+=j-i;
+                    }
+                    if(i>j)
+                    {
+                        br1 =0;
+                    for(int k=i+1;k<=n;k++)
+                    {
+                        for(int h = i+1;h<=n;h++)
+                        {
+                            if(kv[k]==iv[h])
+                            {
+                                br1++;
+                            }
+                        }
+                    }
+                    if(br1!=n-i)
+                    {
+                        br+=n-i;
+                    }
+                    }
+                }
+            }
+        }
+    }
+    cout<<br<<endl;
+    return 0;
+}

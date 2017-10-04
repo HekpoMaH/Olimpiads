@@ -1,0 +1,988 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 31: MATRIX OPERATIONS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap32.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap30.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0967_1a50">CHAPTER 31: MATRIX OPERATIONS<a name="0967_1a50"></h1><P>
+<a name="0967_1a4f">Operations on matrices are at the heart of scientific computing. Efficient algorithms for working with matrices are therefore of considerable practical interest. This chapter provides a brief introduction to matrix theory and matrix operations, emphasizing the problems of multiplying matrices and solving sets of simultaneous linear equations.<P>
+After Section 31.1 introduces basic matrix concepts and notations, Section 31.2 presents Strassen's surprising algorithm for multiplying two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>lg 7</SUP>) = <I>O</I>(<I>n</I><SUP>2.81</SUP>) time. Section 31.3 defines quasirings, rings, and fields, clarifying the assumptions required to make Strassen's algorithm work. It also contains an asymptotically fast algorithm for multiplying boolean matrices. Section 31.4 shows how to solve a set of linear equations using LUP decompositions. Then, Section 31.5 explores the close relationship between the problem of multiplying matrices and the problem of inverting a matrix. Finally, Section 31.6 discusses the important class of symmetric positive-definite matrices and shows how they can be used to find a least-squares solution to an overdetermined set of linear equations.<P>
+
+
+
+
+
+<h1><a name="0969_0001">31.1 Properties of matrices<a name="0969_0001"></h1><P>
+In this section, we review some basic concepts of matrix theory and some fundamental properties of matrices, focusing on those that will be needed in later sections.<P>
+
+
+
+
+
+<h2>Matrices and vectors</h2><P>
+A <I><B>matrix</I></B> is a rectangular array of numbers. For example,<P>
+<img src="730_a.gif"><P>
+<h4><a name="096a_1a62">(31.1)<a name="096a_1a62"></sub></sup></h4><P>
+is a 2 <IMG SRC="../IMAGES/mult.gif"> 3 matrix <I>A</I> = (<I>a<SUB>ij</I></SUB>), where for <I>i</I> = 1, 2 and <I>j</I> = 1, 2, 3, the element of the matrix in row <I>i</I> and column <I>j</I> is <I>a<SUB>ij</I></SUB>. We use uppercase letters to denote matrices and corresponding subscripted lowercase letters to denote their elements. The set of all <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices with real-valued entries is denoted <B>R</B><I><SUP>m<IMG SRC="../IMAGES/mult.gif">n</I></SUP>. In general, the set of <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices with entries drawn from a set <I>S</I> is denoted <I>S<SUP>m<IMG SRC="../IMAGES/mult.gif">n</I></SUP>.<P>
+<a name="096a_1a50"><a name="096a_1a51">The <I><B>transpose</I></B> of a matrix <I>A</I> is the matrix <I>A</I><SUP>T</SUP> obtained by exchanging the rows and columns of <I>A</I>. For the matrix <I>A</I> of equation (31.1),<P>
+<img src="731_a.gif"><P>
+<a name="096a_1a52"><a name="096a_1a53"><a name="096a_1a54">A <I><B>vector</I></B> is a one-dimensional array of numbers. For example,<P>
+<img src="731_b.gif"><P>
+<h4><a name="096a_1a63">(31.2)<a name="096a_1a63"></sub></sup></h4><P>
+is a vector of size 3. We use lowercase letters to denote vectors, and we denote the <I>i</I>th element of a size-<I>n</I> vector <I>x</I> by <I>x<SUB>i</SUB>, </I>for<I> i </I>=<I> </I>1, 2, . . . , <I>n</I>. We take the standard form of a vector to be as a <I><B>column vector</I></B> equivalent to an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> 1 matrix; the corresponding <I><B>row vector</I></B> is obtained by taking the transpose:<P>
+<pre><I>x</I><SUP>T</SUP> = ( 2 3 5 ) .</sub></sup></pre><P>
+<a name="096a_1a55">The <I><B>unit vector</I></B> <I>e<SUB>i</I></SUB> is the vector whose <I>i</I>th element is 1 and all of whose other elements are 0. Usually, the size of a unit vector is clear from the context.<P>
+<a name="096a_1a56">A <I><B>zero matrix</I></B> is a matrix whose every entry is 0. Such a matrix is often denoted 0, since the ambiguity between the number 0 and a matrix of 0's is usually easily resolved from context. If a matrix of 0's is intended, then the size of the matrix also needs to be derived from the context.<P>
+<a name="096a_1a57"><I><B>Square</I></B> <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices arise frequently. Several special cases of square matrices are of particular interest:<P>
+<a name="096a_1a58">1.     A <I><B>diagonal matrix</I></B> has <I>a<SUB>ij</I></SUB> = 0 whenever <I>i</I> <IMG SRC="../IMAGES/noteq.gif"> <I>j</I>. Because all of the off-diagonal elements are zero, the matrix can be specified by listing the elements along the diagonal:<P>
+<img src="731_c.gif"><P>
+<a name="096a_1a59">2     The <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> <I><B>identity matrix</I></B> <I><B>I</I></B><I><SUB>n</I></SUB> is a diagonal matrix with 1's along the diagonal:<P>
+<pre><I><B>I</I></B><I><SUB>n</I></SUB> = diag(1,1,...,1)</sub></sup></pre><P>
+<img src="732_a.gif"><P>
+When <I>I</I> appears without a subscript, its size can be derived from context. The <I>i</I>th column of an identity matrix is the unit vector <I>e<SUB>i</SUB>.</I><P>
+<a name="096a_1a5a">3.     A <I><B>tridiagonal matrix </I></B><I>T</I> is one for which <I>t<SUB>ij</I></SUB> = 0 if |<I>i</I> - <I>j</I>| &gt; 1. Nonzero entries appear only on the main diagonal, immediately above the main diagonal (<I>t<SUB>i</I>,<I>i</I>+1</SUB> for <I>i</I> = 1, 2, . . . , <I>n </I>- 1), or immediately below the main diagonal (<I>t<SUB>i</I>+1,<I>i</I></SUB> for <I>i</I> = 1, 2, . . . , <I>n</I> - 1):<P>
+<img src="732_b.gif"><P>
+<a name="096a_1a5b"><a name="096a_1a5c">4.     An <I><B>upper-triangular matrix </I></B><I>U</I> is one for which <I>u<SUB>ij</I></SUB> = 0 if <I>i</I> &gt; <I>j</I>. All entries below the diagonal are zero:<P>
+<img src="732_c.gif"><P>
+<a name="096a_1a5d">An upper-triangular matrix is <I><B>unit upper-triangular</I></B> if it has all 1's along the diagonal.<P>
+<a name="096a_1a5e">5.     A <I><B>lower-triangular matrix</I></B><I> L</I> is one for which <I>l<SUB>ij</I></SUB> = 0 if <I>i</I> &lt; <I>j</I>. All entries above the diagonal are zero:<P>
+<img src="732_d.gif"><P>
+<a name="096a_1a5f">A lower-triangular matrix is <I><B>unit lower-triangular</I></B> if it has all 1's along the diagonal.<P>
+<a name="096a_1a60">6.     A <I><B>permutation matrix</I></B> <I>P</I> has exactly one 1 in each row or column, and 0's elsewhere. An example of a permutation matrix is<P>
+<img src="732_e.gif"><P>
+Such a matrix is called a permutation matrix because multiplying a vector <I>x</I> by a permutation matrix has the effect of permuting (rearranging) the elements of <I>x</I>.<P>
+<a name="096a_1a61">7.     A <I><B>symmetric matrix</I></B> <I>A</I> satisfies the condition <I>A </I>= <I>A</I><SUP>T</SUP>. For example,<P>
+<img src="733_a.gif"><P>
+is a symmetric matrix.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Operations on matrices</h2><P>
+<a name="096b_1a62">The elements of a matrix or vector are numbers from a number system, such as the real numbers, the complex numbers, or integers modulo a prime. The number system defines how to add and multiply numbers. We can extend these definitions to encompass addition and multiplication of matrices.<P>
+<a name="096b_1a63"><a name="096b_1a64">We define <I><B>matrix addition</I></B> as follows. If <I>A</I> = (<I>a<SUB>ij</I></SUB>) and <I>B</I> = (<I>b<SUB>ij</I></SUB>) are <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices, then their matrix sum <I>C</I> = (<I>c<SUB>ij</I></SUB>) = <I>A</I> + <I>B</I> is the <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix defined by<P>
+<pre><I>c<SUB>ij</SUB> </I>=<I> a<SUB>ij</SUB> </I>+<I> b<SUB>ij</I></sub></sup></pre><P>
+for <I>i</I> = 1, 2, . . . , <I>m</I> and <I>j</I> = 1, 2, . . . , <I>n</I>. That is, matrix addition is performed componentwise. A zero matrix is the identity for matrix addition:<P>
+<pre><I>A </I>+ 0 = <I>A</I></sub></sup></pre><P>
+<pre>= 0 + <I>A </I>.</sub></sup></pre><P>
+<a name="096b_1a65"><a name="096b_1a66"><a name="096b_1a67">If <IMG SRC="../IMAGES/lambdauc.gif"> is a number and <I>A</I> = (<I>a<SUB>ij</I></SUB>) is a matrix, then <IMG SRC="../IMAGES/lambdauc.gif"><I>A =</I> (<IMG SRC="../IMAGES/lambdauc.gif"><I>a<SUB>ij</I></SUB>) is the <I><B>scalar multiple</I></B> of <I>A</I> obtained by multiplying each of its elements by <IMG SRC="../IMAGES/lambdauc.gif">. As a special case, we define the <I><B>negative</I></B> of a matrix <I>A</I> = (<I>a<SUB>ij</I></SUB>) to be -1 <IMG SRC="../IMAGES/dot10.gif"> <I>A</I> = - <I>A</I>, so that the <I>ij</I>th entry of - <I>A</I> is -<I>a<SUB>ij</I></SUB>. Thus,<P>
+<pre><I>A </I>+ (-<I>A</I>) = 0</sub></sup></pre><P>
+<pre>= (-<I>A</I>) + <I>A .</I></sub></sup></pre><P>
+Given this definition, we can define <I><B>matrix subtraction</I></B> as the addition of the negative of a matrix: <I>A</I> - <I>B</I> = <I>A</I> + (-<I>B</I>).<P>
+<a name="096b_1a68">We define <I><B>matrix multiplication</I></B> as follows. We start with two matrices <I>A</I> and <I>B</I> that are <I><B>compatible</I></B> in the sense that the number of columns of <I>A</I> equals the number of rows of <I>B</I>. (In general, an expression containing a matrix product <I>AB</I> is always assumed to imply that matrices <I>A</I> and <I>B</I> are<SUB> </SUB><FONT FACE="Times New Roman" SIZE=2>compatible.) If <I>A</I> = (<I>a<SUB>ij</I></FONT></SUB>) is an <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix and <I>B</I> = (<I>b<SUB>jk</I></SUB>) is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>p</I> matrix, then their matrix product <I>C</I> = <I>AB</I> is the <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>p</I> matrix <I>C</I> = (<I>c<SUB>ik</I></SUB>),<SUB> </SUB>where<P>
+<img src="733_b.gif"><P>
+<h4><a name="096b_1a70">(31.3)<a name="096b_1a70"></sub></sup></h4><P>
+for <I>i</I> = 1, 2, . . . , <I>m</I> and <I>k</I> = 1, 2, . . . , <I>p</I>. The procedure M<FONT FACE="Courier New" SIZE=2>ATRIX-</FONT><FONT FACE="Courier New" SIZE=2>MULTIPLY</FONT> in Section 26.1 implements matrix multiplication in the straightforward manner based on equation (31.3), assuming that the matrices are square: <I>m</I> = <I>n</I> = <I>p</I>. To multiply <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices, M<FONT FACE="Courier New" SIZE=2>ATRIX-</FONT><FONT FACE="Courier New" SIZE=2>MULTIPLY</FONT> performs <I>n</I><SUP>3</SUP> multiplications and <I>n</I><SUP>2</SUP>(<I>n</I> - 1) additions, and its running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>).<P>
+Matrices have many (but not all) of the algebraic properties typical of numbers. Identity matrices are identities for matrix multiplication:<P>
+<pre><I>I<SUB>m</SUB>A</I> = <I>AI<SUB>n</I></SUB> = <I>A</I></sub></sup></pre><P>
+for any <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>A</I>. Multiplying by a zero matrix gives a zero matrix:<P>
+<pre><I>A </I>0 = 0 .</sub></sup></pre><P>
+Matrix multiplication is associative:<P>
+<pre><I>A</I>(<I>BC</I>)<I> </I>=<I> </I>(<I>AB</I>)<I>C</I></sub></sup></pre><P>
+<h4><a name="096b_1a71">(31.4)<a name="096b_1a71"></sub></sup></h4><P>
+for compatible matrices <I>A</I>, <I>B</I>, and <I>C</I>. Matrix multiplication distributes over addition:<P>
+<pre><I>A</I>(<I>B</I> + <I>C</I>) = <I>AB</I> + <I>AC </I>,</sub></sup></pre><P>
+<pre>(<I>B</I> + <I>C</I>)<I>D</I> = <I>BD</I> + <I>CD </I>.</sub></sup></pre><P>
+<h4><a name="096b_1a72">(31.5)<a name="096b_1a72"></sub></sup></h4><P>
+Multiplication of <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices is not commutative, however, unless <I>n</I> = 1. For example, if <img src="734_a.gif"> and <img src="734_b.gif">, then<P>
+<img src="734_c.gif"><P>
+and<P>
+<img src="734_d.gif"><P>
+<a name="096b_1a69"><a name="096b_1a6a"><a name="096b_1a6b"><a name="096b_1a6c"><a name="096b_1a6d"><a name="096b_1a6e"><a name="096b_1a6f">Matrix-vector products or vector-vector products are defined as if the vector were the equivalent <I>n</I> <IMG SRC="../IMAGES/mult.gif"> 1 matrix (or a 1 <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix, in the case of a row vector). Thus, if <I>A</I> is an <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix and <I>x</I> is a vector of size <I>n</I>, then <I>Ax</I> is a vector of size <I>m</I>. If <I>x</I> and <I>y</I> are vectors of size <I>n</I>, then<P>
+<img src="734_e.gif"><P>
+is a number (actually a 1 <IMG SRC="../IMAGES/mult.gif"> 1 matrix) called the <I><B>inner product</I></B> of <I>x</I> and <I>y</I>. The matrix <I>xy</I><SUP>T</SUP> is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>Z</I> called the <I><B>outer product</I></B> of <I>x</I> and <I>y</I>, with <I>z<SUB>ij</I></SUB> = <I>x<SUB>i</SUB>y<SUB>j</I></SUB>. The <I><B>(euclidean) norm </I></B>||<I>x</I>|| of a vector <I>x</I> of size <I>n</I> is defined by<P>
+<img src="734_f.gif"><P>
+Thus, the norm of <I>x</I> is its length in <I>n</I>-dimensional euclidean space.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Matrix inverses, ranks, and determinants</h2><P>
+<a name="096c_1a70">We define the <I><B>inverse</I></B> of an <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrix <I>A</I> to be the <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrix, denoted <I>A</I><SUP>-1</SUP> (if it exists), such that <I>AA</I><SUP>-1</SUP> = <I>I<SUB>n</SUB> </I>= <I>A</I><SUP>-1</SUP> <I>A</I>. For example,<P>
+<img src="735_a.gif"><P>
+<a name="096c_1a71"><a name="096c_1a72"><a name="096c_1a73">Many nonzero <I>n <IMG SRC="../IMAGES/mult.gif"> n </I>matrices do not have inverses. A matrix without an inverse is is called <I><B>noninvertible</I></B>, or <I><B>singular</I></B><I>.</I> An example of a nonzero singular matrix is<P>
+<img src="735_b.gif"><P>
+<a name="096c_1a74">If a matrix has an inverse, it is called <I><B>invertible</I></B>, or <I><B>nonsingular</I></B>. Matrix inverses, when they exist, are unique. (See Exercise 31.1-4.) If <I>A </I>and <I>B </I>are nonsingular <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrices, then<P>
+<pre>(<I>BA</I>)<SUP>-1</SUP> = <I>A</I><SUP>-1</SUP><I>B</I><SUP>-1</SUP>.</sub></sup></pre><P>
+<h4><a name="096c_1a83">(31.6)<a name="096c_1a83"></sub></sup></h4><P>
+The inverse operation commutes with the transpose operation:<P>
+<pre>(<I>A</I><SUP>-1</SUP>)<SUP>T</SUP> = (<I>A</I><SUP>T</SUP>)<SUP>-1 </SUP>.</sub></sup></pre><P>
+<a name="096c_1a75"><a name="096c_1a76"><a name="096c_1a77">The vectors <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB> are <I><B>linearly dependent</I></B> if there exist coefficients <I>c</I><SUB>1</SUB>,<SUB> </SUB><I>c</I><SUB>2</SUB>, . . . , <I>cn,</I> not all of which are zero, such that <I>c</I><SUB>1</SUB><I>x</I><SUB>1 </SUB>+ <I>c</I><SUB>2</SUB><I>x</I><SUB>2</SUB> + . . . + <I>c<SUB>n</SUB>x<SUB>n</I></SUB> = 0. For example, the vectors <I>x</I><SUB>1</SUB> = ( 1 2 3 )<SUP>T</SUP>, <I>x</I><SUB>2</SUB> = ( 2 6 4 )<SUP>T</SUP>, and <I>x</I><SUB>3</SUB> = ( 4 11 9 )<SUP>T</SUP> are linearly dependent, since 2<I>x</I><SUB>1</SUB> + 3<I>x</I><SUB>2</SUB> - 2<I>x</I><SUB>3</SUB> = 0. If vectors are not linearly dependent, they are <I><B>linearly independent.</I></B> For example, the columns of an identity matrix are linearly independent.<P>
+<a name="096c_1a78"><a name="096c_1a79"><a name="096c_1a7a"><a name="096c_1a7b"><a name="096c_1a7c">The<I><B> column rank </I></B>of a nonzero <I>m <IMG SRC="../IMAGES/mult.gif"> n</I> matrix <I>A</I> is the size of the largest set of linearly independent columns of <I>A</I>. Similarly, the <I><B>row rank </I></B>of <I>A</I> is the size of the largest set of linearly independent rows of <I>A</I>. A fundamental property of any matrix <I>A</I> is that its row rank always equals its column rank, so that we can simply refer to the<I><B> rank </I></B>of <I>A</I>. The rank of an <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n </I>matrix is an integer between 0 and min(<I>m</I>, <I>n</I>), inclusive. (The rank of a zero matrix is 0, and the rank of an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> identity matrix is <I>n</I>.) An alternate, but equivalent and often more useful, definition is that the rank of a nonzero <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>A</I> is the smallest number <I>r</I> such that there exist matrices <I>B</I> and <I>C</I> of respective sizes <I>m </I><IMG SRC="../IMAGES/mult.gif"> <I>r</I> and <I>r</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> such that<P>
+<pre><I>A</I> = <I>BC </I>.</sub></sup></pre><P>
+<a name="096c_1a7d"><a name="096c_1a7e">A square <I>n </I><IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix has <I><B>full rank </I></B>if its rank is <I>n</I>. A fundamental property of ranks is given by the following theorem.<P>
+<a name="096c_1a84">Theorem 31.1<a name="096c_1a84"><P>
+A square matrix has full rank if and only if it is nonsingular.      <P>
+An <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix has <I><B>full column rank</I></B> if its rank is <I>n</I>.<P>
+<a name="096c_1a7f">A<I><B> null vector </I></B>for a matrix <I>A</I> is a nonzero vector <I>x</I> such that <I>Ax</I> = 0. The following theorem, whose proof is left as Exercise 31.1-8, and its corollary relate the notions of column rank and singularity to null vectors.<P>
+<a name="096c_1a85">Theorem 31.2<a name="096c_1a85"><P>
+A matrix <I>A</I> has full column rank if and only if it does not have a null vector.      <P>
+<a name="096c_1a86">Corollary 31.3<a name="096c_1a86"><P>
+A square matrix <I>A</I> is singular if and only if it has a null vector.      <P>
+<a name="096c_1a80"><a name="096c_1a81">The <I>ij</I>th<I><B> minor</I></B> of an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>A</I>, for <I>n</I> &gt; 1, is the (<I>n</I> - 1) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - 1) matrix A<SUB>[<I>ij</I>] </SUB>obtained by deleting the <I>i</I>th row and <I>j</I>th column of <I>A</I>. The <I><B>determinant</I></B> of an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix<I> A</I> can be defined recursively in terms of its minors by<P>
+<img src="736_a.gif"><P>
+<h4><a name="096c_1a87">(31.7)<a name="096c_1a87"></sub></sup></h4><P>
+<a name="096c_1a82">The term (-1)<I><SUP>i+ j </I></SUP>det(<I>A</I><SUB>[<I>ij</I>]</SUB>) is known as the <I><B>cofactor </I></B>of the element <I>a<SUB>ij</I></SUB>.<P>
+The following theorems, whose proofs are omitted here, express fundamental properties of the determinant.<P>
+<a name="096c_1a88">Theorem 31.4<a name="096c_1a88"><P>
+The determinant of a square matrix <I>A</I> has the following properties:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>If any row or any column of <I>A</I> is zero, then det (<I>A</I>) = 0.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>The determinant of <I>A</I> is multiplied by <IMG SRC="../IMAGES/lambdauc.gif"> if the entries of any one row (or any one column) of <I>A</I> are all multiplied by <IMG SRC="../IMAGES/lambdauc.gif">.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>The determinant of <I>A</I> is unchanged if the entries in one row (respectively, column) are added to those in another row (respectively, column).<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>The determinant of <I>A</I> equals the determinant of <I>A</I><SUP>T</SUP>.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>The determinant of <I>A</I> is multiplied by - 1 if any two rows (respectively, columns) are exchanged.<P>
+Also, for any square matrices <I>A</I> and <I>B</I>, we have det (<I>AB</I>) = det(<I>A</I>) det(<I>B</I>).      <P>
+<a name="096c_1a89">Theorem 31.5<a name="096c_1a89"><P>
+An<I> n </I><IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>A</I> is singular if and only if det(<I>A</I>) = 0.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Positive-definite matrices</h2><P>
+<a name="096d_1a83">Positive-definite matrices play an important role in many applications. An <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n </I>matrix <I>A</I> is<I><B> positive-definite</I></B> if<I> x</I><SUP>T</SUP> <I>Ax</I> &gt; 0 for all size-<I>n</I> vectors <I>x</I> <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/noteq.gif"></FONT> 0. For example, the identity matrix is positive-definite, since for any nonzero vector <I>x</I> = ( <I>x</I><SUB>1</SUB><I> x</I><SUB>2</SUB> . . .  <I>x<SUB>n</I></SUB>)<SUP>T</SUP>,<P>
+<img src="737_a.gif"><P>
+As we shall see, matrices that arise in applications are often positive-definite due to the following theorem.<P>
+<a name="096d_1a84">Theorem 31.6<a name="096d_1a84"><P>
+For any matrix <I>A</I> with full column rank, the matrix <I>A</I><SUP>T</SUP><I>A</I> is positive-definite.<P>
+<I><B>Proof     </I></B>We must show that<I> x</I><SUP>T</SUP> (<I>A</I><SUP>T</SUP><I>A</I>)<I>x </I>&gt; 0 for any nonzero vector <I>x</I>. For any vector<I> x</I>,<P>
+<pre><I>x</I><SUP>T</SUP>(<I>A</I><SUP>T</SUP><I> A</I>)<I>x = </I>(<I>Ax</I>)<SUP>T</SUP>(<I>Ax</I>)<I>   </I>(by Exercise 31.1-3)</sub></sup></pre><P>
+<pre><I>= </I>||<I>Ax</I>||<SUP>2</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif"> 0 .</sub></sup></pre><P>
+<h4><a name="096d_1a85">(31.8)<a name="096d_1a85"></sub></sup></h4><P>
+Note that ||<I>Ax</I>||<SUP>2</SUP> is just the sum of the squares of the elements of the vector <I>Ax</I>. Therefore, if ||<I>Ax</I>||<SUP>2</SUP> = 0, every element of <I>Ax</I> is 0, which is to say <I>Ax</I> = 0. Since <I>A</I> has full column rank, <I>Ax</I> = 0 implies <I>x</I> = 0, by Theorem 31.2. Hence, <I>A</I><SUP>T</SUP> <I>A</I> is positive-definite.      <P>
+Other properties of positive-definite matrices will be explored in Section 31.6.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="096e_1a88">Exercises<a name="096e_1a88"></h2><P>
+<a name="096e_1a89">31.1-1<a name="096e_1a89"><P>
+<a name="096e_1a84">Prove that the product of two lower-triangular matrices is lower-triangular. Prove that the determinant of a (lower- or upper-) triangular matrix is equal to the product of its diagonal elements. Prove that the inverse of a lower-triangular matrix, if it exists, is lower-triangular.<P>
+<a name="096e_1a8a">31.1-2<a name="096e_1a8a"><P>
+<a name="096e_1a85">Prove that if<I> P</I> is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> permutation matrix and <I>A</I> is an <I>n </I><IMG SRC="../IMAGES/mult.gif"> n matrix, then <I>PA</I> can be obtained from <I>A</I> by permuting its rows, and <I>AP</I> can be obtained from <I>A </I>by permuting its columns. Prove that the product of two permutation matrices is a permutation matrix. Prove that if<I> P</I> is a permutation matrix, then <I>P</I> is invertible, its inverse is <I>P</I><SUP>T</SUP>, and <I>P</I><SUP>T</SUP> is a permutation matrix.<P>
+<a name="096e_1a8b">31.1-3<a name="096e_1a8b"><P>
+<a name="096e_1a86">Prove that (<I>AB</I>)<SUP>T </SUP>= <I>B</I><SUP>T </SUP><I>A</I><SUP>T </SUP>and that <I>A</I><SUP>T </SUP><I>A</I> is always a symmetric matrix.<P>
+<a name="096e_1a8c">31.1-4<a name="096e_1a8c"><P>
+Prove that if <I>B</I> and <I>C</I> are inverses of <I>A</I>, then <I>B</I> = <I>C.</I><P>
+<a name="096e_1a8d">31.1-5<a name="096e_1a8d"><P>
+Let <I>A</I> and <I>B</I> be <I>n<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT> matrices such that <I>AB</I> = <I>I</I>. Prove that if <I>A</I>' is obtained from <I>A</I> by adding row <I>j</I> into row <I>i</I>, then the inverse <I>B</I>' of <I>A</I>' can be obtained by subtracting column <I>i</I> from column <I>j</I> of <I>B.</I><P>
+<a name="096e_1a8e">31.1-6<a name="096e_1a8e"><P>
+Let <I>A</I> be a nonsingular <I>n<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT> matrix with complex entries. Show that every entry of <I>A</I><SUP>-1</SUP> is real if and only if every entry of <I>A </I>is real.<P>
+<a name="096e_1a8f">31.1-7<a name="096e_1a8f"><P>
+Show that if <I>A</I> is a nonsingular symmetric matrix, then <I>A</I><SUP>-1 </SUP>is symmetric. Show that if <I>B </I>is an arbitrary (compatible) matrix, then <I>B AB</I><SUP>T </SUP>is symmetric.<P>
+<a name="096e_1a90">31.1-8<a name="096e_1a90"><P>
+Show that a matrix <I>A</I> has full column rank if and only if <I>Ax</I> = 0 implies <I>x</I> = 0. (<I>Hint</I>: Express the linear dependence of one column on the others as a matrix-vector equation.)<P>
+<a name="096e_1a91">31.1-9<a name="096e_1a91"><P>
+Prove that for any two compatible matrices <I>A</I> and <I>B</I>,<P>
+rank(<I>AB</I>) <IMG SRC="../IMAGES/lteq12.gif"> min(rank(<I>A</I>), rank(<I>B</I>)) ,<P>
+where equality holds if either <I>A</I> or<I> B</I> is a nonsingular square matrix. (<I>Hint</I>: Use the alternate definition of the rank of a matrix.)<P>
+<a name="096e_1a92">31.1-10<a name="096e_1a92"><P>
+<a name="096e_1a87">Given numbers <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . . , <I>x<SUB>n</I>-1</SUB>, prove that the determinant of the <I><B>Vandermonde matrix</B></I><P>
+<img src="738_a.gif"><P>
+is<P>
+<img src="738_b.gif"><P>
+(<I>Hint:</I> Multiply column <I>i</I> by -<I>x</I><SUB>0</SUB> and add it to column <I>i</I> + 1 for <I>i</I> = <I>n</I> - 1, <I>n</I> - 2, . . . , 1, and then use induction.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="096f_1a8a">31.2 Strassen's algorithm for matrix multiplication<a name="096f_1a8a"></h1><P>
+<a name="096f_1a88"><a name="096f_1a89">This section presents Strassen's remarkable recursive algorithm for multiplying<I> n<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n </I></FONT>matrices that runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>lg 7</SUP>) = <I>O</I>(<I>n</I><SUP>2.81</SUP>) time. For sufficiently large<I> n,</I> therefore, it outperforms the naive <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) matrix-multiplication algorithm <FONT FACE="Courier New" SIZE=2>MATRIX</FONT>-<FONT FACE="Courier New" SIZE=2>MULTIPLY</FONT> from Section 26.1.<P>
+
+
+
+
+
+<h2>An overview of the algorithm</h2><P>
+<a name="0970_1a8a">Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm can be viewed as an application of a familiar design technique: divide and conquer. Suppose we wish to compute the product <I>C</I> = <I>AB</I>, where each of <I>A</I>, <I>B</I>, and <I>C</I> are <I>n<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT> matrices. Assuming that <I>n </I>is an exact power of 2, we divide each of <I>A, B,</I> and <I>C</I> into four <I>n/2<FONT FACE="Times New Roman" SIZE=3> <IMG SRC="../IMAGES/mult.gif"> n/2 </I></FONT>matrices, rewriting the equation <I>C</I> = <I>AB</I> as follows:<P>
+<img src="739_a.gif"><P>
+<h4><a name="0970_1a8b">(31.9)<a name="0970_1a8b"></sub></sup></h4><P>
+(Exercise 31.2-2 deals with the situation in which <I>n</I> is not an exact power of 2.) For convenience, the submatrices of <I>A</I> are labeled alphabetically from left to right, whereas those of <I>B</I> are labeled from top to bottom, in agreement with the way matrix multiplication is performed. Equation (31.9) corresponds to the four equations<P>
+<pre><I>r </I>= <I>ae</I> + <I>bf</I> ,</sub></sup></pre><P>
+<h4><a name="0970_1a8c">(31.10)<a name="0970_1a8c"></sub></sup></h4><P>
+<pre><I>s = ag </I>+<I> bh ,</I></sub></sup></pre><P>
+<h4><a name="0970_1a8d">(31.11)<a name="0970_1a8d"></sub></sup></h4><P>
+<pre><I>t = ce </I>+<I> df ,</I></sub></sup></pre><P>
+<h4><a name="0970_1a8e">(31.12)<a name="0970_1a8e"></sub></sup></h4><P>
+<pre><I>u = cg </I>+<I> dh .</I></sub></sup></pre><P>
+<h4><a name="0970_1a8f">(31.13)<a name="0970_1a8f"></sub></sup></h4><P>
+Each of these four equations specifies two multiplications of <I>n/2 </I><IMG SRC="../IMAGES/mult.gif"><I><FONT FACE="Times New Roman" SIZE=3> n/2 </I></FONT>matrices and the addition of their <I>n/2<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n/2</I></FONT> products. Using these equations to define a straightforward divide-and-conquer strategy, we derive the following recurrence for the time <I>T</I>(<I>n</I>) to multiply two <I>n<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT> matrices:<P>
+<pre><I>T</I>(<I>n</I>) = 8<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).</sub></sup></pre><P>
+<h4><a name="0970_1a90">(31.14)<a name="0970_1a90"></sub></sup></h4><P>
+Unfortunately, recurrence (31.14) has the solution<I> T</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>), and thus this method is no faster than the ordinary one.<P>
+Strassen discovered a different recursive approach that requires only 7 recursive multiplications of <I>n/2<FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT>/2<I> </I>matrices and <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) scalar additions and subtractions, yielding the recurrence<P>
+<pre><I>T</I>(<I>n</I>) = 7<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>lg 7</SUP>)</sub></sup></pre><P>
+<pre>= <I>O</I>(<I>n</I><SUP>2.81</SUP>) .</sub></sup></pre><P>
+<h4><a name="0970_1a91">(31.15)<a name="0970_1a91"></sub></sup></h4><P>
+Strassen's method has four steps:<P>
+1.     Divide the input matrices <I>A</I> and <I>B</I> into <I>n</I>/2<I><FONT FACE="Times New Roman" SIZE=3> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I></FONT>/2 submatrices, as in equation (31.9).<P>
+2.     Using <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) scalar additions and subtractions, compute 14 <I>n</I>/2<I><FONT FACE="Times New Roman" SIZE=3> <IMG SRC="../IMAGES/mult.gif"> n</I></FONT>/2<I> </I>matrices <I>A</I><SUB>1</SUB>, <I>B</I><SUB>1</SUB>,<I> A</I><SUB>2</SUB>,<I> B</I><SUB>2</SUB>,<I> . . . </I>,<I> A</I><SUB>7</SUB>,<I> B</I><SUB>7</sub>.<P>
+3.     Recursively compute the seven matrix products <I>P<SUB>i</SUB> = A<SUB>i</SUB>B<SUB>i</I></SUB> for <I>i </I>= 1, 2, . . . , 7.<P>
+4.     Compute the desired submatrices <I>r, s, t, u </I>of the result matrix <I>C </I>by adding and/or subtracting various combinations of the <I>P<SUB>i</I> </SUB>matrices, using only <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>2</I></SUP>) scalar additions and subtractions.<P>
+Such a procedure satisfies the recurrence (31.15). All that we have to do now is fill in the missing details.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Determining the submatrix products</h2><P>
+It is not clear exactly how Strassen discovered the submatrix products that are the key to making his algorithm work. Here, we reconstruct one plausible discovery method.<P>
+Let us guess that each matrix product <I>P<SUB>i</I></SUB> can be written in the form<P>
+<pre><I>P<SUB>i  </I></SUB>=<I>  A<SUB>i</SUB>B<SUB>i</I></sub></sup></pre><P>
+<pre>=  (<IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I>1</SUB><I>a</I> + <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I>2</SUB><I>b</I> + <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I>3</SUB><I>c</I> + <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I>4</SUB><I>d</I>) <IMG SRC="../IMAGES/dot10.gif"> (<IMG SRC="../IMAGES/beta14.gif"><I><SUB>i</I>1</SUB><I>e</I> + <IMG SRC="../IMAGES/beta14.gif"><I><SUB>i</I>2</SUB><I>f</I> + <IMG SRC="../IMAGES/beta14.gif"><I><SUB>i</I>3</SUB><I>g</I> + <IMG SRC="../IMAGES/beta14.gif"><I><SUB>i</I>4</SUB><I>h</I>) ,</sub></sup></pre><P>
+<h4><a name="0971_0001">(31.16)<a name="0971_0001"></sub></sup></h4><P>
+where the coefficients <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>ij</I></SUB>, <IMG SRC="../IMAGES/beta14.gif"><I><SUB>ij</I> </SUB>are all drawn from the set {-1, 0, 1}. That is, we guess that each product is computed by adding or subtracting some of the submatrices of <I>A,</I> adding or subtracting some of the submatrices of <I>B</I>, and then multiplying the two results together. While more general strategies are possible, this simple one turns out to work.<P>
+If we form all of our products in this manner, then we can use this method recursively without assuming commutativity of multiplication, since each product has all of the <I>A</I> submatrices on the left and all of the <I>B</I> submatrices on the right. This property is essential for the recursive application of this method, since matrix multiplication is not commutative.<P>
+For convenience, we shall use 4 <IMG SRC="../IMAGES/mult.gif"> 4 matrices to represent linear combinations of products of submatrices, where each product combines one submatrix of <I>A</I> with one submatrix of <I>B</I> as in equation (31.16). For example, we can rewrite equation (31.10) as<P>
+<img src="740_a.gif"><P>
+<img src="741_a.gif"><P>
+The last expression uses an abbreviated notation in which "+" represents +1, "<IMG SRC="../IMAGES/dot10.gif"><FONT FACE="CG Times (W1)" SIZE=2></FONT> represents 0, and <FONT FACE="CG Times (W1)" SIZE=2>"</FONT>-" represents -1. (From here on, we omit the row and column labels.) Using this notation, we have the following equations for the other submatrices of the result matrix <I>C</I>:<P>
+<img src="741_b.gif"><P>
+We begin our search for a faster matrix-multiplication algorithm by observing that the submatrix <I>s</I> can be computed as <I>s</I> = <I>P</I><SUB>1</SUB> + <I>P</I><SUB>2</SUB>, where <I>P</I><SUB>1 </SUB>and <I>P</I><SUB>2</SUB> are computed using one matrix multiplication each:<P>
+<img src="741_c.gif"><P>
+The matrix <I>t</I> can be computed in a similar manner as <I>t</I> = <I>P</I><SUB>3</SUB> + <I>P</I><SUB>4</SUB>, where<P>
+<img src="742_a.gif"><P>
+Let us define an <I><B>essential term</I></B> to be one of the eight terms appearing on the right-hand side of one of the equations (31.10)--(31.13). We have now used 4 products to compute the two submatrices <I>s</I> and <I>t</I> whose essential terms are <I>ag</I>, <I>bh</I>, <I>ce</I>, and <I>df</I> . Note that <I>P</I><SUB>1</SUB> computes the essential term <I>ag</I>, <I>P</I><SUB>2</SUB> computes the essential term <I>bh</I>, <I>P</I><SUB>3</SUB> computes the essential term <I>ce</I>, and <I>P</I><SUB>4</SUB> computes the essential term <I>df</I>. Thus, it remains for us to compute the remaining two submatrices <I>r</I> and <I>u</I>, whose essential terms are the diagonal terms <I>ae</I>, <I>bf</I>, <I>cg</I>, and <I>dh</I>, without using more than 3 additional products. We now try the innovation <I>P</I><SUB>5</SUB> in order to compute two essential terms at once:<P>
+<img src="742_b.gif"><P>
+In addition to computing both of the essential terms <I>ae</I> and <I>dh</I>, <I>P</I><SUB>5 </SUB>computes the inessential terms <I>ah</I> and <I>de</I>, which need to be cancelled somehow. We can use <I>P</I><SUB>4</SUB> and <I>P</I><SUB>2</SUB> to cancel them, but two other inessential terms then appear:<P>
+<img src="742_c.gif"><P>
+By adding an additional product<P>
+<img src="743_a.gif"><P>
+however, we obtain<P>
+<img src="743_b.gif"><P>
+We can obtain <I>u</I> in a similar manner from <I>P</I><SUB>5</SUB> by using <I>P</I><SUB>1</SUB> and <I>P</I><SUB>3</SUB> to move the inessential terms of <I>P</I><SUB>5</SUB> in a different direction:<P>
+<img src="743_c.gif"><P>
+By subtracting an additional product<P>
+<img src="743_d.gif"><P>
+we now obtain<P>
+<img src="743_e.gif"><P>
+The 7 submatrix products <I>P</I><SUB>1</SUB>, <I>P</I><SUB>2</SUB>, . . . , <I>P</I><SUB>7</SUB> can thus be used to compute the product <I>C</I> = <I>AB</I>, which completes the description of Strassen's method.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Discussion</h2><P>
+The large constant hidden in the running time of Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm makes it impractical unless the matrices are large (<I>n</I> at least 45 or so) and dense (few zero entries). For small matrices, the straightforward algorithm is preferable, and for large, sparse matrices, there are special sparsematrix algorithms that beat Strassen's in practice. Thus, Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s method is largely of theoretical interest.<P>
+By using advanced techniques beyond the scope of this text, one can in fact multiply <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices in better than <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>1g 7</SUP>) time. The current best upper bound is approximately <I>O</I>(<I>n</I><SUP>2.376</SUP>). The best lower bound known is just the obvious <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) bound (obvious because we have to fill in <I>n</I><SUP>2 </SUP>elements of the product matrix). Thus, we currently do not know how hard matrix multiplication really is.<P>
+Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm does not require that the matrix entries be real numbers. All that matters is that the number system form an algebraic ring. If the matrix entries do not form a ring, however, sometimes other techniques can be brought to bear to allow his method to apply. These issues are discussed more fully in the next section.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0973_1a8f">Exercises<a name="0973_1a8f"></h2><P>
+<a name="0973_1a90">31.2-1<a name="0973_1a90"><P>
+Use Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm to compute the matrix product<P>
+<img src="744_a.gif"><P>
+Show your work.<P>
+<a name="0973_1a91">31.2-2<a name="0973_1a91"><P>
+How would you modify Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm to multiply <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices in which <I>n</I> is not an exact power of 2? Show that the resulting algorithm runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>1g 7</SUP>).<P>
+<a name="0973_1a92">31.2-3<a name="0973_1a92"><P>
+What is the largest <I>k</I> such that if you can multiply 3 <IMG SRC="../IMAGES/mult.gif"> 3 matrices using <I>k </I>multiplications (not assuming commutativity of multiplication), then you can multiply <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices in time <I>o</I>(<I>n</I><SUP>1g 7</SUP>)? What would the running time of this algorithm be?<P>
+<a name="0973_1a93">31.2-4<a name="0973_1a93"><P>
+<a name="0973_1a8b"><a name="0973_1a8c">V. Pan has discovered a way of multiplying 68 <IMG SRC="../IMAGES/mult.gif"> 68 matrices using 132,464 multiplications, a way of multiplying 70 <IMG SRC="../IMAGES/mult.gif"> 70 matrices using 143,640 multiplications, and a way of multiplying 72 <IMG SRC="../IMAGES/mult.gif"> 72 matrices using 155,424 multiplications. Which method yields the best asymptotic running time when used in a divide-and-conquer matrix-multiplication algorithm? Compare it with the running time for Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm.<P>
+<a name="0973_1a94">131.2-5<a name="0973_1a94"><P>
+How quickly can you multiply a <I>kn</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix by an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>kn</I> matrix, using Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s algorithm as a subroutine? Answer the same question with the order of the input matrices reversed.<P>
+<a name="0973_1a95">31.2-6<a name="0973_1a95"><P>
+<a name="0973_1a8d"><a name="0973_1a8e">Show how to multiply the complex numbers <I>a</I> + <I>bi</I> and <I>c</I> + <I>di</I> using only three real multiplications. The algorithm should take <I>a</I>, <I>b</I>, <I>c</I>, and <I>d</I> as input and produce the real component <I>ac</I> - <I>bd</I> and the imaginary component <I>ad</I> + <I>bc</I> separately.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0974_0001">* 31.3 Algebraic number systems and boolean matrix multiplication<a name="0974_0001"></h1><P>
+The properties of matrix addition and multiplication depend on the properties of the underlying number system. In this section, we define three different kinds of underlying number systems: quasirings, rings, and fields. We can define matrix multiplication over quasirings, and Strassen<FONT FACE="CG Times (W1)" SIZE=2>'</FONT>s matrix-multiplication algorithm works over rings. We then present a simple trick for reducing boolean matrix multiplication, which is defined over a quasiring that is not a ring, to multiplication over a ring. Finally, we discuss why the properties of a field cannot naturally be exploited to provide better algorithms for matrix multiplication.<P>
+
+
+
+
+
+<h2>Quasirings</h2><P>
+<a name="0975_1a8f"><a name="0975_1a90">Let <img src="745_a.gif"> denote a number system, where <I>S</I> is a set of elements, <IMG SRC="../IMAGES/xor14.gif"> and <img src="745_b.gif"> are binary operations on <I>S</I> (the addition and multiplication operations, respectively), and <img src="745_c.gif"> are distinct distinguished elements of <I>S</I>. This system is a <I><B>quasiring</I></B> if it satisfies the following properties:<P>
+<a name="0975_1a91">1.     <img src="745_d.gif"> is a <I><B>monoid</I></B>:<P>
+<a name="0975_1a92"><IMG SRC="../IMAGES/dot12.gif">     <I>S</I> is <I><B>closed</I></B> under <IMG SRC="../IMAGES/xor14.gif">; that is, <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> for all <I>a</I>, <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="0975_1a93"><IMG SRC="../IMAGES/dot12.gif">     <IMG SRC="../IMAGES/xor14.gif"> is <I><B>associative</I></B>; that is, <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> (<I>b</I> <IMG SRC="../IMAGES/xor14.gif"> <I>c</I>) = (<I>a</I> <IMG SRC="../IMAGES/xor14.gif"> <I>b</I>) <IMG SRC="../IMAGES/xor14.gif"> <I>c</I> for all <I>a</I>, <I>b</I>, <I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="0975_1a94"><IMG SRC="../IMAGES/dot12.gif">     <img src="745_e.gif"> is an <I><B>identity</I></B> for <IMG SRC="../IMAGES/xor14.gif">; that is, <img src="745_f.gif"> for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+Likewise, <img src="745_g.gif"> is a monoid.<P>
+<a name="0975_1a95">2.     <img src="745_h.gif"> is an <I><B>annihilator</I></B>, that is, <img src="745_i.gif"> for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="0975_1a96">3.     The operator <IMG SRC="../IMAGES/xor14.gif"> is <I><B>commutative</I></B>; that is, <I>a </I><IMG SRC="../IMAGES/xor14.gif"><I> b</I> = <I>b </I><IMG SRC="../IMAGES/xor14.gif"><I> a</I> for all <I>a, b </I><IMG SRC="../IMAGES/memof12.gif"><I> S</I>.<P>
+<a name="0975_1a97">4.     The operator <img src="745_j.gif"> <I><B>distributes</I></B> over <IMG SRC="../IMAGES/xor14.gif">; that is, <img src="745_k.gif"> and <img src="745_l.gif"> for all <I>a,b,c </I><IMG SRC="../IMAGES/memof12.gif"><I> S</I>.<P>
+<a name="0975_1a98"><a name="0975_1a99"><a name="0975_1a9a"><a name="0975_1a9b"><a name="0975_1a9c"><a name="0975_1a9d">Examples of quasirings include the <I><B>boolean quasiring</I></B> ({0,1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1), where <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT> denotes logical OR and <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT> denotes logical AND, and the natural number system (<B>N</B>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), where + and <IMG SRC="../IMAGES/dot10.gif"> denote ordinary addition and multiplication. Any closed semiring (see Section 26.4) is also a quasiring; closed semirings obey additional idempotence and infinite-sum properties.<P>
+We can extend <IMG SRC="../IMAGES/xor14.gif"> and <img src="746_a.gif"> to matrices as we did for + and <IMG SRC="../IMAGES/dot10.gif"> in Section 31.1. Denoting the <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> identity matrix composed of <img src="746_b.gif"> we find that matrix multiplication is well defined and the matrix system is itself a quasiring, as the following theorem states.<P>
+<a name="0975_1a9f">Theorem 31.7<a name="0975_1a9f"><P>
+<a name="0975_1a9e">If <img src="746_c.gif"> is a quasiring and <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 1, then <img src="746_d.gif"> is a quasiring.<P>
+<I><B>Proof     </I></B>The proof is left as Exercise 31.3-3.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Rings</h2><P>
+<a name="0976_1a9f"><a name="0976_1aa0">Subtraction is not defined for quasirings, but it is for a <I><B>ring</I></B>, which is a quasiring <img src="746_e.gif"> that satisfies the following additional property:<P>
+<a name="0976_1aa1"><a name="0976_1aa2"><a name="0976_1aa3">5.     Every element in <I>S</I> has an <I><B>additive inverse</I></B>; that is, for all <I>a </I><IMG SRC="../IMAGES/memof12.gif"><I> S,</I> there exists an element <I>b </I><IMG SRC="../IMAGES/memof12.gif"><I> S</I> such that <img src="746_f.gif">. Such a <I>b</I> is also called the <I><B>negative</I></B> of <I>a</I> and is denoted (-<I>a</I>).<P>
+Given that the negative of any element is defined, we can define subtraction by <I>a </I>- <I>b</I> = <I>a </I>+ (-<I>b</I>).<P>
+There are many examples of rings. The integers (<B>Z</B>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1) under the usual operations of addition and multiplication form a ring. The integers modulo <I>n</I> for any integer <I>n</I> &gt; 1<FONT FACE="CG Times (W1)" SIZE=2>--</FONT>that is, (<B>Z</B><I><SUB>n</I></SUB>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), where + is addition modulo <I>n</I> and <IMG SRC="../IMAGES/dot10.gif"> is multiplication modulo <I>n</I>--form a ring. Another example is the set <B>R</B>[<I>x</I>] of finite-degree polynomials in <I>x</I> with real coefficients under the usual operations--that is, (<B>R</B>[<I>x</I>], +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), where + is polynomial addition and <IMG SRC="../IMAGES/dot10.gif"> is polynomial multiplication.<P>
+The following corollary shows that Theorem 31.7 generalizes naturally to rings.<P>
+<a name="0976_1aa4">Corollary 31.8<a name="0976_1aa4"><P>
+If <img src="746_g.gif"> is a ring and <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 1, then <img src="746_h.gif"> is a ring.<P>
+<I><B>Proof     </I></B>The proof is left as Exercise 31.3-3.      <P>
+Using this corollary, we can prove the following theorem.<P>
+<a name="0976_1aa5">Theorem 31.9<a name="0976_1aa5"><P>
+Strassen's matrix-multiplication algorithm works properly over any ring of matrix elements.<P>
+<I><B>Proof     </I></B>Strassen's algorithm depends on the correctness of the algorithm for 2 <IMG SRC="../IMAGES/mult.gif"> 2 matrices, which requires only that the matrix elements belong to a ring. Since the matrix elements do belong to a ring, Corollary 31.8 implies the matrices themselves form a ring. Thus, by induction, Strassen's algorithm works correctly at each level of recursion.      <P>
+Strassen's algorithm for matrix multiplication, in fact, depends critically on the existence of additive inverses. Out of the seven products <I>P</I><SUB>1</SUB>,<I> P</I><SUB>2</SUB>, . . . ,<I>P</I><SUB>7</SUB>, four involve differences of submatrices. Thus, Strassen's algorithm does not work in general for quasirings.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Boolean matrix multiplication</h2><P>
+<a name="0977_1aa4"><a name="0977_1aa5"><a name="0977_1aa6">Strassen's algorithm cannot be used directly to multiply boolean matrices, since the boolean quasiring ({0,1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1) is not a ring. There are instances in which a quasiring is contained in a larger system that is a ring. For example, the natural numbers (a quasiring) are a subset of the integers (a ring), and Strassen's algorithm can therefore be used to multiply matrices of natural numbers if we consider the underlying number system to be the integers. Unfortunately, the boolean quasiring cannot be extended in a similar way to a ring. (See Exercise 31.3-4.)<P>
+The following theorem presents a simple trick for reducing boolean matrix multiplication to multiplication over a ring. Problem 31-1 presents another efficient approach.<P>
+<a name="0977_1aa7">Theorem 31.10<a name="0977_1aa7"><P>
+If <I>M</I>(<I>n</I>) denotes the number of arithmetic operations required to multiply two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices over the integers, then two <I>n</I> <FONT FACE="Times" SIZE=2><IMG SRC="../IMAGES/mult.gif"></FONT> <I>n</I> boolean matrices can be multiplied using <I>O</I>(<I>M</I>(<I>n</I>)) arithmetic operations.<P>
+<I><B>Proof     </I></B>Let the two matrices be <I>A</I> and <I>B,</I> and let <I>C </I>= <I>AB</I> in the boolean quasiring, that is,<P>
+<img src="747_a.gif"><P>
+Instead of computing over the boolean quasiring, we compute the product <I>C</I>' over the ring of integers with the given matrix-multiplication algorithm that uses <I>M</I>(<I>n</I>) arithmetic operations. We thus have<P>
+<img src="747_b.gif"><P>
+Each term <I>a<SUB>ik</SUB>b<SUB>kj</I></SUB> of this sum is 0 if and only if <I>a<SUB>ik</I></SUB> <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT> <I>b<SUB>kj</I> </SUB>= 0, and 1 if and only if <I>a<SUB>ik</SUB><FONT FACE="Times New Roman" SIZE=4> </I><IMG SRC="../IMAGES/angleup.gif"><I> b<SUB>kj</I></FONT></SUB> = 1. Thus, the integer sum <img src="748_a.gif"> is 0 if and only if every term is 0 or, equivalently, if and only if the boolean OR of the terms, which is <I>c<SUB>ij</I></SUB>, is 0. Therefore, the boolean matrix <I>C</I> can be reconstructed with <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) arithmetic operations from the integer matrix <I>C</I>' by simply comparing each <img src="748_b.gif"> with 0. The number of arithmetic operations for the entire procedure is then <I>O</I>(<I>M</I>(<I>n</I>)) +<IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) = <I>O</I>(<I>M</I>(<I>n</I>)), since <I>M</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>).      <P>
+Thus, using Strassen's algorithm, we can perform boolean matrix multiplication in <I>O</I>(<I>n </I><SUP>lg 7</SUP>) time.<P>
+The normal method of multiplying boolean matrices uses only boolean variables. If we use this adaptation of Strassen's algorithm, however, the final product matrix can have entries as large as <I>n</I>, thus requiring a computer word to store them rather than a single bit. More worrisome is that the intermediate results, which are integers, may grow even larger. One method for keeping intermediate results from growing too large is to perform all computations modulo <I>n</I> + 1. Exercise 31.3-5 asks you to show that working modulo <I>n</I> + 1 does not affect the correctness of the algorithm.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Fields</h2><P>
+<a name="0978_1aa7">A ring <img src="748_c.gif"> is a <I><B>field</I></B> if it satisfies the following two additional properties:<P>
+<a name="0978_1aa8">6.     The operator <img src="748_d.gif"> is <I><B>commutative</I></B>; that is, <img src="748_e.gif"> for all <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="0978_1aa9"><a name="0978_1aaa">7.     Every nonzero element in <I>S</I> has a <I><B>multiplicative inverse</I></B>; that is, for all <img src="748_f.gif">, there exists an element <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> such that <img src="748_g.gif">.<P>
+Such an element <I>b</I> is often called the i<I><B>nverse</I></B> of <I>a</I> and is denoted <I>a</I><SUP>-1</SUP>.<P>
+Examples of fields include the real numbers (<B>R</B>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), the complex numbers (<B>C</B>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), and the integers modulo a prime <I>p</I>: (<B>Z</B><I><SUB>p</I></SUB>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1).<P>
+Because fields offer multiplicative inverses of elements, division is possible. They also offer commutativity. By generalizing from quasirings to rings, Strassen was able to improve the running time of matrix multiplication. Since the underlying elements of matrices are often from a field--the real numbers, for instance--one might hope that by using fields instead of rings in a Strassen-like recursive algorithm, the running time might be further improved.<P>
+This approach seems unlikely to be fruitful. For a recursive divide-and-conquer algorithm based on fields to work, the matrices at each step of the recursion must form a field. Unfortunately, the natural extension of Theorem 31.7 and Corollary 31.8 to fields fails badly. For <I>n</I> &gt; 1, the set of <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices <I>never</I> forms a field, even if the underlying number system is a field. Multiplication of <I>n</I> <FONT FACE="Times" SIZE=2><IMG SRC="../IMAGES/mult.gif"></FONT> <I>n</I> matrices is not commutative, and many <I>n</I> <FONT FACE="Times" SIZE=2><IMG SRC="../IMAGES/mult.gif"></FONT> <I>n</I> matrices do not have inverses. Better algorithms for matrix multiplication are therefore more likely to be based on ring theory than on field theory.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0979_1ab0">Exercises<a name="0979_1ab0"></h2><P>
+<a name="0979_1ab1">31.3-1<a name="0979_1ab1"><P>
+Does Strassen's algorithm work over the number system (<B>Z</B>[<I>x</I>], +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1), where <B>Z</B>[<I>x</I>] is the set of all polynomials with integer coefficients in the variable <I>x</I> and + and <IMG SRC="../IMAGES/dot10.gif"> are ordinary polynomial addition and multiplication?<P>
+<a name="0979_1ab2">31.3-2<a name="0979_1ab2"><P>
+Explain why Strassen's algorithm doesn't work over closed semirings (see Section 26.4) or over the boolean quasiring ({0, 1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1).<P>
+<a name="0979_1ab3">31.3-3<a name="0979_1ab3"><P>
+Prove Theorem 31.7 and Corollary 31.8.<P>
+<a name="0979_1ab4">31.3-4<a name="0979_1ab4"><P>
+Show that the boolean quasiring ({0, 1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1) cannot be embedded in a ring. That is, show that it is impossible to add a "-1" to the quasiring so that the resulting algebraic structure is a ring.<P>
+<a name="0979_1ab5">31.3-5<a name="0979_1ab5"><P>
+Argue that if all computations in the algorithm of Theorem 31.10 are performed modulo <I>n</I> + 1, the algorithm still works correctly.<P>
+<a name="0979_1ab6">31.3-6<a name="0979_1ab6"><P>
+<a name="0979_1aab">Show how to determine efficiently if a given undirected input graph contains a triangle (a set of three mutually adjacent vertices).<P>
+<a name="0979_1ab7">31.3-7<a name="0979_1ab7"><P>
+<a name="0979_1aac"><a name="0979_1aad"><a name="0979_1aae"><a name="0979_1aaf">Show that computing the product of two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> boolean matrices over the boolean quasiring is reducible to computing the transitive closure of a given directed 3<I>n</I>-vertex input graph.<P>
+<a name="0979_1ab8">31.3-8<a name="0979_1ab8"><P>
+Show how to compute the transitive closure of a given directed <I>n</I>-vertex input graph in time <I>O</I>(<I>n</I><SUP>lg 7</SUP> lg <I>n</I>). Compare this result with the performance of the <FONT FACE="Courier New" SIZE=2>TRANSITIVE</FONT>-<FONT FACE="Courier New" SIZE=2>CLOSURE</FONT> procedure in Section 26.2.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="097a_1ab5">31.4 Solving systems of linear equations<a name="097a_1ab5"></h1><P>
+<a name="097a_1ab0"><a name="097a_1ab1">Solving a set of simultaneous linear equations is a fundamental problem that occurs in diverse applications. A linear system can be expressed as a matrix equation in which each matrix or vector element belongs to a field, typically the real numbers <B>R</B>. This section discusses how to solve a system of linear equations using a method called LUP decomposition.<P>
+We start with a set of linear equations in <I>n</I> unknowns <I>x</I><SUB>1</SUB>,<I> x</I><SUB>2</SUB>, . . . ,<I> x<SUB>n</I></SUB>:<P>
+<pre><I>a</I><SUB>11</SUB><I>x</I><SUB>1</SUB> + <I>a</I><SUB>12</SUB><I>x</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>a</I><SUB>1<I>n</SUB>x<SUB>n</I></SUB> = <I>b</I><SUB>1</SUB>,</sub></sup></pre><P>
+<pre><I>a</I><SUB>21</SUB><I>x</I><SUB>1</SUB> + <I>a</I><SUB>22</SUB><I>x</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>a</I><SUB>2<I>n</SUB>x<SUB>n</SUB> </I>= <I>b</I><SUB>2</SUB>,</sub></sup></pre><P>
+<img src="750_a.gif"><P>
+<h4><a name="097a_1ab6">(31.17)<a name="097a_1ab6"></sub></sup></h4><P>
+<pre><I>a<SUB>n</I>1</SUB><I>x</I><SUB>1</SUB> + <I>a<SUB>n</I>2</SUB><I>x</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>a<SUB>nn</SUB>x<SUB>n</SUB> </I>= <I>b<SUB>n</I></SUB>.</sub></sup></pre><P>
+<a name="097a_1ab2">A set of values for <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB> that satisfy all of the equations (31.17) simultaneously is said to be a <I><B>solution</I></B> to these equations. In this section, we only treat the case in which there are exactly <I>n</I> equations in <I>n</I> unknowns.<P>
+We can conveniently rewrite equations (31.17) as the matrix-vector equation<P>
+<img src="750_b.gif"><P>
+or, equivalently, letting <I>A</I> = (<I>a<SUB>ij</I></SUB>), <I>x</I> = (<I>x<SUB>j</I></SUB>), and <I>b</I> = (<I>b<SUB>i</I></SUB>), as<P>
+<pre><I>Ax</I> = <I>b </I>.</sub></sup></pre><P>
+<h4><a name="097a_1ab7">(31.18)<a name="097a_1ab7"></sub></sup></h4><P>
+If <I>A</I> is nonsingular, it possesses an inverse <I>A</I><SUP>-1</SUP>, and<P>
+<pre><I>x</I> = <I>A</I><SUP>-1 </SUP><I>b</I></sub></sup></pre><P>
+<h4><a name="097a_1ab8">(31.19)<a name="097a_1ab8"></sub></sup></h4><P>
+is the solution vector. We can prove that <I>x</I> is the unique solution to equation (31.18) as follows. If there are two solutions, <I>x </I>and <I>x</I>', then <I>Ax</I> = <I>Ax</I>' = <I>b</I> and<P>
+<pre><I>x  </I>=  (<I>A</I><SUP>-1 </SUP><I>A</I>)<I>x</I></sub></sup></pre><P>
+<pre>=  <I>A</I><SUP>-1</SUP>(<I>Ax</I>)</sub></sup></pre><P>
+<pre>=  <I>A</I><SUP>-1</SUP>(<I>Ax</I>')</sub></sup></pre><P>
+<pre>=  (<I>A</I><SUP>-1 </SUP><I>A</I>)<I>x</I>'</sub></sup></pre><P>
+<pre>=  <I>x</I>'.</sub></sup></pre><P>
+<a name="097a_1ab3"><a name="097a_1ab4">In this section, we shall be concerned predominantly with the case in which <I>A</I> is nonsingular or, equivalently (by Theorem 31.1), the rank of <I>A</I> is equal to the number <I>n</I> of unknowns. There are other possibilities, however, which merit a brief discussion. If the number of equations is less than the number <I>n</I> of unknowns--or, more generally, if the rank of <I>A</I> is less than <I>n</I>--then the system is <I><B>underdetermined</I></B>. An underdetermined system typically has infinitely many solutions (see Exercise 31.4-9), although it may have no solutions at all if the equations are inconsistent. If the number of equations exceeds the number <I>n</I> of unknowns, the system is <I><B>overdetermined</I></B>, and there may not exist any solutions. Finding good approximate solutions to overdetermined systems of linear equations is an important problem that is addressed in Section 31.6.<P>
+Let us return to our problem of solving the system<I> Ax</I> = <I>b</I> of <I>n</I> equations in <I>n</I> unknowns. One approach is to compute <I>A</I><SUP>-1</SUP> and then multiply both sides by <I>A</I><SUP>-1</SUP>, yielding <I>A</I><SUP>-1</SUP><I>Ax </I>=<I> A</I><SUP>-1</SUP><I>b</I>, or <I>x </I>=<I> A</I><SUP>-1</SUP><I>b</I>. This approach suffers in practice from <I><B>numerical instability</I></B>: round-off errors tend to accumulate unduly when floating-point number representations are used instead of ideal real numbers. There is, fortunately, another approach--LUP decomposition--that is numerically stable and has the further advantage of being about a factor of 3 faster.<P>
+
+
+
+
+
+<h2>Overview of LUP decomposition</h2><P>
+<a name="097b_1ab5"><a name="097b_1ab6"><a name="097b_1ab7">The idea behind LUP decomposition is to find three <I>n</I> <IMG SRC="../IMAGES/mult.gif"><I> n</I> matrices <I>L, U</I>, and <I>P</I> such that<P>
+<pre><I>PA</I> = <I>LU </I>,</sub></sup></pre><P>
+<h4><a name="097b_1ab8">(31.20)<a name="097b_1ab8"></sub></sup></h4><P>
+where<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>L</I> is a unit lower-triangular matrix,<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>U</I> is an upper-triangular matrix, and<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <I>P</I> is a permutation matrix.<P>
+We call matrices <I>L, U,</I> and <I>P</I> satisfying equation (31.20) an <I><B>LUP decomposition</I></B> of the matrix <I>A</I>. We shall show that every nonsingular matrix <I>A</I> possesses such a decomposition.<P>
+The advantage of computing an LUP decomposition for the matrix <I>A</I> is that linear systems can be solved more readily when they are triangular, as is the case for both matrices <I>L</I> and <I>U</I>. Having found an LUP decomposition for <I>A</I>, we can solve the equation (31.18) <I>Ax </I>=<I> b</I> by solving only triangular linear systems, as follows. Multiplying both sides of <I>Ax </I>=<I> b</I> by <I>P</I> yields the equivalent equation <I>P Ax </I>=<I> Pb</I>, which by Exercise 31.1-2 amounts to permuting the equations (31.17). Using our decomposition (31.20), we obtain<P>
+<pre><I>LUx</I> = <I>Pb</I> .</sub></sup></pre><P>
+We can now solve this equation by solving two triangular linear systems. Let us define <I>y </I>=<I> Ux</I>, where <I>x</I> is the desired solution vector. First, we solve the lower-triangular system<P>
+<pre><I>Ly = Pb</I></sub></sup></pre><P>
+<h4><a name="097b_1ab9">(31.21)<a name="097b_1ab9"></sub></sup></h4><P>
+for the unknown vector <I>y</I> by a method called "forward substitution." Having solved for <I>y,</I> we then solve the upper-triangular system<P>
+<pre><I>Ux = y</I></sub></sup></pre><P>
+<h4><a name="097b_1aba">(31.22)<a name="097b_1aba"></sub></sup></h4><P>
+for the unknown <I>x</I> by a method called "back substitution." The vector <I>x</I> is our solution to <I>Ax </I>=<I> b</I>, since the permutation matrix <I>P</I> is invertible (Exercise 31.1 -2):<P>
+<pre><I>Ax  =  P<SUP>-</I>1</SUP> <I>LUx</I></sub></sup></pre><P>
+<pre>=  <I>P<SUP>-</I>1</SUP> <I>Ly</I></sub></sup></pre><P>
+<pre>=  <I>P<SUP>-</I>1</SUP> <I>Pb</I></sub></sup></pre><P>
+<pre>=  <I>b</I> .</sub></sup></pre><P>
+Our next step is to show how forward and back substitution work and then attack the problem of computing the LUP decomposition itself.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Forward and back substitution</h2><P>
+<a name="097c_1ab8"><I><B>Forward substitution</I></B> can solve the lower-triangular system (31.21) in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time, given<I> L, P, </I>and <I>b</I>. For convenience, we represent the permutation <I>P</I> compactly by an array <IMG SRC="../IMAGES/piuc.gif">[1 . . <I>n</I>]. For <I>i</I> = 1, 2, . . . , <I>n</I>, the entry <IMG SRC="../IMAGES/piuc.gif">[<I>i</I>] indicates that <I>P<SUB>i</I>,</SUB><IMG SRC="../IMAGES/piuc.gif">[<I>i</I>] = 1 and <I>P<SUB><FONT FACE="Courier New" SIZE=2>ij</I></FONT></SUB> = 0 for<I> j </I><IMG SRC="../IMAGES/noteq.gif"><I> </I><IMG SRC="../IMAGES/piuc.gif">[<I>i</I>]. Thus, <I>PA</I> has <I>a</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/piuc.gif">[<I>i</I>],<I>j<SUB></SUB> </I></FONT>in row <I>i </I>and column <I>j</I>, and<I> Pb</I> has <I>b</I><IMG SRC="../IMAGES/piuc.gif">[<I>i</I>]<SUB> </SUB>as its <I>i</I>th element. Since <I>L</I> is unit lower-triangular, equation (31.21) can be rewritten as<P>
+<pre><I>y</I><SUB>1</SUB>                             =  <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[1],</sub></sup></pre><P>
+<pre><I>l</I><SUB>21</SUB><I>y</I><SUB>1</SUB> + <I>y</I><SUB>2                        </SUB>=  <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[2],</sub></sup></pre><P>
+<pre><I>l</I><SUB>31</SUB><I>y</I><SUB>1</SUB> + <I>l</I><SUB>32</SUB><I>y</I><SUB>2</SUB> + <I>y</I><SUB>3                </SUB>=  <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[3],</sub></sup></pre><P>
+<img src="752_a.gif"><P>
+<pre><I>l<SUB>n</I>1</SUB><I>y</I><SUB>1</SUB> + <I>l<SUB>n</I>2</SUB><I>y</I><SUB>2</SUB> + <I>l<SUB>n</I>3</SUB><I>y</I><SUB>3</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>y<SUB>n  </I></SUB>=  <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[<I>n</I>]</SUB>.</sub></sup></pre><P>
+Quite apparently, we can solve for <I>y</I><SUB>1</SUB> directly, since the first equation tells us that <I>y</I><SUB>1</SUB> = <I>b</I><IMG SRC="../IMAGES/piuc.gif"><SUB>[1]</SUB>. Having solved for <I>y</I><SUB>1</SUB>, we can substitute it into the second equation, yielding<P>
+<pre><I>y</I><SUB>2</SUB> = <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[2] </SUB>- <I>l</I><SUB>21</SUB><I>y</I><SUB>1</SUB>.</sub></sup></pre><P>
+Now, we can substitute both <I>y</I><SUB>1</SUB> and <I>y</I><SUB>2</SUB> into the third equation, obtaining<P>
+<pre><I>y</I><SUB>3</SUB> = <I>b</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>[3]</SUB> - (<I>l</I><SUB>31</SUB><I>y</I><SUB>1</SUB> + <I>l</I><SUB>32</SUB><I>y</I><SUB>2</SUB>).</sub></sup></pre><P>
+In general, we substitute <I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . ,<I>y<SUB>i</I>-1</SUB> "forward" into the <I>i</I>th equation to solve for <I>y<SUB>i</I></SUB>:<P>
+<img src="752_b.gif"><P>
+<a name="097c_1ab9"><I><B>Back substitution</I></B> is similar to forward substitution. Given <I>U</I> and <I>y</I>, we solve the <I>n</I>th equation first and work backward to to the first equation. Like forward substitution, this process runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time. Since <I>U</I> is upper-triangular, we can rewrite the system (31.22) as<P>
+<pre><I>u</I><SUB>11</SUB><I>x</I><SUB>1</SUB> + <I>u</I><SUB>12</SUB><I>x</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> +   <I>u</I><SUB>1,<I>n-</I>2</SUB><I>x<SUB>n</I>-2</SUB> +   <I>u</I><SUB>1,<I>n</I>-1</SUB><I>x<SUB>n</I>-1</SUB>  +    <I>u</I><SUB>1<I>n</SUB>x<SUB>n</I></SUB> = <I>y</I><SUB>1</SUB>,</sub></sup></pre><P>
+<pre><I>u</I><SUB>22</SUB><I>x</I><SUB>2</SUB> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> +   <I>u</I><SUB>2,<I>n</I>-2</SUB><I>x<SUB>n</I>-2</SUB> +   <I>u</I><SUB>2,<I>n</I>-1</SUB><I>x<SUB>n</I>-1</SUB>  +     <I>u</I><SUB>2<I>n</SUB>x<SUB>n</I></SUB> = <I>y</I><SUB>2</SUB>,</sub></sup></pre><P>
+<img src="752_c.gif"><P>
+<pre><I>un</I>-2,<I>n</I>-2<I>xn</I>-2 + <I>un</I>-2,<I>n</I>-1<I>xn</I>-1 + <I>un</I>-2,<I>nxn</I> <I>=</I> <I>yn-2,</I></sub></sup></pre><P>
+<pre><I>un</I>-1,<I>n</I>-1<I>xn</I>-1 + <I>un</I>-1,<I>nxn</I> = <I>yn</I>-1,</sub></sup></pre><P>
+<pre>     u<SUB>n,n</SUB>x<SUB>n</SUB> = y<SUB>n</SUB> .</sub></sup></pre><P>
+Thus, we can solve for <I>x<SUB>n</I></SUB>,<I> x<SUB>n</I>-1</SUB>, <I>. . . , x</I><SUB>1</SUB> successively as follows:<P>
+<pre><I>x<SUB>n</I></SUB> = <I>y<SUB>n</I></SUB>/<I>u<SUB>nn</I></SUB> ,</sub></sup></pre><P>
+<pre><I>x<SUB>n-</I>1 </SUB><I>= </I>(<I>y<SUB>n</I>-1</SUB> - <I>u<SUB>n</I>-1<I>,n</SUB>x<SUB>n</I></SUB>)/<I>u<SUB>n</I>-1<I>,n</I>-1</SUB> ,</sub></sup></pre><P>
+<pre><I>x<SUB>n</I>-2 </SUB><I>= </I>(<I>y<SUB>n-</I>2</SUB> <I>-</I> (<I>u<SUB>n</I>-2<I>,n</I>-1</SUB><I>x<SUB>n</I>-1</SUB> + <I>u<SUB>n</I>-2<I>,n</SUB>x<SUB>n</I></SUB>))/<I>u<SUB>n</I>-2<I>,n</I>-2 ,</sub></sup></pre><P>
+<img src="753_a.gif"><P>
+or, in general,<P>
+<img src="753_b.gif"><P>
+<a name="097c_1aba">Given <I>P, L, U,</I> and <I>b</I>, the procedure LUP-<FONT FACE="Courier New" SIZE=2>SOLVE</FONT> solves for <I>x</I> by combining forward and back substitution. The pseudocode assumes that the dimension <I>n</I> appears in the attribute <I>rows</I>[<I>L</I>] and that the permutation matrix <I>P</I> is represented by the array <IMG SRC="../IMAGES/piuc.gif">.<P>
+<img src="753_c.gif"><P>
+Procedure LUP-<FONT FACE="Courier New" SIZE=2>SOLVE</FONT> solves for <I>y</I> using forward substitution in lines 2-3, and then it solves for <I>x</I> using backward substitution in lines 4-5. Since there is an implicit loop in the summations within each of the <B>for</B> loops, the running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).<P>
+As an example of these methods, consider the system of linear equations defined by<P>
+<img src="753_d.gif"><P>
+where<P>
+<img src="753_e.gif"><P>
+and we wish to solve for the unknown <I>x</I>. The LUP decomposition is<P>
+<img src="753_f.gif"><P>
+<img src="754_a.gif"><P>
+(The reader can verify that <I>PA</I> = <I>LU</I>.) Using forward substitution, we solve <I>Ly</I> = <I>Pb</I> for <I>y</I>:<P>
+<img src="754_b.gif"><P>
+obtaining<P>
+<img src="754_c.gif"><P>
+by computing first <I>y</I><SUB>1</SUB>, then <I>y</I><SUB>2</SUB>, and finally <I>y</I><SUB>3</SUB>. Using back substitution, we solve <I>Ux</I> = <I>y</I> for <I>x</I>:<P>
+<img src="754_d.gif"><P>
+thereby obtaining the desired answer<P>
+<img src="754_e.gif"><P>
+by computing first <I>x</I><SUB>3</SUB>, then <I>x</I><SUB>2</SUB>, and finally <I>x</I><SUB>1</SUB><I>.</I><P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing an LU decomposition</h2><P>
+<a name="097d_1abb">We have now shown that if an LUP decomposition can be computed for a nonsingular matrix <I>A</I>, forward and back substitution can be used to solve the system <I>Ax</I> = <I>b</I> of linear equations. It remains to show how an LUP decomposition for <I>A</I> can be found efficiently. We start with the case in which <I>A</I> is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> nonsingular matrix and <I>P</I> is absent (or, equivalently, <I>P</I> = <I>I<SUB>n</I></SUB>). In this case, we must find a factorization <I>A</I> = <I>LU</I>. We call the two matrices <I>L</I> and <I>U</I> an <I><B>LU decomposition</I></B> of <I>A</I>.<P>
+<a name="097d_1abc">The process by which we perform LU decomposition is called <I><B>Gaussian elimination</I></B>. We start by subtracting multiples of the first equation from the other equations so that the first variable is removed from those equations. Then, we subtract multiples of the second equation from the third and subsequent equations so that now the first and second variables are removed from them. We continue this process until the system that is left has an upper-triangular form--in fact, it is the matrix <I>U</I>. The matrix <I>L</I> is made up of the row multipliers that cause variables to be eliminated.<P>
+Our algorithm to implement this strategy is recursive. We wish to construct an LU decomposition for an <I>n </I><IMG SRC="../IMAGES/mult.gif"><I> n</I> nonsingular matrix <I>A</I>. If <I>n</I> = 1, then we're done, since we can choose <I>L</I> = <I>I</I><SUB>1</SUB> and <I>U</I> = <I>A</I>. For <I>n</I> &gt; 1, we break <I>A</I> into four parts:<P>
+<img src="755_a.gif"><P>
+where <I>v </I>is a size-(<I>n</I> - 1) column vector, <I>w</I><SUP>T</SUP> is a size-(<I>n</I> - 1) row vector, and <I>A</I>' is an (<I>n</I> - 1) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - 1) matrix. Then, using matrix algebra (verify the equations by simply multiplying through), we can factor <I>A</I> as<P>
+<img src="755_b.gif"><P>
+<a name="097d_1abd"><a name="097d_1abe">The 0's in the first and second matrices of the factorization are row and column vectors, respectively, of size <I>n</I> - 1. The term <I>vw</I><SUP>T</SUP>/<I>a</I><SUB>11</SUB>, formed by taking the outer product of <I>v</I> and <I>w</I> and dividing each element of the result by <I>a</I><SUB>11</SUB>, is an (<I>n</I> - 1) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - 1) matrix, which conforms in size to the matrix <I>A</I>' from which it is subtracted. The resulting (<I>n</I> - 1) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - 1) matrix<P>
+<pre><I>A</I>'<I> - vw</I><SUP>T</SUP>/<I>a</I><SUB>11</sub></sup></pre><P>
+<h4><a name="097d_1ac1">(31.23)<a name="097d_1ac1"></sub></sup></h4><P>
+is called the <I><B>Schur complement</I></B> of <I>A</I> with respect to <I>a</I><SUB>11</SUB>.<P>
+We now recursively find an LU decomposition of the Schur complement. Let us say that<P>
+<pre><I>A</I>'<I> - vw</I><SUP>T</SUP>/<I>a</I><SUB>11</SUB><I> = L</I>'<I>U</I>' ,</sub></sup></pre><P>
+where <I>L</I>' is unit lower-triangular and <I>U</I>' is upper-triangular. Then, using matrix algebra, we have<P>
+<img src="755_c.gif"><P>
+thereby providing our LU decomposition. (Note that because <I>L</I>' is unit lower-triangular, so is <I>L</I>, and because <I>U</I>'is upper-triangular, so is <I>U</I>.)<P>
+<a name="097d_1abf">Of course, if <I>a</I><SUB>11</SUB> = 0, this method doesn't work, because it divides by 0. It also doesn't work if the upper leftmost entry of the Schur complement <I>A</I>'<I> - vw</I><SUP>T</SUP>/<I>a</I><SUB>11</SUB> is 0, since we divide by it in the next step of the recursion. The elements by which we divide during LU decomposition are called <I><B>pivots</I></B>, and they occupy the diagonal elements of the matrix <I>U</I>. The reason we include a permutation matrix <I>P</I> during LUP decomposition is that it allows us to avoid dividing by zero elements. Using permutations to avoid division by 0 (or by small numbers) is called <I><B>pivoting</I></B>.<P>
+An important class of matrices for which LU decomposition always works correctly is the class of symmetric positive-definite matrices. Such matrices require no pivoting, and thus the recursive strategy outlined above can be employed without fear of dividing by 0. We shall prove this result, as well as several others, in Section 31.6.<P>
+<a name="097d_1ac0">Our code for LU decomposition of a matrix <I>A</I> follows the recursive strategy, except that an iteration loop replaces the recursion. (This transformation is a standard optimization for a "tail-recursive" procedure--one whose last operation is a recursive call to itself.) It assumes that the dimension of <I>A</I> is kept in the attribute <I>rows</I>[<I>A</I>]. Since we know that the output matrix <I>U</I> has 0's below the diagonal, and since LU-<FONT FACE="Courier New" SIZE=2>SOLVE</FONT> does not look at these entries, the code does not bother to fill them in. Likewise, because the output matrix <I>L</I> has 1's on its diagonal and 0's above the diagonal, these entries are not filled in either. Thus, the code computes only the "significant" entries of <I>L</I> and <I>U</I>.<P>
+<img src="756_a.gif"><P>
+The outer <B>for</B> loop beginning in line 2 iterates once for each recursive step. Within this loop, the pivot is determined to be <I>u<SUB>kk</I></SUB> = <I>a<SUB>kk</I></SUB> in line 3. Within the <B>for</B> loop in lines 4-6 (which does not execute when <I>k</I> = <I>n</I>), the <I>v </I>and <I>w</I><SUP>T </SUP>vectors are used to update <I>L</I> and <I>U</I>. The elements of the <I>v</I> vector are determined in line 5, where <I>v<SUB>i</I></SUB> is stored in <I>l<SUB>ik</I></SUB>, and the elements of the <I>w</I><SUP>T</SUP> vector are determined in line 6, where <I>w<SUB>i</I></SUB><SUP>T</SUP> is stored in <I>u<SUB>ki</I></SUB>. Finally, the elements of the Schur complement are computed in lines 7-9 and stored back in the matrix <I>A</I>. Because line 9 is triply nested, LU-D<FONT FACE="Courier New" SIZE=2>ECOMPOSITION </FONT>runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>).<P>
+<img src="757_a.gif"><P>
+<h4><a name="097d_1ac2">Figure 31.1 The operation of LU-DECOMPOSITION. (a) The matrix A. (b) The element a<SUB>11</SUB> = 2 in black is the pivot, the shaded column is v/a<SUB>11</SUB>, and the shaded row is w<SUP>T</SUP>. The elements of U computed thus far are above the horizontal line, and the elements of L are to the left of the vertical line. The Schur complement matrix A' - vw<SUP>T</SUP>/a<SUB>11</SUB> occupies the lower right. (c) We now operate on the Schur complement matrix produced from part (b). The element a<SUB>22</SUB> = 4 in black is the pivot, and the shaded column and row are v/a<SUB>22</SUB> and w<SUP>T</SUP> (in the partitioning of the Schur complement), respectively. Lines divide the matrix into the elements of U computed so far (above), the elements of L computed so far (left), and the new Schur complement (lower right). (d) The next step completes the factorization. (The element 3 in the new Schur complement becomes part of U when the recursion terminates.) (e) The factorization A = LU.<a name="097d_1ac2"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Figure 31.1 illustrates the operation of LU-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT>. It shows a standard optimization of the procedure in which the significant elements of <I>L</I> and <I>U</I> are stored "in place" in the matrix <I>A</I>. That is, we can set up a correspondence between each element <I>a<SUB>ij</I></SUB> and either <I>l<SUB>ij</I></SUB> (if <I>i</I> &gt; <I>j</I>) or <I>u<SUB>ij</I></SUB> (if <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I>) and update the matrix <I>A</I> so that it holds both <I>L</I> and <I>U </I>when the procedure terminates. The pseudocode for this optimization is obtained from the above pseudocode merely by replacing each reference to <I>l</I> or <I>u</I> by <I>a</I>; it is not difficult to verify that this transformation preserves correctness.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing an LUP decomposition</h2><P>
+<a name="097e_1ac1">Generally, in solving a system of linear equations <I>Ax</I> = <I>b</I>, we must pivot on off-diagonal elements of <I>A</I> to avoid dividing by 0. Not only is division by 0 undesirable, so is division by any small value, even if <I>A</I> is nonsingular, because numerical instabilities can result in the computation. We therefore try to pivot on a large value.<P>
+The mathematics behind LUP decomposition is similar to that of LU decomposition. Recall that we are given an <I>n </I><IMG SRC="../IMAGES/mult.gif"> <I>n</I> nonsingular matrix <I>A</I> and wish to find a permutation matrix <I>P</I>, a unit lower-triangular matrix <I>L</I>, and an upper-triangular matrix <I>U</I> such that <I>PA</I> = <I>LU</I>. Before we partition the matrix <I>A</I>, as we did for LU decomposition, we move a nonzero element, say <I>a<SUB>k</I>1</SUB>, from the first column to the (1,1) position of the matrix. (If the first column contains only 0's, then <I>A</I> is singular, because its determinant is 0, by Theorems 31.4 and 31.5.) In order to preserve the set of equations, we exchange row 1 with row <I>k</I>, which is equivalent to multiplying <I>A</I> by a permutation matrix <I>Q</I> on the left (Exercise 31.1-2). Thus, we can write <I>QA</I> as<P>
+<img src="758_a.gif"><P>
+where <I>v</I> = (<I>a</I><SUB>21</SUB>, <I>a</I><SUB>31</SUB>, . . . , <I>a<SUB>n</I>1)</SUB><SUP>T,</SUP> except that <I>a</I><SUB>11</SUB> replaces <I>a<SUB>k</I>1</SUB>; <I>w</I><SUP>T</SUP> = (<I>a<SUB>k</I>2</SUB><I>, a<SUB>k</I>3</SUB>, . . . , <I>a<SUB>kn</I></SUB>); and <I>A</I>' is an (<I>n</I> - 1) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - 1) matrix. Since <I>a<SUB>k</I>1</SUB> <IMG SRC="../IMAGES/noteq.gif"> 0, we can now perform much the same linear algebra as for LU decomposition, but now guaranteeing that we do not divide by 0:<P>
+<img src="758_b.gif"><P>
+The Schur complement <I>A</I>' - <I>vw</I><SUP>T</SUP>/<I>a<SUB>k</I>1</SUB> is nonsingular, because otherwise the second matrix in the last equation has determinant 0, and thus the determinant of matrix <I>A</I> is 0; but this means that <I>A</I> is singular, which contradicts our assumption that <I>A</I> is nonsingular. Consequently, we can inductively find an LUP decomposition for the Schur complement, with unit lower-triangular matrix <I>L</I>', upper-triangular matrix <I>U</I>', and permutation matrix <I>P</I>', such that<P>
+<pre><I>P</I>'(<I>A</I>' - <I>vw</I><SUP>T</SUP>/<I>a<SUB>k</I>1</SUB>) = <I>L</I>'<I>U</I>' .</sub></sup></pre><P>
+Define<P>
+<img src="758_c.gif"><P>
+which is a permutation matrix, since it is the product of two permutation matrices (Exercise 31.1-2). We now have<P>
+<img src="758_d.gif"><P>
+<img src="759_a.gif"><P>
+yielding the LUP decomposition. Because <I>L</I>' is unit lower-triangular, so is <I>L</I>, and because <I>U</I>'<I> </I>is upper-triangular, so is <I>U</I>.<P>
+Notice that in this derivation, unlike the one for LU decomposition, both the column vector <I>v</I>/<I>a<SUB>k</I>1</SUB> and the Schur complement <I>A</I>' - <I>vw</I><SUP>T</SUP>/<I>a<SUB>k</I>1</SUB> must be multiplied by the permutation matrix <I>P</I>'.<P>
+Like LU-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT>, our pseudocode for LUP decomposition replaces the recursion with an iteration loop. As an improvement over a direct implementation of the recursion, we dynamically maintain the permutation matrix <I>P</I> as an array <IMG SRC="../IMAGES/piuc.gif">, where <IMG SRC="../IMAGES/piuc.gif">[<I>i</I>] = <I>j</I> means that the <I>i</I>th row of <I>P</I> contains a 1 in column <I>j</I>. We also implement the code to compute <I>L</I> and <I>U</I> "in place" in the matrix <I>A</I>. Thus, when the procedure terminates,<P>
+<img src="759_b.gif"><P>
+<pre><a name="097e_1ac2">LUP-DECOMPOSITION(<I>A</I>)</sub></sup></pre><P>
+<pre>1<I>  n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>2<B>  for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>3<B>       do</B> <IMG SRC="../IMAGES/piuc.gif">[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I></sub></sup></pre><P>
+<pre>4<B>  for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n </I>- 1</sub></sup></pre><P>
+<pre>5<B>       do</B> <I>p</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6<B>          for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>7<B>              do if</B> |<I>a<SUB>ik</I></SUB>| &gt; <I>p</I></sub></sup></pre><P>
+<pre>8<I><B>                    </I>then </B><I>p </I><IMG SRC="../IMAGES/arrlt12.gif"> |<I>a<SUB>ik</I></SUB>|</sub></sup></pre><P>
+<pre>9                         <I>k</I>' <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I></sub></sup></pre><P>
+<pre>10<I><B>          </I>if </B><I>p</I><B> = </B>0</sub></sup></pre><P>
+<pre>11<B>             then error</B> "singular matrix"</sub></sup></pre><P>
+<pre>12          exchange <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>] <IMG SRC="../IMAGES/dblarr12.gif"> <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>']</sub></sup></pre><P>
+<pre>13<B>          for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>14<B>               do</B> exchange <I>a<SUB>ki </I></SUB><IMG SRC="../IMAGES/dblarr12.gif"> <I>a<SUB>k</I></SUB>'<SUB><I>i</I></sub></sup></pre><P>
+<pre>15<B>          for </B><I>i </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> + 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>16<B>               do</B> <I>a<SUB>ik</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>a<SUB>ik</I>/</SUB><I>a<SUB>kk</I></sub></sup></pre><P>
+<pre>17<B>                  for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> + 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>18<B>                       do</B> <I>a<SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>a<SUB>ij</I></SUB> - <I>a<SUB>ik</SUB>a<SUB>kj</I></sub></sup></pre><P>
+Figure 31.2 illustrates how LUP-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT> factors a matrix. The array <IMG SRC="../IMAGES/piuc.gif"> is initialized by lines 2-3 to represent the identity permutation. The outer <B>for</B> loop beginning in line 4 implements the recursion. Each time through the outer loop, lines 5-9 determine the element <I>a<SUB>k</I></SUB>'<I>k</I><SUB></SUB> with largest absolute value of those in the current first column (column <I>k</I>) of the (<I>n</I> - <I>k</I> + l ) <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> <FONT FACE="Times" SIZE=2>-</FONT> <I>k</I> + 1) matrix whose LU decomposition must be found.<P>
+<img src="760_a.gif"><P>
+<h4><a name="097e_1ac3">Figure 31.2 The operation of LUP-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION<FONT FACE="Times New Roman" SIZE=2>. (a) The input matrix A with the identity permutation of the rows on the left. The first step of the algorithm determines that the element 5 in black in the third row is the pivot for the first column. (b) Rows 1 and 3 are swapped and the permutation is updated. The shaded column and row represent v and w<SUP>T</SUP><FONT FACE="Times New Roman" SIZE=2>. (c) The vector v is replaced by v/5, and the the lower right of the matrix is updated with the Schur complement. Lines divide the matrix into three regions: elements of U (above), elements of L (left), and elements of the Schur complement (lower right).(d)-(f) The second step.(g)-(i) The third step finishes the algorithm. (j) The LUP decomposition PA = LU.<a name="097e_1ac3"></FONT></FONT></FONT></sub></sup></h4><P>
+If all elements in the current first column are zero, lines 10-11 report that<I> </I>the matrix is singular. To pivot, we exchange <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>'] with <IMG SRC="../IMAGES/piuc.gif">[<I>k</I>] in line 12 and exchange the <I>k</I>th and <I>k</I>'th rows of <I>A</I> in lines 13-14, thereby making the pivot element <I>a<SUB>kk</I></SUB>. (The entire rows are swapped because in the derivation of the method above, not only is <I>A</I>' - <I>vw</I><SUP>T</SUP>/<I>a<SUB>k</I>1</SUB> multiplied by <I>P</I>', but so is <I>v</I>/<I>a<SUB>k</I>1</SUB>.) Finally, the Schur complement is computed by lines 15-18 in much the same way as it is computed by lines 4-9 of LU-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT>, except that here the operation is written to work "in place."<P>
+Because of its triply nested loop structure, the running time of LUP-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>), the same as that of LU-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT>. Thus, pivoting costs us at most a constant factor in time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="097f_1ac7">Exercises<a name="097f_1ac7"></h2><P>
+<a name="097f_1ac8">31.4-1<a name="097f_1ac8"><P>
+Solve the equation<P>
+<img src="761_a.gif"><P>
+by using forward substitution.<P>
+<a name="097f_1ac9">31.4-2<a name="097f_1ac9"><P>
+Find an LU decomposition of the matrix<P>
+<img src="761_b.gif"><P>
+<a name="097f_1aca">31.4-3<a name="097f_1aca"><P>
+Why does the <B>for</B> loop in line 4 of LUP-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT> run only up to <I>n</I> - 1, whereas the corresponding <B>for</B> loop in line 2 of LU-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT> runs all the way to <I>n</I>?<P>
+<a name="097f_1acb">31.4-4<a name="097f_1acb"><P>
+Solve the equation<P>
+<img src="761_c.gif"><P>
+by using an LUP decomposition.<P>
+<a name="097f_1acc">31.4-5<a name="097f_1acc"><P>
+<a name="097f_1ac3"><a name="097f_1ac4">Describe the LUP decomposition of a diagonal matrix.<P>
+<a name="097f_1acd">31.4-6<a name="097f_1acd"><P>
+<a name="097f_1ac5"><a name="097f_1ac6">Describe the LUP decomposition of a permutation matrix <I>A</I>, and prove that it is unique.<P>
+<a name="097f_1ace">31.4-7<a name="097f_1ace"><P>
+Show that for all <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 1, there exist singular <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices that have LU decompositions.<P>
+<a name="097f_1acf">31.4-8<a name="097f_1acf"><P>
+Show how we can efficiently solve a set of equations of the form <I>Ax</I> = <I>b </I>over the boolean quasiring ({0, 1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1).<P>
+<a name="097f_1ad0">31.4-9<a name="097f_1ad0"><P>
+Suppose that <I>A</I> is an <I>m</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> real matrix of rank <I>m</I>, where <I>m</I> &lt; <I>n</I>. Show how to find a size-<I>n</I> vector <I>x</I><SUB>0</SUB> and an <I>m</I> <IMG SRC="../IMAGES/mult.gif"> (<I>n</I> - <I>m</I>) matrix <I>B</I> of rank <I>n</I> <FONT FACE="Times" SIZE=2>-</FONT> <I>m </I>such that every vector of the form <I>x</I><SUB>0</SUB> + <I>By</I>, for <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B><I><SUP>n-m</I></SUP>, is a solution to the underdetermined equation <I>Ax</I> = <I>b</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0980_1ac8">31.5 Inverting matrices<a name="0980_1ac8"></h1><P>
+<a name="0980_1ac7">Although in practice we do not generally use matrix inverses to solve systems of linear equations, preferring instead to use more numerically stable techniques such as LUP decomposition, it is sometimes necessary to compute a matrix inverse. In this section, we show how LUP decomposition can be used to compute a matrix inverse. We also discuss the theoretically interesting question of whether the computation of a matrix inverse can be sped up using techniques such as Strassen's algorithm for matrix multiplication. Indeed, Strassen's original paper was motivated by the problem of showing that a set of a linear equations could be solved more quickly than by the usual method.<P>
+
+
+
+
+
+<h2>Computing a matrix inverse from an LUP decomposition</h2><P>
+<a name="0981_1ac8"><a name="0981_1ac9">Suppose that we have an LUP decomposition of a matrix <I>A</I> in the form of three matrices <I>L, U</I>, and <I>P</I> such that <I>PA </I>=<I> LU</I>. Using LU-<FONT FACE="Courier New" SIZE=2>SOLVE</FONT>, we can solve an equation of the form <I>Ax </I>=<I> b</I> in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). Since the LUP decomposition depends on <I>A</I> but not <I>b</I>, we can solve a second set of equations of the form <I>Ax</I> = <I>b</I>' in additional time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). In general, once we have the LUP decomposition of <I>A</I>, we can solve, in time <IMG SRC="../IMAGES/bound.gif">(<I>kn</I><SUP>2</SUP>), <I>k</I> versions of the equation <I>Ax </I>=<I> b</I> that differ only in <I>b</I>.<P>
+The equation<P>
+<pre><I>AX</I> = <I>I<SUB>n</I></sub></sup></pre><P>
+<h4><a name="0981_1aca">(31.24)<a name="0981_1aca"></sub></sup></h4><P>
+can be viewed as a set of <I>n</I> distinct equations of the form <I>Ax </I>=<I> b</I>. These equations define the matrix <I>X</I> as the inverse of <I>A</I>. To be precise, let <I>X<SUB>i</I></SUB> denote the <I>i</I>th column of <I>X</I>, and recall that the unit vector <I>e<SUB>i</I></SUB> is the <I>i</I>th column of <I>I<SUB>n</I></SUB>. Equation (31.24) can then be solved for <I>X</I> by using the LUP decomposition for <I>A</I> to solve each equation<P>
+<pre><I>AX<SUB>i</I></SUB> = <I>e<SUB>i</I></sub></sup></pre><P>
+separately for <I>X<SUB>i</I></SUB>. Each of the <I>n X<SUB>i</I></SUB> can be found in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>), and so the computation of <I>X </I>from the LUP decomposition of<I> A</I> takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>). Since the LUP decomposition of <I>A</I> can be computed in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>), the inverse <I>A</I><SUP>-1</SUP> of a matrix <I>A</I> can be determined in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Matrix multiplication and matrix inversion</h2><P>
+<a name="0982_1aca">We now show that the theoretical speedups obtained for matrix multiplication translate to speedups for matrix inversion. In fact, we prove something stronger: matrix inversion is equivalent to matrix multiplication, in the following sense. If <I>M</I>(<I>n</I>) denotes the time to multiply two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices and <I>I</I>(<I>n</I>) denotes the time to invert a nonsingular <I>n</I> <FONT FACE="Times" SIZE=2><IMG SRC="../IMAGES/mult.gif"></FONT> <I>n</I> matrix, then <I>I</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>M</I>(<I>n</I>)). We prove this result in two parts. First, we show that <I>M</I>(<I>n</I>) = <I>O</I>(<I>I</I>(<I>n</I>)), which is relatively easy, and then we prove that <I>I</I>(<I>n</I>) = <I>O</I>(<I>M</I>(<I>n</I>)).<P>
+<a name="0982_1acb">Theorem 31.11<a name="0982_1acb"><P>
+If we can invert an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix in time <I>I</I>(<I>n</I>), where <I>I</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) and <I>I</I>(<I>n</I>) satisfies the regularity condition <I>I</I>(3<I>n</I>) = <I>O</I>(<I>I</I>(<I>n</I>)), then we can multiply two <I>n </I><IMG SRC="../IMAGES/mult.gif"><I> n</I> matrices in time <I>O</I>(<I>I</I>(<I>n</I>)).<P>
+<I><B>Proof     </I></B>Let <I>A</I> and <I>B</I> be <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices whose matrix product <I>C</I> we wish to compute. We define the 3<I>n</I> <IMG SRC="../IMAGES/mult.gif"> 3<I>n</I> matrix <I>D</I> by<P>
+<img src="763_a.gif"><P>
+The inverse of <I>D</I> is<P>
+<img src="763_b.gif"><P>
+and thus we can compute the product <I>AB</I> by taking the upper right <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n </I>submatrix of <I>D</I><SUP>-1</SUP>.<P>
+We can construct matrix <I>D</I> in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) = <I>O</I>(<I>I</I>(<I>n</I>)) time, and we can invert <I>D</I> in <I>O</I>(<I>I</I>(3<I>n</I>)) = <I>O</I>(<I>I</I>(<I>n</I>)) time, by the regularity condition on <I>I</I>(<I>n</I>). We thus have<P>
+<pre><I>M</I>(<I>n</I>) = <I>O</I>(<I>I</I>(<I>n</I>)).      </sub></sup></pre><P>
+Note that <I>I</I>(<I>n</I>) satisfies the regularity condition whenever <I>I</I>(<I>n</I>) does not have large jumps in value. For example, if <I>I</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif"> (<I>n<SUP>c</I></SUP> lg<I><SUP>d</I></SUP> <I>n</I>) for any constants <I>c</I> &gt; 0, <I>d</I> <IMG SRC="../IMAGES/gteq.gif"> 0, then <I>I</I>(<I>n</I>) satisfies the regularity condition.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Reducing matrix inversion to matrix multiplication</h2><P>
+<a name="0983_1acb">The proof that matrix inversion is no harder than matrix multiplication relies on some properties of symmetric positive-definite matrices that will be proved in Section 31.6.<P>
+<a name="0983_1acc">Theorem 31.12<a name="0983_1acc"><P>
+If we can multiply two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> real matrices in time <I>M</I>(<I>n</I>), where <I>M</I>(<I>n</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) and <I>M</I>(<I>n</I>) = <I>O</I>(<I>M</I>(<I>n</I> + <I>k</I>)) for 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, then we can compute the inverse of any real nonsingular <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix in time <I>O</I>(<I>M</I>(<I>n</I>)).<P>
+<I><B>Proof     </I></B>We can assume that <I>n</I> is an exact power of 2, since we have<P>
+<img src="764_a.gif"><P>
+for any <I>k</I> &gt; 0. Thus, by choosing <I>k</I> such that <I>n</I> + <I>k</I> is a power of 2, we enlarge the matrix to a size that is the next power of 2 and obtain the desired answer <I>A</I><SUP>-1 </SUP>from the answer to the enlarged problem. The regularity condition on <I>M</I>(<I>n</I>) ensures that this enlargement does not cause the running time to increase by more than a constant factor.<P>
+For the moment, let us assume that the <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>A</I> is symmetric and positive-definite. We partition <I>A</I> into four <I>n</I>/2 <IMG SRC="../IMAGES/mult.gif"> <I>n</I>/2 submatrices:<P>
+<img src="764_b.gif"><P>
+<h4><a name="0983_1acd">(31.25)<a name="0983_1acd"></sub></sup></h4><P>
+Then, if we let<P>
+<pre><I>S</I> = <I>D </I>- <I>CB</I><SUP><FONT FACE="Times" SIZE=1>-1 </SUP><I>C</I><SUP>T</FONT></sub></sup></pre><P>
+<h4><a name="0983_1ace">(31.26)<a name="0983_1ace"></sub></sup></h4><P>
+be the Schur complement of <I>A</I> with respect to <I>B</I>, we have<P>
+<img src="764_c.gif"><P>
+<h4><a name="0983_1acf">(31.27)<a name="0983_1acf"></sub></sup></h4><P>
+since <I>AA</I><SUP>-1</SUP> = <I>I<SUB>n</I></SUB>, as can be verified by performing the matrix multiplication. The matrices <I>B</I><SUP>-1</SUP> and <I>S</I><SUP><FONT FACE="Times" SIZE=1>-1</FONT></SUP> exist if <I>A</I> is symmetric and positive-definite, by Lemmas 31.13, 31.14, and 31.15 in Section 31.6, because both <I>B</I> and <I>S</I> are symmetric and positive-definite. By Exercise 31.1-3, <I>B</I><SUP>-1</SUP><I>C</I><SUP>T</SUP> = (<I>CB<SUP>-</I>1</SUP>)<SUP>T</SUP> and <I>B</I><SUP>-1</SUP><I>C</I><SUP>T</SUP><I>S</I><SUP><FONT FACE="Times" SIZE=1></SUP>-<SUP>1</FONT></SUP> = (<I>S</I><SUP>-1 </SUP><I>CB</I><SUP><FONT FACE="Times" SIZE=1>-1</FONT></SUP>)<SUP>T</SUP>. Equations (31.26) and (31.27) can therefore be used to specify a recursive algorithm involving 4 multiplications of <I>n</I>/2 <IMG SRC="../IMAGES/mult.gif"> <I>n</I>/2 matrices:<P>
+<pre><I>C </I><IMG SRC="../IMAGES/dot10.gif"> <I>B</I><SUP>-1</SUP>,</sub></sup></pre><P>
+<pre>(<I>CB</I><SUP>-1</SUP>) <IMG SRC="../IMAGES/dot10.gif"> <I>C</I><SUP>T</SUP>,</sub></sup></pre><P>
+<pre><I>S</I><SUP>-1</SUP> <IMG SRC="../IMAGES/dot10.gif"><SUP> </SUP>(<I>CB</I><SUP>-1</SUP>),</sub></sup></pre><P>
+<pre>(<I>CB</I><SUP>-1</SUP>)<SUP>T</SUP> <IMG SRC="../IMAGES/dot10.gif"> (<I>S</I><SUP>-1</SUP> <I>CB</I><SUP>-1</SUP>).</sub></sup></pre><P>
+Since we can multiply <I>n</I>/2<I> </I><IMG SRC="../IMAGES/mult.gif"><I> n</I>/2<I> </I>matrices using an algorithm for <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n </I>matrices, matrix inversion of symmetric positive-definite matrices can be performed in time<P>
+<pre><I>I</I>(<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 2<I>I</I>(<I>n</I>/2) + 4<I>M</I>(<I>n</I>) + <I>O</I>(<I>n</I><SUP>2</SUP>)</sub></sup></pre><P>
+<pre>= 2<I>I</I>(<I>n</I>/2) + <I>O</I>(<I>M</I>(<I>n</I>))</sub></sup></pre><P>
+<pre>= <I>O</I>(<I>M</I>(<I>n</I>)).</sub></sup></pre><P>
+It remains to prove that the asymptotic running time of matrix multiplication can be obtained for matrix inversion when <I>A</I> is invertible but not symmetric and positive-definite. The basic idea is that for any nonsingular matrix <I>A</I>, the matrix <I>A</I><SUP>T</SUP><I>A</I> is symmetric (by Exercise 31.1-3) and positive-definite (by Theorem 31.6). The trick, then, is to reduce the problem of inverting <I>A</I> to the problem of inverting <I>A</I><SUP>T</SUP><I>A</I>.<P>
+The reduction is based on the observation that when <I>A</I> is an <I>n <IMG SRC="../IMAGES/mult.gif"> n </I>nonsingular matrix, we have<P>
+<pre><I>A</I><SUP>-1</SUP><I> = </I>(<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP><I>A</I><SUP>T</SUP>,</sub></sup></pre><P>
+since ((<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP><I> A</I><SUP>T</SUP>)<I>A </I>= (<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP>(<I>A</I><SUP>T</SUP><I>A</I>) = <I>I<SUB>n</I></SUB> and a matrix inverse is unique. Therefore, we can compute <I>A</I><SUP>-1</SUP> by first multiplying <I>A</I><SUP>T</SUP> by <I>A</I> to obtain <I>A</I><SUP>T</SUP><I>A</I>, then inverting the symmetric positive-definite matrix <I>A</I><SUP>T</SUP><I>A</I> using the above divide-and-conquer algorithm, and finally multiplying the result by <I>A</I><SUP>T</SUP>. Each of these three steps takes <I>O</I>(<I>M</I>(<I>n</I>)) time, and thus any nonsingular matrix with real entries can be inverted in <I>O</I>(<I>M</I>(<I>n</I>)) time.      <P>
+The proof of Theorem 31.12 suggests a means of solving the equation <I>Ax </I>=<I> b</I> without pivoting, so long as <I>A</I> is nonsingular. We multiply both sides of the equation by <I>A</I><SUP>T</SUP>, yielding (<I>A</I><SUP>T</SUP><I>A</I>)<I>x </I>=<I> A</I><SUP>T</SUP><I>b</I>. This transformation doesn't affect the solution <I>x</I>, since <I>A</I><SUP>T</SUP> is invertible, so we can factor the symmetric positive-definite matrix <I>A</I><SUP>T</SUP><I>A</I> by computing an LU decomposition. We then use forward and back substitution to solve for <I>x</I> with the right-hand side <I>A</I><SUP>T</SUP><I>b</I>. Although this method is theoretically correct, in practice the procedure LUP-<FONT FACE="Courier New" SIZE=2>DECOMPOSITION</FONT> works much better. LUP decomposition requires fewer arithmetic operations by a constant factor, and it has somewhat better numerical properties.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0984_1ad8">Exercises<a name="0984_1ad8"></h2><P>
+<a name="0984_1ad9">31.5-1<a name="0984_1ad9"><P>
+Let <I>M</I>(<I>n</I>) be the time to multiply <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrices, and let <I>S</I>(<I>n</I>) denote the time required to square an <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrix. Show that multiplying and squaring matrices have essentially the same difficulty: <I>S</I>(<I>n</I>) <I>= </I><IMG SRC="../IMAGES/bound.gif">(<I>M</I>(<I>n</I>)).<P>
+<a name="0984_1ada">31.5-2<a name="0984_1ada"><P>
+<a name="0984_1acc"><a name="0984_1acd">Let <I>M</I>(<I>n</I>) be the time to multiply <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrices, and let <I>L</I>(<I>n</I>) be the time to compute the LUP decomposition of an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix. Show that multiplying matrices and computing LUP decompositions of matrices have essentially the same difficulty: <I>L</I>(<I>n</I>) <I>= </I><IMG SRC="../IMAGES/bound.gif">(<I>M</I>(<I>n</I>)).<P>
+<a name="0984_1adb">31.5-3<a name="0984_1adb"><P>
+<a name="0984_1ace"><a name="0984_1acf">Let <I>M</I>(<I>n</I>) be the time to multiply <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrices, and let <I>D</I>(<I>n</I>) denote the time required to find the determinant of an <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrix. Show that finding the determinant is no harder than multiplying matrices: <I>D</I>(<I>n</I>) <I>= O</I>(<I>M</I>(<I>n</I>))<I>.</I><P>
+<a name="0984_1adc">31.5-4<a name="0984_1adc"><P>
+<a name="0984_1ad0"><a name="0984_1ad1"><a name="0984_1ad2"><I>Let M</I>(<I>n</I>) be the time to multiply <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> boolean matrices, and let <I>T</I>(<I>n</I>) be the time to find the transitive closure of <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> boolean matrices. Show that <I>M</I>(<I>n</I>) =<I> O</I>(<I>T</I>(<I>n</I>)) and <I>T</I>(<I>n</I>) =<I> O</I>(<I>M</I>(<I>n</I>)lg <I>n</I>).<P>
+<a name="0984_1add">31.5-5<a name="0984_1add"><P>
+Does the matrix-inversion algorithm based on Theorem 31.12 work when matrix elements are drawn from the field of integers modulo 2? Explain.<P>
+<a name="0984_1ade">31.5-6<a name="0984_1ade"><P>
+<a name="0984_1ad3"><a name="0984_1ad4"><a name="0984_1ad5"><a name="0984_1ad6"><a name="0984_1ad7">Generalize the matrix-inversion algorithm of Theorem 31.12 to handle matrices of complex numbers, and prove that your generalization works correctly. (<I>Hint</I>: Instead of the transpose of <I>A</I>, use the <I><B>conjugate transpose A</I></B>*, which is obtained from the transpose of <I>A</I> by replacing every entry with its complex conjugate. Instead of symmetric matrices, consider <I><B>Hermitian</I></B> matrices, which are matrices <I>A</I> such that <I>A </I>=<I> A</I>*.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0985_1ade">31.6 Symmetric positive-definite matrices and least-squares approximation<a name="0985_1ade"></h1><P>
+<a name="0985_1ad8"><a name="0985_1ad9">Symmetric positive-definite matrices have many interesting and desirable properties. For example, they are nonsingular, and LU decomposition can be performed on them without our having to worry about dividing by 0. In this section, we shall prove several other important properties of symmetric positive-definite matrices and show an interesting application to curve fitting by a least-squares approximation.<P>
+The first property we prove is perhaps the most basic.<P>
+<a name="0985_1adf">Lemma 31.13<a name="0985_1adf"><P>
+Any symmetric positive-definite matrix is nonsingular.<P>
+<I><B>Proof     </I></B>Suppose that a matrix <I>A</I> is singular. Then by Corollary 31.3, there exists a nonzero vector <I>x</I> such that <I>Ax </I>=<I> </I>0. Hence, <I>x</I><SUP>T</SUP><I>Ax </I>=<I> </I>0, and <I>A </I>cannot be positive-definite.      <P>
+<a name="0985_1ada">The proof that we can perform LU decomposition on a symmetric positive-definite matrix <I>A</I> without dividing by 0 is more involved. We begin by proving properties about certain submatrices of <I>A</I>. Define the <I>k</I>th <I><B>leading submatrix</I></B> of <I>A</I> to be the matrix <I>A<SUB>k</I></SUB> consisting of the intersection of the first <I>k</I> rows and first <I>k</I> columns of <I>A</I>.<P>
+<a name="0985_1ae0">Lemma 31.14<a name="0985_1ae0"><P>
+If <I>A</I> is a symmetric positive-definite matrix, then every leading submatrix of <I>A</I> is symmetric and positive-definite.<P>
+<I><B>Proof     </I></B>That each leading submatrix <I>A<SUB>k</I></SUB> is symmetric is obvious. To prove that <I>A<SUB>k</I></SUB> is positive-definite, let <I>x</I> be a nonzero column vector of size <I>k</I>, and let us partition <I>A</I> as follows:<P>
+<img src="767_a.gif"><P>
+Then, we have<P>
+<img src="767_b.gif"><P>
+since <I>A</I> is positive-definite, and hence <I>A<SUB>k</I></SUB> is also positive-definite.      <P>
+<a name="0985_1adb"><a name="0985_1adc">We now turn to some essential properties of the Schur complement. Let <I>A</I> be a symmetric positive-definite matrix, and let <I>A<SUB>k</I></SUB> be a leading <I>k <IMG SRC="../IMAGES/mult.gif"> k </I>submatrix of <I>A</I>. Partition <I>A</I> as<P>
+<img src="767_c.gif"><P>
+<h4><a name="0985_1ae1">(31.28)<a name="0985_1ae1"></sub></sup></h4><P>
+Then, the <I><B>Schur complement</I></B> of <I>A</I> with respect to <I>A<FONT FACE="Courier New" SIZE=2>k </I></FONT>is defined to be<P>
+<img src="767_d.gif"><P>
+<h4><a name="0985_1ae2">(31.29)<a name="0985_1ae2"></sub></sup></h4><P>
+(By Lemma 31.14, <I>A<FONT FACE="Courier New" SIZE=2>k</I></FONT> is symmetric and positive-definite; therefore, <img src="767_e.gif"><SUP> </SUP>exists by Lemma 31.13, and <I>S</I> is well defined.) Note that our earlier definition (31.23) of the Schur complement is consistent with definition (31.29), by letting <I>k</I> = 1.<P>
+The next lemma shows that the Schur-complement matrices of symmetric positive-definite matrices are themselves symmetric and positive-definite. This result was used in Theorem 31.12, and its corollary is needed to prove the correctness of LU decomposition for symmetric positive-definite matrices.<P>
+<a name="0985_1ae3"><a name="0985_1add">Lemma 31.15<a name="0985_1ae3"><P>
+If <I>A </I>is a symmetric positive-definite matrix and <I>A<SUB>k</I></SUB> is a leading data <I>k</I> <IMG SRC="../IMAGES/mult.gif"> <I>k</I> submatrix of <I>A</I>, then the Schur complement of <I>A</I> with respect to <I>A<SUB>k</I></SUB> is symmetric and positive-definite.<P>
+<I><B>Proof     </I></B>That <I>S</I> is symmetric follows from Exercise 31.1-7. It remains to show that <I>S</I> is positive-definite. Consider the partition of <I>A</I> given in equation (31.28).<P>
+For any nonzero vector <I>x</I>, we have <I>x</I><SUP>T</SUP><I>Ax</I> &gt; 0 by assumption. Let us break <I>x</I> into two subvectors <I>y</I> and <I>z</I> compatible with <I>A<SUB>k</I></SUB> and <I>C</I>, respectively. Because <I>A<SUB>k</I></SUB><SUP>-1</SUP> exists, we have<P>
+<img src="768_a.gif"><P>
+<h4><a name="0985_1ae4">(31.30)<a name="0985_1ae4"></sub></sup></h4><P>
+by matrix magic. (Verify by multiplying through.) This last equation amounts to "completing the square" of the quadractic form. (See Exercise 31.6-2.)<P>
+Since <I>x</I><SUP>T</SUP><I>Ax</I> &gt; 0 holds for any nonzero <I>x</I>, let us pick any nonzero <I>z</I> and then choose <img src="768_b.gif">, which causes the first term in equation (31.30) to vanish, leaving<P>
+<img src="768_c.gif"><P>
+as the value of the expression. For any <I>z</I> <IMG SRC="../IMAGES/noteq.gif"> 0, we therefore have <I>z</I><SUP>T</SUP><I>Sz</I> = <I>x</I><SUP>T</SUP><I>Ax</I> &gt; 0, and thus <I>S</I> is positive-definite.      <P>
+<a name="0985_1ae5">Corollary 31.16<a name="0985_1ae5"><P>
+LU decomposition of a symmetric positive-definite matrix never causes a division by 0.<P>
+<I><B>Proof     </I></B>Let <I>A</I> be a symmetric positive-definite matrix. We shall prove something stronger than the statement of the corollary: every pivot is strictly positive. The first pivot is <I>a</I><SUB>11</SUB>. Let <I>e</I><SUB>1</SUB> be the first unit vector, from which we obtain <img src="768_d.gif">. Since the first step of LU decomposition produces the Schur complement of <I>A</I> with respect to <I>A</I><SUB>1</SUB> = (<I>a</I><SUB>11</SUB>), Lemma 31.15 implies that all pivots are positive by induction.      <P>
+
+
+
+
+
+<h2>Least-squares approximation</h2><P>
+<a name="0986_1ade"><a name="0986_1adf"><a name="0986_1ae0">Fitting curves to given sets of data points is an important application of symmetric positive-definite matrices. Suppose that we are given a set of <I>m</I> data points<P>
+<pre>(<I>x</I><SUB>1</SUB>,<I>y</I><SUB>1</SUB>),(<I>x</I><SUB>2</SUB>,<I>y</I><SUB>2</SUB>),...,(<I>x<SUB>m</I></SUB>,<I>y<SUB>m</I></SUB>),</sub></sup></pre><P>
+where the <I>y<SUB>i</I></SUB> are known to be subject to measurement errors. We would like to determine a function <I>F</I> (<I>x</I>) such that<P>
+<pre><I>y<SUB>i</I></SUB> = <I>F</I>(<I>x<SUB>i</I></SUB>) + <IMG SRC="../IMAGES/eta.gif"><I><SUB>i</I></SUB>,</sub></sup></pre><P>
+<h4><a name="0986_1ae4">(31.31)<a name="0986_1ae4"></sub></sup></h4><P>
+for <I>i</I> = 1, 2, . . . , <I>m</I>, where the approximation errors <IMG SRC="../IMAGES/eta.gif"><I>i</I> are small. The form of the function <I>F</I> depends on the problem at hand. Here, we assume that it has the form of a linearly weighted sum,<P>
+<img src="769_a.gif"><P>
+where the number of summands <I>n</I> and the specific <I><B>basis functions</I></B> <I>f<SUB>j</I></SUB> are chosen based on knowledge of the problem at hand. A common choice is <I>f<SUB>j</I></SUB>(<I>x</I>) = <I>x<SUP>j</I>-1</SUP>, which means that<P>
+<pre><I>F</I>(<I>x</I>) = <I>c</I><SUB>1</SUB> + <I>c</I><SUB>2</SUB><I>x</I> + <I>c</I><SUB>3</SUB><I>x</I><SUP>2</SUP> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>c<SUB>n</SUB>x<SUP>n</I>-1</sub></sup></pre><P>
+is a polynomial of degree <I>n </I>- 1 in <I>x</I>.<P>
+By choosing <I>n</I> = <I>m</I>, we calculate each <I>y<SUB>i</I></SUB> <I>exactly</I> in equation (31.31). Such a high-degree <I>F</I> "fits the noise" as well as the data, however, and generally gives poor results when used to predict <I>y</I> for previously unseen values of <I>x</I>. It is usually better to choose <I>n</I> significantly smaller than <I>m</I> and hope that by choosing the coefficients <I>c<SUB>j</I></SUB> well, we can obtain a function <I>F</I> that finds the significantl patterns in the data points without paying undue attention to the noise. Some theoretical principles exist for choosing <I>n</I>, but they are beyond the scope of this text. In any case, once <I>n</I> is chosen, we end up with an overdetermined set of equations that we wish to solve as well as we can. We now show how this can be done.<P>
+Let<P>
+<img src="769_b.gif"><P>
+denote the matrix of values of the basis functions at the given points; that is, <I>a<SUB>ij</I></SUB> = <I>f<SUB>j</I></SUB>(<I>x<SUB>i</I></SUB>). Let <I>c</I> = (<I>c<SUB>k</I></SUB>) denote the desired size-<I>n</I> vector of coefficients. Then,<P>
+<img src="769_c.gif"><P>
+is the size-<I>m</I> vector of "predicted values" for <I>y</I>. Thus,<P>
+<pre><IMG SRC="../IMAGES/eta.gif"> = <I>Ac</I> - <I>y</I></sub></sup></pre><P>
+is the size-<I>m</I> vector of <I><B>approximation errors</I></B>.<P>
+To minimize approximation errors, we choose to minimize the norm of the error vector <IMG SRC="../IMAGES/eta.gif">, which gives us a <I><B>least-squares solution</I></B>, since<P>
+<img src="769_d.gif"><P>
+Since<P>
+<img src="770_a.gif"><P>
+we can minimize |<FONT FACE="CG Times (W1)" SIZE=2>|<IMG SRC="../IMAGES/eta.gif"></FONT>|| by differentiating ||<IMG SRC="../IMAGES/eta.gif">||<SUP>2</SUP> with respect to each <I>c<SUB>k</I></SUB> and then setting the result to 0:<P>
+<img src="770_b.gif"><P>
+<h4><a name="0986_1ae5">(31.32)<a name="0986_1ae5"></sub></sup></h4><P>
+The <I>n</I> equations (31.32) for <I>k</I> = 1, 2, . . . , <I>n</I> are equivalent to the single matrix equation<P>
+<pre>(<I>Ac</I> -<I>y</I>)<SUP>T</SUP><I>A</I> = 0</sub></sup></pre><P>
+or, equivalently (using Exercise 31.1-3), to<P>
+<pre><I>A</I><SUP>T</SUP>(<I>Ac - y</I>) = 0 ,</sub></sup></pre><P>
+which implies<P>
+<pre><I>A</I><SUP>T</SUP><I>Ac</I> = <I>A</I><SUP>T</SUP><I>y </I>.</sub></sup></pre><P>
+<h4><a name="0986_1ae6">(31.33)<a name="0986_1ae6"></sub></sup></h4><P>
+<a name="0986_1ae1"><a name="0986_1ae2"><a name="0986_1ae3">In statistics, this is called the <I><B>normal equation</I></B>. The matrix <I>A</I><SUP>T</SUP> <I>A</I> is symmetric by Exercise 31.1-3, and if <I>A</I> has full column rank, then <I>A</I><SUP>T</SUP><I>A</I> is positive-definite as well. Hence, (<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP> exists, and the solution to equation (31.33) is<P>
+<pre><I>c</I> = ((<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP><I>A</I><SUP>T</SUP>)y</sub></sup></pre><P>
+<pre>= <I>A</I><SUP>+</SUP><I>y </I>,</sub></sup></pre><P>
+<h4><a name="0986_1ae7">(31.34)<a name="0986_1ae7"></sub></sup></h4><P>
+where the matrix <I>A</I><SUP>+</SUP> = ((<I>A</I><SUP>T</SUP><I>A</I>)<SUP>-1</SUP><I>A</I><SUP>T</SUP>) is called the <I><B>pseudoinverse</I></B> of the matrix <I>A</I>. The pseudoinverese is a natural generalization of the notion of a matrix inverse to the case in which <I>A</I> is nonsquare. (Compare equation (31.34) as the approximate solution to <I>Ac</I> = <I>y</I> with the solution <I>A</I><SUP>-1</SUP><I>b</I> as the exact solution to <I>Ax</I> = <I>b</I>.)<P>
+As an example of producing a least-squares fit, suppose that we have 5 data points<P>
+<pre>(-1,2),(1,1),(2,1),(3,0),(5,3),</sub></sup></pre><P>
+shown as black dots in Figure 31.3. We wish to fit these points with a quadratic polynomial<P>
+<pre><I>F</I>(<I>x</I>) = <I>c</I><SUB>1</SUB> + <I>c</I><SUB>2</SUB><I>x</I> + <I>c</I><SUB>3</SUB><I>x</I><SUP>2</SUP>.</sub></sup></pre><P>
+We start with the matrix of basis-function values<P>
+<img src="770_c.gif"><P>
+<img src="771_a.gif"><P>
+<h4><a name="0986_1ae8">Figure 31.3 The least-squares fit of a quadratic polynomial to the set of data points {(-1, 2), (1, 1), (2, 1),(3, 0), (5, 3)}. The black dots are the data points, and the white dots are their estimated values predicted by the polynomial F(x) = 1.2 - 0.757x + 0.214x<SUP>2</SUP>, the quadratic polynomial that minimizes the sum of the squared errors. The error for each data point is shown as a shaded line.<a name="0986_1ae8"></sub></sup></h4><P>
+whose pseudoinverse is<P>
+<img src="771_b.gif"><P>
+Multiplying <I>y</I> by <I>A</I><SUP>+</SUP>, we obtain the coefficient vector<P>
+<img src="771_c.gif"><P>
+which corresponds to the quadratic polynomial<P>
+<pre><I>F</I>(<I>x</I>) = 1.200 - 0.757<I>x</I> + 0.214<I>x</I><SUP>2</sub></sup></pre><P>
+as the closest-fitting quadratic to the given data, in a least-squares sense.<P>
+As a practical matter, we solve the normal equation (31.33) by multiplying <I>y</I> by <I>A</I><SUP>T</SUP> and then finding an LU decomposition of <I>A</I><SUP>T</SUP> <I>A</I>. If <I>A</I> has full rank, the matrix <I>A</I><SUP>T</SUP> <I>A</I> is guaranteed to be nonsingular, because it is symmetric and positive-definite. (See Exercise 31.1-3 and Theorem 31.6.)<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0987_0001">Exercises<a name="0987_0001"></h2><P>
+<a name="0987_0002">31.6-1<a name="0987_0002"><P>
+Prove that every diagonal element of a symmetric positive-definite matrix is positive.<P>
+<a name="0987_0003">31.6-2<a name="0987_0003"><P>
+Let <img src="772_a.gif"> be a 2 <IMG SRC="../IMAGES/mult.gif"> 2 symmetric positive-definite matrix. Prove that its determinant <I>ac</I> - <I>b</I><SUP>2</SUP> is positive by "completing the square" in a manner similar to that used in the proof of Lemma 31.15.<P>
+<a name="0987_0004">31.6-3<a name="0987_0004"><P>
+Prove that the maximum element in a symmetric positive-definite matrix lies on the diagonal.<P>
+<a name="0987_0005">31.6-4<a name="0987_0005"><P>
+Prove that the determinant of each leading submatrix of a symmetric positive-definite matrix is positive.<P>
+<a name="0987_0006">31.6-5<a name="0987_0006"><P>
+Let <I>A<SUB>k</I></SUB> denote the <I>k</I>th leading submatrix of a symmetric positive-definite matrix <I>A</I>. Prove that det(<I>A<SUB>k</I></SUB>)/det(<I>A<SUB>k</I>-1</SUB>) is the <I>k</I>th pivot during LU decomposition, where by convention det(<I>A</I><SUB>0</SUB>) = 1.<P>
+<a name="0987_0007">31.6-6<a name="0987_0007"><P>
+Find the function of the form<P>
+<pre><I>F</I>(<I>x</I>) = <I>c</I><SUB>1</SUB> + <I>c</I><SUB>2</SUB><I>x </I>lg <I>x</I> + <I>c</I><SUB>3</SUB><I>e<SUP>x</I></sub></sup></pre><P>
+that is the best least-squares fit to the data points<P>
+<pre>(1,1),(2,1),(3,3),(4,8) .</sub></sup></pre><P>
+<a name="0987_0008">31.6-7<a name="0987_0008"><P>
+Show that the pseudoinverse <I>A</I><SUP>+</SUP><I> </I>satisfies the following four equations:<P>
+<pre><I>AA</I><SUP>+</SUP> <I>A </I>=  <I>A </I>,</sub></sup></pre><P>
+<pre><I>A</I><SUP>+</SUP> <I>AA</I><SUP>+  </SUP>=  <I>A</I><SUP>+ </SUP>,</sub></sup></pre><P>
+<pre>(<I>AA</I><SUP>+</SUP>)<SUP>T  </SUP>=  <I>AA</I><SUP>+ </SUP>,</sub></sup></pre><P>
+<pre>(<I>A</I><SUP>+</SUP><I>A</I>)<SUP>T  </SUP>=  <I>A</I><SUP>+</SUP><I>A </I>.</sub></sup></pre><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0988_1af3">Problems<a name="0988_1af3"></h1><P>
+<a name="0988_1af4">31-1     Shamir's boolean matrix multiplication algorithm<a name="0988_1af4"><P>
+<a name="0988_1ae4"><a name="0988_1ae5"><a name="0988_1ae6"><a name="0988_1ae7"><a name="0988_1ae8"><a name="0988_1ae9"><a name="0988_1aea">In Section 31.3, we observed that Strassen's matrix-multiplication algorithm cannot be applied directly to boolean matrix multiplication because the boolean quasiring <I>Q</I> = ({0, 1}, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1) is not a ring. Theorem 31.10 showed that if we used arithmetic operations on words of <I>O</I>(lg <I>n</I>) bits, we could nevertheless apply Strassen's method to multiply <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> boolean matrices in <I>O</I>(<I>n</I><SUP>lg 7</SUP>) time. In this problem, we investigate a probabilistic method that uses only bit operations to achieve nearly as good a bound but with some small chance of error.<P>
+<I><B>a.</I></B>     Show that <I>R</I> = ({0, 1}, <IMG SRC="../IMAGES/xor14.gif">, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, 0, 1), where <IMG SRC="../IMAGES/xor14.gif"> is the XOR (exclusive-or) function, is a ring.<P>
+Let <I>A</I> = (<I>a<SUB>ij</I></SUB>) and <I>B</I> = (<I>b<SUB>ij</I></SUB>) be <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> boolean matrices, and let <I>C</I> = (<I>c<SUB>ij</I></SUB>) = <I>AB</I> in the quasiring <I>Q</I>. Generate <I>A</I>' = (<I>a</I>'<I><SUB>ij</I></SUB>) from <I>A</I> using the following randomized procedure:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>a<SUB>ij</I></SUB> = 0, then let <I>a</I>'<I><SUB>ij</I></SUB> = 0.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>A<SUB>ij</I></SUB> = 1, then let <I>a</I>'<I><SUB>ij</I></SUB> = 1 with probability 1/2 and let <I>a</I>'<I><SUB>ij</I></SUB> = 0 with probability 1/2. The random choices for each entry are independent.<P>
+<I><B>b</I>.</B>     Let <I>C</I>' = (<I>c</I>'<I><SUB>ij</I></SUB>) = <I>A</I>'<I>B</I> in the ring <I>R</I>. Show that <I>c<SUB>ij</I></SUB> = 0 implies <I>c</I>'<I><SUB>ij</I></SUB> = 0. Show that <I>c<SUB>ij</I></SUB> = 1 implies <I>c</I>'<I><SUB>ij</I></SUB> = 1 with probability 1/2.<P>
+<I><B>c</I>.</B>     Show that for any <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> &gt; 0, the probability is at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>/<I>n</I><SUP>2</SUP> that a given <I>c</I>'<I><SUB>ij</I></SUB> never takes on the value <I>c<SUB>ij</I></SUB> for lg(<I>n</I><SUP>2</SUP>/<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>) independent choices of the matrix <I>A</I>'. Show that the probability is at least 1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> that all <I>c</I>'<I><SUB>ij</I></SUB> take on their correct values at least once.<P>
+<I><B>d</I>.</B>     Give an <I>O</I>(<I>n</I><SUP>lg 7 </SUP>lg <I>n</I>)-time randomized algorithm that computes the product in the boolean quasiring <I>Q</I> of two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices with probability at least 1 - 1/<I>n<SUP>k</I></SUP> for any constant <I>k</I> &gt; 0. The only operations permitted on matrix elements are <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT>, and <IMG SRC="../IMAGES/xor14.gif">.<P>
+<a name="0988_1af5">31-2     Tridiagonal systems of linear equations<a name="0988_1af5"><P>
+<a name="0988_1aeb"><a name="0988_1aec"><a name="0988_1aed">Consider the tridiagonal matrix<P>
+<img src="773_a.gif"><P>
+<I><B>a.</I></B>     Find an LU decomposition of <I>A</I>.<P>
+<I><B>b.</I></B>     Solve the equation <I>Ax</I> = (1 1 1 1 1)<SUP>T</SUP> by using forward and back substitution.<P>
+<I><B>c.</I></B>     Find the inverse of <I>A</I>.<P>
+<I><B>d.</I></B>     Show that for any <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> symmetric, positive-definite, tridiagonal matrix <I>A</I> and any <I>n</I>-vector <I>b</I>, the equation <I>Ax</I> = <I>b</I> can be solved in <I>O</I>(<I>n</I>) time by performing an LU decomposition. Argue that any method based on forming <I>A<SUP>-</I>1</SUP> is asymptotically more expensive in the worst case.<P>
+<I><B>e.</I></B>     Show that for any <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> nonsingular, tridiagonal matrix <I>A</I> and any <I>n</I>-vector <I>b</I>, the equation <I>Ax</I> = <I>b</I> can be solved in <I>O</I>(<I>n</I>) time by performing an LUP decomposition.<P>
+<a name="0988_1af6">31-3     Splines<a name="0988_1af6"><P>
+<a name="0988_1aee"><a name="0988_1aef"><a name="0988_1af0"><a name="0988_1af1"><a name="0988_1af2">A practical method for interpolating a set of points with a curve is to use <I><B>cubic splines.</I></B> We are given a set {(<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>): <I>i</I> = 0,1, . . . , <I>n</I>} of <I>n</I> + 1 point-value pairs, where <I>x</I><SUB>0</SUB> &lt; <I>x</I><SUB>1</SUB> &lt; <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> &lt; <I>x<SUB>n</I></SUB>. We wish to fit a piecewise-cubic curve (spline) <I>f</I>(<I>x</I>) to the points. That is, the curve <I>f</I>(<I>x</I>) is made up of <I>n</I> cubic polynomials <I>f<SUB>i</I></SUB>(<I>x</I>) = <I>a<SUB>i</I></SUB> + <I>b<SUB>i</SUB>x</I> + <I>c<SUB>i</SUB>x</I><SUP>2</SUP> + <I>d<SUB>i</SUB>x</I><SUP>3</SUP> for <I>i</I> = 0,1, . . . , <I>n</I> - 1, where if <I>x</I> falls in the range <I>x<SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>x<SUB>i </I>+ 1</SUB>, then the value of the curve is given by <I>f</I>(<I>x</I>) = <I>f<SUB>i</I></SUB>(<I>x</I> - <I>x<SUB>i</I></SUB>). The points <I>x<SUB>i</I></SUB> at which the cubic polynomials are "pasted" together are called <I><B>knots</I></B>. For simplicity, we shall assume that <I>x<SUB>i</I></SUB> = <I>i</I> for <I>i</I> = 0,1, . . . , <I>n</I>.<P>
+To ensure continuity of <I>f</I>(<I>x</I>), we require that<P>
+<pre><I>f</I>(<I>x<SUB>i</I></SUB>)   =  <I>f<SUB>i</I></SUB>(0)  =  <I>y<SUB>i </I></SUB>,</sub></sup></pre><P>
+<pre><I>f</I>(<I>x<SUB>i</I>+1</SUB>) =  <I>f<SUB>i</I></SUB>(1)  =  <I>y<SUB>i</I>+1</sub></sup></pre><P>
+for <I>i</I> = 0, 1, . . . , <I>n</I> - 1. To ensure that <I>f</I>(<I>x</I>) is sufficiently smooth, we also insist that there be continuity of the first derivative at each knot:<P>
+<img src="774_a.gif"><P>
+for <I>i</I> = 0, 1, . . . , <I>n</I> - 1.<P>
+<I><B>a.</I></B>     Suppose that for <I>i</I> = 0, 1, . . . , <I>n</I>, we are given not only the point-value pairs {(<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>)} but also the first derivatives <I>D<SUB>i</I></SUB> = <I>f</I>'(<I>x<SUB>i</I></SUB>) at each knot. Express each coefficient <I>a<SUB>i</I></SUB>, <I>b<SUB>i</I></SUB>, <I>c<SUB>i</I></SUB>, and <I>d<SUB>i</I></SUB> in terms of the values <I>y<SUB>i</I></SUB>, <I>y<SUB>i</I>+1</SUB>, <I>D<SUB>i</I></SUB>, and <I>D<SUB>i</I>+1</SUB>. (Remember that <I>x<SUB>i</I></SUB> = <I>i</I>.) How quickly can the 4<I>n</I> coefficients be computed from the point-value pairs and first derivatives?<P>
+The question remains of how to choose the first derivatives of <I>f</I>(<I>x</I>) at the knots. One method is to require the second derivatives to be continuous at the knots:<P>
+<img src="774_b.gif"><P>
+for <I>i</I> = 0, 1, . . . ,<I>n</I> - 1. At the first and last knots, we assume that <img src="774_c.gif">; these assumptions make <I>f</I>(<I>x</I>) a <I><B>natural </I></B>cubic spline.<P>
+<I><B>b.</I></B>     Use the continuity constraints on the second derivative to show that for <I>i</I> = 1, 2, . . . , <I>n</I> - 1,<P>
+<pre><I>D<SUB>i </I>- 1</SUB> + 4<I>D<SUB>i</I></SUB> + <I>D<SUB>i </I>+ 1</SUB> = 3(<I>y<SUB>i </I>+ 1</SUB> - <I>y<SUB>i </I>- 1</SUB>) .</sub></sup></pre><P>
+<h4><a name="0988_1af7">(31.35)<a name="0988_1af7"></sub></sup></h4><P>
+<I><B>c.</I></B>     Show that<P>
+<pre>2<I>D</I><SUB>0 </SUB>+ <I>D</I><SUB>1</SUB> = 3(<I>y</I><SUB>1</SUB> - <I>y</I><SUB>0</SUB>) ,</sub></sup></pre><P>
+<h4><a name="0988_1af8">(31.36)<a name="0988_1af8"></sub></sup></h4><P>
+<pre><I>D<SUB>n </I>- 1 </SUB>+ 2<I>D<SUB>n</I></SUB> = 3(<I>y<SUB>n</I></SUB> - <I>y<SUB>n </I>- 1</SUB>) .</sub></sup></pre><P>
+<h4><a name="0988_1af9">(31.37)<a name="0988_1af9"></sub></sup></h4><P>
+<I><B>d.</I></B>     Rewrite equations (31.35)--(31.37) as a matrix equation involving the vector <I>D</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>D</I><SUB>0</SUB>, <I>D</I><SUB>1</SUB>, . . . , <I>D<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of unknowns. What attributes does the matrix in your equation have?<P>
+<I><B>e.</I></B>     Argue that a set of <I>n</I> + 1 point-value pairs can be interpolated with a natural cubic spline in <I>O</I>(<I>n</I>) time (see Problem 31-2).<P>
+<I><B>f.</I></B>     Show how to determine a natural cubic spline that interpolates a set of <I>n</I> + 1 points (<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>) satisfying <I>x</I><SUB>0</SUB> &lt; <I>x</I><SUB>1</SUB> &lt; <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> &lt; <I>x<SUB>n</I></SUB>, even when <I>x<SUB>i</I></SUB> is not necessarily equal to <I>i</I>. What matrix equation must be solved, and how quickly does your algorithm run?<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+There are many excellent texts available that describe numerical and scientific computation in much greater detail than we have room for here. The following are especially readable: George and Liu [81], Golub and Van Loan [89], Press, Flannery, Teukolsky, and Vetterling[161, 162], and Strang[181, 182].<P>
+The publication of Strassen's algorithm in 1969 [183] caused much excitement. Before then, it was hard to imagine that the naive algorithm could be improved upon. The asymptotic upper bound on the difficulty of matrix multiplication has since been considerably improved. The most asymptotically efficient algorithm for multiplying <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices to date, due to Coppersmith and Winograd [52], has a running time of <I>O</I>(<I>n</I><SUP>2.376</SUP>). The graphical presentation of Strassen's algorithm is due to Paterson [155]. Fischer and Meyer [67] adapted Strassen's algorithm to boolean matrices (Theorem 31.10) .<P>
+Gaussian elimination, upon which the LU and LUP decompositions are based, was the first systematic method for solving linear systems of equations. It was also one of the earliest numerical algorithms. Although it was known earlier, its discovery is commonly attributed to C. F. Gauss (1777-1855). In his famous paper [183], Strassen also showed that an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix can be inverted in <I>O</I>(<I>n</I><SUP>lg 7</SUP>) time. Winograd [203] originally proved that matrix multiplication is no harder than matrix inversion, and the converse is due to Aho, Hopcroft, and Ullman [4].<P>
+Strang [182] has an excellent presentation of symmetric positive-definite matrices and on linear algebra in general. He makes the following remark on page 334: "My class often asks about <I>unsymmetric</I> positive definite matrices. I never use that term."<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap32.htm">Chapter 32</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

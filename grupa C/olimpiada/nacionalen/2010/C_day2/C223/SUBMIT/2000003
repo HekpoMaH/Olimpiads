@@ -1,0 +1,53 @@
+#include<iostream>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+int main()
+{
+  bool used[10];
+  for(int a=0; a<10; a++)
+  {
+    used[a]=false;
+  }
+  long long n, h, res=0, zero=0, current;
+  int digits=1, diff=0, remaindig, remaindiff, remaindiffag, dev, diffag;
+  cin>>n;
+  h=n;
+  while(h>9)
+  {
+    digits++;
+    used[h%10]=true;
+    h=h/10;
+  }
+  used[h]=true;
+  for(int a=0; a<10; a++)
+  {
+    if(used[a]==true) diff++;
+  }
+  diffag=digits-diff;
+  if(used[0]==true) zero=1;
+  for(int a=1; a<=digits; a++)
+  {
+    current=1;
+    remaindig=digits;
+    if(diff!=digits) remaindiff=diff;
+    else remaindiff=1;
+    remaindiffag=diffag;
+    dev=1;
+    for(int b=0; b<a; b++)
+    {
+      if(remaindiff!=0) current=current*remaindig*remaindiff;
+      dev=dev*remaindiffag;
+      current=current%1800000007;
+      remaindig--;
+      remaindiff--;
+      remaindiffag--;
+    }
+    if(dev!=0) current=current/dev;
+    res=res+current;
+    res=res%1800000007;
+  }
+  if(digits!=diff) cout<<res/(digits-diff+1)<<endl;
+  else cout<<res<<endl;
+  return 0;
+}

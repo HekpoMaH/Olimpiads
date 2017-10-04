@@ -1,0 +1,103 @@
+{
+TASK:CARS
+LANG:PASCAL
+}
+{$I-,Q-,R-,S-}
+const
+   maxn = 51000;
+   maxM = 51000;
+type
+   l1 = record
+     v1,v2 : longint;
+     next : longint;
+   end;
+var
+   c : array[1..maxM] of L1;
+   f,l,BrIN : array[1..MaxN] of longint;
+   used : array[1..MaxN] of byte;
+
+   br : longint;
+   n : longint;
+procedure AddCon(v1,v2 : longint);
+begin
+   inc(br);
+   if f[v1]<>0 then
+      begin
+         c[l[v1]].next:=br;
+         l[v1]:=br;
+      end
+   else
+      begin
+         f[v1]:=br;
+         l[v1]:=br;
+      end;
+   c[l[v1]].v1:=v1;
+   c[l[v1]].v2:=v2;
+
+end;
+var
+   BIgOne : longint;
+procedure readfile;
+var
+   k,p,i,j,q : longint;
+   ff : text;
+begin
+   assign(ff,'fest.in');
+   reset(fF);
+   readln(ff,n);
+   for i:=1 to n do
+      begin
+         read(ff,k);
+         if k>0 then
+            begin
+//               f[i]:=br+1;
+               for j:=1 to k do
+                  begin
+                     read(ff,q);
+                     AddCon(q,i);
+                  end;
+            end
+         else
+            begin
+               BigOne:=i;
+            end;
+      end;
+   close(ff);
+end;
+var
+   ff : array[1..MaxN] of longint;
+function Fu(i : longint) : longint;
+var
+   r,p,k : longint;
+begin
+   if ff[i]<>0 then
+      begin
+         fu:=ff[i];
+         exit;
+      end;
+   if f[i]=0 then
+      begin
+         fu:=1;
+         ff[i]:=1;
+         exit;
+      end;
+   r:=0;
+   k:=f[i];
+   while k<>0 do
+      begin
+         if ff[c[k].v2]=0 then
+            r:=r + Fu(c[k].v2)
+         else
+            r:=r + ff[c[k].v2];
+        if r>987654321 then
+            r:=r - 987654321;
+         k:=c[k].next;
+      end;
+   ff[i]:=r;
+   Fu:=r;
+end;
+
+begin
+   readfile;
+   writeln(Fu(BigOne));
+end.

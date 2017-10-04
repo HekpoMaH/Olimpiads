@@ -1,0 +1,419 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 18: AMORTIZED ANALYSIS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="partv.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap17.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="083c_15c1">CHAPTER 18: AMORTIZED ANALYSIS<a name="083c_15c1"></h1><P>
+<a name="083c_15c0">In an <I><B>amortized analysis</I></B>, the time required to perform a sequence of data-structure operations is averaged over all the operations performed. Amortized analysis can be used to show that the average cost of an operation is small, if one averages over a sequence of operations, even though a single operation might be expensive. Amortized analysis differs from average-case analysis in that probability is not involved; an amortized analysis guarantees the <I>average performance of each operation in the worst case.</I><P>
+The first three sections of this chapter cover the three most common techniques used in amortized analysis. Section 18.1 starts with the aggregate method, in which we determine an upper bound <I>T</I>(<I>n</I>) on the total cost of a sequence of <I>n</I> operations. The amortized cost per operation is then <I>T</I>(<I>n</I>)<I>/n</I>.<P>
+Section 18.2 covers the accounting method, in which we determine an amortized cost of each operation. When there is more than one type of operation, each type of operation may have a different amortized cost. The accounting method overcharges some operations early in the sequence, storing the overcharge as &quot;prepaid credit&quot; on specific objects in the data structure. The credit is used later in the sequence to pay for operations that are charged less than they actually cost.<P>
+Section 18.3 discusses the potential method, which is like the accounting method in that we determine the amortized cost of each operation and may overcharge operations early on to compensate for undercharges later. The potential method maintains the credit as the &quot;potential energy&quot; of the data structure instead of associating the credit with individual objects within the data structure.<P>
+We shall use two examples to examine these three models. One is a stack with the additional operation <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>, which pops several objects at once. The other is a binary counter that counts up from 0 by means of the single operation <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT>.<P>
+While reading this chapter, bear in mind that the charges assigned during an amortized analysis are for analysis purposes only. They should not appear in the code. If, for example, a credit is assigned to an object <I>x</I> when using the accounting method, there is no need to assign an appropriate amount to some attribute <I>credit</I>[<I>x</I>] in the code.<P>
+The insight into a particular data structure gained by performing an amortized analysis can help in optimizing the design. In Section 18.4, for example, we shall use the potential method to analyze a dynamically expanding and contracting table.<P>
+
+
+
+
+
+<h1><a name="083e_15c4">18.1 The aggregate method<a name="083e_15c4"></h1><P>
+<a name="083e_15c1"><a name="083e_15c2"><a name="083e_15c3">In the <I><B>aggregate method</I></B> of amortized analysis, we show that for all <I>n</I>, a sequence of <I>n</I> operations takes <I>worst-case</I> time <I>T</I>(<I>n</I>) in total. In the worst case, the average cost, or <I><B>amortized cost</I></B>, per operation is therefore <I>T</I>(<I>n</I>) / <I>n</I>. Note that this amortized cost applies to each operation, even when there are several types of operations in the sequence. The other two methods we shall study in this chapter, the accounting method and the potential method, may assign different amortized costs to different types of operations.<P>
+
+
+
+
+
+<h2>Stack operations</h2><P>
+<a name="083f_15c4"><a name="083f_15c5">In our first example of the aggregate method, we analyze stacks that have been augmented with a new operation. Section 11.1 presented the two fundamental stack operations, each of which takes <I>O</I>(1) time:<P>
+<FONT FACE="Courier New" SIZE=2>PUSH</FONT>(<I>S</I>, <I>x</I>) pushes object <I>x</I> onto stack <I>S</I>.<P>
+<FONT FACE="Courier New" SIZE=2>POP</FONT>(<I>S</I>) pops the top of stack <I>S</I> and returns the popped object.<P>
+Since each of these operations runs in <I>O</I>(1) time, let us consider the cost of each to be 1. The total cost of a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT> operations is therefore <I>n</I>, and the actual running time for <I>n</I> operations is therefore <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<a name="083f_15c6">The situation becomes more interesting if we add the stack operation <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>(<I>S, k</I>), which removes the <I>k</I> top objects of stack <I>S</I>, or pops the entire stack if it contains less than <I>k</I> objects. In the following pseudocode, the operation S<FONT FACE="Courier New" SIZE=2>TACK-</FONT><FONT FACE="Courier New" SIZE=2>EMPTY</FONT> returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT> if there are no objects currently on the stack, and <FONT FACE="Courier New" SIZE=2>FALSE</FONT> otherwise.<P>
+<pre>MULTIPOP(<I>S,k</I>)</sub></sup></pre><P>
+<pre>1  <B>while</B> not STACK-EMPTY(<I>S</I>) and <I>k </I><IMG SRC="../IMAGES/noteq.gif"> 0</sub></sup></pre><P>
+<pre>2      <B>do</B> POP(<I>S</I>)</sub></sup></pre><P>
+<pre>3<I>         k </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>k</I> - 1</sub></sup></pre><P>
+Figure 18.1 shows an example of <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>.<P>
+What is the running time of <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>(<I>S, k</I>) on a stack of <I>s</I> objects? The actual running time is linear in the number of <FONT FACE="Courier New" SIZE=2>POP</FONT> operations actually executed, and thus it suffices to analyze <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> in terms of the abstract costs of 1 each for <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT>. The number of iterations of the <B>while</B> loop is the number min(<I>s, k</I>) of objects popped off the stack. For each iteration of the loop, one call is made to P<FONT FACE="Courier New" SIZE=2>OP </FONT>in line 2. Thus, the total cost of <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> is min(<I>s, k</I>), and the actual running time is a linear function of this cost.<P>
+<img src="358_a.gif"><P>
+<h4><a name="083f_15c7">Figure 18.1 The action of <FONT FACE="Courier New" SIZE=2>MULTIPOP<FONT FACE="Times New Roman" SIZE=2> on a stack S, shown initially in (a). The top 4 objects are popped by <FONT FACE="Courier New" SIZE=2>MULTIPOP<FONT FACE="Times New Roman" SIZE=2>(S, 4), whose result is shown in (b). The next operation is <FONT FACE="Courier New" SIZE=2>MULTIPOP<FONT FACE="Times New Roman" SIZE=2>(S, 7), which empties the stack<IMG SRC="../IMAGES/arrlt12.gif">shown in (c)<IMG SRC="../IMAGES/arrlt12.gif">since there were fewer than 7 objects remaining.<a name="083f_15c7"></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Let us analyze a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=1>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations on an initially empty stack. The worst-case cost of a <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operation in the sequence is <I>O</I>(<I>n</I>), since the stack size is at most <I>n</I>. The worst-case time of any stack operation is therefore <I>O</I>(<I>n</I>), and hence a sequence of <I>n</I> operations costs <I>O</I>(<I>n</I><SUP><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUP>), since we may have <I>O</I>(<I>n</I>) <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations costing <I>O</I>(<I>n</I>) each. Although this analysis is correct, the <I>O</I>(<I>n</I><SUP><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUP>) result, obtained by considering the worst-case cost of each operation individually, is not tight.<P>
+Using the aggregate method of amortized analysis, we can obtain a better upper bound that considers the entire sequence of <I>n</I> operations. In fact, although a single <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operation can be expensive, any sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations on an initially empty stack can cost at most <I>O</I>(<I>n</I>). Why? Each object can be popped at most once for each time it is pushed. Therefore, the number of times that <FONT FACE="Courier New" SIZE=2>POP</FONT> can be called on a nonempty stack, including calls within <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>, is at most the number of <FONT FACE="Courier New" SIZE=2>PUSH</FONT> operations, which is at most <I>n</I>. For any value of <I>n</I>, any sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations takes a total of <I>O</I>(<I>n</I>) time. The amortized cost of an operation is the average: <I>O</I>(<I>n</I>)/<I>n</I> = <I>O</I>(1).<P>
+We emphasize again that although we have just shown that the average cost, and hence running time, of a stack operation is <I>O</I>(1), no probabilistic reasoning was involved. We actually showed a <I>worst-case</I> bound of <I>O</I>(<I>n</I>) on a sequence of <I>n</I> operations. Dividing this total cost by <I>n</I> yielded the average cost per operation, or the amortized cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Incrementing a binary counter</h2><P>
+<a name="0840_15c7"><a name="0840_15c8">As another example of the aggregate method, consider the problem of implementing a <I>k-</I>bit binary counter that counts upward from 0. We use an array <I>A</I>[0 . . <I>k</I> - 1] of bits, where <I>length</I>[<I>A</I>] = <I>k</I>, as the counter. A binary number <I>x</I> that is stored in the counter has its lowest-order bit in <I>A</I>[0] and its highest-order bit in <I>A</I>[<I>k</I> - 1], so that <img src="358_b.gif">. Initially, <I>x</I> = 0, and thus <I>A</I>[<I>i</I>] = 0 for <I>i</I> = 0, 1, . . . , <I>k</I> - 1. To add 1 (modulo 2<I><SUP>k</I></SUP>) to the value in the counter, we use the following procedure.<P>
+<img src="359_a.gif"><P>
+<h4><a name="0840_15ca">Figure 18.2 An 8-bit binary counter as its value goes from 0 to 16 by a sequence of 16 <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations. Bits that flip to achieve the next value are shaded. The running cost for flipping bits is shown at the right. Notice that the total cost is never more than twice the total number of <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations.<a name="0840_15ca"></sub></sup></h4><P>
+<pre><a name="0840_15c9">INCREMENT(<I>A</I>)</sub></sup></pre><P>
+<pre>1  <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2  <B>while</B> <I>i&lt;</I> <I>length</I>[<I>A</I>] and <I>A</I>[<I>i</I>] = 1</sub></sup></pre><P>
+<pre>3       <B>do</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>4          <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I> + 1</sub></sup></pre><P>
+<pre>5  <B>if</B> <I>i</I> &lt; <I>length</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>6      <B>then</B> <I>A</I>[<I>i</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+This algorithm is essentially the same one implemented in hardware by a ripple-carry counter (see Section 29.2.1). Figure 18.2 shows what happens to a binary counter as it is incremented 16 times, starting with the initial value 0 and ending with the value 16. At the start of each iteration of the <B>while</B> loop in lines 2-4, we wish to add a 1 into position <I>i</I>. If <I>A</I>[<I>i</I>] = 1, then adding 1 flips the bit to 0 in position <I>i</I> and yields a carry of 1, to be added into position <I>i</I> + 1 on the next iteration of the loop. Otherwise, the loop ends, and then, if <I>i &lt;</I> <I>k</I>, we know that <I>A</I>[<I>i</I>] = 0, so that adding a 1 into position <I>i</I>, flipping the 0 to a 1, is taken care of in line 6. The cost of each <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation is linear in the number of bits flipped.<P>
+As with the stack example, a cursory analysis yields a bound that is correct but not tight. A single execution of <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> takes time <IMG SRC="../IMAGES/bound.gif">(<I>k</I>) in the worst case, in which array <I>A</I> contains all 1's. Thus, a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations on an initially zero counter takes time <I>O</I>(<I>nk</I>) in the worst case.<P>
+We can tighten our analysis to yield a worst-case cost of <I>O</I>(<I>n</I>) for a sequence of <I>n</I> I<FONT FACE="Courier New" SIZE=2>NCREMENT'S</FONT> by observing that not all bits flip each time <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> is called. As Figure 18.2 shows, <I>A</I>[0] does flip each time <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> is called. The next-highest-order bit, <I>A</I>[1], flips only every other time: a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations on an initially zero counter causes <I>A</I>[1] to flip <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> times. Similarly, bit <I>A</I>[2] flips only every fourth time, or <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>n/4<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> times in a sequence of <I>n</I> I<FONT FACE="Courier New" SIZE=2>NCREMENT'S</FONT>. In general, for <I>i</I> = 0, 1, . . . , <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, bit <I>A</I>[<I>i</I>] flips <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<I><SUP>i</I></SUP><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> times in a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations on an initially zero counter. For <I>i</I> &gt; <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, bit <I>A</I>[<I>i</I>] never flips at all. The total number of flips in the sequence is thus<P>
+<img src="360_a.gif"><P>
+by equation (3.4). The worst-case time for a sequence of <I>n</I> I<FONT FACE="Courier New" SIZE=2>NCREMENT </FONT>operations on an initially zero counter is therefore <I>O</I>(<I>n</I>), so the amortized cost of each operation is <I>O</I>(<I>n</I>)/<I>n</I> = <I>O</I>(1).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0841_15cc">Exercises<a name="0841_15cc"></h2><P>
+<a name="0841_15cd">18.1-1<a name="0841_15cd"><P>
+<a name="0841_15ca">If a <FONT FACE="Courier New" SIZE=2>MULTIPUSH</FONT> operation were included in the set of stack operations, would the <I>O</I>(1) bound on the amortized cost of stack operations continue to hold?<P>
+<a name="0841_15ce">18.1-2<a name="0841_15ce"><P>
+<a name="0841_15cb">Show that if a <FONT FACE="Courier New" SIZE=2>DECREMENT</FONT> operation were included in the <I>k-</I>bit counter example, <I>n</I> operations could cost as much as <IMG SRC="../IMAGES/bound.gif">(<I>nk</I>) time.<P>
+<a name="0841_15cf">18.1-3<a name="0841_15cf"><P>
+A sequence of <I>n</I> operations is performed on a data structure. The <I>i</I>th operation costs <I>i</I> if <I>i</I> is an exact power of 2, and 1 otherwise. Use an aggregate method of analysis to determine the amortized cost per operation.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0842_15d0">18.2 The accounting method<a name="0842_15d0"></h1><P>
+<a name="0842_15cc"><a name="0842_15cd"><a name="0842_15ce"><a name="0842_15cf">In the <I><B>accounting method</I></B> of amortized analysis, we assign differing charges to different operations, with some operations charged more or less than they actually cost. The amount we charge an operation is called its <I><B>amortized cost</I></B>. When an operation's amortized cost exceeds its actual cost, the difference is assigned to specific objects in the data structure as <I><B>credit</I></B>. Credit can be used later on to help pay for operations whose amortized cost is less than their actual cost. Thus, one can view the amortized cost of an operation as being split between its actual cost and credit that is either deposited or used up. This is very different from the aggregate method, in which all operations have the same amortized cost.<P>
+One must choose the amortized costs of operations carefully. If we want analysis with amortized costs to show that in the worst case the average cost per operation is small, the total amortized cost of a sequence of operations must be an upper bound on the total actual cost of the sequence. Moreover, as in the aggregate method, this relationship must hold for all sequences of operations. Thus, the total credit associated with the data structure must be nonnegative at all times, since it represents the amount by which the total amortized costs incurred exceed the total actual costs incurred. If the total credit were ever allowed to become negative (the result of undercharging early operations with the promise of repaying the account later on), then the total amortized costs incurred at that time would be below the total actual costs incurred; for the sequence of operations up to that time, the total amortized cost would not be an upper bound on the total actual cost. Thus, we must take care that the total credit in the data structure never becomes negative.<P>
+
+
+
+
+
+<h2>Stack operations</h2><P>
+<a name="0843_15d0"><a name="0843_15d1">To illustrate the accounting method of amortized analysis, let us return to the stack example. Recall that the actual costs of the operations were<P>
+<pre>PUSH     1 ,</sub></sup></pre><P>
+<pre>POP      1 ,</sub></sup></pre><P>
+<pre>MULTIPOP  min(<I>k</I>,<I>s</I>) ,</sub></sup></pre><P>
+where <I>k</I> is the argument supplied to <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> and <I>s</I> is the stack size when it is called. Let us assign the following amortized costs:<P>
+<pre>PUSH     2 ,</sub></sup></pre><P>
+<pre>POP      0 ,</sub></sup></pre><P>
+<pre>MULTIPOP  0 .</sub></sup></pre><P>
+Note that the amortized cost of <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> is a constant (0), whereas the actual cost is variable. Here, all three amortized costs are <I>O</I>(l), although in general the amortized costs of the operations under consideration may differ asymptotically.<P>
+We shall now show that we can pay for any sequence of stack operations by charging the amortized costs. Suppose we use a dollar bill to represent each unit of cost. We start with an empty stack. Recall the analogy of Section 11.1 between the stack data structure and a stack of plates in a cafeteria. When we push a plate on the stack, we use 1 dollar to pay the actual cost of the push and are left with a credit of 1 dollar (out of the 2 dollars charged), which we put on top of the plate. At any point in time, every plate on the stack has a dollar of credit on it.<P>
+The dollar stored on the plate is prepayment for the cost of popping it from the stack. When we execute a <FONT FACE="Courier New" SIZE=2>POP</FONT> operation, we charge the operation nothing and pay its actual cost using the credit stored in the stack. To pop a plate, we take the dollar of credit off the plate and use it to pay the actual cost of the operation. Thus, by charging the <FONT FACE="Courier New" SIZE=2>PUSH</FONT> operation a little bit more, we needn't charge the <FONT FACE="Courier New" SIZE=2>POP</FONT> operation anything.<P>
+Moreover, we needn't charge <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations anything either. To pop the first plate, we take the dollar of credit off the plate and use it to pay the actual cost of a <FONT FACE="Courier New" SIZE=2>POP</FONT> operation. To pop a second plate, we again have a dollar of credit on the plate to pay for the <FONT FACE="Courier New" SIZE=2>POP</FONT> operation, and so on. Thus, we have always charged at least enough up front to pay for <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations. In other words, since each plate on the stack has 1 dollar of credit on it, and the stack always has a nonnegative number of plates, we have ensured that the amount of credit is always nonnegative. Thus, for <I>any</I> sequence of <I>n </I><FONT FACE="Courier New" SIZE=2>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operations, the total amortized cost is an upper bound on the total actual cost. Since the total amortized cost is <I>O</I>(<I>n</I>), so is the total actual cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Incrementing a binary counter</h2><P>
+<a name="0844_15d2"><a name="0844_15d3">As another illustration of the accounting method, we analyze the <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation on a binary counter that starts at zero. As we observed earlier, the running time of this operation is proportional to the number of bits flipped, which we shall use as our cost for this example. Let us once again use a dollar bill to represent each unit of cost (the flipping of a bit in this example).<P>
+For the amortized analysis, let us charge an amortized cost of 2 dollars to set a bit to 1. When a bit is set, we use 1 dollar (out of the 2 dollars charged) to pay for the actual setting of the bit, and we place the other dollar on the bit as credit. At any point in time, every 1 in the counter has a dollar of credit on it, and thus we needn't charge anything to reset a bit to 0; we just pay for the reset with the dollar bill on the bit.<P>
+The amortized cost of <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> can now be determined. The cost of resetting the bits within the <B>while</B> loop is paid for by the dollars on the bits that are reset. At most one bit is set, in line 6 of <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT>, and therefore the amortized cost of an <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation is at most 2 dollars. The number of l's in the counter is never negative, and thus the amount of credit is always nonnegative. Thus, for <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations, the total amortized cost is <I>O</I>(<I>n</I>), which bounds the total actual cost.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0845_15d6">Exercises<a name="0845_15d6"></h2><P>
+<a name="0845_15d7">18.2-1<a name="0845_15d7"><P>
+A sequence of stack operations is performed on a stack whose size never exceeds <I>k</I>. After every <I>k</I> operations, a copy of the entire stack is made for backup purposes. Show that the cost of <I>n</I> stack operations, including copying the stack, is <I>O</I>(<I>n</I>) by assigning suitable amortized costs to the various stack operations.<P>
+<a name="0845_15d8">18.2-2<a name="0845_15d8"><P>
+<a name="0845_15d4">Redo Exercise 18.1-3 using an accounting method of analysis.<P>
+<a name="0845_15d9">18.2-3<a name="0845_15d9"><P>
+<a name="0845_15d5">Suppose we wish not only to increment a counter but also to reset it to zero (i.e., make all bits in it 0). Show how to implement a counter as a bit vector so that any sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> and <FONT FACE="Courier New" SIZE=2>RESET</FONT> operations takes time <I>O</I>(<I>n</I>) on an initially zero counter. (<I>Hint</I>: Keep a pointer to the high-order 1.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0846_15dc">18.3 The potential method<a name="0846_15dc"></h1><P>
+<a name="0846_15d6"><a name="0846_15d7"><a name="0846_15d8">Instead of representing prepaid work as credit stored with specific objects in the data structure, the <I><B>potential method</I></B> of amortized analysis represents the prepaid work as "potential energy,"or just "potential," that can be released to pay for future operations. The potential is associated with the data structure as a whole rather than with specific objects within the data structure.<P>
+<a name="0846_15d9"><a name="0846_15da"><a name="0846_15db">The potential method works as follows. We start with an initial data structure <I>D</I><SUB>0 </SUB>on which <I>n </I>operations are performed. For each <I>i</I> = 1, 2, . . . , <I>n</I>, we let <I>c<SUB>i</I></SUB> be the actual cost of the <I>i</I>th operation and <I>D<SUB>i</I></SUB> be the data structure that results after applying the <I>i</I>th operation to data structure <I>D<SUB>i - </I>l.</SUB> A <I><B>potential function</I></B> <IMG SRC="../IMAGES/phicap12.gif"> maps each data structure <I>D<SUB>i</I></SUB> to a real number <IMG SRC="../IMAGES/phicap12.gif"> (<I>D<SUB>i</I></SUB>), which is the <I><B>potential</I></B> associated with data structure <I>D<SUB>i</I></SUB>. The <I><B>amortized cost</I></B> <img src="363_a.gif"> of the <I>i</I>th operation with respect to potential function <IMG SRC="../IMAGES/phicap12.gif"> is defined by<P>
+<img src="363_b.gif"><P>
+<h4><a name="0846_15dd">(18.1)<a name="0846_15dd"></sub></sup></h4><P>
+The amortized cost of each operation is therefore its actual cost plus the increase in potential due to the operation. By equation (18.1), the total amortized cost of the <I>n</I> operations is<P>
+<img src="363_c.gif"><P>
+<img src="364_a.gif"><P>
+<h4><a name="0846_15de">(18.2)<a name="0846_15de"></sub></sup></h4><P>
+The second equality follows from equation (3.7), since the <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) telescope.<P>
+If we can define a potential function <IMG SRC="../IMAGES/phicap12.gif"> so that <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>n</SUB>) </I><IMG SRC="../IMAGES/gteq.gif"><I></I> <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>), then the total amortized cost <img src="364_b.gif"> is an upper bound on the total actual cost. In practice, we do not always know how many operations might be performed. Therefore, if we require that <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>)<I> </I><IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) for all <I>i</I>, then we guarantee, as in the accounting method, that we pay in advance. It is often convenient to define <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) to be 0 and then to show that <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) <IMG SRC="../IMAGES/gteq.gif"> 0 for all <I>i</I>. (See Exercise 18.3-1 for an easy way to handle cases in which <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) <IMG SRC="../IMAGES/noteq.gif"> 0.)<P>
+Intuitively, if the potential difference <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) - <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i - </I>1</SUB>) of the <I>i</I>th operation is positive, then the amortized cost <img src="364_c.gif"> represents an overcharge to the <I>i</I>th operation, and the potential of the data structure increases. If the potential difference is negative, then the amortized cost represents an undercharge to the <I>i</I>th operation, and the actual cost of the operation is paid by the decrease in the potential.<P>
+The amortized costs defined by equations (18.1) and (18.2) depend on the choice of the potential function <IMG SRC="../IMAGES/phicap12.gif">. Different potential functions may yield different amortized costs yet still be upper bounds on the actual costs. There are often trade-offs that can be made in choosing a potential function; the best potential function to use depends on the desired time bounds.<P>
+
+
+
+
+
+<h2>Stack operations</h2><P>
+<a name="0847_15dc"><a name="0847_15dd">To illustrate the potential method, we return once again to the example of the stack operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>. We define the potential function <IMG SRC="../IMAGES/phicap12.gif"> on a stack to be the number of objects in the stack. For the empty stack <I>D</I><SUB>0</SUB> with which we start, we have <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) = 0. Since the number of objects in the stack is never negative, the stack <I>D<SUB>i </I></SUB>that results after the <I>i</I>th operation has nonnegative potential, and thus<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>)  <IMG SRC="../IMAGES/gteq.gif">  0</sub></sup></pre><P>
+<pre>=  <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>).</sub></sup></pre><P>
+The total amortized cost of <I>n</I> operations with respect to <IMG SRC="../IMAGES/phicap12.gif"> therefore represents an upper bound on the actual cost.<P>
+Let us now compute the amortized costs of the various stack operations. If the <I>i</I>th operation on a stack containing <I>s</I> objects is a <FONT FACE="Courier New" SIZE=2>PUSH</FONT> operation, then the potential difference is<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) - <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i - </I>1</SUB>)  =  (<I>s</I> + 1 ) - <I>s</I></sub></sup></pre><P>
+<pre>=  1 .</sub></sup></pre><P>
+By equation (18.1), the amortized cost of this <FONT FACE="Courier New" SIZE=2>PUSH</FONT> operation is<P>
+<img src="364_d.gif"><P>
+Suppose that the <I>i</I>th operation on the stack is <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>(<I>S,k</I>) and that <I>k</I>' <I>= min(</I>k,s<I>) objects are popped off the stack. The actual cost of the operation is </I>k<I>'</I>, and the potential difference is<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) - <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i-</I>1</SUB>) = -<I>k</I>'<I>.</I></sub></sup></pre><P>
+Thus, the amortized cost of the <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> operation is<P>
+<img src="365_a.gif"><P>
+Similarly, the amortized cost of an ordinary <FONT FACE="Courier New" SIZE=2>POP</FONT> operation is 0.<P>
+The amortized cost of each of the three operations is <I>O</I>(1), and thus the total amortized cost of a sequence of <I>n</I> operations is <I>O</I>(<I>n</I>). Since we have already argued that <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>), the total amortized cost of <I>n</I> operations is an upper bound on the total actual cost. The worst-case cost of <I>n</I> operations is therefore <I>O</I>(<I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Incrementing a binary counter</h2><P>
+<a name="0848_15de"><a name="0848_15df">As another example of the otential method, we again look at incrementing a binary counter. This time, we define the potential of the counter after the <I>i</I>th <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation to be <I>b<SUB>i</I></SUB>, the number of 1's in the counter after the <I>i</I>th operation.<P>
+Let us compute the amortized cost of an <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation. Suppose that the <I>i</I>th <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operation resets <I>t<SUB>i</SUB> </I>bits. The actual cost of the operation is therefore at most <I>t<SUB>i</SUB> </I>+1, since in addition to resetting <I>t<SUB>i</SUB> </I>bits, it sets at most one bit to a 1. The number of 1's in the counter after the <I>i</I>th operation is therefore <I>b<SUB>i</SUB> </I><IMG SRC="../IMAGES/lteq12.gif"><I> b<SUB>i-1</SUB> </I>- <I>t<SUB>i</SUB> +</I>1,<I> </I>and the potential difference is<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif"> (<I>D<SUB>i</I></SUB>) - <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I>-1</SUB>)  <IMG SRC="../IMAGES/lteq12.gif"><I>  </I>(<I>b<SUB>i</I>-1</SUB> - <I>t<SUB>i</SUB> </I>+ 1) - <I>b<SUB>i</I>-1</sub></sup></pre><P>
+<pre>=  1 - <I>t<SUB>i</SUB>.</I></sub></sup></pre><P>
+The amortized cost is therefore<P>
+<img src="365_b.gif"><P>
+If the counter starts at zero, then <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) = 0. Since <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) <IMG SRC="../IMAGES/gteq.gif"> 0 for all <I>i</I>, the total amortized cost of a sequence of <I>n</I> INCREMENT operations is an upper bound on the total actual cost, and so the worst-case cost of <I>n </I>INCREMENT operations is <I>O</I>(<I>n</I>).<P>
+The potential method gives us an easy way to analyze the counter even when it does not start at zero. There are initially <I>b</I><SUB>0</SUB> 1's, and after <I>n </I><FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations there are <I>b<SUB>n</I></SUB> 1's, where 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>b</I><SUB>0</SUB><I>, b<SUB>n</SUB> </I><IMG SRC="../IMAGES/lteq12.gif"><I> k</I>. We can rewrite equation (18.2) as<P>
+<img src="366_a.gif"><P>
+<h4><a name="0848_15e0">(18.3)<a name="0848_15e0"></sub></sup></h4><P>
+We have <img src="366_b.gif"> for all 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i </I><IMG SRC="../IMAGES/lteq12.gif"><I> n</I>. Since <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) = <I>b</I><SUB>0</SUB> and <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>n</I></SUB>) = <I>b<SUB>n</I></SUB>,<SUB> </SUB>the total actual cost of <I>n</I> <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations is<P>
+<img src="366_c.gif"><P>
+Note in particular that since <I>b</I><SUB>0</SUB><I> </I><IMG SRC="../IMAGES/lteq12.gif"><I> k</I>, if we execute at least <I>n </I>= <IMG SRC="../IMAGES/omega12.gif">(<I>k</I>) <FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations, the total actual cost is <I>O</I>(<I>n</I>), no matter what initial value the counter contains.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0849_15e2">Exercises<a name="0849_15e2"></h2><P>
+<a name="0849_15e3">18.3-1<a name="0849_15e3"><P>
+Suppose we have a potential function <IMG SRC="../IMAGES/phicap12.gif"> such that <IMG SRC="../IMAGES/phicap12.gif">(<I>D<SUB>i</I></SUB>) <IMG SRC="../IMAGES/gteq.gif"> <IMG SRC="../IMAGES/phicap12.gif">(<I>D</I><SUB>0</SUB>) for all <I>i</I>, but <IMG SRC="../IMAGES/phicap12.gif">(D<SUB>0</SUB>) <IMG SRC="../IMAGES/noteq.gif"> 0. Show that there exists a potential function <IMG SRC="../IMAGES/phicap12.gif">'<I> such that <IMG SRC="../IMAGES/phicap12.gif">'</I>(<I>D</I><SUB>0</SUB>) = 0, <IMG SRC="../IMAGES/phicap12.gif">'<I>(</I>D<SUB>i<I></SUB>) <IMG SRC="../IMAGES/gteq.gif"> 0 for all </I>i<I> <IMG SRC="../IMAGES/gteq.gif"> 1, and the amortized costs using <IMG SRC="../IMAGES/phicap12.gif">'</I> are the same as the amortized costs using <IMG SRC="../IMAGES/phicap12.gif">.<P>
+<a name="0849_15e4">18.3-2<a name="0849_15e4"><P>
+Redo Exercise 18.1-3 using a potential method of analysis.<P>
+<a name="0849_15e5">18.3-3<a name="0849_15e5"><P>
+<a name="0849_15e0"><a name="0849_15e1">Consider an ordinary binary heap data structure with <I>n </I>elements that supports the instructions <FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> in <I>O</I>(lg <I>n</I>) worst-case time. Give a potential function <IMG SRC="../IMAGES/phicap12.gif"> such that the amortized cost of <FONT FACE="Courier New" SIZE=2>INSERT</FONT> is <I>O</I>(lg <I>n</I>) and the amortized cost of <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> is <I>O</I>(1), and show that it works.<P>
+<a name="0849_15e6">18.3-4<a name="0849_15e6"><P>
+What is the total cost of executing <I>n </I>of the stack operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT>, <FONT FACE="Courier New" SIZE=2>POP</FONT>, and <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT>, assuming that the stack begins with <I>s</I><SUB>0</SUB><I> </I>objects and finishes with <I>s<SUB>n</SUB> </I>objects?<P>
+<a name="0849_15e7">18.3-5<a name="0849_15e7"><P>
+Suppose that a counter begins at a number with <I>b </I>1's in its binary representation, rather than at 0. Show that the cost of performing <I>n </I><FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> operations is <I>O</I>( <I>n</I>) if <I>n </I>= <IMG SRC="../IMAGES/omega12.gif">(<I>b</I>). (Do not assume that <I>b</I> is constant.)<P>
+<a name="0849_15e8">18.3-6<a name="0849_15e8"><P>
+Show how to implement a queue with two ordinary stacks (Exercise 11.1-6) so that the amortized cost of each <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT> and each <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT> operation is <I>O</I>(1).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="084a_15e6">18.4 Dynamic tables<a name="084a_15e6"></h1><P>
+<a name="084a_15e2"><a name="084a_15e3">In some applications, we do not know in advance how many objects will be stored in a table. We might allocate space for a table, only to find out later that it is not enough. The table must then be reallocated with a larger size, and all objects stored in the original table must be copied over into the new, larger table. Similarly, if many objects have been deleted from the table, it may be worthwhile to reallocate the table with a smaller size. In this section, we study this problem of dynamically expanding and contracting a table. Using amortized analysis, we shall show that the amortized cost of insertion and deletion is only <I>O</I>(1), even though the actual cost of an operation is large when it triggers an expansion or a contraction. Moreover, we shall see how to guarantee that the unused space in a dynamic table never exceeds a constant fraction of the total space.<P>
+We assume that the dynamic table supports the operations <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>. <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> inserts into the table an item that occupies a single <I><B>slot</I></B>, that is, a space for one item. Likewise, <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> can be thought of as removing an item from the table, thereby freeing a slot. The details of the data-structuring method used to organize the table are unimportant; we might use a stack (Section 11.1), a heap (Section 7.1), or a hash table (Chapter 12). We might also use an array or collection of arrays to implement object storage, as we did in Section 11.3.<P>
+<a name="084a_15e4"><a name="084a_15e5">We shall find it convenient to use a concept introduced in our analysis of hashing (Chapter 12). We define the <I><B>load factor</I> </B><IMG SRC="../IMAGES/alpha12.gif">(<I>T</I>) of a nonempty table <I>T</I> to be the number of items stored in the table divided by the size (number of slots) of the table. We assign an empty table (one with no items) size 0, and we define its load factor to be 1. If the load factor of a dynamic table is bounded below by a constant, the unused space in the table is never more than a constant fraction of the total amount of space.<P>
+We start by analyzing a dynamic table in which only insertions are performed. We then consider the more general case in which both insertions and deletions are allowed.<P>
+
+
+
+
+
+<h2><a name="084b_15ec">18.4.1 Table expansion<a name="084b_15ec"></h2><P>
+<a name="084b_15e6">Let us assume that storage for a table is allocated as an array of slots. A table fills up when all slots have been used or, equivalently, when its load factor is 1.<SUP>1</SUP> In some software environments, if an attempt is made to insert an item into a full table, there is no alternative but to abort with an error. We shall assume, however, that our software environment, like many modern ones, provides a memory-management system that can allocate and free blocks of storage on request. Thus, when an item is inserted into a full table, we can <I><B>expand</I></B> the table by allocating a new table with more slots than the old table had and then copy items from the old table into the new one.<P>
+<SUP>1</SUP>In some situations, such as an open-address hash table, we may wish to consider a table to be full if its load factor equals some constant strictly less than 1. (See Exercise 18.4-2.)<P>
+A common heuristic is to allocate a new table that has twice as many slots as the old one. If only insertions are performed, the load factor of a table is always at least 1/2, and thus the amount of wasted space never exceeds half the total space in the table.<P>
+In the following pseudocode, we assume that <I>T</I> is an object representing the table. The field <I>table</I>[<I>T</I>] contains a pointer to the block of storage representing the table. The field <I>num</I>[<I>T</I>]contains the number of items in the table, and the field <I>size</I>[<I>T</I>] is the total number of slots in the table. Initially, the table is empty: <I>num</I>[<I>T</I>] = <I>size</I>[<I>T</I>] = 0.<P>
+<pre><a name="084b_15e7">TABLE-INSERT(<I>T</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>size</I>[<I>T</I>] = 0</sub></sup></pre><P>
+<pre>2      <B>then </B>allocate <I>table </I>[<I>T</I>] with 1 slot</sub></sup></pre><P>
+<pre>3           <I>size</I>[<I>T</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>4  <B>if</B> <I>num</I>[<I>T</I>] = <I>size</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>5      <B>then</B> allocate <I>new-table</I> with 2 <IMG SRC="../IMAGES/dot10.gif"> <I>size</I>[<I>T</I>] slots</sub></sup></pre><P>
+<pre>6           insert all items in <I>table</I>[<I>T</I>] into <I>new-table</I></sub></sup></pre><P>
+<pre>7           free <I>table</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>8           <I>table</I>[<I>T</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>new-table</I></sub></sup></pre><P>
+<pre>9           <I>size</I>[<I>T</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 2 <IMG SRC="../IMAGES/dot10.gif"> <I>size</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>10  insert <I>x</I> into <I>table</I>[<I>T</I>]</sub></sup></pre><P>
+<pre>11  <I>num</I>[<I>T</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>num</I>[<I>T</I>] + 1</sub></sup></pre><P>
+Notice that we have two &quot;insertion&quot; procedures here: the <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure itself and the <I><B>elementary insertion</I></B> into a table in lines 6 and 10. We can analyze the running time of <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> in terms of the number of elementary insertions by assigning a cost of 1 to each elementary insertion. We assume that the actual running time of <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> is linear in the time to insert individual items, so that the overhead for allocating an initial table in line 2 is constant and the overhead for allocating and freeing storage in lines 5 and 7 is dominated by the cost of transferring items in line 6. We call the event in which the <B>then</B> clause in lines 5-9 is executed an <I><B>expansion</I></B>.<P>
+Let us analyze a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations on an initially empty table. What is the cost <I>c<SUB>i</I></SUB> of the <I>i</I>th operation? If there is room in the current table (or if this is the first operation), then <I>c<SUB>i</I></SUB> = 1, since we need only perform the one elementary insertion in line 10. If the current table is full, however, and an expansion occurs, then <I>c<SUB>i</SUB> = i</I>: the cost is 1 for the elementary insertion in line 10 plus <I>i</I> - 1 for the items that must be copied from the old table to the new table in line 6. If <I>n</I> operations are performed, the worst-case cost of an operation is <I>O</I>(<I>n</I>), which leads to an upper bound of <I>O</I>(<I>n</I><SUP>2</SUP>) on the total running time for <I>n</I> operations. <P>
+This bound is not tight, because the cost of expanding the table is not borne often in the course of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations. Specifically, the <I>i</I>th operation causes an expansion only when <I>i</I> - 1 is an exact power of 2. The amortized cost of an operation is in fact <I>O</I>(1), as we can show using the aggregate method. The cost of the <I>i</I>th operation is<P>
+<img src="369_a.gif"><P>
+The total cost of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations is therefore<P>
+<img src="369_b.gif"><P>
+since there are at most <I>n</I> operations that cost 1 and the costs of the remaining operations form a geometric series. Since the total cost of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations is 3<I>n</I>, the amortized cost of a single operation is 3.<P>
+<a name="084b_15e8"><a name="084b_15e9">By using the accounting method, we can gain some feeling for why the amortized cost of a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation should be 3. Intuitively, each item pays for 3 elementary insertions: inserting itself in the current table, moving itself when the table is expanded, and moving another item that has already been moved once when the table is expanded. For example, suppose that the size of the table is <I>m</I> immediately after an expansion. Then, the number of items in the table is <I>m</I>/2, and the table contains no credit. We charge 3 dollars for each insertion. The elementary insertion that occurs immediately costs 1 dollar. Another dollar is placed as credit on the item inserted. The third dollar is placed as credit on one of the <I>m</I>/2 items already in the table. Filling the table requires <I>m</I>/2 additional insertions, and thus, by the time the table contains <I>m</I> items and is full, each item has a dollar to pay for its reinsertion during the expansion.<P>
+<a name="084b_15ea"><a name="084b_15eb">The potential method can also be used to analyze a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>- <FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations, and we shall use it in Section 18.4.2 to design a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> operation that has <I>O</I>(1) amortized cost as well. We start by defining a potential function <IMG SRC="../IMAGES/phicap12.gif"> that is 0 immediately after an expansion but builds to the table size by the time the table is full, so that the next expansion can be paid for by the potential. The function<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>) = 2<IMG SRC="../IMAGES/dot10.gif"><I>num</I>[<I>T</I>] - <I>size</I>[<I>T</I>]</sub></sup></pre><P>
+<h4><a name="084b_15ed">(18.4)<a name="084b_15ed"></sub></sup></h4><P>
+is one possibility. Immediately after an expansion, we have <I>num</I>[<I>T</I>] = <I>size</I>[<I>T</I>]/2, and thus <IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>) = 0, as desired. Immediately before an expansion, we have <I>num</I>[<I>T</I>] = <I>size</I>[<I>T</I>], and thus <IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>) = <I>num</I>[<I>T</I>], as desired. The initial value of the potential is 0, and since the table is always at least half full, <I>num</I>[<I>T</I>] <IMG SRC="../IMAGES/gteq.gif"> <I>size</I>[<I>T</I>]/2, which implies that <IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>) is always nonnegative. Thus, the sum of the amortized costs of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operations is an upper bound on the sum of the actual costs.<P>
+To analyze the amortized cost of the <I>i</I>th <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation, we let <I>num<SUB>i</I></SUB> denote the number of items stored in the table after the <I>i</I>th operation, <I>size<SUB>i</I></SUB> denote the total size of the table after the <I>i</I>th operation, and <IMG SRC="../IMAGES/phicap12.gif"><I><SUB>i</I></SUB> denote the potential after the <I>i</I>th operation. Initially, we have num<SUB>0</SUB> = 0, <I>size</I><SUB>0</SUB> =0, and <IMG SRC="../IMAGES/phicap12.gif"><SUB>0</SUB> = 0.<P>
+If the <I>i</I>th <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation does not trigger an expansion, then <I>size<SUB>i</I></SUB> = <I>size<SUB>i - </I>1</SUB> and the amortized cost of the operation is<P>
+<img src="370_a.gif"><P>
+If the <I>i</I>th operation does trigger an expansion, then <I>size<SUB>i</I></SUB>/2 = <I>size<SUB>i</I>-1</SUB> = <I>num<SUB>i</I></SUB> - 1, and the amortized cost of the operation is<P>
+<img src="370_b.gif"><P>
+Figure 18.3 plots the values of <I>num<SUB>i</I></SUB>, <I>size<SUB>i</I></SUB>, and <IMG SRC="../IMAGES/phicap12.gif"><I><SUB>i</I></SUB> against <I>i</I>. Notice how the potential builds to pay for the expansion of the table.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="084c_15f0">18.4.2 Table expansion and contraction<a name="084c_15f0"></h2><P>
+To implement a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> operation, it is simple enough to remove the specified item from the table. It is often desirable, however, to <I><B>contract</I></B> the table when the load factor of the table becomes too small, so that the wasted space is not exorbitant. Table contraction is analogous to table expansion: when the number of items in the table drops too low, we allocate a new, smaller table and then copy the items from the old table into the new one. The storage for the old table can then be freed by returning it to the memory-management system. Ideally, we would like to preserve two properties:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>the load factor of the dynamic table is bounded below by a constant, and<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     </FONT>the amortized cost of a table operation is bounded above by a constant.<P>
+<img src="371_a.gif"><P>
+<h4><a name="084c_15f1">Figure 18.3 The effect of a sequence of n <FONT FACE="Courier New" SIZE=2>TABLE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT></FONT></FONT> operations on the number num<SUB>i</SUB> of items in the table, the number size<SUB>i</SUB> of slots in the table, and the potential <IMG SRC="../IMAGES/phicap12.gif"><SUB>i </SUB> = 2 <IMG SRC="../IMAGES/dot10.gif"> num<SUB>i</SUB> - size<SUB>i</SUB>, each being measured after the ith operation. The thin line shows num<SUB>i</SUB>, the thick line shows size<SUB>i</SUB>, and the dashed line shows <IMG SRC="../IMAGES/phicap12.gif"><SUB>i</SUB>. Notice that immediately before an expansion, the potential has built up to the number of items in the table, and therefore it can pay for moving all the items to the new table. Afterwards, the potential drops to 0, but it is immediately increased by 2 when the item that caused the expansion is inserted.<a name="084c_15f1"></sub></sup></h4><P>
+We assume that cost can be measured in terms of elementary insertions and deletions.<P>
+A natural strategy for expansion and contraction is to double the table size when an item is inserted into a full table and halve the size when a deletion would cause the table to become less than half full. This strategy guarantees that the load factor of the table never drops below 1/2, but unfortunately, it can cause the amortized cost of an operation to be quite large. Consider the following scenario. We perform <I>n</I> operations on a table <I>T</I>, where <I>n</I> is an exact power of 2. The first <I>n/2</I> operations are insertions, which by our previous analysis cost a total of <IMG SRC="../IMAGES/phicap12.gif"> (<I>n</I>). At the end of this sequence of insertions, <I>num</I>[<I>T</I>]<I> = size</I>[<I>T</I>]<I> = n/2.</I> For the second <I>n/2</I> operations, we perform the following sequence:<P>
+<pre>I, D, D, I, I, D, D, I, I,... ,</sub></sup></pre><P>
+where I stands for an insertion and D stands for a deletion. The first insertion causes an expansion of the table to size <I>n</I>. The two following deletions cause a contraction of the table back to size <I>n/2</I>. Two further insertions cause another expansion, and so forth. The cost of each expansion and contraction is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), and there are <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) of them. Thus, the total cost of the <I>n</I> operations is <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>2</I></SUP>), and the amortized cost of an operation is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<a name="084c_15ec">The difficulty with this strategy is obvious: after an expansion, we do not perform enough deletions to pay for a contraction. Likewise, after a contraction, we do not perform enough insertions to pay for an expansion.<P>
+We can improve upon this strategy by allowing the load factor of the table to drop below 1/2. Specifically, we continue to double the table size when an item is inserted into a full table, but we halve the table size when a deletion causes the table to become less than 1/4 full, rather than 1/2 full as before. The load factor of the table is therefore bounded below by the constant 1/4. The idea is that after an expansion, the load factor of the table is 1/2. Thus, half the items in the table must be deleted before a contraction can occur, since contraction does not occur unless the load factor would fall below 1/4. Likewise, after a contraction, the load factor of the table is also 1/2. Thus, the number of items in the table must be doubled by insertions before an expansion can occur, since expansion occurs only when the load factor would exceed 1.<P>
+<a name="084c_15ed">We omit the code for <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>, since it is analogous to T<FONT FACE="Courier New" SIZE=2>ABLE-</FONT><FONT FACE="Courier New" SIZE=2>INSERT</FONT>. It is convenient to assume for analysis, however, that if the number of items in the table drops to 0, the storage for the table is freed. That is, if <I>num</I>[<I>T</I>] = 0, then <I>size</I>[<I>T</I>] = 0.<P>
+<a name="084c_15ee"><a name="084c_15ef">We can now use the potential method to analyze the cost of a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> operations. We start by defining a potential function <IMG SRC="../IMAGES/phicap12.gif"> that is 0 immediately after an expansion or contraction and builds as the load factor increases to 1 or decreases to 1/4. Let us denote the load factor of a nonempty table <I>T</I> by <IMG SRC="../IMAGES/alpha12.gif">(<I>T</I>) = <I>num</I>[<I>T</I>]<I>/size</I>[<I>T</I>]<I>.</I> Since for an empty table, <I>num</I>[<I>T</I>] = <I>size</I>[<I>T</I>] = 0 and <IMG SRC="../IMAGES/alpha12.gif">[<I>T</I>] = 1, we always have <I>num</I>[<I>T</I>] = <IMG SRC="../IMAGES/alpha12.gif">(<I>T</I>) <IMG SRC="../IMAGES/dot10.gif"><I> size</I>[<I>T</I>], whether the table is empty or not. We shall use as our potential function<P>
+<img src="372_a.gif"><P>
+<h4><a name="084c_15f2">(18.5)<a name="084c_15f2"></sub></sup></h4><P>
+Observe that the potential of an empty table is 0 and that the potential is never negative. Thus, the total amortized cost of a sequence of operations with respect to <IMG SRC="../IMAGES/phicap12.gif"> is an upper bound on their actual cost.<P>
+Before proceeding with a precise analysis, we pause to observe some properties of the potential function. Notice that when the load factor is 1/2, the potential is 0. When it is 1, we have <I>size</I>[<I>T</I>]<I> = num</I>[<I>T</I>]<I>, </I> which implies <IMG SRC="../IMAGES/phicap12.gif"><I>(T) = num</I>[<I>T</I>]<I>,</I> and thus the potential can pay for an expansion if an item is inserted. When the load factor is 1/4, we have <I>size</I>[<I>T</I>]<I> = 4 </I><IMG SRC="../IMAGES/dot10.gif"><I> num</I>[<I>T</I>]<I> ,</I> which implies <IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>)<I> = num</I>[<I>T</I>]<I>,</I> and thus the potential can pay for a contraction if an item is deleted. Figure 18.4 illustrates how the potential behaves for a sequence of operations.<P>
+To analyze a sequence of <I>n</I> <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> operations, we let <I>c<SUB>i</I></SUB> denote the actual cost of the <I>i</I>th operation, <img src="372_b.gif"> denote its amortized cost with respect to <IMG SRC="../IMAGES/phicap12.gif">, <I>num<SUB>i</I></SUB> denote the number of items stored in the table after the <I>i</I>th operation, <I>size<SUB>i</I></SUB> denote the total size of the table after the <I>i</I>th operation, <IMG SRC="../IMAGES/alpha12.gif"> <I><SUB>i</I></SUB> denote the load factor of the table after the <I>i</I>th operation, and <IMG SRC="../IMAGES/phicap12.gif"><I><SUB>i</I></SUB> denote the potential after the <I>i</I>th operation. Initially, <I>num</I><SUB>0</SUB><I> = </I>0<I>, size</I><SUB>0</SUB> = 0, <IMG SRC="../IMAGES/alpha12.gif"><SUB>0</SUB> = 1, and <IMG SRC="../IMAGES/phicap12.gif"><SUB>0</SUB> = 0.<P>
+<img src="373_a.gif"><P>
+<h4><a name="084c_15f3">Figure 18.4 The effect of a sequence of n <FONT FACE="Courier New" SIZE=2>TABLE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT></FONT></FONT> and <FONT FACE="Courier New" SIZE=2>TABLE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT></FONT></FONT> operations on the number num<SUB>i</SUB> of items in the  table, the number size<SUB>i</SUB> of slots in the table, and the potential<a name="084c_15f3"></sub></sup></h4><P>
+<img src="373_b.gif"><P>
+<h4>each being measured after the ith operation. The thin line shows num<SUB>i</SUB>, the thick line shows size<SUB>i</SUB>, and the dashed line shows <IMG SRC="../IMAGES/phicap12.gif"><SUB>i</SUB>. Notice that immediately before an expansion, the potential has built up to the number of items in the table, and therefore it can pay for moving all the items to the new table. Likewise, immediately before a contraction, the potential has built up to the number of items in the table.</sub></sup></h4><P>
+We start with the case in which the <I>i</I>th operation is <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT>. If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB><IMG SRC="../IMAGES/gteq.gif"><I> </I>1/2<I>,</I> the analysis is identical to that for table expansion in Section 18.4.1. Whether the table expands or not, the amortized cost <img src="373_c.gif"> of the operation is at most 3. If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB> &lt; 1/2, the table cannot expand as a result of the operation, since expansion occurs only when <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1 </SUB>= 1. If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I></SUB> &lt; 1/2 as well, then the amortized cost of the <I>i</I>th operation is<P>
+<img src="373_d.gif"><P>
+<pre>If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB> &lt; 1/2 but <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I></SUB> <IMG SRC="../IMAGES/gteq.gif"> 1/2, then</sub></sup></pre><P>
+<img src="373_e.gif"><P>
+<img src="374_a.gif"><P>
+Thus, the amortized cost of a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation is at most 3.<P>
+We now turn to the case in which the <I>i</I>th operation is <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT>. In this case, <I>num<SUB>i</I></SUB> = <I>num<SUB>i-</I>1</SUB> - 1. If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB><I> </I>&lt;<I> </I>1/2, then we must consider whether the operation causes a contraction. If it does not, the<I>n size<SUB>i = </SUB>size<SUB>i-</I>1</SUB> and the amortized cost of the operation is<P>
+<img src="374_b.gif"><P>
+If <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB> &lt; 1/2 and the <I>i</I>th operation does trigger a contraction, then the actual cost of the operation is <I>c<SUB>i</I></SUB> = <I>num<SUB>i</I></SUB> + 1, since we delete one item and move <I>num<SUB>i</I></SUB> items. We have <I>size<SUB>i</I></SUB>/2 = <I>size<SUB>i</I>-1</SUB>/4 = <I>num<SUB>i</I></SUB> + 1, and the amortized cost of the operation is<P>
+<img src="374_c.gif"><P>
+When the <I>i</I>th operation is a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> and <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I>-1 </SUB><IMG SRC="../IMAGES/gteq.gif"> 1/2, the amortized cost is also bounded above by a constant. The analysis is left as Exercise 18.4-3.<P>
+In summary, since the amortized cost of each operation is bounded above by a constant, the actual time for any sequence of <I>n</I> operations on a dynamic table is <I>O(n)</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="084d_15f1">Exercises<a name="084d_15f1"></h2><P>
+<a name="084d_15f2">18.4-1<a name="084d_15f2"><P>
+Argue intuitively that if <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/lteq12.gif"> 1/2 and <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> 1/2, then the amortized cost of a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation is 0.<P>
+<a name="084d_15f3">18.4-2<a name="084d_15f3"><P>
+<a name="084d_15f0">Suppose that we wish to implement a dynamic, open-address hash table. Why might we consider the table to be full when its load factor reaches some value <IMG SRC="../IMAGES/alpha12.gif"> that is strictly less than 1? Describe briefly how to make insertion into a dynamic, open-address hash table run in such a way that the expected value of the amortized cost per insertion is <I>O</I>(1). Why is the expected value of the actual cost per insertion not necessarily <I>O</I>(1) for all insertions?<P>
+<a name="084d_15f4">18.4-3<a name="084d_15f4"><P>
+Show that if the <I>i</I>th operation on a dynamic table is <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> and <IMG SRC="../IMAGES/alpha12.gif"><I><SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/gteq.gif"> 1/2, then the amortized cost of the operation with respect to the potential function (18.5) is bounded above by a constant.<P>
+<a name="084d_15f5">18.4-4<a name="084d_15f5"><P>
+Suppose that instead of contracting a table by halving its size when its load factor drops below 1/4, we contract it by multiplying its size by 2/3 when its load factor drops below 1/3. Using the potential function<P>
+<pre><IMG SRC="../IMAGES/phicap12.gif">(<I>T</I>) = |2 <IMG SRC="../IMAGES/dot10.gif"> <I>num</I>[<I>T</I>] - <I>size</I>[<I>T</I>]| <B>,</B></sub></sup></pre><P>
+show that the amortized cost of a <FONT FACE="Courier New" SIZE=2>TABLE</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> that uses this strategy is bounded above by a constant.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="084e_15fc">Problems<a name="084e_15fc"></h1><P>
+<a name="084e_15fd">18-1     Bit-reversed binary counter<a name="084e_15fd"><P>
+<a name="084e_15f1"><a name="084e_15f2"><a name="084e_15f3"><a name="084e_15f4"><a name="084e_15f5">Chapter 32 examines an important algorithm called the Fast Fourier Transform, or FFT. The first step of the FFT algorithm performs a <I><B>bit-reversal permutation </I></B>on an input array <I>A</I>[0 . . n - 1] whose length is <I>n</I> = 2<I><SUP>k</I></SUP> for some nonnegative integer <I>k</I>. This permutation swaps elements whose indices have binary representations that are the reverse of each other.<P>
+We can express each index <I>a</I> as a <I>k</I>-bit sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>k-</I>1</SUB>, <I>a<SUB>k-2</I></SUB>, . . . , <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, where <img src="375_a.gif">. We define<P>
+<pre>rev<I><SUB>k</I></SUB>(<IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>k-</I>1</SUB>, <I>a<SUB>k-2</I></SUB>,..., <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">) = (<IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>0, </SUB><I>a</I><SUB>1</SUB>,..., <I>a<SUB>k-</I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> ;</sub></sup></pre><P>
+thus,<P>
+<img src="375_b.gif"><P>
+For example, if <I>n</I> = 16 (or, equivalently, <I>k</I> = 4), then rev<I><SUB>k</I></SUB>(3) = 12, since the 4-bit representation of 3 is 0011, which when reversed gives 1100, the 4-bit representation of 12.<P>
+<I><B>a.     </I></B>Given a function rev<I><SUB>k</I></SUB> that runs in <IMG SRC="../IMAGES/bound.gif">(<I>k</I>) time, write an algorithm to perform the bit-reversal permutation on an array of length <I>n</I> = 2<I><SUP>k</I></SUP> in <I>O</I>(<I>nk</I>) time.<P>
+<a name="084e_15f6">We can use an algorithm based on an amortized analysis to improve the running time of the bit-reversal permutation. We maintain a "bit-reversed counter " and a procedure <FONT FACE="Courier New" SIZE=2>BIT</FONT>-<FONT FACE="Courier New" SIZE=2>REVERSED</FONT>-<FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> that, when given a bit-reversed-counter value<B> </B><I>a</I><B>, </B>produces rev<I><SUB>k</I></SUB>(rev<I><SUB>k</I></SUB>(<I>a</I>) + 1). If <I>k</I> = 4, for example, and the bit-reversed counter starts at 0, then successive calls to <FONT FACE="Courier New" SIZE=2>BIT</FONT>-<FONT FACE="Courier New" SIZE=2>REVERSED</FONT>-<FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> produce the sequence<P>
+<pre>0000, 1000, 0100, 1100, 0010, 1010,... = 0, 8, 4, 12, 2, 10,... .</sub></sup></pre><P>
+<I><B>b.     </I></B>Assume that the words in your computer store <I>k</I>-bit values and that in unit time, your computer can manipulate the binary values with operations such as shifting left or right by arbitrary amounts, bitwise-AND, bitwise-OR, etc. Describe an implementation of the <FONT FACE="Courier New" SIZE=2>BIT</FONT>-<FONT FACE="Courier New" SIZE=2>REVERSED</FONT>-<FONT FACE="Courier New" SIZE=2>INCREMENT</FONT> procedure that allows the bit-reversal permutation on an <I>n</I>-element array to be performed in a total of <I>O</I>(<I>n</I>) time.<P>
+<I><B>c.     </I></B>Suppose that you can shift a word left or right by only one bit in unit time. Is it still possible to implement an <I>O</I>(<I>n</I>)-time bit-reversal permutation?<P>
+<a name="084e_15fe">18-2     Making binary search dynamic<a name="084e_15fe"><P>
+<a name="084e_15f7"><a name="084e_15f8">Binary search of a sorted array takes logarithmic search time, but the time to insert a new element is linear in the size of the array. We can improve the time for insertion by keeping several sorted arrays.<P>
+Specifically, suppose that we wish to support <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> and <FONT FACE="Courier New" SIZE=2>INSERT</FONT> on a set of <I>n</I> elements. Let <I>k</I> = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n</I> + 1)<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>, and let the binary representation of <I>n </I>be <IMG SRC="../IMAGES/lftwdchv.gif"><I>n<SUB>k-1</I></SUB>, <I>n<SUB>k-2</I></SUB>, . . . , <I>n<SUB>0</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">. We have <I>k</I> sorted arrays <I>A<SUB>0</I></SUB>, <I>A</I><SUB>1</SUB>, . . . , <I>A<SUB>k</I>-1</SUB>, where for <I>i</I> = 0, 1, . . . , <I>k</I> - 1, the length of array <I>A<SUB>i</I></SUB> is 2<I><SUP>i</I></SUP>. Each array is either full or empty, depending on whether <I>n<SUB>i</I></SUB> = 1 or <I>n<SUB>i</I></SUB> = 0, respectively. The total number of elements held in all <I>k</I> arrays is therefore <img src="376_a.gif">. Although each individual array is sorted, there is no particular relationship between elements in different arrays.<P>
+<I><B>a</I>.     </B>Describe how to perform the <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> operation for this data structure. Analyze its worst-case running time.<P>
+<I><B>b</I>.     </B>Describe how to insert a new element into this data structure. Analyze its worst-case and amortized running times.<P>
+<I><B>c</I>.     </B>Discuss how to implement <FONT FACE="Courier New" SIZE=2>DELETE</FONT>.<P>
+<a name="084e_15ff">18-3     Amortized weight-balanced trees<a name="084e_15ff"><P>
+<a name="084e_15f9"><a name="084e_15fa"><a name="084e_15fb">Consider an ordinary binary search tree augmented by adding to each node <I>x</I> the field <I>size</I>[<I>x</I>] giving the number of keys stored in the subtree rooted at <I>x</I>. Let <IMG SRC="../IMAGES/alpha12.gif"> be a constant in the range 1/2 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/alpha12.gif"> &lt; 1. We say that a given node <I>x </I>is <I><B></I></B><IMG SRC="../IMAGES/alpha12.gif"><I><B></I></B><I><B>-balanced</I></B> if<P>
+<pre><I>size</I>[<I>left</I>[<I>x</I>]] <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/alpha12.gif"> <SUP>.</SUP> <I>size</I>[<I>x</I>]</sub></sup></pre><P>
+and<P>
+<pre><I>size</I>[<I>right</I>[<I>x</I>]] <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/alpha12.gif"> <SUP>.</SUP> <I>size</I>[<I>x</I>].</sub></sup></pre><P>
+The tree as a whole is <I><B></I></B><IMG SRC="../IMAGES/alpha12.gif"><I><B></I><I></B>-balanced</I> if every node in the tree is <IMG SRC="../IMAGES/alpha12.gif">-balanced. The following amortized approach to maintaining weight-balanced trees was suggested by G. Varghese.<P>
+<I><B>a</I>.     </B>A 1/2-balanced tree is, in a sense, as balanced as it can be. Given a node <I>x</I> in an arbitrary binary search tree, show how to rebuild the subtree rooted at <I>x</I> so that it becomes 1/2-balanced. Your algorithm should run in time <IMG SRC="../IMAGES/bound.gif">(<I>size</I>[<I>x</I>], and it can use <I>O</I>(<I>size</I>[<I>x</I>]) auxiliary storage.<P>
+<I><B>b</I>.     </B>Show that performing a search in an <I>n</I>-node <IMG SRC="../IMAGES/alpha12.gif">-balanced binary search tree takes <I>O</I>(lg <I>n</I>) worst-case time.<P>
+For the remainder of this problem, assume that the constant <IMG SRC="../IMAGES/alpha12.gif"> is strictly greater than 1/2. Suppose that <FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> are implemented as usual for an <FONT FACE="Courier New" SIZE=2>n</FONT>-node binary search tree, except that after every such operation, if any node in the tree is no longer <IMG SRC="../IMAGES/alpha12.gif">-balanced, then the subtree rooted at the highest such node in the tree is "rebuilt" so that it becomes 1/2-balanced.<P>
+We shall analyze this rebuilding scheme using the potential method. For a node <I>x</I> in a binary search tree <I>T</I>, we define<P>
+<pre><IMG SRC="../IMAGES/delta12.gif">(<I>x</I>) = |<I>size</I>[<I>left</I>[<I>x</I>]] - <I>size</I>[<I>right</I>[<I>x</I>]]| ,</sub></sup></pre><P>
+and we define the potential of <I>T</I> as<P>
+<img src="377_a.gif"><P>
+where <I>c</I> is a sufficiently large constant that depends on <IMG SRC="../IMAGES/alpha12.gif">.<P>
+<I><B>c.     </I></B>Argue that any binary search tree has nonnegative potential and that a 1/2-balanced tree has potential 0. <P>
+<I><B>d</I>.     </B>Suppose that <I>m</I> units of potential can pay for rebuilding an <I>m</I>-node subtree. How large must <I>c</I> be in terms of <IMG SRC="../IMAGES/alpha12.gif"> in order for it to take <I>O</I>(1) amortized time to rebuild a subtree that is not <IMG SRC="../IMAGES/alpha12.gif">-balanced?<P>
+<I><B>e.     </I></B>Show that inserting a node into or deleting a node from an <I>n</I>-node <IMG SRC="../IMAGES/alpha12.gif">-balanced tree costs <I>O</I>(lg <I>n)</I> amortized time.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+The aggregate method of amortized' analysis was used by Aho, Hopcroft, and Ullman [4]. Tarjan [189] surveys the accounting and potential methods of amortized analysis and presents several applications. He attributes the accounting method to several authors, including M. R. Brown, R. E. Tarjan, S. Huddleston, and K. Mehlhorn. He attributes the potential method to D. D. Sleator. The term "amortized" is due to D. D. Sleator and R. E. Tarjan.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="partv.htm">Part V</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

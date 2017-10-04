@@ -1,0 +1,18 @@
+<hashtable>
+  <entry>
+    <string>castle_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>castle_submit_time</string>
+    <string>2010.04.25 11:10:30</string>
+  </entry>
+  <entry>
+    <string>castle_filename</string>
+    <string>castle.cpp</string>
+  </entry>
+  <entry>
+    <string>castle</string>
+    <string>2000001</string>
+  </entry>
+</hashtable>

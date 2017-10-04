@@ -1,0 +1,81 @@
+{
+TASK: festa
+LANG: PASCAL
+}
+program Fest;
+type
+  hora=record
+  h:longint;
+  krd:longint;
+  dist:longint;
+  end;
+  v=record
+  cord,razl:longint;
+  end;
+var sumi:array[1..10000] of longint;
+a:array[1..2000] of hora;
+sum,s,s1,m,n:longint;
+i,j,p,q:longint;
+vrm:v;
+procedure Vhod;
+var st:string;code:integer;
+begin
+n:=0;
+m:=0;
+repeat
+readln(st);
+if copy(st,1,pos(' ',st)-1)='1' then begin
+inc(n);
+delete(st,1,pos(' ',st));
+val(copy(st,1,pos(' ',st)-1),a[n].krd,code);
+delete(st,1,pos(' ',st));
+val(st,a[n].h,code);
+end;
+if copy(st,1,pos(' ',st)-1)='2' then begin
+inc(m);
+delete(st,1,pos(' ',st));
+val(st,sumi[m],code);
+end;
+until eof;
+end;
+procedure Ne6to;
+begin
+for i:=1 to m do begin
+sum:=sumi[i];
+j:=0;
+repeat
+for q:=1 to n do
+a[q].dist:=abs(a[q].krd-j);
+s1:=s;
+s:=0;
+for p:=1 to n do
+s:=s+a[p].dist*a[p].h;
+inc(j);
+until(j>100000000)or(s>sum);
+if s>sum then begin
+vrm.cord:=j-1;
+vrm.razl:=sum-s1;
+end;
+j:=0;
+repeat
+for q:=1 to n do
+a[q].dist:=abs(a[q].krd-j);
+s1:=s;
+s:=0;
+for p:=1 to n do
+s:=s+a[p].dist*a[p].h;
+j:=j-1;
+until(j<-100000000)or(s>sum);
+if s>sum then
+if sum-s1<vrm.razl then writeln(j+1,' ',sum-s1)
+else writeln(vrm.cord,' ',vrm.razl);
+end;
+end;
+begin
+vrm.razl:=100000000;
+s:=0;
+s1:=0;
+Vhod;
+Ne6to;
+readln;
+end.

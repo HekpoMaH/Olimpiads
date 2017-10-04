@@ -1,0 +1,79 @@
+/*
+TASK: MORSE
+LANG: C
+*/
+
+
+#include <stdio.h>
+#include <ctype.h>
+
+int i;
+char a[256] = {0}, c = 0;
+
+char cs[27][6] = {
+     ".-",   // A
+     "-...", // B
+     "-.-.", // C
+     "-..",  // D
+     ".",    // E
+     "..-.", // F
+     "....", // H
+     "..",   // I
+     ".---", // J
+     "-.-",  // K
+     ".-..",   // L
+     "--",   // M
+     "-.",   // N
+     "---",  // O
+     ".--.",  // P
+     "--.-", // Q
+     ".-.",  // R
+     "...",  // S
+     "-",    // T
+     "..-",  // U
+     "...-", // V
+     ".--",  // W
+     "-..-", // X
+     "-.--", // Y
+     "--.."  // Z
+};
+
+char ds [10][6] = {
+     "-----",
+     ".----",
+     "..---",
+     "...--",
+     "....-",
+     ".....",
+     "-",
+     "--",
+     "---",
+     "----"
+};
+
+int main () {
+    for (i = 0;  ; i ++) {
+        c = getchar();
+        c = toupper(c);
+        if (c >= 'A' && c <= 'Z') {
+              printf ("%s", cs[c - 'B']);
+        } else if (isdigit(c)) {
+             printf ("%s", ds[c - '0']);
+        } else if (c == '.') {
+               printf (".-.-.-");
+        } else if (c == ',') {
+               printf ("--..--");
+        } else if (c == '-') {
+               printf ("-..-.");
+        } else if (c == '?') {
+               printf ("..--..");
+        } else if (c == ' ') {
+               printf (".-.-.");
+        } else if (feof(stdin)) {
+           printf ("...-.-\n");
+           break;
+        }
+        printf (" ");
+    }
+    return 0;
+}

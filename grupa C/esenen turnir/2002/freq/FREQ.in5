@@ -1,0 +1,51 @@
+50
+mb of ram for the operating system  plus an additional mb of ram for access
+  available harddisk space for access sr number  indicates typical installation  your harddisk usage will vary depending on configuration  choices made  during custom installation might require more or less 
+ harddisk space   typical installation  mb available harddisk space for office numbers indicate typical installation  your harddisk usage will vary depending on configuration  choices made during custom installation might require more or less aaaaaaaaaa
+ harddisk space mb for disc word  excel  outlook  powerpoint  
+ access   cdrom drive
+  vga or higher resolution monitor  super vga recommended   microsoft mouse  microsoft intellimouse  or 
+ compatible pointing device additional items or services required to use certain 
+ features  baud modem    or higher baud recommended
+  multimedia computer required to access sound and other 
+ multimedia effects
+  microsoft exchange client or microsoft outlook required to run office email
+  mb of additional memory required to run office email
+  some internet functionality might require internet 
+ access and payment of a separate fee to a service 
+  provider some features switch automatically to a different setting 
+ during custom install
+during a custom installation  if you set access to  not available  and then change certain features of access to something other than  not available   some additional features will also switch from  not available  to the new xdasdasddassdassasdasdasdaasd
+setting you chose  the features affected are 
+ help
+ typical wizards
+ additional wizards
+ snapshot viewer
+ database replication
+ if you are trying to save space on your disk  try setting 
+ access or the individual feature to  installed on first 
+ use  instead  
+ installing access sr on a network
+    to create an administrative installation point for 
+qqqq 
+  create a share on a network server for the 
+ administrative installation point  the network share 
+ must have at least megabytes mb of available 
+ disk space  
+  on a computer that is running microsoft windows  
+ windows nt workstation or windows nt server and that 
+ has write permission to the share  connect to the 
+ server share  
+  on the start menu  click run  and then click browse  
+  on office disc in the cdrom drive  select setup exe 
+ and click open  
+  on the command line following setup exe  type 
+ a data msi 
+ and click ok  
+ for example  
+ e  setup exe a data msi 
+                when prompted  enter the organization name that you 
+ want to define for all users who install office from 
+ this location  
+  when prompted for the installation location  enter the 
+when prompted for the installation location  enter the 

@@ -1,0 +1,32 @@
+#include<iostream>
+#include<cmath>
+#include<vector>
+#include<queue>
+#include<stack>
+#include<algorithm>
+#include<string>
+#include<cstdio>
+using namespace std;
+int i,n,j;
+char zz,z[200001];
+double a[200001];
+int main()
+{
+    while (1==1)
+    {
+        i++;
+        cin>>z[i];
+        cin>>a[i];
+        if (z[i]=='=')break;
+    }
+    for (j=i-1;j>=1;j--)
+    {
+        if (z[j]=='+') a[i]=a[i]-a[j];
+        else
+        if (z[j]=='-') a[i]=a[i]+a[j];
+        else
+        if (z[j]=='*') a[i]=a[i]/a[j];
+    }
+    cout<<a[i]<<endl;
+    return 0;
+}

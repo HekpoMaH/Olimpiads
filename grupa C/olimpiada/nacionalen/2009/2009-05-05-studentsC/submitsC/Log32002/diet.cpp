@@ -1,0 +1,116 @@
+/*
+TASK:diet
+LANG:c++
+*/
+#include<iostream>
+using namespace std;
+int main ()
+{
+    int a,b,c,d,sbb,ost,aa,bb,cc,min,br=0,oss;
+    cin>>a>>b>>c;
+    d=(a*10)+(b*20)+(c*30);
+    cout<<d/60<<' ';
+    ost=d%60;
+    sbb=a+b+c;
+    while(oss!=ost&&sbb>0)
+    {
+                          min=1000000;
+                   if(a<b)min=a;
+                   else min=b;
+                   if(c<min)min=c;
+                   a-=min;
+                   b-=min;
+                   c-=min;
+                   sbb=a+b+c;
+                   if(sbb==0)break;
+                   oss=(a*10)+(b*20)+(c*30);
+                   if(oss<60)break;
+                   if(a==0)
+                   {
+                           if(b==0)
+                           {
+                                   a++;
+                                   b++;
+                                   c--;
+                                   br++;
+                           }
+                           else
+                           if(c==0)
+                           {
+                                   a+=2;
+                                   b--;
+                                   br++;
+                           }
+                           else
+                           {
+                               if(b>c)
+                               {
+                                      a+=2;
+                                      b--;
+                                      br++;
+                               }
+                               else
+                               if(c>b)
+                               {
+                                      a++;
+                                      b++;
+                                      c--;
+                                      br++;
+                               }
+                               else
+                               if(c==b)
+                               {
+                                       a++;
+                                       b++;
+                                       c--;
+                                       br++;
+                               }       
+                           }
+                   }
+                   else
+                   if(b==0)
+                   {
+                          if(a>2)
+                          {
+                                 a-=2;
+                                 b++;
+                          } 
+                          else 
+                          {
+                               c--;
+                               a++;
+                               b++;
+                               br++;
+                          }
+                   }
+                   else
+                   if(c==0)
+                   {
+                           if(a>1&&b>1)
+                           {
+                                       a--;
+                                       b--;
+                                       c++;
+                           }
+                           else 
+                           {
+                                if(a==1&&b>2)
+                                {
+                                            a++;
+                                            c++;
+                                            b-=2;
+                                            br++; 
+                                }
+                                else
+                                if(a>3&&b==1)
+                                {
+                                             a-=3;
+                                             c++;
+                                }
+                                
+                           }
+                   }
+                   
+    }
+    cout<<br<<endl;
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="fr"
+ lang="fr" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>fr:stl:vector:vector_constructors</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-09-07T02:59:48-0700" />
+<meta name="keywords" content="fr,stl,vector,vector_constructors" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/fr/stl/vector/vector_constructors?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=fr:stl:vector" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/fr/stl/vector/vector_constructors" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/fr/stl/vector/vector_constructors" />
+<link rel="canonical" href="vector_constructors" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='fr:stl:vector';var JSINFO = {"id":"fr:stl:vector:vector_constructors","namespace":"fr:stl:vector"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="constructeurs_des_vecteur" id="constructeurs_des_vecteur">Constructeurs des Vecteur</a></h2>
+<div class="level2">
+
+<p>
+Syntaxe :
+</p>
+<pre class="c code c++" style="font-family:monospace;">    <span class="co2">#include &lt;vector&gt;</span>
+    using namespace std<span class="sy0">;</span>
+    vector<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+    vector<span class="br0">&#40;</span> <span class="kw4">const</span> vector<span class="sy0">&amp;</span> c <span class="br0">&#41;</span><span class="sy0">;</span>
+    vector<span class="br0">&#40;</span> size_type num<span class="sy0">,</span> <span class="kw4">const</span> TYPE<span class="sy0">&amp;</span> val <span class="sy0">=</span> TYPE<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#41;</span><span class="sy0">;</span>
+    template<span class="sy0">&lt;</span> typename input_iterator <span class="sy0">&gt;</span>
+    vector<span class="br0">&#40;</span> input_iterator debut<span class="sy0">,</span> input_iterator fin<span class="br0">&#41;</span><span class="sy0">;</span>
+    ~vector<span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+Le constructeur par défaut ne prend pas d&#039;arguments et crée une nouvelle instance d&#039;un vecteur vide.
+</p>
+
+<p>
+Le second constructeur est le constructeur par copie. Il est utilisé pour créer une copie d&#039;un vecteur donné c.
+</p>
+
+<p>
+Le troisième constructeur crée un vecteur contenant num éléments. Si val est spécifié, chacun de ces éléments aura cette valeur. Si val n&#039;est pas fourni, alors le constructeur par défaut du type contenu dans le vecteur sera utilisé.
+</p>
+
+<p>
+Par exemple, le code ci-dessous crée un vecteur contenant 5 fois la valeur 42.
+
+</p>
+<pre class="c code c++" style="font-family:monospace;">   vector<span class="sy0">&lt;</span>int<span class="sy0">&gt;</span> v1<span class="br0">&#40;</span> 5<span class="sy0">,</span> 42 <span class="br0">&#41;</span><span class="sy0">;</span></pre>
+<p>
+Le dernier constructeur permet de construire un vecteur contenant les valeurs de la séquence [debut, fin).
+Par exemple :
+
+</p>
+<pre class="c code c++" style="font-family:monospace;">   <span class="co1">// create a vector of random integers</span>
+   <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;original vector: &quot;</span><span class="sy0">;</span>
+   vector<span class="sy0">&lt;</span>int<span class="sy0">&gt;</span> v<span class="sy0">;</span>
+   <span class="kw1">for</span><span class="br0">&#40;</span> <span class="kw4">int</span> i <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span> i <span class="sy0">&lt;</span> <span class="nu0">10</span><span class="sy0">;</span> <span class="sy0">++</span>i <span class="br0">&#41;</span> <span class="br0">&#123;</span>
+     <span class="kw4">int</span> num <span class="sy0">=</span> <span class="br0">&#40;</span><span class="kw4">int</span><span class="br0">&#41;</span> rand<span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">%</span> <span class="nu0">10</span><span class="sy0">;</span>
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> num <span class="sy0">&lt;&lt;</span> <span class="st0">&quot; &quot;</span><span class="sy0">;</span>
+     v.<span class="me1">push_back</span><span class="br0">&#40;</span> num <span class="br0">&#41;</span><span class="sy0">;</span>
+   <span class="br0">&#125;</span>
+   <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> endl<span class="sy0">;</span>
+&nbsp;
+   <span class="co1">// find the first element of v that is even</span>
+   vector<span class="sy0">&lt;</span>int<span class="sy0">&gt;::</span><span class="me2">iterator</span> iter1 <span class="sy0">=</span> v.<span class="me1">begin</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+   <span class="kw1">while</span><span class="br0">&#40;</span> iter1 <span class="sy0">!=</span> v.<span class="me1">end</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="sy0">*</span>iter1 <span class="sy0">%</span> 2 <span class="sy0">!=</span> 0 <span class="br0">&#41;</span> <span class="br0">&#123;</span>
+     <span class="sy0">++</span>iter1<span class="sy0">;</span>
+   <span class="br0">&#125;</span>
+&nbsp;
+   <span class="co1">// find the last element of v that is even</span>
+   vector<span class="sy0">&lt;</span>int<span class="sy0">&gt;::</span><span class="me2">iterator</span> iter2 <span class="sy0">=</span> v.<span class="me1">end</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span>
+   <span class="kw1">do</span> <span class="br0">&#123;</span>
+     <span class="sy0">--</span>iter2<span class="sy0">;</span>
+   <span class="br0">&#125;</span> <span class="kw1">while</span><span class="br0">&#40;</span> iter2 <span class="sy0">!=</span> v.<span class="me1">begin</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> <span class="sy0">*</span>iter2 <span class="sy0">%</span> 2 <span class="sy0">!=</span> 0 <span class="br0">&#41;</span><span class="sy0">;</span>
+&nbsp;
+   <span class="co1">// only proceed if we find both numbers</span>
+   <span class="kw1">if</span><span class="br0">&#40;</span> iter1 <span class="sy0">!=</span> v.<span class="me1">end</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="sy0">&amp;&amp;</span> iter2 <span class="sy0">!=</span> v.<span class="me1">begin</span><span class="br0">&#40;</span><span class="br0">&#41;</span> <span class="br0">&#41;</span> <span class="br0">&#123;</span>
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;first even number: &quot;</span> <span class="sy0">&lt;&lt;</span> <span class="sy0">*</span>iter1 <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;, last even number: &quot;</span> <span class="sy0">&lt;&lt;</span> <span class="sy0">*</span>iter2 <span class="sy0">&lt;&lt;</span> endl<span class="sy0">;</span>
+&nbsp;
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot;new vector: &quot;</span><span class="sy0">;</span>
+     vector<span class="sy0">&lt;</span>int<span class="sy0">&gt;</span> v2<span class="br0">&#40;</span> iter1<span class="sy0">,</span> iter2 <span class="br0">&#41;</span><span class="sy0">;</span>
+     <span class="kw1">for</span><span class="br0">&#40;</span> <span class="kw4">int</span> i <span class="sy0">=</span> <span class="nu0">0</span><span class="sy0">;</span> i <span class="sy0">&lt;</span> v2.<span class="me1">size</span><span class="br0">&#40;</span><span class="br0">&#41;</span><span class="sy0">;</span> <span class="sy0">++</span>i <span class="br0">&#41;</span> <span class="br0">&#123;</span>
+       <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> v2<span class="br0">&#91;</span>i<span class="br0">&#93;</span> <span class="sy0">&lt;&lt;</span> <span class="st0">&quot; &quot;</span><span class="sy0">;</span>
+     <span class="br0">&#125;</span>
+     <a href="http://www.opengroup.org/onlinepubs/009695399/functions/cout.html"><span class="kw3">cout</span></a> <span class="sy0">&lt;&lt;</span> endl<span class="sy0">;</span>
+   <span class="br0">&#125;</span></pre>
+<p>
+Cet exemple fournit le résultat suivant :
+</p>
+<pre class="code">
+   original vector: 1 9 7 9 2 7 2 1 9 8
+   first even number: 2, last even number: 8
+   new vector: 2 7 2 1 9</pre>
+<p>
+Tous ces constructeurs ont une <a href="../../complexity" class="wikilink1" title="fr:complexity">complexité algorithmique</a> linéaire, sauf le premier, qui est de complexité constante.
+</p>
+
+<p>
+Le destructeur par défaut de chaque élément est appelé lorsque le vecteur est détruit.
+</p>
+
+</div>
+<!-- SECTION "Constructeurs des Vecteur" [3-] --></div>
+</body>
+</html>

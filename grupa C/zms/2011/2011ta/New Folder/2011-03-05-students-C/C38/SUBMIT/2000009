@@ -1,0 +1,65 @@
+#include<iostream>
+#include<deque>
+using namespace std;
+deque<long long>n;
+deque<char>c;
+long long sum;
+int main()
+{
+char a;
+long long b;
+cin>>a;
+//cout<<"oom"<<endl;
+
+
+while(a!='=')
+{
+    cin>>b;
+    c.push_front(a);
+    n.push_front(b);
+                         //   cout<<c.front()<<endl;
+                       //     cout<<n.front()<<endl;
+    cin>>a;
+
+}
+cin>>b;
+sum=b;
+
+
+    //cout<<sum<<endl;
+
+
+
+while(!c.empty())
+{
+    a=c.front();
+    c.pop_front();
+    b=n.front();
+    n.pop_front();
+
+
+  //  cout<<a<<' '<<c.front()<<endl;
+ //   cout<<b<<' '<<n.front()<<endl;
+
+    if(a=='+'){sum-=b;}
+    if(a=='-'){sum+=b;}
+    if(a=='*'){sum/=b;}
+    if(a=='/'){sum*=b;}
+
+}
+
+cout<<sum<<endl;
+
+return 0;
+}
+
+/*
++
+21
+-
+3
+*
+4
+=
+124
+*/

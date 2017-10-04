@@ -1,0 +1,47 @@
+#include<iostream>
+using namespace std;
+int n;
+bool prover(string s)
+{
+     int j=s.size();
+     int m[25];
+     for(int i=0;i<j;i++)m[i]=s[i];
+     sort(m,m+j);
+     bool f=1;
+     for(int i=0;i<j-1;i++)if(m[i]==m[i+1]){f=0;break;}
+     return f;
+}
+string prom(string s1)
+{
+      string s=s1;
+       int t=n-1;       
+       while(s[t]>'a'+n-1)
+       {
+                          s[t]='a';
+                          s[t-1]++;
+                          t--;
+       }
+       return s;
+       
+}
+int main()
+{
+    string s="";
+    char t='a';
+    long long k;
+    cin>>n;
+    cin>>k;
+    long long br=1;
+    for(int i=0;i<n;i++){s+=t;t++;}
+   while(br!=k)
+    {
+                s[n-1]++;
+                if(s[n-1]>'a'+n-1)
+                s=prom(s);
+                if(prover(s)==1)br++;
+    }
+    cout<<s<<endl;
+    return 0;
+}
+                                  
+                

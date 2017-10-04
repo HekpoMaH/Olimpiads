@@ -1,0 +1,432 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 5: SETS, ETC.</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap06.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap04.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="0729_0001">CHAPTER 5: SETS, ETC.<a name="0729_0001"></h1><P>
+In earlier chapters, we touched on the elements of discrete mathematics. This chapter reviews more completely the notations, definitions, and elementary properties of sets, relations, functions, graphs, and trees. Readers already well versed in this material need only skim this chapter.<P>
+
+
+
+
+
+<h1><a name="072b_1217">5.1 Sets<a name="072b_1217"></h1><P>
+<a name="072b_11e3"><a name="072b_11e4"><a name="072b_11e5"><a name="072b_11e6"><a name="072b_11e7"><a name="072b_11e8">A <I><B>set</I></B> is a collection of distinguishable objects, called its <I><B>members</I></B> or <I><B>elements.</I></B> If an object <I>x</I> is a member of a set <I>S</I>, we write <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> (read &quot;<I>x</I> is a member of <I>S</I>&quot; or, more briefly, &quot;<I>x</I> is in <I>S</I>&quot;). If <I>x</I> is not a member of <I>S</I>, we write <I>x</I> <IMG SRC="../IMAGES/notmem.gif"> <I>S</I>. We can describe a set by explicitly listing its members as a list inside braces. For example, we can define a set <I>S</I> to contain precisely the numbers 1, 2, and 3 by writing <I>S</I> = {1, 2, 3}. Since 2 is a member of the set <I>S</I>, we can write 2 <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>, and since 4 is not a member, we have 4 <IMG SRC="../IMAGES/notmem.gif"> <I>S</I>. A set cannot contain the same object more than once, and its elements are not ordered. Two sets <I>A</I> and <I>B</I> are <I><B>equal</I></B>, written <I>A</I> = <I>B</I>, if they contain the same elements. For example, {1, 2, 3, 1} = {1, 2, 3} = {3, 2, 1}.<P>
+We adopt special notations for frequently encountered sets.<P>
+<a name="072b_11e9"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <img src="77_a.gif"> denotes the <I><B>empty set</I></B>, that is, the set containing no members.<P>
+<a name="072b_11ea"><a name="072b_11eb"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <B>Z</B> denotes the set of <I><B>integers</I></B>, that is, the set {. . . , 2, -1, 0, 1, 2, . . .}.<P>
+<a name="072b_11ec"><a name="072b_11ed"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <B>R</B> denotes the set of <I><B>real numbers</I></B>.<P>
+<a name="072b_11ee"><a name="072b_11ef"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     <B>N</B> denotes the set of <I><B>natural numbers</I></B>, that is, the set {0, 1, 2, . . .}.<SUP>1</sup><P>
+<SUP>1</SUP>Some authors start the natural numbers with 1 instead of 0. The modern trend seems to be to start with 0.<P>
+<a name="072b_11f0"><a name="072b_11f1">If all the elements of a set <I>A</I> are contained in a set <I>B</I>, that is, if <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A </I>implies <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>, then we write <I>A </I><IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I> and say that <I>A</I> is a <I><B>subset</I></B> of <I>B</I>. A set <I>A</I> is a <I><B>proper subset</I></B> of <I>B</I>, written <I>A</I> <IMG SRC="../IMAGES/rightu.gif"> <I>B</I>, if <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I> but <I>A</I> <IMG SRC="../IMAGES/noteq.gif"> <I>B.</I> (Some authors use the symbol "<IMG SRC="../IMAGES/rightu.gif"> to denote the ordinary subset relation, rather than the proper-subset relation.) For any set <I>A</I>, we have <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>A</I>. For two sets <I>A</I> and <I>B</I>, we have <I>A</I> = <I>B</I> if and only if <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I> and <I>B</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>A</I>. For any three sets <I>A</I>, <I>B</I>, and <I>C</I>, if <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I> and <I>B</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>C</I>, then <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>C</I>. For any set <I>A</I>, we have <img src="78_a.gif"> <IMG SRC="../IMAGES/rgtubar.gif"> <I>A</I>.<P>
+<a name="072b_11f2">We sometimes define sets in terms of other sets. Given a set <I>A</I>, we can define a set <I>B</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>A</I> by stating a property that distinguishes the elements of <I>B</I>. For example, we can define the set of even integers by {<I>x</I> : <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <B>Z</B> and <I>x</I>/2 is an integer}. The colon in this notation is read "such that." (Some authors use a vertical bar in place of the colon.)<P>
+Given two sets <I>A</I> and <I>B</I>, we can also define new sets by applying <I><B>set operations</I></B><I>:</I><P>
+<a name="072b_11f3"><a name="072b_11f4"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The <I><B>intersection</I></B> of sets <I>A</I> and <I>B</I> is the set<P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I> = {<I>x</I> : <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> and <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>} .</sub></sup></pre><P>
+<a name="072b_11f5"><a name="072b_11f6"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The <I><B>union</I></B> of sets <I>A</I> and <I>B</I> is the set<P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I> = {<I>x</I> : <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> and <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>} .</sub></sup></pre><P>
+<a name="072b_11f7"><a name="072b_11f8"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The <I><B>difference</I></B> between two sets <I>A</I> and <I>B</I> is the set<P>
+<pre><I>A</I> - <I>B</I> = {<I>x</I> : <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> and <I>x</I> <IMG SRC="../IMAGES/notmem.gif"> <I>B</I>} .</sub></sup></pre><P>
+Set operations obey the following laws.<P>
+<a name="072b_11f9"><B>Empty set laws:</B><P>
+<img src="78_b.gif"><P>
+<a name="072b_11fa"><B>Idempotency laws:</B><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>A</I> = <I>A</I>,</sub></sup></pre><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>A</I> = <I>A</I>.</sub></sup></pre><P>
+<a name="072b_11fb"><B>Commutative laws:</B><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> B = <I>B</I> <IMG SRC="../IMAGES/dome.gif"> <I>A</I>,</sub></sup></pre><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> B = <I>B</I> <IMG SRC="../IMAGES/wideu.gif"> <I>A.</I></sub></sup></pre><P>
+<a name="072b_11fc"><B>Associative laws:</B><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> (<I>B</I> <IMG SRC="../IMAGES/dome.gif"> <I>C</I>) = (<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I>) <IMG SRC="../IMAGES/dome.gif"> <I>C,</I></sub></sup></pre><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> (<I>B</I> <IMG SRC="../IMAGES/wideu.gif"> <I>C</I>) = (<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I>) <IMG SRC="../IMAGES/wideu.gif"> <I>C.</I></sub></sup></pre><P>
+<a name="072b_11fd"><B>Distributive laws:</B><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> (<I>B</I> <IMG SRC="../IMAGES/wideu.gif"> <I>C</I>) = (<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I>) <IMG SRC="../IMAGES/wideu.gif"> (<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>C</I>),</sub></sup></pre><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> (<I>B</I> <IMG SRC="../IMAGES/dome.gif"> <I>C</I>) = (<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I>) <IMG SRC="../IMAGES/dome.gif"> (<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>C</I>).</sub></sup></pre><P>
+<h4><a name="072b_1218">(5.1)<a name="072b_1218"></sub></sup></h4><P>
+<a name="072b_11fe"><B>Absorption laws:</B><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/dome.gif"> (<I>A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B</I>) = <I>A</I>,</sub></sup></pre><P>
+<pre><I>A</I> <IMG SRC="../IMAGES/wideu.gif"> (<I>A</I> <IMG SRC="../IMAGES/dome.gif"> <I>B</I>) = <I>A.</I></sub></sup></pre><P>
+<a name="072b_11ff"><B>DeMorgan's laws:</B><P>
+<pre><I>A</I> - (<I>B</I> <IMG SRC="../IMAGES/dome.gif"> <I>C</I>) = (<I>A</I> - <I>B)</I> <IMG SRC="../IMAGES/wideu.gif"> (<I>A</I> - <I>C</I>),</sub></sup></pre><P>
+<pre><I>A</I> - (<I>B</I> <IMG SRC="../IMAGES/wideu.gif"> <I>C</I>) = (<I>A</I> - <I>B)</I> <IMG SRC="../IMAGES/dome.gif"> (<I>A</I> - <I>C</I>).</sub></sup></pre><P>
+<h4><a name="072b_1219">(5.2)<a name="072b_1219"></sub></sup></h4><P>
+<img src="79_a.gif"><P>
+<h4><a name="072b_121a">Figure 5.1 A Venn diagram illustrating the first of DeMorgan's laws (5.2). Each of the sets A, B, and C is represented as a circle in the plane.<a name="072b_121a"></sub></sup></h4><P>
+<a name="072b_1200">The first of DeMorgan's laws is illustrated in Figure 5.1, using a <I><B>Venn diagram</I></B>, a graphical picture in which sets are represented as regions of the plane.<P>
+<a name="072b_1201"><a name="072b_1202">Often, all the sets under consideration are subsets of some larger set <I>U </I>called the <I><B>universe</I>.</B> For example, if we are considering various sets made up only of integers, the set <B>Z</B> of integers is an appropriate universe. Given a universe <I>U</I>, we define the <I><B>complement</I></B> of a set <I>A</I> as <img src="79_b.gif">. For any set <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>U</I>, we have the following laws:<P>
+<img src="79_c.gif"><P>
+DeMorgan's laws (5.2) can be rewritten with complements. For any two sets <I>A, B</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>U</I>, we have<P>
+<img src="79_d.gif"><P>
+<a name="072b_1203"><a name="072b_1204">Two sets <I>A</I> and <I>B</I> are <I><B>disjoint</I></B> if they have no elements in common, that is, if <img src="79_e.gif">. A collection <I>S</I> = {<I>S<SUB>i</I></SUB>} of nonempty sets forms a <I><B>partition </I></B>of a set <I>S</I> if<P>
+<a name="072b_1205"><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     the sets are <I><B>pairwise disjoint</I></B>, that is, <I>S<SUB>i</I></SUB>, <I>S<SUB>j</I></SUB> <IMG SRC="../IMAGES/memof12.gif"> <I><FONT FACE="Courier New" SIZE=2>S</I></FONT> and <I>i</I> <IMG SRC="../IMAGES/noteq.gif"> <I>j</I> imply <img src="79_f.gif">, and<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     their union is <I>S</I>, that is,<P>
+<img src="79_g.gif"><P>
+In other words, <I>S</I> forms a partition of <I>S</I> if each element of <I>S</I> appears in exactly one <I>S<SUB>i</I></SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<a name="072b_1206"><a name="072b_1207"><a name="072b_1208"><a name="072b_1209"><a name="072b_120a"><a name="072b_120b"><a name="072b_120c">The number of elements in a set is called the <I><B>cardinality</I></B> (<I>or <B>size</I></B>) of the set, denoted |<I>S|</I>. Two sets have the same cardinality if their elements can be put into a one-to-one correspondence. The cardinality of the empty set is <img src="79_h.gif">. If the cardinality of a set is a natural number, we say the set is <I><B>finite</I></B>; otherwise, it is <I><B>infinite</I></B>. An infinite set that can be put into a one-to-one correspondence with the natural numbers <B>N</B> is <I><B>countably infinite</I></B>; otherwise, it is <I><B>uncountable</I></B>. The integers <B>Z</B> are countable, but the reals <B>R</B> are uncountable.<P>
+For any two finite sets <I>A</I> and <I>B</I>, we have the identity<P>
+<pre><I>|A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B| = |</I>A| + |<I>B| - |</I>A<I> <IMG SRC="../IMAGES/dome.gif"> </I>B| <I>,</I></sub></sup></pre><P>
+<h4><a name="072b_121b">(5.3)<a name="072b_121b"></sub></sup></h4><P>
+from which we can conclude that<P>
+<pre><I>|A</I> <IMG SRC="../IMAGES/wideu.gif"> <I>B| <IMG SRC="../IMAGES/lteq12.gif"> |</I>A| + |<I>B| </I>.</sub></sup></pre><P>
+If <I>A</I> and <I>B</I> are disjoint, then |<I>A</I> <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/dome.gif"></FONT> <I>B| = 0 and thus |</I>A<I> <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/wideu.gif"></FONT> </I>B| = |<I>A| + |</I>B|. If <I>A </I><IMG SRC="../IMAGES/rgtubar.gif"> <I>B</I>, then |<I>A| <IMG SRC="../IMAGES/lteq12.gif"> |</I>B|.<P>
+<a name="072b_120d"><a name="072b_120e"><a name="072b_120f">A finite set of <I>n</I> elements is sometimes called an <I><B>n-set</I></B>. A 1-set is called a <I><B>singleton</I></B>. A subset of <I>k</I> elements of a set is sometimes called a <I><B>k-subset</I></B>.<P>
+<a name="072b_1210">The set of all subsets of a set <I>S</I>, including the empty set and the set <I>S </I>itself, is denoted 2<I><SUP>S</I></SUP> and is called the <I><B>power set</I></B> of <I>S</I>. For example, <img src="80_a.gif">. The power set of a finite set <I>S</I> has cardinality 2<SUP>|<I></SUP>S|.</I><P>
+<a name="072b_1211">We sometimes care about setlike structures in which the elements are ordered. An <I><B>ordered pair</I></B> of two elements <I>a</I> and <I>b</I> is denoted (<I>a, b</I>) and can be defined formally as the set (<I>a, b</I>) = {<I>a</I>, {<I>a, b</I>}}. Thus, the ordered pair (<I>a, b</I>) is <I>not</I> the same as the ordered pair (<I>b, a</I>).<P>
+<a name="072b_1212"><a name="072b_1213"><a name="072b_1214">The <I><B>Cartesian product</I> </B>of two sets <I>A</I> and <I>B</I>, denoted <I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>B</I>, is the set of all ordered pairs such that the first element of the pair is an element of <I>A </I>and the second is an element of <I>B</I>. More formally,<P>
+<pre><I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>B</I> = {(<I>a,b</I>) : <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> and <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>}.</sub></sup></pre><P>
+For example, {<I>a, b</I>} <IMG SRC="../IMAGES/mult.gif"> {<I>a, b, c</I>} = {(<I>a, a</I>), (<I>a, b</I>), (<I>a, c</I>), (<I>b, a</I>), (<I>b, b</I>), (<I>b, c</I>)}. When <I>A</I> and <I>B</I> are finite sets, the cardinality of their Cartesian product is<P>
+<pre><I>|A</I> <IMG SRC="../IMAGES/mult.gif"> <I>B| = |</I>A| <I><IMG SRC="../IMAGES/dot10.gif"> |</I>B| .</sub></sup></pre><P>
+<h4><a name="072b_121c">(5.4)<a name="072b_121c"></sub></sup></h4><P>
+<a name="072b_1215"><a name="072b_1216">The Cartesian product of <I>n</I> sets <I>A</I><SUB>l</SUB>, <I>A</I><SUB>2</SUB>,. . . , <I>A<SUB>n</I></SUB> is the set of <I><B>n-tuples</I></B><P>
+<pre><I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/mult.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/mult.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/mult.gif"> <I>A<SUB>n</I></SUB> = {(<I>a</I><SUB>1</SUB>,<I>a</I><SUB>2</SUB>,...,<I>a<SUB>n</I></SUB>):<I>a<SUB>i </I></SUB><IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB>,<I>i</I> = 1, 2,...,<I>n</I>} ,</sub></sup></pre><P>
+whose cardinality is<P>
+<pre><I>|A</I><SUB>1</SUB> <IMG SRC="../IMAGES/mult.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/mult.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/mult.gif"> <I>A<SUB>n</I></SUB>| = |<I>A</I><SUB>1</SUB>| <IMG SRC="../IMAGES/dot10.gif"> |<I>A</I><SUB>2</SUB>| <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> |<I>A<SUB>n</I></SUB>|</sub></sup></pre><P>
+if all sets are finite. We denote an <I>n-</I>fold Cartesian product over a single set <I>A</I> by the set<P>
+<pre><I>A<SUP>n</I></SUP> = <I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>A</I> <IMG SRC="../IMAGES/mult.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/mult.gif"> <I>A </I>,</sub></sup></pre><P>
+whose cardinality is |<I>A<SUP>n</I></SUP>| = |<I>A|</I><SUP>n<I></SUP></I> if <I>A</I> is finite. An <I>n-</I>tuple can also be viewed as a finite sequence of length <I>n</I> (see page 84).<P>
+
+
+
+
+
+<h2><a name="072c_1218">Exercises<a name="072c_1218"></h2><P>
+<a name="072c_1219">5.1-1<a name="072c_1219"><P>
+Draw Venn diagrams that illustrate the first of the distributive laws (5.1).<P>
+<a name="072c_121a">5.1-2<a name="072c_121a"><P>
+Prove the generalization of DeMorgan's laws to any finite collection of sets:<P>
+<img src="81_a.gif"><P>
+<a name="072c_121b">5.1-3<a name="072c_121b"><P>
+<a name="072c_1217">Prove the generalization of equation (5.3), which is called the<I><B> principle of inclusion and exclusion:</B></I><P>
+<pre><I>|A</I><SUB>1 </SUB><IMG SRC="../IMAGES/wideu.gif"><I> A</I><SUB>2 </SUB><IMG SRC="../IMAGES/wideu.gif"><I> </I><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/wideu.gif"><I> A<SUB>n</I></SUB>|<I><SUB> =</I></sub></sup></pre><P>
+<pre><I>|A</I><SUB>1</SUB>| + |<I>A</I><SUB>2</SUB>| + <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> + |<I>A<SUB>n</SUB>|</I></sub></sup></pre><P>
+<pre>-|<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB>| - |<I>A</I><SUB>1 </SUB><IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB>| - <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif">     (all pairs)</sub></sup></pre><P>
+<pre>+|<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>3</SUB><IMG SRC="../IMAGES/sglvrt.gif"> + <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif">            (all triples)</sub></sup></pre><P>
+<img src="81_b.gif"><P>
+<pre>+(-1)<I><SUP>n</I>-1 </SUP>|<I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/dome.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/dome.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dome.gif"> <I>A<SUB>n</I></SUB>|<I> .</I></sub></sup></pre><P>
+<a name="072c_121c">5.1-4<a name="072c_121c"><P>
+Show that the set of odd natural numbers is countable.<P>
+<a name="072c_121d">5.1-5<a name="072c_121d"><P>
+Show that for any finite set <I>S</I>, the power set 2<I><SUP>S </I></SUP>has 2<SUP>|<I></SUP>S</I>| elements (that is, there are 2<SUP>|<I></SUP>S</I>| distinct subsets of <I>S</I>).<P>
+<a name="072c_121e">5.1-6<a name="072c_121e"><P>
+Give an inductive definition for an <I>n-</I>tuple by extending the set-theoretic definition for an ordered pair.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="072d_1229">5.2 Relations<a name="072d_1229"></h1><P>
+<a name="072d_1218"><a name="072d_1219">A<I><B> binary relation</I></B> <I>R</I> on two sets <I>A</I> and <I>B</I> is a subset of the Cartesian product <I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>B</I>. If (<I>a, b</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>R</I>, we sometimes write <I>a</I> <I>R</I> <I>b</I>. When we say that <I>R</I> is a binary relation on a set <I>A</I>, we mean that <I>R</I> is a subset of <I>A</I> <IMG SRC="../IMAGES/mult.gif"> <I>A</I>. For example, the "less than" relation on the natural numbers is the set {(<I>a,b</I>): <I>a,b</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B> and <I>a </I>&lt; <I>b</I>}. An <I>n</I>-ary relation on sets <I>A</I><SUB>1</SUB>, <I>A</I><SUB>2</SUB>, . . . , <I>A<SUB>n</I></SUB> is a subset of <I>A</I><SUB>1</SUB><I> </I><IMG SRC="../IMAGES/mult.gif"><I> A<SUB>2</SUB> </I> <IMG SRC="../IMAGES/mult.gif">  <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/mult.gif"> <I> A<SUB>n</SUB>.</I><P>
+<a name="072d_121a"><a name="072d_121b"><a name="072d_121c">A binary relation <I>R</I> <IMG SRC="../IMAGES/rgtubar.gif"> A<I> <IMG SRC="../IMAGES/mult.gif"> </I>A <I>is<B> </B></I><B>reflexive<I> </B>if</I><P>
+<pre><I>a</I> <I>R</I> <I>a</I></sub></sup></pre><P>
+for all <I>a </I><IMG SRC="../IMAGES/memof12.gif"><I> A</I>. For example, &quot;=&quot; and &quot;<IMG SRC="../IMAGES/lteq12.gif">&quot; are reflexive relations on <B>N</B>, but &quot;&lt;&quot; is not. The relation <I>R</I> is <I><B>symmetric</I></B> if<P>
+<pre><I>a</I> <I>R</I> <I>b</I> implies <I>b</I> <I>R</I> <I>a</I></sub></sup></pre><P>
+for all <I>a</I>, <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>. For example, &quot;=&quot; is symmetric, but &quot;&lt;&quot; and &quot;<IMG SRC="../IMAGES/lteq12.gif">&quot; are not. The relation <I>R</I> is <I><B>transitive</I></B> if<P>
+<pre><I>a</I> <I>R</I> <I>b</I> and <I>b</I> <I>R</I> <I>c</I> imply <I>a R</I> <I>c</I></sub></sup></pre><P>
+for all <I>a,b,c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>. For example, the relations &quot;&lt;,&quot; &quot;<IMG SRC="../IMAGES/lteq12.gif">,&quot; and &quot;=&quot; are transitive, but the relation <I>R</I> = {(<I>a, b</I>): <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B> and <I>a</I> = <I>b</I> - 1 } is not, since 3 <I>R</I> 4 and 4 <I>R</I> 5 do not imply 3 <I>R</I> 5.<P>
+<a name="072d_121d"><a name="072d_121e"><a name="072d_121f">A relation that is reflexive, symmetric, and transitive is an <I><B>equivalence relation</I>.</B> For example, &quot;=&quot; is an equivalence relation on the natural numbers, but &quot;&lt;&quot; is not. If <I>R</I> is an equivalence relation on a set <I>A</I>, then for <I>a</I> <IMG SRC="../IMAGES/memof12.gif"><I>A</I>, the <I><B>equivalence class</I></B> of <I>a</I> is the set [<I>a</I>] = {<I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>: <I>a</I> <I>R</I> <I>b</I>}, that is, the set of all elements equivalent to <I>A</I>. For example, if we define <I>R</I> = {(<I>a, b</I>): <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B> and <I>a</I> + <I>b</I> is an even number}, then <I>R</I> is an equivalence relation, since <I>a</I> + <I>a</I> is even (reflexive), <I>a </I>+ <I>b</I> is even implies <I>b</I> + <I>a </I>is even (symmetric), and <I>a</I> + <I>b</I> is even and <I>b </I>+ <I>c </I>is even imply <I>a</I> + <I>c</I> is even (transitive). The equivalence class of 4 is [4] = {0, 2, 4, 6, . . .}, and the equivalence class of 3 is [3] = {1, 3, 5, 7, . . .}. A basic theorem of equivalence classes is the following.<P>
+<a name="072d_122a">Theorem 5.1<a name="072d_122a"><P>
+<a name="072d_1220">The equivalence classes of any equivalence relation <I>R</I> on a set <I>A</I> form a partition of <I>A</I>, and any partition of <I>A</I> determines an equivalence relation on <I>A</I> for which the sets in the partition are the equivalence classes.<P>
+<I><B>Proof     </I></B>For the first part of the proof, we must show that the equivalence classes of <I>R</I> are nonempty, pairwise-disjoint sets whose union is <I>A</I>. Because <I>R</I> is reflexive, <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> [<I>a</I>], and so the equivalence classes are nonempty; moreover, since every element <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> belongs to the equivalence class [<I>a</I>], the union of the equivalence classes is <I>A</I>. It remains to show that the equivalence classes are pairwise disjoint, that is, if two equivalence classes [<I>a</I>] and [<I>b</I>] have an element <I>c</I> in common, then they are in fact the same set. Now a <I>R</I> <I>c</I> and <I>b</I> <I>R</I> c, which by symmetry and transitivity imply <I>a</I> <I>R</I> <I>b</I>. Thus, for any arbitrary element <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> [<I>a</I>], we have <I>x</I> <I>R</I> a implies <I>x</I> <I>R</I> <I>b</I>, and thus [<I>a</I>] <IMG SRC="../IMAGES/rgtubar.gif"> [<I>b</I>]. Similarly, [<I>b</I>] <IMG SRC="../IMAGES/rgtubar.gif"> [<I>a</I>], and thus [<I>a</I>] = [<I>b</I>].<P>
+For the second part of the proof, let <I>A</I> = {<I>A<SUB>i</I></SUB>} be a partition of <I>A</I>, and define <I>R</I> = {(<I>a,b</I>): there exists <I>i</I> such that <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB> and <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB>}. We claim that <I>R</I> is an equivalence relation on <I>A</I>. Reflexivity holds, since <I>a </I><IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB> implies <I>a</I> <I>R</I> <I>a</I>. Symmetry holds, because if <I>a</I> <I>R</I> <I>b</I>, then <I>a</I> and <I>b</I> are in the same set <I>A<SUB>i</I></SUB>, and hence <I>b</I> <I>R</I> <I>a</I>. If <I>a</I> <I>R</I> <I>b </I>and <I>b</I> <I>R</I> <I>c</I>, then all three elements are in the same set, and thus <I>a</I> <I>R</I> <I>c</I> and transitivity holds. To see that the sets in the partition are the equivalence classes of <I>R</I>, observe that if <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB>, then <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> [<I>a</I>] implies <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB>, and <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A<SUB>i</I></SUB> implies <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> [<I>a</I>].      <P>
+<a name="072d_1221">A binary relation <I>R</I> on a set <I>A</I> is <I><B>antisymmetric</I></B> if<P>
+<pre><I>a</I> <I>R</I> <I>b</I> and <I>b</I> <I>R</I> <I>a</I> imply <I>a</I> = <I>b</I> .</sub></sup></pre><P>
+<a name="072d_1222"><a name="072d_1223"><a name="072d_1224">For example, the &quot;<IMG SRC="../IMAGES/lteq12.gif">&quot; relation on the natural numbers is antisymmetric, since <I>a</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>b</I> and <I>b</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>a</I> imply <I>a</I> = <I>b</I>. A relation that is reflexive, antisymmetric, and transitive is a <I><B>partial order</I></B>, and we call a set on which a partial order is defined a <I><B>partially ordered set</I></B>. For example, the relation &quot;is a descendant of&quot; is a partial order on the set of all people (if we view individuals as being their own descendants).<P>
+In a partially ordered set <I>A</I>, there may be no single &quot;maximum&quot; element <I>x</I> such that <I>y</I> <I>R</I> <I>x</I> for all <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>. Instead, there may several <I><B>maximal</I></B> elements <I>x</I> such that for no <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> is it the case that <I>x</I> <I>R</I> y. For example, in a collection of different-sized boxes there may be several maximal boxes that don't fit inside of any other box, yet no single &quot;maximum&quot; box into which any other box will fit.<P>
+<a name="072d_1225"><a name="072d_1226"><a name="072d_1227"><a name="072d_1228">A partial order <I>R</I> on a set <I>A</I> is a <I><B>total</I></B> or <I><B>linear order</I></B><I> </I>if for all <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>, we have <I>a</I> <I>R</I> <I>b</I> or <I>b</I> <I>R a</I>, that is, if every pairing of elements of <I>A</I> can be related by <I>R</I>. For example, the relation &quot;<IMG SRC="../IMAGES/lteq12.gif">&quot; is a total order on the natural numbers, but the &quot;is a descendant of&quot; relation is not a total order on the set of all people, since there are individuals neither of whom is descended from the other.<P>
+
+
+
+
+
+<h2><a name="072e_122c">Exercises<a name="072e_122c"></h2><P>
+<a name="072e_122d">5.2-1<a name="072e_122d"><P>
+Prove that the subset relation <FONT FACE="CG Times (W1)" SIZE=2>"<IMG SRC="../IMAGES/rgtubar.gif"></FONT><FONT FACE="CG Times (W1)" SIZE=2></FONT> on all subsets of <B>Z </B>is a partial order but not a total order.<P>
+<a name="072e_122e">5.2-2<a name="072e_122e"><P>
+<a name="072e_1229"><a name="072e_122a"><a name="072e_122b">Show that for any positive integer <I>n</I>, the relation <FONT FACE="CG Times (W1)" SIZE=2>"</FONT>equivalent modulo <I>n</I>" is an equivalence relation on the integers. (We say that <I>a</I> <IMG SRC="../IMAGES/equiv10.gif"> <I>b </I>(mod <I>n</I>) if there exists an integer <I>q</I> such that <I>a</I> - <I>b</I> =<I>qn</I>.) Into what equivalence classes does this relation partition the integers?<P>
+<a name="072e_122f">5.2-3<a name="072e_122f"><P>
+Give examples of relations that are<P>
+<I><B>a</I>.</B>      reflexive and symmetric but not transitive,<P>
+<I><B>b.</I></B>     reflexive and transitive but not symmetric,<P>
+<I><B>c.     </I></B>symmetric and transitive but not reflexive.<P>
+<a name="072e_1230">5.2-4<a name="072e_1230"><P>
+Let <I>S</I> be a finite set, and let <I>R</I> be an equivalence relation on <I>S</I> <IMG SRC="../IMAGES/mult.gif"> <I>S</I>. Show that if in addition <I>R</I> is antisymmetric, then the equivalence classes of <I>S</I> with respect to <I>R</I> are singletons.<P>
+<a name="072e_1231">5.2-5<a name="072e_1231"><P>
+Professor Narcissus claims that if a relation <I>R</I> is symmetric and transitive, then it is also reflexive. He offers the following proof. By symmetry, <I>a</I> <I>R</I> <I>b</I> implies <I>b</I> <I>R</I> <I>a</I>. Transitivity, therefore, implies <I>a</I> <I>R</I> <I>a</I>. Is the professor correct?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="072f_1241">5.3 Functions<a name="072f_1241"></h1><P>
+<a name="072f_122c"><a name="072f_122d"><a name="072f_122e">Given two sets <I>A</I> and <I>B</I>, a <I><B>function</I></B> <I>f</I> is a binary relation on <I>A </I><IMG SRC="../IMAGES/mult.gif"> <I>B</I> such that for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>, there exists precisely one <I>b </I><IMG SRC="../IMAGES/memof12.gif"> <I>B</I> such that (<I>a,b</I>) <IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/scrptf12.gif">. The set <I>A</I> is called the <I><B>domain</I> </B>of <I>f</I>, and the set <I>B</I> is called the <I><B>codomain </I></B>of <I>f</I>. We sometimes write <I>f</I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I>; and if (<I>a, b</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>f</I>, we write <I>b</I> = <I>f</I> (<I>a</I>), since <I>b</I> is uniquely determined by the choice of <I>a</I>.<P>
+Intuitively, the function <I>f</I> assigns an element of <I>B</I> to each element of <I>A</I>. No element of <I>A</I> is assigned two different elements of <I>B</I>, but the same element of <I>B</I> can be assigned to two different elements of <I>A</I>. For example, the binary relation<P>
+<pre><I>f</I> = {(<I>a,b</I>) : <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B> and <I>b</I> = <I>a</I> mod 2 }</sub></sup></pre><P>
+is a function <I>f </I>: <B>N</B> <IMG SRC="../IMAGES/arrow12.gif"> {0,1}, since for each natural number <I>a</I>, there is exactly one value <I>b</I> in {0, 1} such that <I>b</I> = <I>a</I> mod 2. For this example 0 = <I>f </I>(0), 1 = <I>f</I> (1), 0 = <I>f </I>(2), etc. In contrast, the binary relation<P>
+<pre><I>g</I> = {(<I>a</I>,<I>b</I>) : <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B> and <I>a</I> + <I>b</I> is even}</sub></sup></pre><P>
+is not a function, since (1, 3) and (1, 5) are both in <I>g</I>, and thus for the choice <I>a</I> = 1, there is not precisely one <I>b</I> such that (<I>a, b</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>g</I>.<P>
+<a name="072f_122f"><a name="072f_1230"><a name="072f_1231">Given a function <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I>, if <I>b</I> = <I>f</I> (<I>a</I>), we say that <I>a</I> is the <I><B>argument </I></B>of <I>f</I> and that <I>b</I> is the <I><B>value</I></B> of <I>f</I> at <I>a</I>. We can define a function by stating its value for every element of its domain. For example, we might define <I>f </I>(<I>n</I>) = 2<I>n</I> for <I>n</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B>, which means <I>f </I>= {(<I>n</I>,2<I>n</I>): <I>n</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B>}. Two functions <I>f </I>and <I>g</I> are <I><B>equal</I></B> if they have the same domain and codomain and if, for all <I>a</I> in the domain, <I>f </I>(<I>a</I>) = <I>g</I>(<I>a</I>).<P>
+<a name="072f_1232"><a name="072f_1233"><a name="072f_1234"><a name="072f_1235"><a name="072f_1236">A <I><B>finite sequence </I></B>of length <I>n</I> is a function<I> f </I>whose domain is the set {0, 1, . . . , <I>n</I> - 1}. We often denote a finite sequence by listing its values: <IMG SRC="../IMAGES/lftwdchv.gif"><I>f </I>(0), <I>f </I>(1), . . . , <I>f</I> (<I>n</I> - 1)<IMG SRC="../IMAGES/wdrtchv.gif">. An <I><B>infinite sequence</I></B> is a function whose domain is the set <B>N</B> of natural numbers. For example, the Fibonacci sequence, defined by (2.13), is the infinite sequence <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/lftwdchv.gif"></FONT>0, 1, 1, 2, 3, 5, 8, 13, 21, . . .<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+When the domain of a function <I>f </I>is a Cartesian product, we often omit the extra parentheses surrounding the argument of <I>f</I>. For example, if <I>f </I>: <I>A</I><SUB>1</SUB> <IMG SRC="../IMAGES/mult.gif"> <I>A</I><SUB>2</SUB> <IMG SRC="../IMAGES/mult.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><I> </I><IMG SRC="../IMAGES/mult.gif"> <I>A<SUB>n</I></SUB> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I>, we would write <I>b</I> = <I>f </I>(<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>) instead of <I>b</I> = <I>f </I>((<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . , <I>a<SUB>n</I></SUB>)). We also call each <I>a<SUB>i</I></SUB>, an <I><B>argument</I></B> to the function <I>f </I>, though technically the (single) argument to <I>f </I>is the <I>n-</I>tuple (<I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . ,<I>a</I><SUB>n</SUB>).<P>
+<a name="072f_1237">If <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I> is a function and <I>b</I> = <I>f </I>(<I>a</I>), then we sometimes say that <I>b </I>is the <I><B>image</I></B> of <I>a</I> under <I>f </I>. The image of a set <I>A</I>'<IMG SRC="../IMAGES/rgtubar.gif"> <I>A</I> under <I>f </I>is defined by<P>
+<pre><I>f</I>(<I>A</I>' = {<I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B : b</I> = <I>f</I>(<I>a</I>) for some <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I>'} .</sub></sup></pre><P>
+<a name="072f_1238">The <I><B>range</I></B> of <I>f</I> is the image of its domain, that is, <I>f </I>(<I>A</I>). For example, the range of the function <I>f </I>: <B>N</B> <IMG SRC="../IMAGES/arrow12.gif"> <B>N</B> defined by <I>f </I>(<I>n</I>) = 2<I>n</I> is <I>f </I>(<B>N</B>)<I> = </I>{<I>m </I>: <I>m </I>= 2<I>n</I> for some <I>n</I> <IMG SRC="../IMAGES/memof12.gif"> <B>N</B>}.<P>
+<a name="072f_1239"><a name="072f_123a">A function is a <I><B>surjection</I></B> if its range is its codomain. For example, the function <I>f</I>(<I>n</I>) = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is a surjective function from <B>N</B> to <B>N</B>, since every element in <B>N</B> appears as the value of <I>f </I>for some argument. In contrast, the function <I>f</I>(<I>n</I>) = 2<I>n</I> is not a surjective function from <B>N</B> to <B>N</B>, since no argument to <I>f </I>can produce 3 as a value. The function <I>f </I>(<I>n</I>) = 2<I>n</I> is, however, a surjective function from the natural numbers to the even numbers. A surjection <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I> is sometimes described as mapping <I>A</I> <I><B>onto</I></B><I> B</I>. When we say that <I>f </I>is onto, we mean that it is surjective.<P>
+<a name="072f_123b"><a name="072f_123c">A function <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I> is an<I> <B>injection</I></B> if distinct arguments to &acirc; produce<B> </B>distinct values, that is, if <I>a</I> <IMG SRC="../IMAGES/noteq.gif"> <I>a</I>' implies <I>&acirc;</I>(<I>a</I>)<I> = &acirc;</I>(<I>a</I>'). For example, the function <I>f </I>(<I>n</I>) = 2<I>n</I> is an injective function from <B>N</B> to <B>N</B>, since each even number <I>b</I> is the image under <I>&acirc;</I> of at most one element of the domain, namely <I>b</I>/2. The function <I>f </I>(<I>n</I>) = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is not injective, since the value 1 is produced by two arguments: 2 and 3. An injection is sometimes called a <I><B>one-to-one</I></B> function.<P>
+<a name="072f_123d">A function <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I> is a <I><B>bijection</I></B> if it is injective and surjective. For example, the function <I>f </I>(<I>n</I>) = (-1)<I><SUP>n</I></SUP> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> is a bijection from <B>N</B> to <B>Z</B>:<P>
+<pre>0 <IMG SRC="../IMAGES/leftu.gif"> <IMG SRC="../IMAGES/arrow12.gif">  0 ,</sub></sup></pre><P>
+<pre>1  <IMG SRC="../IMAGES/arrow12.gif">  -1 ,</sub></sup></pre><P>
+<pre>2  <IMG SRC="../IMAGES/arrow12.gif">  1 ,</sub></sup></pre><P>
+<pre>3  <IMG SRC="../IMAGES/arrow12.gif">  -2 ,</sub></sup></pre><P>
+<pre>4  <IMG SRC="../IMAGES/arrow12.gif">  2 ,</sub></sup></pre><P>
+<img src="85_a.gif"><P>
+<a name="072f_123e"><a name="072f_123f">The function is injective, since no element of <B>Z</B> is the image of more than one element of <B>N</B>. It is surjective, since every element of <B>Z</B> appears as the image of some element of <B>N</B>. Hence, the function is bijective. A bijection is sometimes called a <I><B>one-to-one correspondence</I></B>, since it pairs elements in the domain and codomain. A bijection from a set <I>A</I> to itself is sometimes called a <I><B>permutation.</B></I><P>
+<a name="072f_1240">When a function &acirc; is bijective, its <I><B>inverse</I></B> <I>&acirc;</I><SUP>-1</SUP> is defined as<P>
+<pre><I>f</I><SUP>-1</SUP>(<I>b</I>) = <I>a</I> if and only if <I>f</I>(<I>a</I>) = <I>b</I>.</sub></sup></pre><P>
+For example, the inverse of the function <I>&acirc;</I>(<I>n</I>) = (-1)<I><SUP>n</I></SUP> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> is<P>
+<img src="85_b.gif"><P>
+
+
+
+
+
+<h2><a name="0730_0001">Exercises<a name="0730_0001"></h2><P>
+<a name="0730_0002">5.3-1<a name="0730_0002"><P>
+Let <I>A </I>and <I>B</I> be finite sets, and let <I>f </I>: <I>A</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>B</I> be a function. Show that<P>
+<I><B>a.</I></B>     if <I>f</I> is injective, then |<I>A</I>| <IMG SRC="../IMAGES/lteq12.gif"> |<I>B</I>|;<P>
+<I><B>b.</I></B>     f <I>f</I> is surjective, then |<I>A</I>| <IMG SRC="../IMAGES/gteq.gif"> |<I>B</I>|.<P>
+<a name="0730_0003">5.3-2<a name="0730_0003"><P>
+Is the function <I>f </I>(<I>x</I>) = <I>x </I>+ 1 bijective when the domain and the codomain are <B>N</B>? Is it bijective when the domain and the codomain are <B>Z</B>?<P>
+<a name="0730_0004">5.3-3<a name="0730_0004"><P>
+Give a natural definition for the inverse of a binary relation such that if a relation is in fact a bijective function, its relational inverse is its functional inverse.<P>
+<a name="0730_0005">5.3-4<a name="0730_0005"><P>
+Give a bijection from <B>Z</B> to <B>Z</B> <IMG SRC="../IMAGES/mult.gif"> <B>Z</B>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0731_126f">5.4 Graphs<a name="0731_126f"></h1><P>
+<a name="0731_1241">This section presents two kinds of graphs: directed and undirected. The reader should be aware that certain definitions in the literature differ from those given here, but for the most part, the differences are slight. Section 23.1 shows how graphs can be represented in computer memory.<P>
+<a name="0731_1242"><a name="0731_1243"><a name="0731_1244"><a name="0731_1245"><a name="0731_1246"><a name="0731_1247">A <I><B>directed graph</I></B> (or <I><B>digraph</I></B>) <I>G</I> is a pair (<I>V, E</I>), where <I>V</I> is a finite set and <I>E</I> is a binary relation on <I>V</I>. The set <I>V</I> is called the <I><B>vertex set</I></B> of <I>G</I>, and its elements are called <I><B>vertices</I></B> (singular: <I><B>vertex</I></B>). The set <I>E</I> is called the <I><B>edge set</I></B> of <I>G</I>, and its elements are called <I><B>edges.</I></B> Figure 5.2(a) is a pictorial representation of a directed graph on the vertex set {1, 2, 3, 4, 5, 6}. Vertices are represented by circles in the figure, and edges are represented by arrows. Note that <I><B>self-loops</I></B>--edges from a vertex to itself--are possible.<P>
+<a name="0731_1248">In an <I><B>undirected graph</I></B> <I>G</I> = (<I>V, E</I>), the edge set <I>E</I> consists of <I>unordered</I> pairs of vertices, rather than ordered pairs. That is, an edge is a set {<I>u, v</I>}, where <I>u,v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> and <I>u</I> <IMG SRC="../IMAGES/noteq.gif"> <I>v</I>. By convention, we use the notation (<I>u, v</I>) for an edge, rather than the set notation {<I>u,v</I>}, and (<I>u,v</I>) and (<I>v, u</I>) are considered to be the same edge. In an undirected graph, self-loops are forbidden, and so every edge consists of exactly two distinct vertices. Figure 5.2(b) is a pictorial representation of an undirected graph on the vertex set {1, 2, 3, 4, 5, 6}.<P>
+<a name="0731_1249">Many definitions for directed and undirected graphs are the same, although certain terms have slightly different meanings in the two contexts. If (<I>u, v</I>) is an edge in a directed graph <I>G</I> = (<I>V, E</I>), we say that (<I>u, v</I>) is <I><B>incident from</I></B> or <I><B>leaves</I></B> vertex <I>u</I> and is <I><B>incident to</I></B> or <I><B>enters</I></B> vertex <I>v</I>. For example, the edges leaving vertex 2 in Figure 5.2(a) are (2, 2), (2, 4), and (2, 5). The edges entering vertex 2 are (1, 2) and (2, 2). If (<I>u, v</I>) is an edge in an undirected graph <I>G</I> = (<I>V</I>, <I>E</I>), we say that (<I>u</I>, <I>v</I>) is <I><B>incident on</I></B> vertices <I>u</I> and <I>v</I>. In Figure 5.2(b), the edges incident on vertex 2 are (1, 2) and (2, 5).<P>
+<img src="87_a.gif"><P>
+<h4><a name="0731_1270">Figure 5.2 Directed and undirected graphs. (a) A directed graph G = (V, E), where V = {1, 2, 3, 4, 5, 6} and E = {(1, 2), (2, 2), (2, 4), (2, 5), (4, 1), (4, 5), (5, 4), (6, 3)}. The edge (2, 2) is a self-loop. (b) An undirected graph G = (V, E), where V = {1, 2, 3, 4, 5, 6} and E = {(1, 2), (1, 5), (2, 5), (3, 6)}. The vertex 4 is isolated. (c) The subgraph of the graph in part (a) induced by the vertex set {1, 2, 3, 6}.<a name="0731_1270"></sub></sup></h4><P>
+<a name="0731_124a"><a name="0731_124b">If (<I>u, v</I>) is an edge in a graph <I>G</I> = (<I>V, E</I>), we say that vertex <I>v</I> is <I><B>adjacent</I></B> to vertex <I>u</I>. When the graph is undirected, the adjacency relation is symmetric. When the graph is directed, the adjacency relation is not necessarily symmetric. If <I>v</I> is adjacent to <I>u</I> in a directed graph, we sometimes write <I>u</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>v</I>. In parts (a) and (b) of Figure 5.2, vertex 2 is adjacent to vertex 1, since the edge (1, 2) belongs to both graphs. Vertex 1 is <I>not</I> adjacent to vertex 2 in Figure 5.2(a), since the edge (2, 1) does not belong to the graph.<P>
+<a name="0731_124c"><a name="0731_124d"><a name="0731_124e">The <I><B>degree</I></B> of a vertex in an undirected graph is the number of edges incident on it. For example, vertex 2 in Figure 5.2(b) has degree 2. In a directed graph, the <I><B>out-degree</I></B> of a vertex is the number of edges leaving it, and the <I><B>in-degree</I></B> of a vertex is the number of edges entering it. The <I><B>degree</I></B> of a vertex in a directed graph is its in-degree plus its out-degree. Vertex 2 in Figure 5.2(a) has in-degree 2, out-degree 3, and degree 5.<P>
+<a name="0731_124f"><a name="0731_1250"><a name="0731_1251"><a name="0731_1252"><a name="0731_1253">A <I><B>path</I></B> of <I><B>length</I></B> <I>k</I> from a vertex <I>u</I> to a vertex <I>u' </I>in a graph<I> G</I> = (<I>V, E</I>) is a sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . , <I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of vertices such that <I>u = v</I><SUB>0</SUB><I>, u' = v<SUB>k</I></SUB>, and (<I>v<SUB>i - </I>1</SUB>,<I> v<SUB>i</I></SUB>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> for <I>i</I> = 1, 2, . . . , <I>k</I>. The length of the path is the number of edges in the path. The path <I><B>contains</I></B> the vertices <I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB> , . . . , <I>v<SUB>k</I></SUB> and the edges (<I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>), (<I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>), . . . , (<I>v<SUB>k</I> - 1</SUB>, <I>v<SUB>k</I></SUB>). If there is a path <I>p</I> from <I>u</I> to <I>u</I>', we say that <I>u</I>' is <I><B>reachable</I></B> from <I>u</I> via <I>p</I>, which we sometimes write as <img src="87_b.gif"> if <I>G</I> is directed. A path is <I><B>simple</I></B> if all vertices in the path are distinct. In Figure 5.2(a), the path <IMG SRC="../IMAGES/lftwdchv.gif">1, 2, 5, 4<IMG SRC="../IMAGES/wdrtchv.gif"> is a simple path of length 3. The path <IMG SRC="../IMAGES/lftwdchv.gif">2, 5, 4, 5<IMG SRC="../IMAGES/wdrtchv.gif"> is not simple.<P>
+<a name="0731_1254">A <I><B>subpath</I></B> of path <I>p</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . , <I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is a contiguous subsequence of its vertices. That is, for any 0 <IMG SRC="../IMAGES/lteq12.gif"> i <I><IMG SRC="../IMAGES/lteq12.gif"> j </I><IMG SRC="../IMAGES/lteq12.gif"> k<I>, the subsequence of vertices <IMG SRC="../IMAGES/lftwdchv.gif">v<SUB>i</SUB>, v<SUB>i + </I>1</SUB>, . . . <I>,v<SUB>j</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is a subpath of <I>p</I>.<P>
+<a name="0731_1255"><a name="0731_1256"><a name="0731_1257"><a name="0731_1258">In a directed graph, a path <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0<I>, </SUB>v</I><SUB>1</SUB>, . . . , <I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> forms a <I><B>cycle</I></B> if <I>v</I><SUB>0</SUB> = <I>v<SUB>k</I></SUB> and the path contains at least one edge. The cycle is <I><B>simple</I></B> if, in addition, <I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . , <I>v<SUB>k</I></SUB> are distinct. A self-loop is a cycle of length 1. Two paths <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . , <I>v<SUB>k - </I>1</SUB>, <I>v</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I>'<SUB>0</SUB>, <I>v</I>'<I><SUB>1</SUB>, </I>v<I>'</I><SUB>2</SUB>, . . . , <I>v</I>'<I><SUB>k - 1</SUB>,</I>v<I>'</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> form the same cycle if there exists an integer <I>j</I> such that <I>v</I><I>'<SUB>i</I></SUB> = <I>v</I><SUB>(<I>i </I>+ <I>j</I>) mod<I>k</I></SUB> for <I>i</I> = 0, 1, . . . , <I>k</I> - 1<I><B>.</I></B> In Figure 5.2(a), the path <IMG SRC="../IMAGES/lftwdchv.gif">1, 2, 4, 1<IMG SRC="../IMAGES/wdrtchv.gif"> forms the same cycle as the paths <IMG SRC="../IMAGES/lftwdchv.gif">2, 4, 1, 2<IMG SRC="../IMAGES/wdrtchv.gif"> and <IMG SRC="../IMAGES/lftwdchv.gif">4, 1, 2, 4<IMG SRC="../IMAGES/wdrtchv.gif">. This cycle is simple, but the cycle <IMG SRC="../IMAGES/lftwdchv.gif">1, 2, 4, 5, 4, 1<IMG SRC="../IMAGES/wdrtchv.gif"> is not. The cycle <IMG SRC="../IMAGES/lftwdchv.gif">2, 2<IMG SRC="../IMAGES/wdrtchv.gif"> formed by the edge (2, 2) is a self-loop. A directed graph with no self-loops is <I><B>simple</I></B>. In an undirected graph, a path <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB><I>, v</I><SUB>l</SUB><I>, . . . , v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>forms a<I> <B>cycle</I></B> if <I>v</I><SUB>0</SUB><I> = v<SUB>k</I></SUB> and <I>v</I><SUB>1</SUB><I>, v</I><SUB>2</SUB><I>, . . . , v<SUB>k</I></SUB> are distinct. For example, in Figure 5.2(b), the path <IMG SRC="../IMAGES/lftwdchv.gif">1, 2, 5, 1<IMG SRC="../IMAGES/wdrtchv.gif"> is a cycle. A graph with no cycles is <I><B>acyclic</I></B>.<P>
+<a name="0731_1259"><a name="0731_125a"><a name="0731_125b">An undirected graph is <I><B>connected</I></B> if every pair of vertices is connected by a path. The <I><B>connected components</I></B> of a graph are the equivalence classes of vertices under the "is reachable from" relation. The graph in Figure 5.2(b) has three connected components: {1, 2, 5}, {3, 6}, and {4}. Every vertex in {1,2,5} is reachable from every other vertex in {1, 2, 5}. An undirected graph is connected if it has exactly one connected component, that is, if every vertex is reachable from every other vertex.<P>
+<a name="0731_125c"><a name="0731_125d"><a name="0731_125e">A directed graph is <I><B>strongly connected</I></B> if every two vertices are reachable from each other. The <I><B>strongly connected components</I></B> of a graph are the equivalence classes of vertices under the "are mutually reachable" relation. A directed graph is strongly connected if it has only one strongly connected component. The graph in Figure 5.2(a) has three strongly connected components: {1, 2, 4, 5}, {3}, and {6}. All pairs of vertices in {1, 2, 4, 5} are mutually reachable. The vertices {3, 6} do not form a strongly connected component, since vertex 6 cannot be reached from vertex 3.<P>
+<a name="0731_125f">Two graphs <I>G</I> = (<I>V</I>, <I>E</I>) and <I>G</I><I>'</I> = (<I>V</I>'<I>, </I>E<I>'</I>) are <I><B>isomorphic</I></B> if there exists a bijection <I>f </I>: <I>V</I> <IMG SRC="../IMAGES/arrow12.gif"> <I>V</I><I>'</I> such that <I>(u, v)</I> <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> if and only if (<I>f</I>(<I>u</I>), <I>f</I>(<I>v</I>)) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I><I>'</I>. In other words, we can relabel the vertices of <I>G</I> to be vertices of <I>G</I><I>'</I>, maintaining the corresponding edges in <I>G</I> and <I>G</I><I>'</I>. Figure 5.3(a) shows a pair of isomorphic graphs <I>G</I> and <I>G</I><I>'</I> with respective vertex sets <I>V</I> = {1, 2, 3, 4, 5, 6} and <I>V</I>'<I> = {</I>u, v, w, x, y, z<I>}. The mapping from </I>V<I> to </I>V<I>'</I> given by <I>f</I>(1) = <I>u, f</I>(2) = <I>v, f</I>(3) = <I>w, f</I>(4) = <I>x, f</I>(5) = <I>y, f</I>(6) = <I>z</I> is the required bijective function. The graphs in Figure 5.3(b) are not isomorphic. Although both graphs have 5 vertices and 7 edges, the top graph has a vertex of degree 4 and the bottom graph does not.<P>
+<a name="0731_1260"><a name="0731_1261">We say that a graph <I>G</I><I>' = </I>(<I>V</I>', E<I>'</I>) is a <I><B>subgraph</I></B> of <I>G = </I>(<I>V,E</I>) if <I>V</I><I>' </I><IMG SRC="../IMAGES/rgtubar.gif"><I> V</I> and <I>E</I>' <I><IMG SRC="../IMAGES/rgtubar.gif"> E</I>. Given a set <I>V</I>' <I><IMG SRC="../IMAGES/rgtubar.gif"> V</I>, the subgraph of <I>G</I> <I><B>induced</I></B> by <I>V</I><I>'</I> is the graph <I>G</I><I>' = </I>(<I>V</I>', E<I>'</I>), where<P>
+<pre><I>E</I>'<I> = {(</I>u, v<I>) <IMG SRC="../IMAGES/memof12.gif"> </I>E<I>: </I>u, v<I> <IMG SRC="../IMAGES/memof12.gif"> </I>V<I>'</I>} .</sub></sup></pre><P>
+<img src="89_a.gif"><P>
+<h4><a name="0731_1271">Figure 5.3 (a) A pair of isomorphic graphs. The vertices of the top graph are mapped to the vertices of the bottom graph by f(1) = u, f(2) = v, f(3) = w, f(4) = x, f(5) = y, f(6) = z. (b) Two graphs that are not isomorphic, since the top graph has a vertex of degree 4 and the bottom graph does not.<a name="0731_1271"></sub></sup></h4><P>
+The subgraph induced by the vertex set {1, 2, 3, 6} in Figure 5.2(a) appears in Figure 5.2(c) and has the edge set {(1, 2), (2, 2), (6, 3)}.<P>
+<a name="0731_1262"><a name="0731_1263"><a name="0731_1264">Given an undirected graph <I>G</I> = (<I>V, E</I>), the <I><B>directed version</I></B> of <I>G</I> is the directed graph <I>G</I>' = (V, E<I>'</I>), where (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"> E<I>'</I> if and only if (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E. </I>That is, each undirected edge (<I>u, v</I>) in <I>G</I> is replaced in the directed version by the two directed edges (<I>u, v</I>) and (<I>v, u</I>). Given a directed graph <I>G</I> =(<I>V, E</I>), the <I><B>undirected version</I></B> of <I>G</I> is the undirected graph <I>G</I><I>' = </I>(<I>V, E</I>'), where (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"> E<I>'</I> if and only if <I>u</I> <IMG SRC="../IMAGES/noteq.gif"> <I>v</I> and (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E.</I> That is, the undirected version contains the edges of <I>G</I> "with their directions removed" and with self-loops eliminated. (Since (<I>u, v</I>) and (<I>v</I>,<I> u</I>) are the same edge in an undirected graph, the undirected version of a directed graph contains it only once, even if the directed graph contains both edges (<I>u, v</I>) and (<I>v</I>,<I> u</I>). In a directed graph <I>G =</I> (<I>V, E</I>), a <I><B>neighbor</I></B> of a vertex <I>u</I> is any vertex that is adjacent to <I>u</I> in the undirected version of <I>G.</I> That is, <I>v</I> is a neighbor of <I>u</I> if either (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I> or (<I>v</I>,<I> u</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E.</I> In an undirected graph, <I>u</I> and <I>v</I> are neighbors if they are adjacent.<P>
+<a name="0731_1265"><a name="0731_1266"><a name="0731_1267"><a name="0731_1268"><a name="0731_1269"><a name="0731_126a"><a name="0731_126b">Several kinds of graphs are given special names. A <I><B>complete graph</I></B> is an undirected graph in which every pair of vertices is adjacent. A <I><B>bipartite graph</I></B> is an undirected graph <I>G = (V, E</I>) in which <I>V</I> can be partitioned into two sets <I>V</I><SUB>1</SUB> and <I>V</I><SUB>2</SUB> such that (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E</I> implies either <I>u </I><IMG SRC="../IMAGES/memof12.gif"> V<I><SUB>1</SUB> and </I>v <I><IMG SRC="../IMAGES/memof12.gif"> V</I><SUB>2</SUB> or <I>u </I><IMG SRC="../IMAGES/memof12.gif"> V<I><SUB>2</SUB> and </I>v <I><IMG SRC="../IMAGES/memof12.gif"> V</I><SUB>1</SUB>. That is, all edges go between the two sets <I>V</I><SUB>1</SUB>and <I>V</I><SUB>2</SUB>. An acyclic, undirected graph is a <I><B>forest</I></B>, and a connected, acyclic, undirected graph is a (<I><B>free)</I></B> <I><B>tree</I></B> (see Section 5.5). We often take the first letters of "directed acyclic graph" and call such a graph a <I><B>dag.</I></B><P>
+<a name="0731_126c"><a name="0731_126d"><a name="0731_126e">There are two variants of graphs that you may occasionally encounter. A <I><B>multigraph</I></B> is like an undirected graph, but it can have both multiple edges between vertices and self-loops. A <I><B>hypergraph</I></B> is like an undirected graph, but each <I><B>hyperedge</I></B>, rather than connecting two vertices, connects an arbitrary subset of vertices. Many algorithms written for ordinary directed and undirected graphs can be adapted to run on these graphlike structures.<P>
+
+
+
+
+
+<h2><a name="0732_1270">Exercises<a name="0732_1270"></h2><P>
+<a name="0732_1271">5.4-1<a name="0732_1271"><P>
+<a name="0732_126f">Attendees of a faculty party shake hands to greet each other, and each professor remembers how many times he or she shook hands. At the end of the party, the department head sums up the number of times that each professor shook hands. Show that the result is even by proving the<I><B> handshaking lemma</I></B>: if <I>G = (V, E</I>) is an undirected graph, then<P>
+<img src="90_a.gif"><P>
+<a name="0732_1272">5.4-2<a name="0732_1272"><P>
+Show that in an undirected graph, the length of a cycle must be at least 3.<P>
+<a name="0732_1273">5.4-3<a name="0732_1273"><P>
+Show that if a directed or undirected graph contains a path between two vertices <I>u</I> and <I>v</I>, then it contains a simple path between <I>u</I> and <I>v.</I> Show that if a directed graph contains a cycle, then it contains a simple cycle.<P>
+<a name="0732_1274">5.4-4<a name="0732_1274"><P>
+Show that any connected, undirected graph <I>G = </I>(<I>V</I>,<I> E</I>) satisfies |<I>E| <IMG SRC="../IMAGES/gteq.gif"> |</I>V| -<I> 1.</I><P>
+<a name="0732_1275">5.4-5<a name="0732_1275"><P>
+Verify that in an undirected graph, the &quot;is reachable from&quot; relation is an equivalence relation on the vertices of the graph. Which of the three properties of an equivalence relation hold in general for the &quot;is reachable from&quot; relation on the vertices of a directed graph?<P>
+<a name="0732_1276">5.4-6<a name="0732_1276"><P>
+What is the undirected version of the directed graph in Figure 5.2(a)? What is the directed version of the undirected graph in Figure 5.2(b)?<P>
+<a name="0732_1277">5.4-7<a name="0732_1277"><P>
+Show that a hypergraph can be represented by a bipartite graph if we let incidence in the hypergraph correspond to adjacency in the bipartite graph. (<I>Hint</I>: Let one set of vertices in the bipartite graph correspond to vertices of the hypergraph, and let the other set of vertices of the bipartite graph correspond to hyperedges.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0733_1271">5.5 Trees<a name="0733_1271"></h1><P>
+<a name="0733_1270">As with graphs, there are many related, but slightly different, notions of trees. This section presents definitions and mathematical properties of several kinds of trees. Sections 11.4 and 23.1 describe how trees can be represented in a computer memory.<P>
+
+
+
+
+
+<h2><a name="0734_1274">5.5.1 Free trees<a name="0734_1274"></h2><P>
+<a name="0734_1271"><a name="0734_1272"><a name="0734_1273">As defined in Section 5.4, a <I><B>free tree</I></B> is a connected, acyclic, undirected graph. We often omit the adjective "free" when we say that a graph is a tree. If an undirected graph is acyclic but possibly disconnected, it is a <I><B>forest.</I></B> Many algorithms that work for trees also work for forests. Figure 5.4(a) shows a free tree, and Figure 5.4(b) shows a forest. The forest in Figure 5.4(b) is not a tree because it is not connected. The graph in Figure 5.4(c) is neither a tree nor a forest, because it contains a cycle.<P>
+The following theorem captures many important facts about free trees.<P>
+<a name="0734_1275">Theorem 5.2<a name="0734_1275"><P>
+Let <I>G = (V, E</I>) be an undirected graph. The following statements are equivalent.<P>
+1.     <I>G</I> is a free tree.<P>
+2.     Any two vertices in <I>G</I> are connected by a unique simple path.<P>
+3.     <I>G</I> is connected, but if any edge is removed from <I>E</I>, the resulting graph is disconnected.<P>
+4.     <I>G</I> is connected, and |<I>E| = |</I>V| - 1.<P>
+5.     <I>G</I> is acyclic, and |<I>E| = |</I>V| - 1.<P>
+6.     <I>G</I> is acyclic, but if any edge is added to <I>E</I>, the resulting graph contains a cycle.<P>
+<I><B>Proof     </I></B>(1) <IMG SRC="../IMAGES/rtbigar.gif"> (2): Since a tree is connected, any two vertices in <I>G</I> are connected by at least one simple path. Let <I>u</I> and <I>v</I> be vertices that are connected by two distinct simple paths <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB>, as shown in Figure 5.5. Let <I>w</I> be the vertex at which the paths first diverge; that is, <I>w</I> is the first vertex on both <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> whose successor on <I>p</I><SUB>1</SUB> is <I>x</I> and whose successor on <I>p</I><SUB>2</SUB> is <I>y</I>, where <I>x </I><IMG SRC="../IMAGES/noteq.gif"> <I>y.</I> Let <I>z</I> be the first vertex at which the paths reconverge; that is, <I>z</I> is the first vertex following <I>w</I> on <I>p</I><SUB>1</SUB> that is also on <I>p</I><SUB>2</SUB>. Let <I>p</I>' be the subpath of <I>p</I><SUB>1</SUB><I> </I>from<I> w</I> through <I>x</I> to <I>z</I>, and let <I>p</I>\" be the subpath of <I>p</I><SUB>2</SUB> from <I>w</I> through <I>y</I> to <I>z.</I> Paths <I>p</I>' and <I>p</I>\" share no vertices except their endpoints. Thus, the path obtained by concatenating <I>p</I>' and the reverse of <I>p</I>\"<I></I>is a cycle. This is a contradiction. Thus, if <I>G</I> is a tree, there can be at most one path between two vertices.<P>
+<img src="91_a.gif"><P>
+<h4><a name="0734_1276">Figure 5.4 (a) A free tree. (b) A forest. (c) A graph that contains a cycle and is therefore neither a tree nor a forest.<a name="0734_1276"></sub></sup></h4><P>
+<img src="92_a.gif"><P>
+<h4><a name="0734_1277">Figure 5.5 A step in the proof of Theorem 5.2: if (1) G is a free tree, then (2) any two vertices in G are connected by a unique simple path. Assume for the sake of contradiction that vertices u and v are connected by two distinct simple paths p<SUB>1</SUB> and p<SUB>2</SUB>. These paths first diverge at vertex w, and they first reconverge at vertex z. The path p' concatenated with the reverse of the path p\" forms a cycle, which yields the contradiction.<a name="0734_1277"></sub></sup></h4><P>
+(2) <IMG SRC="../IMAGES/rtbigar.gif"> (3): If any two vertices in <I>G</I> are connected by a unique simple path, then <I>G</I> is connected. Let (<I>u, v</I>) be any edge in <I>E</I>. This edge is a path from <I>u</I> to <I>v</I>, and so it must be the unique path from <I>u</I> to <I>v.</I> If we remove (<I>u, v</I>) from <I>G</I>, there is no path from<I> u</I> to <I>v</I>, and hence its removal disconnects <I>G.</I><P>
+(3) <IMG SRC="../IMAGES/rtbigar.gif"> (4): By assumption, the graph <I>G</I> is connected, and by Exercise 5.4-4, we have |<I>E| <IMG SRC="../IMAGES/gteq.gif"> |</I>V| - 1. We shall prove |<I>E| <IMG SRC="../IMAGES/lteq12.gif"> |</I>V| - 1 by induction. A connected graph with <I>n</I> = 1 or <I>n</I> = 2 vertices has <I>n</I> - 1 edges. Suppose that <I>G</I> has <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 3 vertices and that all graphs satisfying (3) with fewer than <I>n</I> vertices also satisfy |<I>E| </I><IMG SRC="../IMAGES/lteq12.gif"> |V| - 1. Removing an arbitrary edge from <I>G</I> separates the graph into <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 2 connected components (actually <I>k</I> = 2). Each component satisfies (3), or else <I>G</I> would not satisfy (3). Thus, by induction, the number of edges in all components combined is at most |<I>V| - </I>k<I> <IMG SRC="../IMAGES/lteq12.gif"> |</I>V| - 2. Adding in the removed edge yields |<I>E| <IMG SRC="../IMAGES/lteq12.gif"> </I>|V| - 1.<P>
+(4) <IMG SRC="../IMAGES/rtbigar.gif"> (5): Suppose that <I>G</I> is connected and that |<I>E| = |</I>V| - 1. We must show that <I>G</I> is acyclic. Suppose that <I>G</I> has a cycle containing <I>k </I>vertices <I>v</I><SUB>1</SUB>,<I> v</I><SUB>2</SUB>,<I> . . . </I>,<I> v<SUB>k</SUB>. Let G<SUB>k</SUB> = </I>(<I>V<SUB>k</I></SUB>,<I> E<SUB>k</I></SUB>) be the subgraph of <I>G</I> consisting of the cycle. Note that |<I>V<SUB>k</SUB>| = |E<SUB>k</I></SUB>|<I> = k.</I> If <I>k &lt; |V|, there must be a vertex </I>v<SUB>k<I>+1</SUB> <IMG SRC="../IMAGES/memof12.gif"> </I>V -<I> </I>V<SUB>k<I></SUB> that is adjacent to some vertex </I>v<SUB>i</SUB> <I><IMG SRC="../IMAGES/memof12.gif"> V<SUB>k</I></SUB>, since <I>G</I> is connected. Define <I>G<SUB>k+</I>1</SUB><I> = </I>(<I>V<SUB>k</I>+1</SUB>,<SUB> </SUB><I>E<SUB>k</I>+1</SUB>)<I> </I>to be the subgraph of <I>G</I> with <I>V<SUB>k</I>+1</SUB><I> = V<SUB>k</I></SUB><IMG SRC="../IMAGES/wideu.gif">{<I>v<SUB>k</I>+1</SUB>} and <I>E<SUB>k</I>+1</SUB> = <I>E<SUB>k</I></SUB><IMG SRC="../IMAGES/wideu.gif">{(<I>v</I><SUB>1</SUB>, <I>v<SUB>k</I>+1</SUB>)}. Note that |<I>V<SUB>k</I>+1</SUB>| = |<I>E<SUB>k</I>+1</SUB>|<I> = k</I>+1. If <I>k+</I>1 &lt; <I>n</I>, we can continue, defining G<I><SUB>k</I>+2</SUB> in the same manner, and so forth, until we obtain <I>G<SUB>n</SUB> = </I>(<I>V<SUB>n</SUB>, E<SUB>n</I></SUB>), where <I>n</I> = |<I>V|, </I>V<SUB>n<I></SUB> = </I>V<I>, and |</I>E<SUB>n<I></SUB>|</I> <I>=</I> |V<SUB>n<I></SUB>| = |</I>V|<FONT FACE="Courier New" SIZE=2>.</FONT> Since <I>G<SUB>n</SUB> </I>is a subgraph of<I> G</I>, we have <I>E<SUB>n</I></SUB> <IMG SRC="../IMAGES/rgtubar.gif"> <I>E</I>, and hence |<I>E| <IMG SRC="../IMAGES/gteq.gif"> |</I>V|, which contradicts the assumption that |<I>E| = |</I>V<I>| - 1. Thus, </I>G<I> is acyclic.</I><P>
+(5) <IMG SRC="../IMAGES/rtbigar.gif"> (6): Suppose that <I>G</I> is acyclic and that <FONT FACE="Courier New" SIZE=2>|<I>E </I>|</FONT> = <FONT FACE="Courier New" SIZE=2>|<I>V </I>|</FONT> - 1. Let <I>k</I> be the number of connected components of <I>G</I>. Each connected component is a free tree by definition, and since (1) implies (5), the sum of all edges in all connected components of <I>G</I> is |<I>V </I>| - <I>k</I>. Consequently, we must have <I>k</I> = 1, and <I>G </I>is in fact a tree. Since (1) implies (2), any two vertices in <I>G</I> are connected by a unique simple path. Thus, adding any edge to <I>G </I>creates a cycle.<P>
+(6) <IMG SRC="../IMAGES/rtbigar.gif"> (1): Suppose that <I>G</I> is acyclic but that if any edge is added to <I>E</I>, a cycle is created. We must show that <I>G</I> is connected. Let <I>u</I> and <I>v</I> be arbitrary vertices in <I>G</I>. If <I>u</I> and <I>v</I> are not already adjacent, adding the edge (<I>u, v</I>) creates a cycle in which all edges but (<I>u, v</I>) belong to <I>G</I>. Thus, there is a path from <I>u</I> to <I>v</I>, and since <I>u</I> and <I>v</I> were chosen arbitrarily, <I>G </I>is connected.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0735_1288">5.5.2 Rooted and ordered trees<a name="0735_1288"></h2><P>
+<a name="0735_1274"><a name="0735_1275"><a name="0735_1276"><a name="0735_1277">A <I><B>rooted tree</I></B> is a free tree in which one of the vertices is distinguished from the others. The distinguished vertex is called the <I><B>root</I></B> of the tree. We often refer to a vertex of a rooted tree as a <I><B>node</I></B><SUP>2</SUP> of the tree. Figure 5.6(a) shows a rooted tree on a set of 12 nodes with root 7.<P>
+<SUP>2</SUP>The term "node" is often used in the graph theory literature as a synonym for "vertex." We shall reserve the term "node" to mean a vertex of a rooted tree.<P>
+<a name="0735_1278"><a name="0735_1279"><a name="0735_127a"><a name="0735_127b"><a name="0735_127c">Consider a node <I>x</I> in a rooted tree <I>T</I> with root <I>r</I>. Any node <I>y</I> on the unique path from <I>r</I> to <I>x</I> is called an <I><B>ancestor</I></B> of <I>x</I>. If <I>y</I> is an ancestor of <I>x</I>, then <I>x</I> is a <I><B>descendant</I></B> of <I>y</I>. (Every node is both an ancestor and a descendant of itself.) If <I>y</I> is an ancestor of <I>x</I> and <I>x </I><IMG SRC="../IMAGES/noteq.gif"><I> y</I>, then <I>y</I> is a <I><B>proper ancestor</I></B> of <I>x</I> and <I>x</I> is a <I><B>proper</I> </B><I><B>descendant</I></B> of <I>y</I>. The <I><B>subtree rooted at x </I></B>is the tree induced by descendants of <I>x</I>, rooted at <I>x</I>. For example, the subtree rooted at node 8 in Figure 5.6(a) contains nodes 8, 6, 5, and 9.<P>
+<a name="0735_127d"><a name="0735_127e"><a name="0735_127f"><a name="0735_1280"><a name="0735_1281"><a name="0735_1282">If the last edge on the path from the root <I>r</I> of a tree <I>T</I> to a node <I>x</I> is (<I>y, x</I>), then <I>y</I> is the <I><B>parent</I></B> of <I>x</I>, and <I>x</I> is a <I><B>child</I></B> of <I>y</I>. The root is the only node in <I>T</I> with no parent. If two nodes have the same parent, they are <I><B>siblings</I></B>. A node with no children is an <I><B>external node</I></B> or <I><B>leaf</I></B>. A nonleaf node is an <I><B>internal node.</I></B><P>
+<img src="94_a.gif"><P>
+<h4><a name="0735_1289">Figure 5.6 Rooted and ordered trees. (a) A rooted tree with height 4. The tree is drawn in a standard way: the root (node 7) is at the top, its children (nodes with depth 1 ) are beneath it, their children (nodes with depth 2) are beneath them, and so forth. If the tree is ordered, the relative left-to-right order of the children of a node matters; otherwise it doesn't. (b) Another rooted tree. As a rooted tree, it is identical to the tree in (a), but as an ordered tree it is different, since the children of node 3 appear in a different order.<a name="0735_1289"></sub></sup></h4><P>
+<a name="0735_1283"><a name="0735_1284"><a name="0735_1285"><a name="0735_1286">The number of children of a node <I>x</I> in a rooted tree <I>T</I> is called the <I><B>degree</I></B> of <I>x</I>.<SUP>3</SUP> The length of the path from the root <I>r</I> to a node <I>x</I> is the <I><B>depth</I></B> of <I>x</I> in <I>T</I>. The largest depth of any node in <I>T</I> is the <I><B>height</I></B> of <I>T</I>.<P>
+<SUP>3</SUP>Notice that the degree of a node depends on whether <I>T</I> is considered to be a rooted tree or a free tree. The degree of a vertex in a free tree is, as in any undirected graph, the number of adjacent vertices. In a rooted tree, however, the degree is the number of children--the parent of a node does not count toward its degree.<P>
+<a name="0735_1287">An <I><B>ordered tree</I></B> is a rooted tree in which the children of each node are ordered. That is, if a node has <I>k</I> children, then there is a first child, a second child, . . . , and a <I>k</I>th child. The two trees in Figure 5.6 are different when considered to be ordered trees, but the same when considered to be just rooted trees.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0736_1293">5.5.3 Binary and positional trees<a name="0736_1293"></h2><P>
+<a name="0736_1288">Binary trees are best described recursively. A <I><B>binary tree</I></B><I> T</I> is a structure defined on a finite set of nodes that either<P>
+<IMG SRC="../IMAGES/dot12.gif">     contains no nodes, or<P>
+<a name="0736_1289"><a name="0736_128a"><IMG SRC="../IMAGES/dot12.gif">     is comprised of three disjoint sets of nodes: a <I><B>root</I></B> node, a binary tree called its <I><B>left subtree</I></B>, and a binary tree called its <I><B>right subtree.</I></B><P>
+The binary tree that contains no nodes is called the <I><B>empty tree</I></B> or <I><B>null tree</I></B>, sometimes denoted <FONT FACE="Courier New" SIZE=2>NIL</FONT>. If the left<SUB> </SUB>subtree is nonempty, its root is called the <I><B>left child</I></B> of the root of the entire tree. Likewise, the root of a nonnull right subtree is the <I><B>right child</I></B> of the root of the entire tree. If a subtree is the null tree <FONT FACE="Courier New" SIZE=2>NIL</FONT>, we say that the child is <I><B>absent</I></B> or <I><B>missing</I></B>. Figure 5.7(a) shows a binary tree.<P>
+<img src="95_a.gif"><P>
+<h4><a name="0736_1294">Figure 5.7 Binary trees. (a) A binary tree drawn in a standard way. The left child of a node is drawn beneath the node and to the left. The right child is drawn beneath and to the right. (b) A binary tree different from the one in (a). In (a), the left child of node 7 is 5 and the right child is absent. In (b), the left child of node 7 is absent and the right child is 5. As ordered trees, these trees are the same, but as binary trees, they are distinct. (c) The binary tree in (a) represented by the internal nodes of a full binary tree: an ordered tree in which each internal node has degree 2. The leaves in the tree are shown as squares.<a name="0736_1294"></sub></sup></h4><P>
+<a name="0736_128b"><a name="0736_128c"><a name="0736_128d">A binary tree is not simply an ordered tree in which each node has degree at most 2. For example, in a binary tree, if a node has just one child, the position of the child--whether it is the <I><B>left child</I></B> or the <I><B>right child</I></B>--matters. In an ordered tree, there is no distinguishing a sole child as being either left or right. Figure 5.7(b) shows a binary tree that differs from the tree in Figure 5.7(a) because of the position of one node. Considered as ordered trees, however, the two trees are identical.<P>
+<a name="0736_128e"><a name="0736_128f">The positioning information in a binary tree can be represented by the internal nodes of an ordered tree, as shown in Figure 5.7(c). The idea is to replace each missing child in the binary tree with a node having no children. These leaf nodes are drawn as squares in the figure. The tree that results is a <I><B>full binary tree</I></B>: each node is either a leaf or has degree exactly 2. There are no degree-1 nodes. Consequently, the order of the children of a node preserves the position information.<P>
+<a name="0736_1290"><a name="0736_1291">The positioning information that distinguishes binary trees from ordered trees can be extended to trees with more than 2 children per node. In a<I><B> positional tree</I></B>, the children of a node are labeled with distinct positive integers. The <I>i</I>th child of a node is <I><B>absent</I></B> if no child is labeled with integer <I>i</I>. A <I><B>k-ary</I></B> tree is a positional tree in which for every node, all children with labels greater than <I>k</I> are missing. Thus, a binary tree is a<I> k-</I>ary tree with <I>k</I> = 2.<P>
+<a name="0736_1292">A <I><B>complete k-ary tree</I></B> is a <I>k-</I>ary tree in which all leaves have the same depth and all internal nodes have degree <I>k</I>. Figure 5.8 shows a complete binary tree of height 3. How many leaves does a complete <I>k-</I>ary tree of height <I>h</I> have? The root has <I>k</I> children at depth 1, each of which has <I>k</I> children at depth 2, etc. Thus, the number of leaves at depth <I>h</I> is <I>k<SUP>h</I></SUP>. Consequently, the height of a complete <I>k-</I>ary tree with <I>n</I> leaves is log<I><SUB>k</I></SUB> <I>n</I>. The number of internal nodes of a complete <I>k-</I>ary tree of height <I>h</I> is<P>
+<img src="96_b.gif"><P>
+by equation (3.3). Thus, a complete binary tree has 2<I><SUP>h</I></SUP> - 1 internal nodes.<P>
+<img src="96_a.gif"><P>
+<h4><a name="0736_1295">Figure 5.8 A complete binary tree of height 3 with 8 leaves and 7 internal nodes.<a name="0736_1295"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0737_1298">Exercises<a name="0737_1298"></h2><P>
+<a name="0737_1299">5.5-1<a name="0737_1299"><P>
+Draw all the free trees composed of the 3 vertices <I>A, B</I>, and <I>C</I>. Draw all the rooted trees with nodes <I>A, B</I>, and <I>C</I> with <I>A</I> as the root. Draw all the ordered trees with nodes <I>A, B</I>, and <I>C</I> with <I>A</I> as the root. Draw all the binary trees with nodes <I>A, B</I>, and <I>C</I> with <I>A</I> as the root.<P>
+<a name="0737_129a">5.5-2<a name="0737_129a"><P>
+Show that for <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 7, there exists a free tree on <I>n</I> nodes such that picking each of the <I>n</I> nodes as a root results in a different rooted tree.<P>
+<a name="0737_129b">5.5-3<a name="0737_129b"><P>
+Let <I>G</I> = (<I>V, E</I>) be a directed acyclic graph in which there is a vertex <I>v</I><SUB>0</SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> such that there exists a unique path from <I>v</I><SUB>0</SUB> to every vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. Prove that the undirected version of <I>G</I> forms a tree.<P>
+<a name="0737_129c">5.5-4<a name="0737_129c"><P>
+Show by induction that the number of degree-2 nodes in any binary tree is 1 less than the number of leaves.<P>
+<a name="0737_129d">5.5-5<a name="0737_129d"><P>
+Show by induction that a binary tree with <I>n</I> nodes has height at least <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>lg <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>.<P>
+<a name="0737_129e">5.5-6<a name="0737_129e"><P>
+<a name="0737_1293"><a name="0737_1294"><a name="0737_1295"><a name="0737_1296">The <I><B>internal path length</I></B><I> </I>of a full binary tree is the sum, taken over all internal nodes of the tree, of the depth of each node. Likewise, the<I> <B>exernal path length</I></B> is the sum, taken over all leaves of the tree, of the depth of each leaf. Consider a full binary tree with <I>n</I> internal nodes, internal path length <I>i</I>, and external path length <I>e</I>. Prove that <I>e</I> = <I>i</I> + 2<I>n</I>.<P>
+<a name="0737_129f">5.5-7<a name="0737_129f"><P>
+<a name="0737_1297">Let us associate a &quot;weight&quot; <I>w</I>(<I>x</I>) = 2<I><SUP>-d</I></SUP> with each leaf <I>x</I> of depth <I>d</I> in a binary tree <I>T</I>. Prove that <SUB><FONT FACE="Times New Roman" SIZE=5></SUB><IMG SRC="../IMAGES/sum14.gif"><I>x</I></FONT><SUB> <I>w</I>(<I>x</I>)</SUB> <IMG SRC="../IMAGES/lteq12.gif"> 1, where the sum is taken over all leaves <I>x</I> in <I>T</I>. (This is known as the <I><B>Kraft inequality</I>.)</B><P>
+<a name="0737_12a0">5.5-8<a name="0737_12a0"><P>
+Show that every binary tree with <I>L</I> leaves contains a subtree having between <I>L</I>/3 and 2<I>L</I>/3 leaves, inclusive.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0738_129c">Problems<a name="0738_129c"></h1><P>
+<a name="0738_129d">5-1     Graph coloring<a name="0738_129d"><P>
+<a name="0738_1298"><a name="0738_1299">A <I><B>k-coloring</I></B> of an undirected graph <I>G</I> = (<I>V, E</I>) is a function <I>c</I>: <I>V </I><IMG SRC="../IMAGES/arrow12.gif"><I> </I>{0, l, . . . , <I>k</I> -1} such that <I>c</I>(<I>u</I>) <IMG SRC="../IMAGES/noteq.gif"> <I>c</I>(<I>v</I>) for every edge (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>. In other words, the numbers 0, 1, . . . , <I>k -</I> 1<I> </I>represent the <I>k</I> colors, and adjacent vertices must have different colors.<P>
+<I><B>a.</I></B>     Show that any tree is 2-colorable.<P>
+<I><B>b.</I></B>     Show that the following are equivalent:<P>
+1<I>. G</I> is bipartite.<P>
+2. <I>G</I> is 2-colorable.<P>
+3. <I>G</I> has no cycles of odd length.<P>
+<I><B>c.</I></B>     Let <I>d</I> be the maximum degree of any vertex in a graph <I>G</I>. Prove that <I>G</I> can be colored with <I>d</I> + 1 colors.<P>
+<I><B>d.</I></B>     Show that if <I>G</I> has <I>O</I>(|<I>V|</I>) edges, then <I>G</I> can be colored with <I>O</I><img src="97_a.gif"> colors.<P>
+<a name="0738_129e">5-2 Friendly graphs<a name="0738_129e"><P>
+Reword each of the following statements as a theorem about undirected graphs, and then prove it. Assume that friendship is symmetric but not reflexive.<P>
+<I><B>a.</I></B>     In any group of <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 2 people, there are two people with the same number of friends in the group.<P>
+<I><B>b.</I></B>     Every group of six people contains either three mutual friends or three mutual strangers.<P>
+<I><B>c.</I></B>     Any group of people can be partitioned into two subgroups such that at least half the friends of each person belong to the subgroup of which that person is <I>not</I> a member.<P>
+<I><B>d.</I></B>     If everyone in a group is the friend of at least half the people in the group, then the group can be seated around a table in such a way that everyone is seated between two friends.<P>
+<a name="0738_129f">5-3     Bisecting trees<a name="0738_129f"><P>
+<a name="0738_129a"><a name="0738_129b">Many divide-and-conquer algorithms that operate on graphs require that the graph be bisected into two nearly equal-sized subgraphs by removing a small number of edges. This problem investigates bisections of trees.<P>
+<I><B>a.</I></B>     Show that by removing a single edge, we can partition the vertices of any <I>n-</I>vertex binary tree into two sets <I>A</I> and <I>B</I> such that |<I>A| <IMG SRC="../IMAGES/lteq12.gif"> 3</I>n<I>/4 and |</I>B| <IMG SRC="../IMAGES/lteq12.gif"> 3<I>n</I>/4.<P>
+<I><B>b.</I></B>     Show that the constant 3/4 in part (a) is optimal in the worst case by giving an example of a simple tree whose most evenly balanced partition upon removal of a single edge has |<I>A| = 3</I>n<I>/4.</I><P>
+<I><B>c.</I></B>     Show that by removing at most <I>O</I>(lg <I>n</I>) edges, we can partition the vertices of any <I>n-</I>vertex tree into two sets <I>A</I> and <I>B</I> such that |<I>A| = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></I>n</FONT><I>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> and |</I>B| = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+G. Boole pioneered the development of symbolic logic, and he introduced many of the basic set notations in a book published in 1854. Modern set theory was created by G. Cantor during the period 1874-1895. Cantor focused primarily on sets of infinite cardinality. The term &quot;function&quot; is attributed to G. W. Leibnitz, who used it to refer to several kinds of mathematical formulas. His limited definition has been generalized many times. Graph theory originated in 1736, when L. Euler proved that it was impossible to cross each of the seven bridges in the city of K&ouml;nigsberg exactly once and return to the starting point.<P>
+A useful compendium of many definitions and results from graph theory is the book by Harary [94].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap06.htm">Chapter 6</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

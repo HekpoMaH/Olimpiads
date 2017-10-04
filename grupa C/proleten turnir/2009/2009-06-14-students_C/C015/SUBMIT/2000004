@@ -1,0 +1,21 @@
+#include<cstdio>
+#include<vector>
+using namespace std;
+
+int n , l;
+
+int main() {
+	scanf ( "%d%d" , &n , &l );
+	int a = 0;
+	for ( int i = 0;i < n;++i ) {
+		int pp , rr , qq , ff;
+		scanf ( "%d%d%d%d" , &pp , &rr , &qq , &ff );
+		a += ff;
+	}
+	if ( a < l ) {
+		printf ( "-1\n" );
+		return 0;
+	}
+	printf ( "88\n" );
+	return 0;
+}

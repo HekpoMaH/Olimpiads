@@ -1,0 +1,124 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+int a[64][64], b[64][64];
+char c;
+int n, m, i, j, sx, sy, fx, fy, px, py, ans;
+int con[16][4] = {{-1,0},{0,-1},{1,0},{0,1}};
+
+int bfs1 (int sx, int sy, int fx, int fy) {
+    a[sx][sy] = 1;
+    queue <int> q;
+    q.push (sx);
+    q.push (sy);
+    int x, y, xx, yy;
+    while (!q.empty ()) {
+        x = q.front ();
+        q.pop ();
+        y = q.front ();
+        q.pop ();
+        for (int i = 0; i <= 3; ++ i) {
+            xx = x + con[i][0];
+            yy = y + con[i][1];
+            if (xx > 0 && xx <= n && yy > 0 && yy <= m && a[xx][yy] == 0) {
+                a[xx][yy] = a[x][y] + 1;
+                if (xx == fx && yy == fy) return a[xx][yy];
+                q.push (xx);
+                q.push (yy);
+            }
+            if (xx <= 0 && a[n][yy] == 0) {
+                a[n][yy] = a[x][y] + 1;
+                if (n == fx && yy == fy) return a[n][yy];
+                q.push (n);
+                q.push (yy);
+            }
+            if (xx > n && a[1][yy] == 0) {
+                a[1][yy] = a[x][y] + 1;
+                if (1 == fx && yy == fy) return a[1][yy];
+                q.push (1);
+                q.push (yy);
+            }
+            if (yy <= 0 && a[xx][m] == 0) {
+                a[xx][m] = a[x][y] + 1;
+                if (xx == fx && m == fy) return a[xx][m];
+                q.push (xx);
+                q.push (m);
+            }
+            if (yy > m && a[xx][1] == 0) {
+                a[xx][1] = a[x][y] + 1;
+                if (xx == fx && 1 == fy) return a[xx][1];
+                q.push (xx);
+                q.push (1);
+            }
+        }
+    }
+
+}
+
+int bfs2 (int sx, int sy, int fx, int fy) {
+    b[sx][sy] = 1;
+    queue <int> q;
+    q.push (sx);
+    q.push (sy);
+    int x, y, xx, yy;
+    while (!q.empty ()) {
+        x = q.front ();
+        q.pop ();
+        y = q.front ();
+        q.pop ();
+        for (int i = 0; i <= 3; ++ i) {
+            xx = x + con[i][0];
+            yy = y + con[i][1];
+            if (xx > 0 && xx <= n && yy > 0 && yy <= m && b[xx][yy] == 0) {
+                b[xx][yy] = b[x][y] + 1;
+                if (xx == fx && yy == fy) return b[xx][yy];
+                q.push (xx);
+                q.push (yy);
+            }
+            if (xx <= 0 && b[n][yy] == 0) {
+                b[n][yy] = b[x][y] + 1;
+                if (n == fx && yy == fy) return b[n][yy];
+                q.push (n);
+                q.push (yy);
+            }
+            if (xx > n && b[1][yy] == 0) {
+                b[1][yy] = b[x][y] + 1;
+                if (1 == fx && yy == fy) return b[1][yy];
+                q.push (1);
+                q.push (yy);
+            }
+            if (yy <= 0 && b[xx][m] == 0) {
+                b[xx][m] = b[x][y] + 1;
+                if (xx == fx && m == fy) return b[xx][m];
+                q.push (xx);
+                q.push (m);
+            }
+            if (yy > m && b[xx][1] == 0) {
+                b[xx][1] = b[x][y] + 1;
+                if (xx == fx && 1 == fy) return b[xx][1];
+                q.push (xx);
+                q.push (1);
+            }
+        }
+    }
+
+}
+
+int main () {
+    scanf ("%d %d", &n, &m);
+    for (i = 1; i <= n; ++ i)
+        for (j = 1; j <= m; ++ j) {
+            cin >> c;
+            if (c == 'E') { sx = i; sy = j; }
+            if (c == 'P') { px = i; py = j; }
+            if (c == 'X') { fx = i; fy = j; }
+            if (c == '#') { a[i][j] = -1; b[i][j] = -1; }
+        }
+
+    ans = bfs1 (sx, sy, px, py) - 1 + bfs2 (px, py, fx, fy) - 1;
+    if (a[px][py] == 0 || b[fx][fy] == 0) cout << -1 << endl;
+    else cout << ans << endl;
+
+    return 0;
+}

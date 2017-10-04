@@ -1,0 +1,111 @@
+/*
+TASK:PHONE
+LANG:C++
+*/
+# include <stdio.h>
+# define MAXN (1<<7)
+# define MAXNUM (1<<5)
+
+
+
+int isdigit(char c) {
+    int a = (int)c-48;
+    if(a>=0 && a<= 9) return 1;
+    return 0;
+}
+
+double best;
+int n;
+int lenb,b[MAXNUM];
+
+struct person {
+     int len,k;
+     double price;
+     int number[MAXNUM],avalable[MAXNUM];
+} data[MAXN];
+
+void read() {
+     scanf("%d", &n);
+     best = 1000000.0;
+     for(int i = 0; i <= n; i++) {
+         data[i].len = 0;
+         char c;
+         scanf("%c", &c);
+         c= 'h';
+         while(c != ' ') {
+             scanf("%c", &c);
+             if(isdigit(c)) data[i].number[data[i].len++] = (int)c-48;
+             else break;
+         }
+         scanf("%lf", &data[i].price);
+
+         scanf("%d", &data[i].k);
+
+         for(int j = 0; j < data[i].k; j++) {
+             scanf("%d", &data[i].avalable[j]);
+         }
+     }
+
+    /*
+    for(int i = 0; i <= n; i++) {
+          for(int j = 0; j < data[i].len;j++) printf("%d",data[i].number[j]);
+          printf(" %lf %d ",data[i].price,data[i].k);
+          for(int j = 0; j < data[i].k;j++) printf("%d ", data[i].avalable[j]);
+          printf("\n"); 
+    }*/
+    char c;
+    lenb = 0;
+    scanf("%c", c);
+    while(c != EOF) {
+         scanf("%c",&c);
+         if(isdigit(c)) b[lenb++] = ((int)c)-48;
+         else break;
+    }
+    //for(int i = 0; i < lenb; i++) printf("%d",b[i]);
+}
+
+void solve(int p,double cena) {
+     int ok = 0;
+     for(int i = 0; i < lenb; i++) {
+          ok = 0;
+          for(int j = 0; j < data[p].k;j++) {
+                if(b[i] == data[p].avalable[j]) {
+                   ok = 1;
+                   break;
+                }
+
+          }
+          if(ok == 0) break;
+     }
+     if(ok == 1) {
+          if(best > cena) best = cena;
+          return;
+     }
+
+
+
+     for(int i = 1; i <= n; i++) {
+          int ok = 0;
+          if(i != p) {
+              for(int j = 0; j < data[i].len;j++) {
+                 ok = 0;
+                 for(int l = 0; l < data[p].k; l++) {
+                    if(data[p].avalable[l] == data[i].number[j]) {
+                       ok = 1;
+                       break;
+                    }
+
+                 }
+                 if(ok == 0) break;
+              }
+              if(ok == 1) solve(i,cena+data[i].price);
+          }
+     }
+}
+
+int main() {
+   read();
+   solve(0,data[0].price);
+   printf("%.2lf\n", best);
+return 0;
+}

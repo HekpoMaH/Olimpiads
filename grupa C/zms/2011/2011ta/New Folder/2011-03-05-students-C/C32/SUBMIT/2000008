@@ -1,0 +1,63 @@
+#include <iostream>
+#include <cstdio>
+#include <cmath>
+#include <map>
+#include <algorithm>
+#define MAX 1024*1024
+using namespace std;
+
+int n, nom[1024][1024];
+int k, i, j, q;
+map<int, int> m;
+
+struct d { int st, r, otg; } ans[16384];
+bool cmp(d a, d b) { return a.st < b.st; }
+bool cmp1(d a, d b) { return a.r < b.r; }
+
+int main()
+{
+for(i=1; i<=10001; i++)
+ans[i].otg = MAX;
+
+scanf("%d", &n);
+for(i=0; i<n; i++)
+for(j=0; j<n; j++)
+scanf("%d", &nom[i][j]);
+
+scanf("%d", &k);
+for(i=1; i<=k; i++)
+{
+scanf("%d", &j);
+ans[i].r = i;
+ans[i].st = j;
+}
+
+sort(ans + 1, ans + k + 1, cmp);
+for(i=1; i<=k; i++)
+m[ans[i].st] = i;
+
+for(i=0; i<n; i++)
+for(j=0; j<n; j++)
+{
+q = m[nom[i][j]];
+if(q >= 1) ans[q].otg = min(ans[q].otg, i + n - 1 - j);
+}
+
+for(i=1; i<=k; i++)
+if(ans[i].otg == MAX)
+{
+if(ans[i - 1].st == ans[i].st && ans[i-1].otg != MAX)
+ans[i].otg = ans[i-1].otg;
+else
+for(j=i+1; j <= k && ans[j].st == ans[i].st; j++)
+if(ans[j].otg != MAX) { ans[i].otg = ans[j].otg; break; }
+}
+
+sort(ans + 1, ans + k + 1, cmp1);
+
+for(i=1; i<=k; i++)
+if(ans[i].otg == MAX) printf("No Solution\n");
+else printf("%d\n", ans[i].otg);
+
+return 0;
+}

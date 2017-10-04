@@ -1,0 +1,28 @@
+#include<iostream>
+#include<string>
+#include<vector>
+using namespace std;
+long long n,k,p=2,i;
+char c;
+vector <char> v;
+int main()
+{
+ scanf("%d%d",&n,&k);
+ c='a';
+ if(n==1 && k==1) printf("a\n");
+ else
+ {
+  for(i=1;i<=n;i++)
+   {v.push_back(c); c++;}
+
+  while(p<=k)
+   {next_permutation(v.begin(),v.end()); p++;}     
+  for(i=0;i<=n-1;i++)
+   cout<<v[i];
+  printf("\n");
+ }       
+// system("pause");
+ return 0;
+}
+
+ 

@@ -1,0 +1,38 @@
+/*
+TASK: runaway
+LANG: C++
+*/
+
+#include<iostream>
+#include<string>
+#include<cstring>
+#include<cmath>
+#include<queue>
+#include<list>
+#include<cstdio>
+#include<stdlib.h>
+#include<stack>
+#include<fstream>
+
+using namespace std;
+string currentroomentrance;
+int n,m,k,i,j;
+int castle[1000][1000];
+bool isexitreached=false;
+vector<int>atcastle;
+void Dijkstra(int fnt)
+{
+}
+int main()
+{
+    cin>>n;
+    for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+                {
+                    cin>>castle[i][j];
+                }
+        }
+        cin>>k;
+    return 0;
+}

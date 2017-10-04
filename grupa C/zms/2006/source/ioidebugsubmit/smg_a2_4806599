@@ -1,0 +1,232 @@
+/*
+TASK: festA
+LANG: C++
+*/			
+
+#include <cstdio>
+#include <cstdlib>
+#include <cmath>
+											
+/************************************
+* VNIMANIE DA SE SMENQT CONSTANTITE *
+*************************************/
+
+const int INTERVAL = /*1 << 3;*/1 << 14;//16 000
+const int IDTLEN = /*1 << 4;*/1 << 15;//32 000
+
+const int MAXRANGE = 1 << 28;//100 000 000
+
+struct el {
+	int sum;
+	int pay;
+	el () {}
+	el (int _sum, int _pay) : sum (_sum), pay (_pay) {}
+};													   
+
+el idt1 [IDTLEN];
+el idt2 [IDTLEN];
+
+
+void add1 (int pos, int val, int l =0, int r =INTERVAL, int p =0) {
+	if (l + 1 == r) {
+		idt1[p].sum += val;
+		idt1[p].pay += val;
+		return;
+	}
+	
+	
+	int m = (l + r) / 2;
+	if (pos < m)
+		add1 (pos, val, l, m, p * 2 + 1);//first child
+	else
+		add1 (pos, val, m, r, p * 2 + 2);//second child
+
+	idt1[p].sum = idt1[2 * p + 1].sum + idt1[2 * p + 2].sum;
+	idt1[p].pay = idt1[2 * p + 1].pay + idt1[2 * p + 2].pay +
+					idt1[2 * p + 1].sum * (r - m);
+
+	return;
+}
+			 										  
+void add2 (int pos, int val, int l =0, int r =INTERVAL, int p =0) {
+	if (l + 1 == r) {
+		idt2[p].sum += val;
+		idt2[p].pay += val;
+		return;
+	}
+	
+	
+	int m = (l + r) / 2;
+	if (pos < m)
+		add2 (pos, val, l, m, p * 2 + 1);//first child
+	else
+		add2 (pos, val, m, r, p * 2 + 2);//second child
+
+	idt2[p].sum = idt2[2 * p + 1].sum + idt2[2 * p + 2].sum;
+	idt2[p].pay = idt2[2 * p + 1].pay + idt2[2 * p + 2].pay +
+					idt2[2 * p + 2].sum * (m - l); 
+
+	return;
+}
+	
+int srch1 (int pos, int l =0, int r =INTERVAL, int p =0) {
+//	printf ("1 %d %d %d\n", l, r, (l + r) / 2);
+	if (l + 1 == r) {
+		if (pos != r) return 0;
+		return idt1[p].pay;
+	}
+
+	int m = (l + r) / 2;
+	
+	if (pos <= m) {
+		return srch1 (pos, l, m, p * 2 + 1);
+	} else {
+		return srch1 (pos, m, r, p * 2 + 2) + 
+		idt1[p * 2 + 1].pay + idt1[p * 2 + 1].sum * (pos - m);
+	}
+}
+
+int srch2 (int pos, int l =0, int r =INTERVAL, int p =0) {
+//	printf ("2 %d %d %d\n", l, r, (l + r) / 2);
+	if (l + 1 == r) {
+		if (pos != l - 1) return 0;
+		return idt2[p].pay;
+	}
+
+	int m = (l + r) / 2;
+	
+	if (pos >= m - 1) {
+		return srch2 (pos, m, r, p * 2 + 2);
+	} else {				
+		return srch2 (pos, l, m, p * 2 + 1) + 
+		idt2[p * 2 + 2].pay + idt2[p * 2 + 2].sum * (m - 1 - pos);
+	}
+}
+
+
+inline void add (int pos, int val) {
+	add1 (pos, val);
+	add2 (pos, val);
+}								  
+
+inline long long srch (int pos) {
+	if (pos <= -1)
+		return (long long)idt2[0].pay + (long long)(idt2[0].sum) * (-1 - pos);
+	else if (pos >= INTERVAL)
+		return (long long)idt1[0].pay + (long long)idt1[0].sum * (pos - INTERVAL);
+	else {//normal case 
+		return (long long)srch1 (pos) + (long long)srch2 (pos);
+	}
+}						   
+
+int bsrchmin (int l = 0, int r = INTERVAL) {
+	int p = 0;
+	int ost = idt1[0].sum / 2;
+	int m;
+	while (l + 1 < r) {
+		m = (l + r) / 2;
+		if (idt1[p * 2 + 1].sum > ost) {
+			r = m;
+			p = p * 2 + 1;
+		} else {		  
+			ost -= idt1[p * 2 + 1].sum;
+			l = m;
+			p = p * 2 + 2;
+		}							 
+	}								 
+	return r;
+}
+
+long long S;
+ 
+int bpos;
+long long babs;
+
+void bsrch_up (int l) {
+	--l;
+	int r = MAXRANGE, m;	  
+	long long ls;//last srch
+	
+	while (l + 1 < r) {
+		m = (l + r) / 2;
+		if (S > (ls = srch (m)))
+			l = m;
+		else
+			r = m;
+//		printf ("%Ld now %d %d\n", ls, l, r);
+	}			 
+
+	ls = srch (r);
+	if (llabs (ls - S) < babs) {
+		bpos = r;
+		babs = abs (ls - S);  
+	}	
+
+	--r;
+	ls = srch (r);
+	if (llabs (ls - S) < babs) {
+		bpos = r;
+		babs = abs (ls - S);  
+	}
+}
+
+void bsrch_down (int r) {
+	int l = -MAXRANGE, m;
+	long long ls;
+	
+	while (l + 1 < r) {
+		m = (l + r) / 2;
+		if (S < (ls = srch (m)))
+			l = m;
+		else
+			r = m;
+	}			  
+	
+	ls = srch (r);
+	if (llabs (ls - S) < babs) {
+		bpos = r;
+		babs = abs (ls - S);  
+	}	
+
+	--r;
+	ls = srch (r);
+	if (llabs (ls - S) < babs) {
+		bpos = r;
+		babs = abs (ls - S);  
+	}
+	
+
+
+}
+
+void find () {
+	babs = (1 << 31) - 1;
+	
+	int mpos = bsrchmin ();
+//	printf ("**%d\n", mpos);
+
+	
+	bsrch_down (mpos);
+	bsrch_up (mpos);
+}
+
+int main () {	
+ 
+	int type;
+	int a, b;
+	while (scanf ("%d", &type) != EOF) {
+		if (type == 1) {
+			scanf ("%d %d", &a, &b);
+			add (a, b);
+//			printf ("%d %d\n%d %d\n", idt1[0].sum, idt1[0].pay, idt2[0].sum, idt2[0].pay);
+		} else {//type == 2
+			scanf ("%Ld", &S); 
+//			printf ("%d -> %d\n", S, srch (S));
+			find ();
+			printf ("%d %Ld\n", bpos, babs);
+		}
+	}
+
+	return 0;
+}
+

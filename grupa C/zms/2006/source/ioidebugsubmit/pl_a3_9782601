@@ -1,0 +1,63 @@
+{
+TASK: festa
+LANG: PASCAL
+}
+const
+ maxx = 1001;
+ maxn = 100000;
+var
+ a : array[0..maxn] of longint;
+ g : text;
+ i,j,b,d,max,com,s,br : longint;
+ ans : array[0..maxn] of record v, p : longint; end;
+procedure calcmin;
+var
+   poz: longint;
+   cur , min : longint;
+begin
+   poz:=0;
+   min:=(1 shl 30);
+   cur:=0;
+   for i:=-maxx to maxx do
+   begin
+      for j:=0 to max do
+      cur:=cur+abs(j-i)*a[j];
+      if abs(s-cur)<abs(s-min) then begin min:=cur; poz:=i; end;
+   end;
+   inc(br);
+   ans[br].p:=poz;
+   ans[br].v:=abs(s-min);
+end;
+procedure main;
+var
+ f : text;
+begin
+   max:=-1;
+   assign(f,'');
+   reset(f);
+   assign(g,'');
+   rewrite(g);
+   while not eoln(f) do
+   begin
+      read(f,com);
+      if com=1 then
+      begin
+         read(f,d);
+         if d>max then max:=d;
+         readln(f,b);
+         inc(a[d],b);
+      end
+      else
+      begin
+         readln(f,s);
+         calcmin;
+      end;
+   end;
+   close(f);
+   for i:=1 to br do
+   writeln(g,ans[i].p,' ',ans[i].v);
+   close(g);
+end;
+begin
+   main;
+end.

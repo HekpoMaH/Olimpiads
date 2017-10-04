@@ -1,0 +1,592 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 26: ALL-PAIRS SHORTEST PATHS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap27.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap25.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+
+<h1><a name="08d8_183c">CHAPTER 26: ALL-PAIRS SHORTEST PATHS<a name="08d8_183c"></h1><P>
+<a name="08d8_1835"><a name="08d8_1836"><a name="08d8_1837">In this chapter, we consider the problem of finding shortest paths between all pairs of vertices in a graph. This problem might arise in making a table of distances between all pairs of cities for a road atlas. As in Chapter 25, we are given a weighted, directed graph <I>G</I> = (<I>V</I>, <I>E</I>) with a weight function <I>w</I>: <I>E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B> that maps edges to real-valued weights. We wish to find, for every pair of vertices <I>u</I>, <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, a shortest (least-weight) path from <I>u</I> to <I>v</I>, where the weight of a path is the sum of the weights of its constituent edges. We typically want the output in tabular form: the entry in <I>u</I>'s row and <I>v</I>'s column should be the weight of a shortest path from <I>u</I> to <I>v.</I><P>
+We can solve an all-pairs shortest-paths problem by running a single-source shortest-paths algorithm <IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif"> times, once for each vertex as the source. If all edge weights are nonnegative, we can use Dijkstra's algorithm. If we use the linear-array implementation of the priority queue, the running time is <I>O</I>(<I>V</I><SUP>3</SUP> + <I>VE</I>) = <I>O</I>(<I>V</I><SUP>3</SUP>). The binary-heap implementation of the priority queue yields a running time of <I>O</I>(<I>V E </I>lg <I>V</I>), which is an improvement if the graph is sparse. Alternatively, we can implement the priority queue with a Fibonacci heap, yielding a running time of <I>O</I>(<I>V</I><SUP>2</SUP> lg <I>V</I> + <I>VE</I>).<P>
+If negative-weight edges are allowed, Dijkstra's algorithm can no longer be used. Instead, we must run the slower Bellman-Ford algorithm once from each vertex. The resulting running time is <I>O</I>(<I>V</I><SUP>2 </SUP><I>E</I>), which on a dense graph is <I>O</I>(<I>V</I><SUP>4</SUP>). In this chapter we shall see how to do better. We shall also investigate the relation of the all-pairs shortest-paths problem to matrix multiplication and study its algebraic structure.<P>
+Unlike the single-source algorithms, which assume an adjacency-list representation of the graph, most of the algorithms in this chapter use an adjacency-matrix representation. (Johnson's algorithm for sparse graphs uses adjacency lists.) The input is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>W</I> representing the edge weights of an <I>n</I>-vertex directed graph <I>G</I> = (<I>V</I>, <I>E</I>). That is, <I>W</I> = (<I>w<SUB>ij</I></SUB>), where<P>
+<img src="550_a.gif"><P>
+<h4><a name="08d8_183d">(26.1)<a name="08d8_183d"></sub></sup></h4><P>
+Negative-weight edges are allowed, but we assume for the time being that the input graph contains no negative-weight cycles.<P>
+The tabular output of the all-pairs shortest-paths algorithms presented in this chapter is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>D</I> = (<I>d<SUB>ij</I></SUB>), where entry <I>d<SUB>ij</I></SUB> contains the weight of a shortest path from vertex <I>i</I> to vertex <I>j</I>. That is, if we let <IMG SRC="../IMAGES/delta12.gif">(<I>i,j</I>) denote the shortest-path weight from vertex <I>i</I> to vertex <I>j</I> (as in Chapter 25), then <I>dij</I> = <IMG SRC="../IMAGES/delta12.gif">(<I>i,j</I>) at termination.<P>
+<a name="08d8_1838"><a name="08d8_1839"><a name="08d8_183a">To solve the all-pairs shortest-paths problem on an input adjacency matrix, we need to compute not only the shortest-path weights but also a <I><B>predecessor matrix</I></B> <IMG SRC="../IMAGES/piuc.gif"> = (<IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB> ), where <IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB> is <FONT FACE="Courier New" SIZE=2>NIL</FONT> if either <I>i </I>=<I> j</I> or there is no path from <I>i</I> to <I>j</I>, and otherwise <IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB> is some predecessor of <I>j</I> on a shortest path from <I>i</I>. Just as the predecessor subgraph <I>G</I><IMG SRC="../IMAGES/piuc.gif"> from Chapter 25 is a shortest-paths tree for a given source vertex, the subgraph induced by the <I>i</I>th row of the <IMG SRC="../IMAGES/piuc.gif"> matrix should be a shortest-paths tree with root <I>i</I>. For each vertex <I>i</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, we define the <I><B>predecessor subgraph</I></B> of <I>G</I> for <I>i</I> as <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i </I></SUB>= (<I>V</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB>, <I>E</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB>), where<P>
+<pre><I>V</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i </I></SUB>= {<I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I> : <IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I> </SUB><IMG SRC="../IMAGES/noteq.gif"> NIL} <IMG SRC="../IMAGES/wideu.gif"> {<I>i</I>}</sub></sup></pre><P>
+and<P>
+<pre><I>E</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB> = {(<IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB>, <I>j</I>): <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I><SUB></SUB><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB> and <IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I> </SUB><IMG SRC="../IMAGES/noteq.gif"> NIL} <SUB>.</sub></sup></pre><P>
+If <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB> is a shortest-paths tree, then the following procedure, which is a modified version of the <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>PATH</FONT> procedure from Chapter 23, prints a shortest path from vertex <I>i</I> to vertex <I>j.</I><P>
+<pre><a name="08d8_183b">PRINT-ALL-PAIRS-SHORTEST-PATH(<IMG SRC="../IMAGES/piuc.gif">,<I>i</I>,<I>j</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>i</I> = <I>j</I></sub></sup></pre><P>
+<pre>2      <B>then</B> print <I>i</I></sub></sup></pre><P>
+<pre>3      <B>else if</B> <IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB> = NIL</sub></sup></pre><P>
+<pre>4              <B>then</B> print &quot;no path from&quot; <I>i</I> &quot;to&quot; <I>j</I> &quot;exists&quot;</sub></sup></pre><P>
+<pre>5              <B>else</B> PRINT-ALL-PAIRS-SHORTEST-PATH(<IMG SRC="../IMAGES/piuc.gif">,<I>i</I>,<IMG SRC="../IMAGES/piuc.gif"><I><SUB>ij</I></SUB>)</sub></sup></pre><P>
+<pre>6                   print <I>j</I></sub></sup></pre><P>
+In order to highlight the essential features of the all-pairs algorithms in this chapter, we won't cover the creation and properties of predecessor matrices as extensively as we dealt with predecessor subgraphs in Chapter 25. The basics are covered by some of the exercises.<P>
+
+
+
+
+
+<h2>Chapter outline</h2><P>
+Section 26.1 presents a dynamic-programming algorithm based on matrix multiplication to solve the all-pairs shortest-paths problem. Using the technique of &quot;repeated squaring,&quot; this algorithm can be made to run in <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>3 </SUP>1g <I>V</I>) time. Another dynamic-programming algorithm, the Floyd-Warshall algorithm, is given in Section 26.2. The Floyd-Warshall algorithm runs in time <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>3</SUP>). Section 26.2 also covers the problem of finding the transitive closure of a directed graph, which is related to the all-pairs shortest-paths problem. Johnson's algorithm is presented in Section 26.3. Unlike the other algorithms in this chapter, Johnson's algorithm uses the adjacency-list representation of a graph. It solves the all-pairs shortest-paths problem in <I>O</I>(<I>V</I><SUP>2</SUP> lg <I>V</I> + <I>V E</I>) time, which makes it a good algorithm for large, sparse graphs. Finally, in Section 26.4, we examine an algebraic structure called a &quot;closed semiring,&quot; which allows many shortest-paths algorithms to be applied to a host of other all-pairs problems not involving shortest paths.<P>
+Before proceeding, we need to establish some conventions for adjacency-matrix representations. First, we shall generally assume that the input graph <I>G</I> = (<I>V, E</I>) has <I>n</I> vertices, so that <I>n</I> = <IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif">. Second, we shall use the convention of denoting matrices by uppercase letters, such as <I>W</I> or <I>D</I>, and their individual elements by subscripted lowercase letters, such as <I>w<SUB>ij </I></SUB>or <I>d<SUB>ij</I></SUB>. Some matrices will have parenthesized superscripts, as in <I>D</I><SUP>(<I>m</I>) </SUP>= <img src="552_a.gif">, to indicate iterates. Finally, for a given <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrix <I>A</I>, we shall assume that the value of <I>n</I> is stored in the attribute <I>rows</I>[<I>A</I>].<P>
+<P>
+
+
+
+
+
+
+
+<h1><a name="08db_1840">26.1 Shortest paths and matrix multiplication<a name="08db_1840"></h1><P>
+<a name="08db_183c"><a name="08db_183d"><a name="08db_183e"><a name="08db_183f">This section presents a dynamic-programming algorithm for the all-pairs shortest-paths problem on a directed graph <I>G</I> = (<I>V, E</I>). Each major loop of the dynamic program will invoke an operation that is very similar to matrix multiplication, so that the algorithm will look like repeated matrix multiplication. We shall start by developing a <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>4</SUP>)-time algorithm for the all-pairs shortest-paths problem and then improve its running time to <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>3</SUP> lg <I>V</I>).<P>
+Before proceeding, let us briefly recap the steps given in Chapter 16 for developing a dynamic-programming algorithm.<P>
+1.     Characterize the structure of an optimal solution.<P>
+2.     Recursively define the value of an optimal solution.<P>
+3.     Compute the value of an optimal solution in a bottom-up fashion.<P>
+(The fourth step, constructing an optimal solution from computed information, is dealt with in the exercises.)<P>
+
+
+
+
+
+<h2>The structure of a shortest path</h2><P>
+<a name="08dc_1840">We start by characterizing the structure of an optimal solution. For the all-pairs shortest-paths problem on a graph <I>G</I> = (<I>V, E</I>), we have proved (Lemma 25.1 ) that all subpaths of a shortest path are shortest paths.Supppose that the graph is represented by an adjacency matrix <I>W</I> = (<I>w<SUB>ij</I></SUB>). Consider a shortest path <I>p</I> from vertex <I>i</I> to vertex <I>j</I>, and suppose that <I>p</I> containsat most <I>m</I> edges. Assuming that there are no negative-weight cycles, <I>m</I> is finite. If <I>i</I> = <I>j</I>, then <I>p</I> has weight 0 and no edges. If vertices <I>i</I> and <I>j</I> are distinct, then we decompose path <I>p</I> into <img src="553_a.gif">, where path <I>p</I>' now contains at most <I>m</I> - 1 edges. Moreover, by Lemma 25.1, <I>p'</I> is a shortest path from <I>i</I> to <I>k</I>. Thus, by Corollary 25.2, we have <IMG SRC="../IMAGES/delta12.gif">(<I>i, j</I>) = <IMG SRC="../IMAGES/delta12.gif">(<I>i, k</I>) + <I>w<SUB>kj</I></SUB>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A recursive solution to the all-pairs shortest-paths problem</h2><P>
+Now, let <img src="553_b.gif"> be the minimum weight of any path from vertex <I>i</I> to vertex <I>j </I>that contains at most <I>m</I> edges. When <I>m</I> = 0, there is a shortest path from <I>i </I>to <I>j</I> with no edges if and only if <I>i</I> = <I>j</I>. Thus,<P>
+<img src="553_c.gif"><P>
+For <I>m</I> <IMG SRC="../IMAGES/gteq.gif"> 1, we compute <img src="553_d.gif"> as the minimum of <img src="553_e.gif"> (the weight of the shortest path from <I>i</I> to <I>j</I> consisting of at most <I>m</I> - 1 edges) and the minimum weight of any path from <I>i</I> to <I>j</I> consisting of at most <I>m</I> edges, obtained by looking at all possible predecessors <I>k</I> of <I>j</I>. Thus, we recursively define<P>
+<img src="553_f.gif"><P>
+<h4><a name="08dd_0001">(26.2)<a name="08dd_0001"></sub></sup></h4><P>
+The latter equality follows since <I>w<SUB>jj</I></SUB> = 0 for all <I>j</I>.<P>
+What are the actual shortest-path weights <IMG SRC="../IMAGES/delta12.gif">(<I>i, j</I>)? If the graph contains no negative-weight cycles, then all shortest paths are simple and thus contain at most <I>n</I> - 1 edges. A path from vertex <I>i</I> to vertex <I>j</I> with more than <I>n</I> - 1 edges cannot have less weight than a shortest path from <I>i</I> to <I>j</I>. The actual shortest-path weights are therefore given by<P>
+<img src="553_g.gif"><P>
+<h4><a name="08dd_0002">(26.3)<a name="08dd_0002"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing the shortest-path weights bottom up</h2><P>
+Taking as our in put the matrix <I>W</I> = (<I>w<SUB>ij</I></SUB>), we now compute a series of matrices <I>D</I><SUP>(1)</SUP>, <I>D</I><SUP>(2)</SUP>, . . . , <I>D</I><SUP>(<I>n</I>-1<I>)</I>,</SUP><SUB> </SUB>where for <I>m</I><SUB> </SUB>=<SUB> </SUB>1, 2, . . . <I>n</I><FONT FACE="Courier New" SIZE=2> </FONT>- 1,<SUB>,</SUB> we have <img src="553_h.gif">. The final matrix <I>D</I><SUP>(<I>n</I>-1) </SUP>contains the actual shortest-path weights. Observe that since <img src="553_i.gif"> for all vertices <I>i</I>, <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, we have <I>D</I><SUP>(1)</SUP> = <I>W</I>.<P>
+The heart of the algorithm is the following procedure, which, given matrices <I>D</I><SUP>(<I>m</I>-1)</SUP> and <I>W</I>, returns the matrix <I>D</I><SUP>(<I>m</I>)</SUP>. That is, it extends the shortest paths computed so far by one more edge.<P>
+<pre><a name="08de_1841">EXTEND-SHORTEST-PATHS(<I>D</I>,<I>W</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>D</I>]</sub></sup></pre><P>
+<pre>2 let <I>D</I>' = (<I>d</I>'<I><SUB>ij</I></SUB>) be an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix</sub></sup></pre><P>
+<pre>3 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4      <B>do for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 to <I>n</I></sub></sup></pre><P>
+<pre>5             <B>do</B> <I>d</I>'<I><SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/infin.gif"></sub></sup></pre><P>
+<pre><I>6                </I><B>for</B><I> k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>7                    <B>do</B> <I>d</I>'<I><SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> min(<I>d</I>'<I><SUB>ij</I></SUB>, d<I><SUB>ik</I></SUB> + <I>w<SUB>kj</I></SUB>)</sub></sup></pre><P>
+<pre>8 <B>return</B> <I>D</I>'</sub></sup></pre><P>
+The procedure computes a matrix <I>D</I>' = (<I>d</I>'<I><SUB>ij</I></SUB>), which it returns at the end. It does so by computing equation (26.2) for all <I>i</I> and <I>j</I>, using <I>D</I> for <I>D</I><SUP>(<I>m</I>-1)</SUP>and <I>D</I>' for <I>D</I><SUP>(<I>m</I>)</SUP>. (It is written without the superscripts to make its input and output matrices independent of <I>m</I>.) Its running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) due to the three nested <B>for</B> loops.<P>
+We can now see the relation to matrix multiplication. Suppose we wish to compute the matrix product <I>C</I> = <I>A </I><IMG SRC="../IMAGES/dot10.gif"><I> B</I> of two <I>n <IMG SRC="../IMAGES/mult.gif"> n</I> matrices <I>A</I> and <I>B</I>. Then, for <I>i</I>, <I>j</I> = 1, 2, . . . , <I>n</I>, we compute<P>
+<img src="554_a.gif"><P>
+<h4><a name="08de_1844">(26.4)<a name="08de_1844"></sub></sup></h4><P>
+Observe that if we make the substitutions<P>
+<pre><I>d</I><SUP>(<I>m</I>-1)</SUP>  <IMG SRC="../IMAGES/arrow12.gif">  <I>a </I>,</sub></sup></pre><P>
+<pre><I>w  </I><IMG SRC="../IMAGES/arrow12.gif">  <I>b </I>,</sub></sup></pre><P>
+<pre><I>d</I><SUP>(<I>m</I>)</SUP> <IMG SRC="../IMAGES/arrow12.gif">  <I>c ,</I></sub></sup></pre><P>
+<pre>min  <IMG SRC="../IMAGES/arrow12.gif">  + ,</sub></sup></pre><P>
+<pre>+  <IMG SRC="../IMAGES/arrow12.gif">  <IMG SRC="../IMAGES/dot10.gif"></sub></sup></pre><P>
+in equation (26.2), we obtain equation (26.4). Thus, if we make these changes to <FONT FACE="Courier New" SIZE=2>EXTEND</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> and also replace <IMG SRC="../IMAGES/infin.gif"> (the identity for min) by 0 (the identity for +), we obtain the straightforward <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>)-time procedure for matrix multiplication.<P>
+<pre><a name="08de_1842">MATRIX-MULTIPLY(<I>A</I>, <I>B</I>)</sub></sup></pre><P>
+<pre>1 <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>2 let <I>C</I> be an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix</sub></sup></pre><P>
+<pre>3 <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4      <B>do for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>5             <B>do</B> <I>c<SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>6                <B>for </B><I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>7                    <B>do</B> <I>c<SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>c<SUB>ij</I></SUB> + <I>a<SUB>ik </SUB></I><IMG SRC="../IMAGES/dot10.gif"><I> b<SUB>kj</I></sub></sup></pre><P>
+<pre>8 <B>return </B><I>C</I></sub></sup></pre><P>
+Returning to the all-pairs shortest-paths problem, we compute the shortest-path weights by extending shortest paths edge by edge. Letting <I>A</I> <IMG SRC="../IMAGES/dot10.gif"> <I>B </I>denote the matrix &quot;product&quot; returned by <FONT FACE="Courier New" SIZE=2>EXTEND</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT>(<I>A, B</I>), we compute the sequence of <I>n</I> - 1 matrices<P>
+<pre><I>D</I><SUP>(1)  </SUP>=   <I>D</I><SUP>(0)</SUP> <IMG SRC="../IMAGES/dot10.gif"> <I>W  </I>=  <I>W</I>,</sub></sup></pre><P>
+<pre><I>D</I><SUP>(2)  </SUP>=   <I>D</I><SUP>(1)</SUP> <IMG SRC="../IMAGES/dot10.gif"> <I>W  </I>=  <I>W</I><SUP>2</SUP>,</sub></sup></pre><P>
+<pre><I>D</I><SUP>(3)  </SUP>=   <I>D</I><SUP>(2) </SUP><IMG SRC="../IMAGES/dot10.gif"> <I>W  </I>=  <I>W</I><SUP>3</SUP>,</sub></sup></pre><P>
+<img src="555_a.gif"><P>
+<pre><I>D</I><SUP>(<I>n</I>-1)  </SUP>=  <I>D</I><SUP>(<I>n</I>-2) </SUP><IMG SRC="../IMAGES/dot10.gif"><SUP> </SUP><I>W  </I>=  <I>W<SUP>n</I>-1 <B>.</B></sub></sup></pre><P>
+As we argued above, the matrix <I>D</I><SUP>(<I>n-</I>1)</SUP> = <I>W<SUP>n-</I>1</SUP> contains the shortest-path weights. The following procedure computes this sequence in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>4</SUP>) time.<P>
+<pre><a name="08de_1843">SLOW-ALL-PAIRS-SHORTEST-PATHS(<I>W</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>W</I>]</sub></sup></pre><P>
+<pre>2  <I>D</I><SUP>(1)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> <I>W</I></sub></sup></pre><P>
+<pre>3  <B>for</B> <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>n </I>- 1</sub></sup></pre><P>
+<pre>4       <B>do</B> <I>D</I><SUP>(<I>m</I>)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> EXTEND-SHORTEST-PATHS(<I>D</I><SUP>(<I>m</I></SUP>-<SUP>1)</SUP>,<I>W</I>)</sub></sup></pre><P>
+<pre>5  <B>return</B> <I>D</I><SUP>(<I>n</I></SUP>-<SUP>1)</sub></sup></pre><P>
+Figure 26.1 shows a graph and the matrices <I>D</I><SUP>(<I>m</I>)</SUP> computed by the procedure <FONT FACE="Courier New" SIZE=2>SLOW</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Improving the running time</h2><P>
+Our goal, however, is not to compute <I>all</I> the <I>D</I><SUP>(<I>m</I>)</SUP> matrices: we are interested only in matrix <I>D</I><SUP>(<I>n-</I>1)</SUP>. Recall that in the absence of negative-weight cycles, equation (26.3) implies <I>D</I><SUP>(<I>m</I>)</SUP> = <I>D</I><SUP>(<I>n-</I>1)</SUP> for all integers <I>m</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I> - 1. We can compute <I>D</I><SUP>(<I>n-</I>1)</SUP> with only <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n</I> - 1)<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> matrix products by computing the sequence<P>
+<pre><I>D</I><SUP>(1)  </SUP>=   <I>W </I>,</sub></sup></pre><P>
+<pre><I>D</I><SUP>(2)  </SUP>=   <I>W</I><SUP>2</SUP>   =  <I>W</I> <IMG SRC="../IMAGES/dot10.gif"><I>W</I>,</sub></sup></pre><P>
+<pre><I>D</I><SUP>(4)  </SUP>=   <I>W</I><SUP>4</SUP>   =  <I>W</I><SUP>2 </SUP><IMG SRC="../IMAGES/dot10.gif"><I>W</I><SUP>2</sub></sup></pre><P>
+<pre><I>D</I><SUP>(8)  </SUP>=   <I>W</I><SUP>8</SUP>   =  <I>W</I><SUP>4 </SUP><IMG SRC="../IMAGES/dot10.gif"><I>W</I><SUP>4</SUP>,</sub></sup></pre><P>
+<img src="555_b.gif"><P>
+<pre><I>D</I><SUP>(2</SUP><IMG SRC="../IMAGES/hfbrul14.gif"><SUP>lg(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"><SUP>)  </SUP>= <I>W</I><SUP>2</SUP><IMG SRC="../IMAGES/hfbrul14.gif"><SUP>lg(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"><SUP>   </SUP>=  <I>W</I><SUP>2</SUP><IMG SRC="../IMAGES/hfbrul14.gif"><SUP>lg(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"><SUP>-1</SUP> <IMG SRC="../IMAGES/dot10.gif"> <I>W</I><SUP>2</SUP><IMG SRC="../IMAGES/hfbrul14.gif"><SUP>lg(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"><SUP>-1</SUP>.</sub></sup></pre><P>
+Since 2<IMG SRC="../IMAGES/hfbrul14.gif"><SUP>lg(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"> <IMG SRC="../IMAGES/gteq.gif"> <I>n </I>- 1, the final product <I>D</I><SUP>(2<FONT FACE="Times New Roman" SIZE=1></SUP><IMG SRC="../IMAGES/hfbrul14.gif"><SUP>1g(<I>n</I>-1)</SUP><IMG SRC="../IMAGES/hfbrur14.gif"><SUP>)</FONT></SUP> is equal to <I>D</I><SUP>(<I>n</I>-1)</SUP>.<P>
+<a name="08df_1844"><a name="08df_1845"><a name="08df_1846"><a name="08df_1847">The following procedure computes the above sequence of matrices by using this technique of <I><B>repeated squaring</I></B>.<P>
+<img src="556_a.gif"><P>
+<h4><a name="08df_1849">Figure 26.1 A directed graph and the sequence of matrices D<SUP>(m)</SUP><FONT FACE="Times New Roman" SIZE=2> computed by <FONT FACE="Courier New" SIZE=2>SLOW<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>ALL<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>PAIRS<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SHORTEST<FONT FACE="Times New Roman" SIZE=2>-P<FONT FACE="Courier New" SIZE=2>ATHS.<FONT FACE="Times New Roman" SIZE=2> The reader may verify that D<SUP>(5)</SUP><FONT FACE="Times New Roman" SIZE=2> = D<SUP>(4)</SUP><FONT FACE="Times New Roman" SIZE=2> . W is equal to D<SUP>(4)</SUP><FONT FACE="Times New Roman" SIZE=2>, and thus D<SUP>(m)</SUP><FONT FACE="Times New Roman" SIZE=2> = D<SUP>(4)</SUP><FONT FACE="Times New Roman" SIZE=2> for all m <IMG SRC="../IMAGES/gteq.gif"> 4.<a name="08df_1849"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<pre><a name="08df_1848">FASTER-ALL-PAIRS-SHORTEST-PATHS(<I>W</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>W</I>]</sub></sup></pre><P>
+<pre>2  <I>D</I><SUP>(1)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> <I>W</I></sub></sup></pre><P>
+<pre>3  <I>m </I><IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>4  <B>while</B> <I>n</I> - 1 &gt; <I>m</I></sub></sup></pre><P>
+<pre>5      <B>do</B> <I>D</I><SUP>(2<I>m</I>)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> EXTEND-SHORTEST-PATHS(<I>D</I><SUP>(<I>m</I>)</SUP>,<I>D</I><SUP>(<I>m</I>)</SUP>)</sub></sup></pre><P>
+<pre>6         <I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2<I>m</I></sub></sup></pre><P>
+<pre>7  <B>return</B> <I>D</I><SUP>(<I>m</I>)</sub></sup></pre><P>
+In each iteration of the <B>while</B> loop of lines 4-6, we compute <I>D</I><SUP>(2<I>m</I>)</SUP> = (<I>D</I><SUP>(<I>m</I>))2</SUP>, starting with <I>m</I> = 1. At the end of each iteration, we double the value of <I>m</I>. The final iteration computes <I>D</I><SUP>(<I>n</I>-1)</SUP> by actually computing <I>D</I><SUP>(2<I>m</I>)</SUP> for some <I>n</I> - 1 <IMG SRC="../IMAGES/lteq12.gif"> 2<I>m</I> &lt; 2<I>n</I> - 2. By equation (26.3), <I>D</I><SUP>(2<I>m</I>)</SUP> = <I>D</I><SUP>(<I>n</I>-1)</SUP>. The next time the test in line 4 is performed, <I>m</I> has been doubled, so now <I>n</I> - 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I>, the test fails, and the procedure returns the last matrix it computed.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>FASTER</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>lg <I>n</I>) since each of the <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n </I>- 1)<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> matrix products takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) time. Observe that the code is tight, containing no elaborate data structures, and the constant hidden in the <IMG SRC="../IMAGES/bound.gif">-notation is therefore small.<P>
+<img src="557_a.gif"><P>
+<h4><a name="08df_184a">Figure 26.2 A weighted, directed graph for use in Exercises 26.1-1, 26.2-1,  and  26.3-1.<a name="08df_184a"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08e0_184c">Exercises<a name="08e0_184c"></h2><P>
+<a name="08e0_184d">26.1-1<a name="08e0_184d"><P>
+Run <FONT FACE="Courier New" SIZE=2>SLOW</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> on the weighted, directed graph of Figure 26.2, showing the matrices that result for each iteration of the respective loops. Then do the same for <FONT FACE="Courier New" SIZE=2>FASTER</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT>.<P>
+<a name="08e0_184e">26.1-2<a name="08e0_184e"><P>
+Why do we require that <I>w<SUB>ii</I></SUB> = 0 for all 1 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>?<P>
+<a name="08e0_184f">26.1-3<a name="08e0_184f"><P>
+What does the matrix<P>
+<img src="557_b.gif"><P>
+used in the shortest-paths algorithms correspond to in regular matrix multiplication?<P>
+<a name="08e0_1850">26.1-4<a name="08e0_1850"><P>
+Show how to express the single-source shortest-paths problem as a product of matrices and a vector. Describe how evaluating this product corresponds to a Bellman-Ford-like algorithm (see Section 25.3).<P>
+<a name="08e0_1851">26.1-5<a name="08e0_1851"><P>
+Suppose we also wish to compute the vertices on shortest paths in the algorithms of this section. Show how to compute the predecessor matrix <IMG SRC="../IMAGES/piuc.gif"> from the completed matrix <I>D</I> of shortest-path weights in <I>O</I>(<I>n</I><SUP>3</SUP>) time.<P>
+<a name="08e0_1852">26.1-6<a name="08e0_1852"><P>
+The vertices on shortest paths can also be computed at the same time as the shortest-path weights. Let us define <img src="558_a.gif"> to be the predecessor of vertex <I>j</I> on any minimum-weight path from<I> i</I> to <I>j</I> that contains at most <I>m</I> edges. Modify <FONT FACE="Courier New" SIZE=2>EXTEND</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> and <FONT FACE="Courier New" SIZE=2>SLOW</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> to compute the matrices <IMG SRC="../IMAGES/piuc.gif"><SUP>(1)</SUP>, <IMG SRC="../IMAGES/piuc.gif"><SUP>(2)</SUP>, . . . , <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>n-</I>1)</SUP> as the matrices <I>D</I><SUP>(1)</SUP>, <I>D</I><SUP>(2)</SUP>, . . . , <I>D</I><SUP>(<I>n</I>-1)</SUP> are computed.<P>
+<a name="08e0_1853">26.1-7<a name="08e0_1853"><P>
+<a name="08e0_1849">The <FONT FACE="Courier New" SIZE=2>FASTER</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> procedure, as written, requires us to store <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n</I> - 1)<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> matrices, each with <I>n</I><SUP>2</SUP> elements, for a total space requirement of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2 </SUP>lg <I>n</I>). Modify the procedure to require only <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) space by using only two <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrices.<P>
+<a name="08e0_1854">26.1-8<a name="08e0_1854"><P>
+<a name="08e0_184a"><a name="08e0_184b">Modify <FONT FACE="Courier New" SIZE=2>FASTER</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS </FONT>to detect the presence of a negative-weight cycle.<P>
+<a name="08e0_1855">26.1-9<a name="08e0_1855"><P>
+Give an efficient algorithm to find the length (number of edges) of a minimum-length negative-weight cycle in a graph.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08e1_1850">26.2 The Floyd-Warshall algorithm<a name="08e1_1850"></h1><P>
+<a name="08e1_184c"><a name="08e1_184d"><a name="08e1_184e"><a name="08e1_184f">In this section, we shall use a different dynamic-programming formulation to solve the all-pairs shortest-paths problem on a directed graph <I>G</I> = (<I>V, E</I>). The resulting algorithm, known as the <I><B>Floyd-Warshall algorithm</I></B>, runs in <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>3</SUP>) time. As before, negative-weight edges may be present, but we shall assume that there are no negative-weight cycles. As in Section 26.1, we shall follow the dynamic-programming process to develop the algorithm. After studying the resulting algorithm, we shall present a similar method for finding the transitive closure of a directed graph.<P>
+
+
+
+
+
+<h2>The structure of a shortest path</h2><P>
+<a name="08e2_1850"><a name="08e2_1851"><a name="08e2_1852">In the Floyd-Warshall algorithm, we use a different characterization of the structure of a shortest path than we used in the matrix-multiplication-based all-pairs algorithms. The algorithm considers the &quot;intermediate&quot; vertices of a shortest path, where an <I><B>intermediate</I></B> vertex of a simple path <I>p</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . , <I>v</I><SUB>l</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is any vertex of <I>p</I> other than <I>v</I><SUB>1</SUB> or <I>v</I><SUB>l</SUB>, that is, any vertex in the set {<I>v</I><SUB>2</SUB>,<I>v</I><SUB>3</SUB>, . . . , <I>v</I><SUB>l-1</SUB>}.<P>
+The Floyd-Warshall algorithm is based on the following observation. Let the vertices of <I>G</I> be <I>V</I> = {1, 2, . . . , <I>n</I>}, and consider a subset {1, 2, . . . , <I>k</I>} of vertices for some <I>k</I>. For any pair of vertices <I>i,</I> <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, consider all paths from <I>i</I> to <I>j</I> whose intermediate vertices are all drawn from {1, 2, . . . , <I>k</I>}, and let <I>p</I> be a minimum-weight path from among them. (Path <I>p</I> is simple, since we assume that <I>G</I> contains no negative-weight cycles.) The Floyd- Warshall algorithm exploits a relationship between path <I>p</I> and shortest paths from <I>i</I> to <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1}. The relationship depends on whether or not <I>k</I> is an intermediate vertex of path <I>p</I>.<P>
+<img src="559_a.gif"><P>
+<h4><a name="08e2_1853">Figure 26.3 Path p is a shortest path from vertex i to vertex j, and k is the highest-numbered intermediate vertex of p. Path p<SUB>1</SUB>, the portion of path p from vertex i to vertex k, has all intermediate vertices in the set {1, 2, . . . , k - 1}. The same holds for path p<SUB>2</SUB> from vertex k to vertex j.<a name="08e2_1853"></sub></sup></h4><P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>k</I> is not an intermediate vertex of path <I>p</I>, then all intermediate vertices of path <I>p</I> are in the set {1, 2, . . . , <I>k</I> - 1}. Thus, a shortest path from vertex <I>i</I> to vertex <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1} is also a shortest path from <I>i</I> to <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>k</I> is an intermediate vertex of path <I>p</I>, then we break <I>p</I> down into <img src="559_b.gif"> as shown in Figure 26.3. By Lemma 25.1, <I>p</I><SUB>1</SUB> is a shortest path from <I>i</I> to <I>k</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}. In fact, vertex <I>k</I> is not an intermediate vertex of path <I>p</I><SUB>1</SUB>, and so <I>p</I><SUB>1 </SUB>is a shortest path from <I>i</I> to <I>k</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1}. Similarly, <I>p</I><SUB>2</SUB> is a shortest path from vertex <I>k</I> to vertex <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1}.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A recursive solution to the all-pairs shortest-paths problem</h2><P>
+Based on the above observations, we define a different recursive formulation of shortest-path estimates than we did in Section 26.1. Let <img src="559_c.gif"> be the weight of a shortest path from vertex <I>i</I> to vertex <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}. When <I>k</I> = 0, a path from vertex <I>i</I> to vertex <I>j</I> with no intermediate vertex numbered higher than 0 has no intermediate vertices at all. It thus has at most one edge, and hence <img src="559_d.gif">. A recursive definition is given by<P>
+<img src="559_e.gif"><P>
+<h4><a name="08e3_0001">(26.5)<a name="08e3_0001"></sub></sup></h4><P>
+The matrix <img src="560_a.gif"> gives the final answer--<img src="560_b.gif"> for all <I>i, j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>--because all intermediate vertices are in the set {1, 2, . . . , <I>n</I>}.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing the shortest-path weights bottom up</h2><P>
+<a name="08e4_1853">Based on recurrence (26.5), the following bottom-up procedure can be used to compute the values <img src="560_c.gif"> in order of increasing values of <I>k</I>. Its input is an <I>n</I> <IMG SRC="../IMAGES/mult.gif"> <I>n</I> matrix <I>W</I> defined as in equation (26.1). The procedure returns the matrix <I>D</I><SUP>(<I>n</I>)</SUP> of shortest-path weights.<P>
+<img src="560_d.gif"><P>
+Figure 26.4 shows a directed graph and the matrices <I>D</I><SUP>(<I>k</I>)</SUP> computed by the Floyd-Warshall algorithm.<P>
+The running time of the Floyd-Warshall algorithm is determined by the triply nested <B>for</B> loops of lines 3-6. Each execution of line 6 takes <I>O</I>(1) time. The algorithm thus runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>). As in the final algorithm in Section 26.1, the code is tight, with no elaborate data structures, and so the constant hidden in the <IMG SRC="../IMAGES/bound.gif">-notation is small. Thus, the Floyd-Warshall algorithm is quite practical for even moderate-sized input graphs.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Constructing a shortest path</h2><P>
+There are a variety of different methods for constructing shortest paths in the Floyd-Warshall algorithm. One way is to compute the matrix <I>D</I> of shortest-path weights and then construct the predecessor matrix <IMG SRC="../IMAGES/piuc.gif"> from the <I>D</I> matrix. This method can be implemented to run in <I>O</I>(<I>n</I><SUP>3</SUP>) time (Exercise 26.1-5). Given the predecessor matrix <IMG SRC="../IMAGES/piuc.gif">, the <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATH</FONT> procedure can be used to print the vertices on a given shortest path.<P>
+We can compute the predecessor matrix <IMG SRC="../IMAGES/piuc.gif"> &quot;on-line&quot; just as the Floyd-Warshall algorithm computes the matrices <I>D</I><SUP>(<I>k</I>)</SUP>. Specifically, we compute a sequence of matrices <IMG SRC="../IMAGES/piuc.gif"><SUP>(0)</SUP>, <IMG SRC="../IMAGES/piuc.gif"><SUP>(1)</SUP>, . . . , <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>n</I>)</SUP>, where <IMG SRC="../IMAGES/piuc.gif"> = <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>n</I>)</SUP> and <img src="560_e.gif"> is defined to be the predecessor of vertex <I>j</I> on a shortest path from vertex <I>i </I>with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}.<P>
+We can give a recursive formulation of <img src="560_f.gif">. When <I>k</I> = 0, a shortest path from <I>i</I> to <I>j</I> has no intermediate vertices at all. Thus,<P>
+<img src="561_a.gif"><P>
+<h4><a name="08e5_0001">Figure 26.4 The sequence of matrices D<SUP>(k)</SUP><FONT FACE="Times New Roman" SIZE=2> and <IMG SRC="../IMAGES/piuc.gif"><SUP>(k)</SUP><FONT FACE="Times New Roman" SIZE=2> computed by the Floyd-Warshall algorithm for the graph in Figure 26.1.<a name="08e5_0001"></FONT></FONT></sub></sup></h4><P>
+<img src="562_a.gif"><P>
+<h4><a name="08e5_0002">(26.6)<a name="08e5_0002"></sub></sup></h4><P>
+For <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1, if we take the path <img src="562_b.gif">, then the predecessor of <I>j</I> we choose is the same as the predecessor of <I>j</I> we chose on a shortest path from <I>k</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1}. Otherwise, we choose the same predecessor of <I>j</I> that we chose on a shortest path from <I>i</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I> - 1}. Formally, for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1,<P>
+<img src="562_c.gif"><P>
+<h4><a name="08e5_0003">(26.7)<a name="08e5_0003"></sub></sup></h4><P>
+We leave the incorporation of the <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>k</I>)</SUP> matrix computations into the <FONT FACE="Courier New" SIZE=2>FLOYD</FONT>-<FONT FACE="Courier New" SIZE=2>WARSHALL</FONT> procedure as Exercise 26.2-3. Figure 26.4 shows the sequence of <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>k</I>)</SUP> matrices that the resulting algorithm computes for the graph of Figure 26.1. The exercise also asks for the more difficult task of proving that the predecessor subgraph <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB> is a shortest-paths tree with root <I>i</I>. Yet another way to reconstruct shortest paths is given as Exercise 26.2-6.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Transitive closure of a directed graph</h2><P>
+<a name="08e6_1854"><a name="08e6_1855"><a name="08e6_1856">Given a directed graph <I>G</I> = (<I>V</I>, <I>E</I>) with vertex set <I>V</I> = {1, 2, . . . , <I>n</I>}, we may wish to find out whether there is a path in <I>G</I> from <I>i</I> to <I>j</I> for all vertex pairs <I>i</I>, <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>. The <I><B>transitive closure</I></B> of <I>G</I> is defined as the graph <I>G</I>* = (<I>V</I>, <I>E</I>*), where<P>
+<I>E</I>* = {(<I>i</I>, <I>j</I>) : there is a path from vertex <I>i</I> to vertex <I>j</I> in <I>G</I>} .<P>
+One way to compute the transitive closure of a graph in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) time is to assign a weight to 1 to each edge of <I>E</I> and run the Floyd-Warshall algorithm. If there is a path from vertex <I>i</I> to vertex <I>j</I>, we get <I>d<SUB>ij</I></SUB> &lt; <I>n</I>. Otherwise, we get <I>d<SUB>ij</I></SUB> = <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>.<P>
+There is another, similar way to compute the transitive closure of <I>G</I> in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) time that can save time and space in practice. This method involves substitutions of the logical operations <IMG SRC="../IMAGES/angledwn.gif"> and <IMG SRC="../IMAGES/angleup.gif"> for the arithmetic operations min and + in the Floyd-Warshall algorithm. For <I>i</I>, <I>j</I>, <I>k</I> = 1, 2, . . . , <I>n</I>, we define <img src="562_d.gif"> to be 1 if there exists a path in graph <I>G</I> from vertex <I>i</I> to <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}, and 0 otherwise. We construct the transitive closure <I>G</I>* = (<I>V</I>, <I>E</I>*) by putting edge (<I>i</I>, <I>j</I>) into <I>E</I>* if and only if <img src="562_e.gif"> = 1. A recursive definition of <img src="562_f.gif">, analogous to recurrence (26.5), is<P>
+<img src="562_g.gif"><P>
+and for <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1,<P>
+<img src="563_a.gif"><P>
+<h4><a name="08e6_1858">(26.8)<a name="08e6_1858"></sub></sup></h4><P>
+As in the Floyd-Warshall algorithm, we compute the matrices <img src="563_b.gif"> in order of increasing <I>k</I>.<P>
+<pre><a name="08e6_1857">TRANSITIVE-CLOSURE(<I>G</I>)</sub></sup></pre><P>
+<img src="563_c.gif"><P>
+Figure 26.5 shows the matrices <I>T</I><SUP>(<I>k</I>)</SUP> computed by the <FONT FACE="Courier New" SIZE=2>TRANSITIVE-</FONT><FONT FACE="Courier New" SIZE=2>CLOSURE</FONT> procedure on a sample graph. Like the Floyd-Warshall algorithm, the running time of the <FONT FACE="Courier New" SIZE=2>TRANSITIVE-</FONT><FONT FACE="Courier New" SIZE=2>CLOSURE</FONT> procedure is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>). On some computers, though, logical operations on single-bit values execute faster than arithmetic operations on integer words of data. Moreover, because the direct transitive-closure algorithm uses only boolean values rather than integer values, its space requirement is less than the Floyd-Warshall algorithm's by a factor corresponding to the size of a word of computer storage.<P>
+In Section 26.4, we shall see that the correspondence between <FONT FACE="Courier New" SIZE=2>FLOYD-</FONT><FONT FACE="Courier New" SIZE=2>WARSHALL</FONT> and <FONT FACE="Courier New" SIZE=2>TRANSITIVE</FONT>-<FONT FACE="Courier New" SIZE=2>CLOSURE</FONT> is more than coincidence. Both algorithms are based on a type of algebraic structure called a "closed semiring."<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08e7_185b">Exercises<a name="08e7_185b"></h2><P>
+<a name="08e7_185c">26.2-1<a name="08e7_185c"><P>
+<a name="08e7_1858">Run the Floyd-Warshall algorithm on the weighted, directed graph of Figure 26.2. Show the matrix <I>D</I><SUP>(<I>k</I>)</SUP> that results for each iteration of the outer loop.<P>
+<a name="08e7_185d">26.2-2<a name="08e7_185d"><P>
+As it appears above, the Floyd-Warshall algorithm requires <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) space, since we compute <img src="563_d.gif"> for <I>i</I>, <I>j</I>, <I>k</I> = 1, 2, . . . , <I>n</I>. Show that the following procedure, which simply drops all the superscripts, is correct, and thus only <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) space is required.<P>
+<img src="564_a.gif"><P>
+<h4><a name="08e7_185e">Figure 26.5 A directed graph and the matrices T<SUP>(k)</SUP> computed by the transitive-closure algorithm.<a name="08e7_185e"></sub></sup></h4><P>
+<pre><a name="08e7_1859">FLOYD-WARSHALL'(<I>W</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>rows</I>[<I>W</I>]</sub></sup></pre><P>
+<pre>2  <I>D</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>W</I></sub></sup></pre><P>
+<pre>3  <B>for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to </B><I>n</I></sub></sup></pre><P>
+<pre>4       <B>do for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>5              <B>do for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>6                 <I>d<SUB>ij</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> min(<I>d<SUB>ij</I></SUB>, <I>d<SUB>ik</I></SUB> + <I>d<SUB>kj</I></SUB>)</sub></sup></pre><P>
+<pre>7  <B>return</B> <I>D</I></sub></sup></pre><P>
+<a name="08e7_185f">26.2-3<a name="08e7_185f"><P>
+Modify the <FONT FACE="Courier New" SIZE=2>FLOYD</FONT>-<FONT FACE="Courier New" SIZE=2>WARSHALL</FONT> procedure to include computation of the <IMG SRC="../IMAGES/piuc.gif"><SUP>(<I>k</I>)</SUP> matrices according to equations (26.6) and (26.7). Prove rigorously that for all <I>i</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, the predecessor subgraph <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB>, <I>i</I></SUB> is a shortest-paths tree with root <I>i</I>. (<I>Hint</I>: To show that <I>G</I><IMG SRC="../IMAGES/piuc.gif"><SUB>,<I>i</I></SUB> is acyclic, first show that <img src="564_b.gif"> implies <img src="564_c.gif">. Then, adapt the proof of Lemma 25.8.)<P>
+<a name="08e7_1860">26.2-4<a name="08e7_1860"><P>
+Suppose that we modify the way in which equality is handled in equation (26.7):<P>
+<img src="564_d.gif"><P>
+Is this alternative definition of the predecessor matrix <IMG SRC="../IMAGES/piuc.gif"> correct?<P>
+<a name="08e7_1861">26.2-5<a name="08e7_1861"><P>
+<a name="08e7_185a">How can the output of the Floyd-Warshall algorithm be used to detect the presence of a negative-weight cycle?<P>
+<a name="08e7_1862">26.2-6<a name="08e7_1862"><P>
+Another way to reconstruct shortest paths in the Floyd-Warshall algorithm uses values <img src="565_a.gif"> for <I>i</I>, <I>j</I>, <I>k</I> = 1, 2, . . . , <I>n</I>, where <img src="565_b.gif"> is the highest-numbered intermediate vertex of a shortest path from <I>i</I> to <I>j</I>. Give a recursive formulation for <img src="565_c.gif">, modify the <FONT FACE="Courier New" SIZE=2>FLOYD</FONT>-<FONT FACE="Courier New" SIZE=2>WARSHALL</FONT> procedure to compute the <img src="565_d.gif"> values, and rewrite the <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATH</FONT> procedure to take the matrix <img src="565_e.gif"> as an input. How is the matrix <IMG SRC="../IMAGES/phicap12.gif"> like the <I>s</I> table in the matrix-chain multiplication problem of Section 16.1?<P>
+<a name="08e7_1863">26.2-7<a name="08e7_1863"><P>
+Give an <I>O</I>(<I>V E</I>)-time algorithm for computing the transitive closure of a directed graph <I>G</I> = (<I>V</I>, <I>E</I>).<P>
+<a name="08e7_1864">26.2-8<a name="08e7_1864"><P>
+Suppose that the transitive closure of a directed acyclic graph can be computed in <IMG SRC="../IMAGES/scrptf12.gif">(<I>V</I>, <I>E</I>) time, where <IMG SRC="../IMAGES/scrptf12.gif">(<I>V</I>, <I>E</I>) = <IMG SRC="../IMAGES/omega12.gif">(<I>V</I> + <I>E</I>) and <IMG SRC="../IMAGES/scrptf12.gif"> is monotonically increasing. Show that the time to compute the transitive closure of a general directed graph is <I>O</I>(<IMG SRC="../IMAGES/scrptf12.gif">(<I>V</I>, <I>E</I>)).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08e8_185f">26.3 Johnson's algorithm for sparse graphs<a name="08e8_185f"></h1><P>
+<a name="08e8_185b"><a name="08e8_185c"><a name="08e8_185d">Johnson's algorithm finds shortest paths between all pairs in <I>O</I>(<I>V</I><SUP>2</SUP> lg <I>V</I> + <I>V E</I>) time; it is thus asymptotically better than either repeated squaring of matrices or the Floyd-Warshall algorithm for sparse graphs. The algorithm either returns a matrix of shortest-path weights for all pairs or reports that the input graph contains a negative-weight cycle. Johnson's algorithm uses as subroutines both Dijkstra's algorithm and the Bellman-Ford algorithm, which are described in Chapter 25.<P>
+<a name="08e8_185e">Johnson's algorithm uses the technique of <I><B>reweighting</I></B>, which works as follows. If all edge weights <I>w</I> in a graph <I>G</I> = (<I>V</I>, <I>E</I>) are nonnegative, we can find shortest paths between all pairs of vertices by running Dijkstra's algorithm once from each vertex; with the Fibonacci-heap priority queue, the running time of this all-pairs algorithm is <I>O</I>(<I>V</I><SUP>2 </SUP>lg <I>V</I> + <I>V E</I>). If <I>G </I>has negative-weight edges, we simply compute a new set of nonnegative edge weights that allows us to use the same method. The new set of edge weights <img src="565_f.gif"> must satisfy two important properties.<P>
+1.     For all pairs of vertices <I>u</I>, <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, a shortest path from <I>u</I> to <I>v</I> using weight function <I>w</I> is also a shortest path from <I>u</I> to <I>v</I> using weight function <img src="566_a.gif">.<P>
+2.     For all edges (<I>u</I>, <I>v</I>), the new weight <img src="566_b.gif"> is nonnegative.<P>
+As we shall see in a moment, the preprocessing of <I>G</I> to determine the new weight function <img src="566_c.gif"> can be performed in <I>O</I>(<I>V E</I>) time.<P>
+
+
+
+
+
+<h2>Preserving shortest paths by reweighting</h2><P>
+As the following lemma shows, it is easy to come up with a reweighting of the edges that satisfies the first property above. We use <IMG SRC="../IMAGES/delta12.gif"> to denote shortest-path weights derived from weight function <I>w</I> and <img src="566_d.gif"> to denote shortest-path weights derived from weight function <img src="566_e.gif">.<P>
+<a name="08e9_0001">Lemma 26.1<a name="08e9_0001"><P>
+Given a weighted, directed graph <I>G</I> = (<I>V</I>, <I>E</I>) with weight function <I>w</I>: <I>E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B>, let <I>h</I>: <I>V</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B> be any function mapping vertices to real numbers. For each edge (<I>u</I>, <I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>, define<P>
+<img src="566_f.gif"><P>
+<h4><a name="08e9_0002">(26.9)<a name="08e9_0002"></sub></sup></h4><P>
+Let <I>p</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>0</SUB>, <I>v</I><SUB>l</SUB>, . . . , <I>v<SUB>k</I></SUB>) be a path from vertex <IMG SRC="../IMAGES/upsil12.gif"><SUB>0</SUB> to vertex <I>v<SUB>k</I></SUB>. Then, <I>w</I>(<I>p</I>) = <IMG SRC="../IMAGES/delta12.gif">(<I>v</I><SUB>0</SUB>, <I>v<SUB>k</I></SUB>) if and only if <img src="566_g.gif">. Also, <I>G</I> has a negative-weight cycle using weight function <I>w</I> if and only if <I>G</I> has a negative-weight cycle using weight function <img src="566_h.gif">.<P>
+<I><B>Proof     </I></B>We start by showing that<P>
+<img src="566_i.gif"><P>
+<h4><a name="08e9_0003">(26.10)<a name="08e9_0003"></sub></sup></h4><P>
+We have<P>
+<img src="566_j.gif"><P>
+The third equality follows from the telescoping sum on the second line.<P>
+We now show by contradiction that <I>w</I>(<I>p</I>) = <IMG SRC="../IMAGES/delta12.gif">(<I>v</I><SUB>0</SUB>, <I>v<SUB>k</I></SUB>) implies <img src="566_k.gif">. Suppose that there is a shorter path <I>p</I>' from <I>v</I><SUB>0</SUB> to <I>v<SUB>k</I></SUB> using weight function <img src="566_l.gif">. Then, <img src="566_m.gif">. By equation (26.10),<P>
+<img src="566_n.gif"><P>
+which implies that<I> w</I>(<I>p</I>')<I> </I>&lt;<I> w</I>(<I>p</I>). But this contradicts our assumption that <I>p</I> is a shortest path from <I>u</I> to <I>v</I> using <I>w</I>. The proof of the converse is similar.<P>
+Finally, we show that <I>G</I> has a negative-weight cycle using weight function<I> w</I> if and only if <I>G</I> has a negative-weight cycle using weight function <img src="567_a.gif">. Consider any cycle <I>c = </I>&lt;<I>v</I><SUB>0</SUB><I>, v</I><SUB>1</SUB><I>, . . . , v<SUB>k</SUB></I>&gt;, where <I>v</I><SUB>0</SUB><I>= v<SUB>k</I></SUB>. By equation (26.10),<P>
+<img src="567_b.gif"><P>
+and thus <I>c</I> has negative weight using <I>w</I> if and only if it has negative weight using <img src="567_c.gif">      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Producing nonnegative weights by reweighting</h2><P>
+Our next goal is to ensure that the second property holds: we want <img src="567_d.gif"> (<I>u, v</I>) to be nonnegative for all edges (<I>u,v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E</I>. Given a weighted, directed graph <I>G = </I>(<I>V, E</I>) with weight function <IMG SRC="../IMAGES/omega12.gif"><I>: E</I> <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B>, we make a new graph <I>G</I>'<I> = </I>(<I>V</I>'<I>, E</I>'), where <I>V</I>'<I> = V </I><IMG SRC="../IMAGES/wideu.gif"> {<I>s</I>} for some new vertex <I>s </I><IMG SRC="../IMAGES/notmem.gif"><I> V</I> and <I>E</I>'<I>= E </I><IMG SRC="../IMAGES/wideu.gif"> {(<I>s, </I><IMG SRC="../IMAGES/upsil12.gif">): <I>v</I> <IMG SRC="../IMAGES/memof12.gif"><I> V</I>}. We extend the weight function <I>w</I> so that <IMG SRC="../IMAGES/omega12.gif"><I> </I>(<I>s,v</I>) = 0 for all <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>. Note that because <I>s</I> has no edges that enter it, no shortest paths in <I>G</I>'<I>,</I> other than those with source <I>s</I>, contain <I>s</I>. Moreover, <I>G</I>'<I> </I>has no negative-weight cycles if and only if <I>G</I> has no negative-weight cycles. Figure 26.6(a) shows the graph <I>G</I>'<I> </I>corresponding to the graph <I>G</I> of Figure 26.1.<P>
+Now suppose that <I>G</I> and <I>G</I>' have no negative-weight cycles. Let us define <I>h(v) =</I><IMG SRC="../IMAGES/delta12.gif"><I>(s,v)</I> for all <I>v </I><IMG SRC="../IMAGES/memof12.gif"> <I>V</I>'. By Lemma 25.3, we have <I>h(v) </I><IMG SRC="../IMAGES/lteq12.gif"><I> h(u)</I> + <IMG SRC="../IMAGES/omega12.gif"><I>(u, v)</I> for all edges <I>(u,v) </I><IMG SRC="../IMAGES/memof12.gif"><I> E</I>'. Thus, if we define the new weights <img src="567_e.gif"> according to equation (26.9), we have <img src="567_f.gif"> and the second property is satisfied. Figure 26.6(b) shows the graph <I>G</I>' from Figure 26.6(a) with reweighted edges.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Computing all-pairs shortest paths</h2><P>
+Johnson's algorithm to compute all-pairs shortest paths uses the Bellman-Ford algorithm (Section 25.3) and Dijkstra's algorithm (Section 25.2) as subroutines. It assumes that the edges are stored in adjacency lists. The algorithm returns the usual <IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif">X<IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif"> matrix <I>D = d<SUB>ij</I>,</SUB> where <I>d<SUB>ij</SUB> = </I><IMG SRC="../IMAGES/delta12.gif"><I>(i, j)</I>, or it reports that the input graph contains a negative-weight cycle. (In order for the indices into the <I>D</I> matrix to make any sense, we assume that the vertices are numbered from 1 to <IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif">.)<P>
+<img src="568_a.gif"><P>
+<h4><a name="08eb_1864">Figure 26.6 Johnson's all-pairs shortest-paths algorithm run on the graph of Figure 26.1. (a) The graph G' with the original weight function w. The new vertex s is black. Within each vertex v is h(v) = <IMG SRC="../IMAGES/delta12.gif">(s, v). (b) Each edge (u, v) is reweighted with weight function <img src="568_b.gif">. (c)-(g) The result of running Dijkstra's algorithm on each vertex of G using weight function <img src="568_c.gif">. In each part, the source vertex u is black. Within each vertex v are the values <img src="568_d.gif"> and <IMG SRC="../IMAGES/delta12.gif">(u, v), separated by a slash. The value d<SUB>uv</SUB> = <IMG SRC="../IMAGES/delta12.gif">(u, v) is equal to <img src="568_e.gif">.<a name="08eb_1864"></sub></sup></h4><P>
+<img src="569_a.gif"><P>
+<a name="08eb_185f"><a name="08eb_1860"><a name="08eb_1861">This code simply performs the actions we specified earlier. Line 1 produces <I>G</I>'<I>.</I> Line 2 runs the Bellman-Ford algorithm on <I>G</I>' with weight function <I>w</I>. If <I>G</I>' , and hence <I>G</I>, contains a negative-weight cycle, line 3 reports the problem. Lines 4-11 assume that <I>G</I>' contains no negative-weight cycles. Lines 4-5 set <I>h</I>(<I>v</I>) to the shortest-path weight <IMG SRC="../IMAGES/delta12.gif">(<I>s</I>,<I> v</I>) computed by the Bellman-Ford algorithm for all <I>v </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>'. Lines 6-7 compute the new weights <img src="569_b.gif">. For each pair of vertices <I>u, v </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>, the <B>for</B> loop of lines 8-11 computes the shortest-path weight <img src="569_c.gif"> by calling Dijkstra's algorithm once from each vertex in <I>V</I>. Line 11 stores in matrix entry <I>d<SUB>uv</I></SUB> the correct shortest-path weight <IMG SRC="../IMAGES/delta12.gif"><I>(u, v)</I>, calculated using equation (26.10). Finally, line 12 returns the completed <I>D</I> matrix. Figure 26.6 shows the execution of Johnson's algorithm.<P>
+<a name="08eb_1862"><a name="08eb_1863">The running time of Johnson's algorithm is easily seen to be <I>O(V<SUP>2</SUP> </I>lg<I> V + VE)</I> if the priority queue in Dijkstra's algorithm is implemented by a Fibonacci heap. The simpler binary-heap implementation yields a running time of <I>O</I>(<I>V E </I>1g<I> V</I>), which is still asymptotically faster than the Floyd-Warshall algorithm if the graph is sparse.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08ec_0001">Exercises<a name="08ec_0001"></h2><P>
+<a name="08ec_0002">26.3-1<a name="08ec_0002"><P>
+Use Johnson's algorithm to find the shortest paths between all pairs of vertices in the graph of Figure 26.2. Show the values of <I>h</I> and <img src="569_d.gif"> computed by the algorithm.<P>
+<a name="08ec_0003">26.3-2<a name="08ec_0003"><P>
+What is the purpose of adding the new vertex <I>s</I> to <I>V</I>, yielding <I>V</I>'<I>?</I><P>
+<a name="08ec_0004">26.3-3<a name="08ec_0004"><P>
+Suppose that <I>w</I>(<I>u, v</I>) <IMG SRC="../IMAGES/gteq.gif"> 0 for all edges (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E</I>. What is the relationship between the weight functions <I>w </I>and <img src="570_a.gif"> ?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08ed_0001">* 26.4 A general framework for solving path problems in directed graphs<a name="08ed_0001"></h1><P>
+In this section, we examine "closed semirings," an algebraic structure that yields a general framework for solving path problems in directed graphs. We start by defining closed semirings and discussing how they relate to a calculus of directed paths. We then show some examples of closed semirings and a "generic" algorithm for computing all-pairs path information. Both the Floyd-Warshall algorithm and the transitive-closure algorithm from Section 26.2 are instantiations of this generic algorithm.<P>
+
+
+
+
+
+<h2>Definition of closed semirings</h2><P>
+<a name="08ee_1864"><a name="08ee_1865"><a name="08ee_1866"><a name="08ee_1867"><a name="08ee_1868"><a name="08ee_1869"><a name="08ee_186a"><a name="08ee_186b"><a name="08ee_186c"><a name="08ee_186d"><a name="08ee_186e"><a name="08ee_186f">A<I> <B>closed semiring</I></B> is a system <img src="570_b.gif"> where <I>S</I> is a set of elements, <IMG SRC="../IMAGES/xor14.gif"> (the <I><B>summary operator</I></B>) and <img src="570_c.gif"> (the <I><B>extension operator)</I></B> are binary operations on <I>S</I>, and <img src="570_d.gif"> are elements of <I>S</I>, satisfying the following eight properties:<P>
+1.     <img src="570_e.gif"> is a <I><B>monoid</I></B><I>:</I><P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     <I>S </I></FONT>is <I><B>closed</I></B> under <IMG SRC="../IMAGES/xor14.gif">: <I>a</I> <IMG SRC="../IMAGES/xor14.gif"> b <IMG SRC="../IMAGES/memof12.gif"> <I>S</I> for all <I>a, b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif">     <IMG SRC="../IMAGES/xor14.gif"></FONT> is <I><B>associative</I>:</B><I> a</I> <IMG SRC="../IMAGES/xor14.gif"> (<I>b </I><IMG SRC="../IMAGES/xor14.gif"> <I>c</I>) = (<I>a</I> <IMG SRC="../IMAGES/xor14.gif"><I> b</I>) <IMG SRC="../IMAGES/xor14.gif"> <I>c </I>for all <I>a</I>,<I>b</I>,<I>c</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S.</I><P>
+<img src="570_f.gif"><P>
+Likewise, <img src="570_g.gif"> is a monoid.<P>
+<img src="570_h.gif"><P>
+3.     <IMG SRC="../IMAGES/xor14.gif"> is <I><B>commutative:</I></B><I> a </I><IMG SRC="../IMAGES/xor14.gif"> <I>b</I> = <I>b</I> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I> for all <I>a</I>, <I>b</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S.</I><P>
+4.     <IMG SRC="../IMAGES/xor14.gif"> is <I><B>idempotent:</I></B><I> a </I><IMG SRC="../IMAGES/xor14.gif"> <I>a</I> = <I>a</I> for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S.</I><P>
+<img src="570_i.gif"><P>
+6.     If <I>a</I><SUB>1</SUB>,<I> a</I><SUB>2</SUB>,<I> a</I><SUB>3</SUB>, . . . is a countable sequence of elements of <I>S</I>, then <I>a</I><SUB>1</SUB> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I><SUB>2</SUB> <IMG SRC="../IMAGES/xor14.gif"> <I>a</I><SUB>3</SUB> <IMG SRC="../IMAGES/xor14.gif"> . . . is well defined and in <I>S</I>.<P>
+7.     Associativity, commutativity, and idempotence apply to infinite summaries. (Thus, any infinite summary can be rewritten as an infinite summary in which each term of the summary is included just once and the order of evaluation is arbitrary.)<P>
+<img src="570_j.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2>A calculus of paths in directed graphs</h2><P>
+<a name="08ef_1870"><a name="08ef_1871"><a name="08ef_1872"><a name="08ef_1873"><a name="08ef_1874">Although the closed-semiring properties may seem abstract, they can be related to a calculus of paths in directed graphs. Suppose we are given a directed graph <I>G = </I>(<I>V, E</I>) and a <I><B>labeling function</I></B> <IMG SRC="../IMAGES/lambdauc.gif">: <I>V </I>X<I> V </I><IMG SRC="../IMAGES/arrow12.gif"><I> S</I> mapping all ordered pairs of vertices into some codomain <I>S</I>.The <I><B>label of edge</I></B> (<I>u, v</I>)<I> </I><IMG SRC="../IMAGES/memof12.gif"><I> E</I> is denoted ,<IMG SRC="../IMAGES/lambdauc.gif">(<I>u, v</I>). Since <IMG SRC="../IMAGES/lambdauc.gif"> is defined over the domain <I>V </I>X<I> V,</I> the label <IMG SRC="../IMAGES/lambdauc.gif">(<I>u, v</I>) is usually taken as <img src="571_a.gif"> if (<I>u, v</I>) is not an edge of <I>G</I> (we shall see why in a moment).<P>
+<a name="08ef_1875">We use the associative extension operator <img src="571_b.gif"> to extend the notion of labels to paths. The <I><B>label of path</I></B> <I>p = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>1</SUB>,<I> v</I><SUB>2, . . . ,</SUB><I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I><SUB> </I></SUB>is<P>
+<img src="571_c.gif"><P>
+The identity <img src="571_d.gif"> serves as the label of the empty path.<P>
+As a runing example of an application of closed semirings, we shall use shortest paths with nonnegative edge weights. The codomain <I>S i</I>s <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0</SUP> <IMG SRC="../IMAGES/wideu.gif"> {<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, where <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0</SUP> is the set of nonnegative reals, and <IMG SRC="../IMAGES/lambdauc.gif"><I>(i, j) = w<SUB>ij</I></SUB> for all <I>i, j </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>. The extension operator <img src="571_e.gif"> corresponds to the arithmetic operator +, and the label of path <I>p =</I><IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>1</SUB>,v<SUB>2</I>, . . . ,</SUB><I>v<SUB>k</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>is therefore<P>
+<img src="571_f.gif"><P>
+Not surprisingly, the role of <img src="751_g.gif"> , the identity for <img src="571_h.gif"> , is taken by 0, the identity for +. We denote the empty path by <IMG SRC="../IMAGES/epsilon.gif">, and its label is <img src="571_i.gif">.<P>
+<a name="08ef_1876"><a name="08ef_1877">Because the extension operator <img src="571_j.gif"> is associative, we can define the label of the concatenation of two paths in a natural way. Given paths <I>p</I><SUB>1</SUB> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>1</SUB><I>,v</I><SUB>2</SUB><I>, . . . ,v<SUB>k</SUB></I><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>and<I> p</I><SUB>2<I> = </I></SUB><IMG SRC="../IMAGES/lftwdchv.gif"><I><SUB>vk</SUB>,v<SUB>k+</I>, . . . ,</SUB><I>,v</I><SUB>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I>, </I>their <I><B>concatenation</I></B> is<P>
+<pre><I>p</I><SUB>1</SUB> <SUB><IMG SRC="../IMAGES/degree.gif"></SUB> <I>p</I><SUB>2</SUB> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v</I><SUB>1</SUB>, <I>v</I><SUB>2</SUB>, . . . ,<I>v<SUB>k</I></SUB>,<I>v<SUB>k</I>+1</SUB>, . . . ,<I>v<SUB>l</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">,</sub></sup></pre><P>
+and the label of their concatenation is<P>
+<img src="571_k.gif"><P>
+<a name="08ef_1878">The summary operator <IMG SRC="../IMAGES/xor14.gif">, which is both commutative and associative, is used to <I><B>summarize</I></B> path labels. That is, the value <IMG SRC="../IMAGES/lambdauc.gif"><I>(p<SUB>1</SUB>) </I><IMG SRC="../IMAGES/xor14.gif"><I>(p<SUB>2</SUB>)</I> gives a summary, the semantics of which are specific to the application, of the labels of paths <I>p<SUB>1</I></SUB> and <I>p<SUB>2</I></SUB>.<P>
+Our goal will be to compute, for all pairs of vertices <I>i, j </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>, the summary of all path labels from <I>i</I> to <I>j:</I><P>
+<img src="572_a.gif"><P>
+<h4><a name="08ef_187b">(26.11)<a name="08ef_187b"></sub></sup></h4><P>
+We require commutativity and associativity of <IMG SRC="../IMAGES/xor14.gif"> because the order in which paths are summarized should not matter. Because we use the annihilator <img src="572_b.gif"> as the label of an ordered pair (<I>u, v</I>) that is not an edge in the graph, any path that attempts to take an absent edge has label <img src="572_c.gif">.<P>
+For shortest paths, we use min as the summary operator <IMG SRC="../IMAGES/xor14.gif">. The identity for min is <IMG SRC="../IMAGES/infin.gif"><FONT FACE="Times New Roman" SIZE=4>,</FONT> and <IMG SRC="../IMAGES/infin.gif"> is indeed an annihilator for + : <I>a + </I><IMG SRC="../IMAGES/infin.gif"> = <IMG SRC="../IMAGES/infin.gif"> + <I>a</I> = <IMG SRC="../IMAGES/infin.gif"> for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0 </SUP><IMG SRC="../IMAGES/wideu.gif"> {<IMG SRC="../IMAGES/infin.gif">}. Absent edges have weight <IMG SRC="../IMAGES/infin.gif">, and if any edge of a path has weight <IMG SRC="../IMAGES/infin.gif"> , so does the path.<P>
+We want the summary operator <IMG SRC="../IMAGES/xor14.gif"> to be idempotent, because from equation (26.11), we see that <IMG SRC="../IMAGES/xor14.gif"> should summarize the labels of a set of paths. If <I>p</I> is a path, then {<I>p</I>} <IMG SRC="../IMAGES/wideu.gif"> {<I>p</I>} <I>= </I>{<I>p</I>}; if we summarize path <I>p </I>with itself, the resulting label should be the label of <I>p</I>: <IMG SRC="../IMAGES/lambdauc.gif">(<I>p</I>)<I> </I><IMG SRC="../IMAGES/xor14.gif"><I> </I><IMG SRC="../IMAGES/lambdauc.gif">(<I>p</I>)<I> = </I><IMG SRC="../IMAGES/lambdauc.gif">(<I>p</I>).<P>
+Because we consider paths that may not be simple, there may be a countably infinite number of paths in a graph. (Each path, simple or not, has a finite number of edges.) The operator <IMG SRC="../IMAGES/xor14.gif"> should therefore be applicable to a countably infinite number of path labels. That is, if <I>a</I><SUB>1</SUB>,<I> a</I><SUB>2</SUB>, <I>a</I><SUB>3</SUB>, . . . is a countable sequence of elements in codomain <I>S</I>, then the label <I>a<SUB>1</SUB> </I><IMG SRC="../IMAGES/xor14.gif"><I> a<SUB>2</SUB> </I><IMG SRC="../IMAGES/xor14.gif"><I> a<SUB>3</I></SUB> <IMG SRC="../IMAGES/xor14.gif"><I> </I>. . . should be well defined and in <I>S</I>. It should not matter in which order we summarize path labels, and thus associativity and commutativity should hold for infinite summaries. Furthermore, if we summarize the same path label <I>a</I> a countably infinite number of times, we should get <I>a</I> as the result, and thus idempotence should hold for infinite summaries.<P>
+Returning to the shortest-paths example, we ask if min is applicable to an infinite sequence of values in <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0 </SUP><IMG SRC="../IMAGES/wideu.gif"> {<IMG SRC="../IMAGES/infin.gif">}. For example, is the value of min <img src="572_d.gif"> well defined? It is, if we think of the min operator as actually returning the greatest lower bound (infimum) of its arguments, in which case we get min <img src="572_e.gif">.<P>
+To compute labels of diverging paths, we need distributivity of the extension operator <img src="572_f.gif"> over the summary operator <IMG SRC="../IMAGES/xor14.gif">. As shown in Figure 26.7, suppose that we have paths <img src="572_g.gif"> By distributivity, we can summarize the labels of paths <I>p</I><SUB>1</SUB><I> <SUB><IMG SRC="../IMAGES/degree.gif"></SUB> <IMG SRC="../IMAGES/piuc.gif"></I><SUB>2</SUB> and <I>p</I><SUB>1</SUB><I> <SUB><IMG SRC="../IMAGES/degree.gif"></SUB> <IMG SRC="../IMAGES/piuc.gif"></I><SUB>3</SUB> by computing either <img src="572_h.gif">.<P>
+Because there may be a countably infinite number of paths in a graph, <img src="572_i.gif"> should distribute over infinite summaries as well as finite ones. Figure 26.8, for example, contains paths <img src="572_j.gif"> along with the cycle <img src="572_k.gif">. We must be able to summarize the paths <I>p<SUB>1</SUB> <IMG SRC="../IMAGES/degree.gif"> p<SUB>2</SUB>, p<SUB>1</SUB> <SUB><IMG SRC="../IMAGES/degree.gif"> </SUB>c<SUB> <IMG SRC="../IMAGES/degree.gif"></SUB> p<SUB>2</SUB>, p<SUB>1 <IMG SRC="../IMAGES/degree.gif"></SUB> c <SUB><IMG SRC="../IMAGES/degree.gif"> </SUB>c <SUB><IMG SRC="../IMAGES/degree.gif"> </SUB>p<SUB>2</I></SUB>, . . . . Distributivity of <img src="572_l.gif"> over countably infinite summaries gives us<P>
+<img src="572_m.gif"><P>
+<img src="573_a.gif"><P>
+<h4><a name="08ef_187c">Figure 26.7 Using distributivity of <img src="573_b.gif">. To summarize the labels of paths p<SUB>1 <IMG SRC="../IMAGES/degree.gif"></SUB><FONT FACE="Times New Roman" SIZE=2> p<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2> and p<SUB>1 <IMG SRC="../IMAGES/degree.gif"></SUB><FONT FACE="Times New Roman" SIZE=2> p<SUB>3</SUB><FONT FACE="Times New Roman" SIZE=2>, we may compute either <img src="573_c.gif"> or <img src="573_d.gif">.<a name="08ef_187c"></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<img src="573_e.gif"><P>
+<h4><a name="08ef_187d">Figure 26.8 Distributivity of <img src="573_f.gif"> over countably infinite summaries of <IMG SRC="../IMAGES/xor14.gif">. Because of cycle c, there are a countably infinite number of paths from vertex v to vertex x. We must be able to summarize the paths p<SUB>1 </SUB><IMG SRC="../IMAGES/degree.gif"><FONT FACE="Times New Roman" SIZE=2> p<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>, p<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2> <IMG SRC="../IMAGES/degree.gif"><SUB> </SUB>c <IMG SRC="../IMAGES/degree.gif"><SUB> </SUB>p<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>, p<SUB>1</SUB><FONT FACE="Times New Roman" SIZE=2> <IMG SRC="../IMAGES/degree.gif"><SUB> </SUB>c<IMG SRC="../IMAGES/degree.gif"> c <IMG SRC="../IMAGES/degree.gif"> p<SUB>2</SUB><FONT FACE="Times New Roman" SIZE=2>, . . ..<a name="08ef_187d"></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<a name="08ef_1879"><a name="08ef_187a">We use a special notation to denote the label of a cycle that may be traversed any number of times. Suppose that we have a cycle <I>c </I>with label <IMG SRC="../IMAGES/lambdauc.gif">(<I>c</I>) = <I>a</I> We may traverse <I>c </I>zero times for a label of <img src="573_g.gif">, once for a label of <IMG SRC="../IMAGES/lambdauc.gif">(<I>c</I>) = <I>a</I>, twice for a label of <img src="573_h.gif">, and so on. The label we get by summarizing this infinite number of traversals of cycle <I>c </I>is the <I><B>closure</I></B> of <I>a</I>, defined by<P>
+<img src="573_i.gif"><P>
+Thus, in Figure 26.8, we want to compute <img src="573_j.gif">.<P>
+For the shortest-paths example, for any nonnegative real <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0 </SUP><IMG SRC="../IMAGES/wideu.gif"> {<FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT>},<P>
+<img src="573_k.gif"><P>
+The interpretation of this property is that since all cycles have nonnegative weight, no shortest path ever needs to traverse an entire cycle.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Examples of closed semirings</h2><P>
+<a name="08f0_187b">We have already seen one example of a closed semiring, namely <I>S</I><SUB>1</SUB> = (<B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0</SUP> <IMG SRC="../IMAGES/wideu.gif"> {<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, min, +, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT> ,0), which we used for shortest paths with nonnegative edge weights. (As previously noted, the min operator actually returns the greatest lower bound of its arguments.) We have also shown that <I>a</I><SUP>*</SUP> = 0 for all <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0</SUP> <IMG SRC="../IMAGES/wideu.gif"> {<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}.<P>
+We claimed, however, that even if there are negative-weight edges, the Floyd-Warshall algorithm computes shortest-path weights as long as no negative-weight cycles are present. By adding the appropriate closure operator and extending the codomain of labels to <B>R</B> <IMG SRC="../IMAGES/wideu.gif"> {-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, we can find a closed semiring to handle negative-weight cycles. Using min for <IMG SRC="../IMAGES/xor14.gif"> and + for <img src="574_a.gif">, the reader may verify that the closure of <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B> <IMG SRC="../IMAGES/wideu.gif"> {-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>} is<P>
+<img src="574_b.gif"><P>
+The second case (<I>a</I> &lt; 0) models the situation in which we can traverse a negative-weight cycle an infinite number of times to obtain a weight of -<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT> on any path containing the cycle. Thus, the closed semiring to use for the Floyd-Warshall algorithm with negative edge weights is <I>S</I><SUB>2</SUB> = (<B>R</B> <IMG SRC="../IMAGES/wideu.gif"> {-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, min, +, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif">,</FONT> 0). (See Exercise 26.4-3.)<P>
+For transitive closure, we use the closed semiring <I>S</I><SUB>3</SUB> = ({0, 1}, V, <IMG SRC="../IMAGES/lambdauc.gif">, 0, 1), where <IMG SRC="../IMAGES/lambdauc.gif">(<I>i, j</I>) = 1 if (<I>i, j</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E,</I> and <IMG SRC="../IMAGES/lambdauc.gif">(<I>i, j</I>)= 0 otherwise. Here we have 0<SUP>*</SUP> = 1<SUP>*</SUP> = 1. <P>
+<P>
+
+
+
+
+
+
+
+<h2>A dynamic-programming algorithm for directed-path labels</h2><P>
+<a name="08f1_187c">Suppose we are given a directed graph <I>G</I> = (<I>V, E</I>) with labeling function <IMG SRC="../IMAGES/lambdauc.gif">: <I>V </I><IMG SRC="../IMAGES/mult.gif"> <I>V </I><IMG SRC="../IMAGES/arrow12.gif"> <I>S</I>. The vertices are numbered 1 through <I>n</I>. For each pair of vertices <I>i</I>, <I>j</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>, we want to compute equation (26.11): <P>
+<img src="574_c.gif"><P>
+which is the result of summarizing all paths from <I>i</I> to <I>j</I> using the summary operator <IMG SRC="../IMAGES/xor14.gif">. For shortest paths, for example, we wish to compute <P>
+<img src="574_d.gif"><P>
+There is a dynamic-programming algorithm to solve this problem, and its form is very similar to the Floyd-Warshall algorithm and the transitive- closure algorithm. Let <img src="574_e.gif"> be the set of paths from vertex <I>i</I> to vertex <I>j</I> with all intermediate vertices in the set { 1, 2, . . . , <I>k</I>}. We define<P>
+<img src="574_f.gif"><P>
+Note the analogy to the definitions of <img src="574_g.gif"><I> i</I>n the Floyd-Warshall algorithm and <img src="574_h.gif"> in the transitive-closure algorithm. We can define <img src="574_i.gif"> recursively by<P>
+<img src="574_j.gif"><P>
+<h4><a name="08f1_187e">(26.12)<a name="08f1_187e"></sub></sup></h4><P>
+Recurrence (26.12) is reminiscent of recurrences (26.5) and (26.8), but with an additional factor of <img src="574_k.gif"> included. This factor represents the summary of all cycles that pass through vertex <I>k</I> and have all other vertices in the set {1, 2, . . . , <I>k</I> - 1}. (When we assume no negative-weight cycles in the Floyd-Warshall algorithm, <img src="575_a.gif"> is 0, corresponding to <img src="575_b.gif"> , the weight of an empty cycle. In the transitive-closure algorithm, the empty path from <I>k</I> to <I>k</I> gives us <img src="575_c.gif">. Thus, for both of these algorithms, we can ignore the factor of <img src="575_d.gif">, since it is just the identity for <img src="575_e.gif">.) The basis of the recursive definition is<P>
+<img src="575_f.gif"><P>
+which we can see as follows. The label of the one-edge path &lt;<I>i, j</I>&gt;<I> </I>is simply <IMG SRC="../IMAGES/lambdauc.gif">(<I>i, j</I>) (which is equal to <img src="575_g.gif"> if (<I>i, j</I>) is not an edge in <I>E</I>). If, in addition, <I>i</I> = <I>j</I>, then <img src="575_h.gif"> is the label of the empty path from <I>i </I>to<I> i</I>.<P>
+<a name="08f1_187d">The dynamic-programming algorithm computes the values <img src="575_i.gif"> in order of increasing <I>k</I>. It returns the matrix <I>L</I><SUP>(<I>n</I>)</SUP> = <img src="575_j.gif">.<P>
+<img src="575_k.gif"><P>
+The running time of this algorithm depends on the time to compute <img src="575_l.gif">, <IMG SRC="../IMAGES/xor14.gif">, and *. If we let <img src="575_m.gif">, and <I>T</I>*<SUB> </SUB>represent these times, then the running time of <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>SUMMARIES</FONT> is <img src="575_n.gif">, which is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) if each of the three operations takes <I>O</I>(1) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="08f2_1880">Exercises<a name="08f2_1880"></h2><P>
+<a name="08f2_1881">26.4-1<a name="08f2_1881"><P>
+Verify that <I>S</I><SUB>1</SUB> = (<B>R</B><IMG SRC="../IMAGES/gteq.gif"><SUP>0</SUP> <IMG SRC="../IMAGES/wideu.gif"> {<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, min, +, <FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, 0) and <I>S</I><SUB>3</SUB> = ({0, 1}, V, <IMG SRC="../IMAGES/lambdauc.gif">, 0, 1) are closed semirings.<P>
+<a name="08f2_1882">26.4-2<a name="08f2_1882"><P>
+Verify that <I>S</I><SUB>2</SUB> = (<B>R</B> <IMG SRC="../IMAGES/wideu.gif"> {-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>}, min, +, +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>, 0) is a closed semiring. What is the value of <I>a</I> + (-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT> ) for <I>a</I> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B>? What about (-<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>) + (+<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>)?<P>
+<a name="08f2_1883">26.4-3<a name="08f2_1883"><P>
+<a name="08f2_187e"><a name="08f2_187f">Rewrite the <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>SUMMARIES</FONT> procedure to use closed semiring <I>S</I><SUB>2</SUB>, so that it implements the Floyd-Warshall algorithm. What should be the value of -<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT> +<FONT FACE="Times New Roman" SIZE=3><IMG SRC="../IMAGES/infin.gif"></FONT>?<P>
+<a name="08f2_1884">26.4-4<a name="08f2_1884"><P>
+Is the system <I>S</I><SUB>4</SUB> = (<B>R</B>, +, <IMG SRC="../IMAGES/dot10.gif">, 0, 1) a closed semiring?<P>
+<a name="08f2_1885">26.4-5<a name="08f2_1885"><P>
+Can we use an arbitrary closed semiring for Dijkstra's algorithm? What about for the Bellman-Ford algorithm? What about for the <FONT FACE="Courier New" SIZE=2>FASTER</FONT>-<FONT FACE="Courier New" SIZE=2>ALL</FONT>-<FONT FACE="Courier New" SIZE=2>PAIRS</FONT>-<FONT FACE="Courier New" SIZE=2>SHORTEST</FONT>-<FONT FACE="Courier New" SIZE=2>PATHS</FONT> procedure?<P>
+<a name="08f2_1886">26.4-6<a name="08f2_1886"><P>
+A trucking firm wishes to send a truck from Castroville to Boston laden as heavily as possible with artichokes, but each road in the United States has a maximum weight limit on trucks that use the road. Model this problem with a directed graph <I>G </I>= (<I>V, E</I>) and an appropriate closed semiring, and give an efficient algorithm to solve it.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="08f3_188f">Problems<a name="08f3_188f"></h1><P>
+<a name="08f3_1890">26-1     Transitive closure of a dynamic graph<a name="08f3_1890"><P>
+<a name="08f3_1880"><a name="08f3_1881">Suppose that we wish to maintain the transitive closure of a directed graph <I>G = (V, E</I>) as we insert edges into <I>E</I>. That is, after each edge has been inserted, we want to update the transitive closure of the edges inserted so far. Assume that the graph <I>G </I>has no edges initially and that the transitive closure is to be represented as a boolean matrix.<P>
+<I><B>a.     </I></B>Show how the transitive closure <I>G</I><SUP>* </SUP>= (<I>V, E</I><SUP>*</SUP>) of a graph <I>G </I>= (<I>V, E</I>) can be updated in <I>0</I>(<I>V</I><SUP>2</SUP>) time when a new edge is added to <I>G</I>.<P>
+<I><B>b.     </I></B>Give an example of a graph <I>G</I> and an edge <I>e</I> such that <IMG SRC="../IMAGES/omega12.gif">(<I>V</I><SUP>2</SUP>) time is required to update the transitive closure after the insertion of <I>e</I> into <I>G</I>.<P>
+<I><B>c.     </I></B>Describe an efficient algorithm for updating the transitive closure as edges are inserted into the graph. For any sequence of <I>n </I>insertions, your algorithm should run in total time <img src="576_a.gif">, where <I>t<SUB>i</I></SUB> is the time to update the transitive closure when the <I>i</I>th edge is inserted. Prove that your algorithm attains this time bound.<P>
+<a name="08f3_1891">26-2     Shortest paths in <IMG SRC="../IMAGES/memof12.gif">-dense graphs<a name="08f3_1891"><P>
+<a name="08f3_1882"><a name="08f3_1883"><a name="08f3_1884"><a name="08f3_1885"><a name="08f3_1886"><a name="08f3_1887"><a name="08f3_1888"><a name="08f3_1889">A graph <I>G </I>= (<I>V, E</I>) is <I><B><FONT FACE="Courier New" SIZE=2></I></B><IMG SRC="../IMAGES/memof12.gif"><I><B></I></B><I><B>-dense</I></B></FONT> if <IMG SRC="../IMAGES/sglvrt.gif"><I>E</I><IMG SRC="../IMAGES/sglvrt.gif"> = <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>1 <I>+ </I></SUP><IMG SRC="../IMAGES/memof12.gif"><I> )</I> for some constant <I><FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"></FONT> in the range 0 &lt; <I><FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> </FONT>1. By using <I>d</I>-ary heaps (see Problem 7-2) in shortest-paths algorithms on <I><FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"></FONT>-dense graphs, we can match the running times of Fibonacci-heap-based algorithms without using as complicated a data structure.<P>
+<I><B>a.</I></B>     What are the asymptotic running times for <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, and <FONT FACE="Courier New" SIZE=2>DECREASE</FONT>-<FONT FACE="Courier New" SIZE=2>KEY</FONT>, as a function of <I>d</I> and the number <I>n </I>of elements in a <I>d</I>-ary heap? What are these running times if we choose <I>d</I> = <IMG SRC="../IMAGES/bound.gif">(<I>n</I><IMG SRC="../IMAGES/alpha12.gif">) for some constant 0 &lt; <IMG SRC="../IMAGES/alpha12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> 1? Compare these running times to the amortized costs of these operations for a Fibonacci heap.<P>
+<I><B>b</I>.</B>     Show how to compute shortest paths from a single source on an <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>-dense directed graph <I>G </I>= (<I>V, E</I>) with no negative-weight edges in <I>O</I>(<I>E</I>) time. (<I>Hint</I>: Pick <I>d</I> as a function of <I><FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"></FONT>.)<P>
+<I><B>c</I>.</B>     Show how to solve the all-pairs shortest-paths problem on an <I><FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"></FONT>-dense directed graph <I>G </I>= (<I>V, E</I>) with no negative-weight edges in <I>O</I>(<I>V E</I>) time.<P>
+<I><B>d</I>.</B>     Show how to solve the all-pairs shortest-paths problem in <I>O</I>(<I>V E</I>) time on an <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>-dense directed graph <I>G </I>= (<I>V, E</I>) that may have negative-weight edges but has no negative-weight cycles.<P>
+<a name="08f3_1892">26-3     Minimum spanning tree as a closed semiring<a name="08f3_1892"><P>
+<a name="08f3_188a"><a name="08f3_188b"><a name="08f3_188c"><a name="08f3_188d"><a name="08f3_188e">Let <I>G </I>= (<I>V, E</I>) be a connected, undirected graph with weight function <I>w</I> : E <IMG SRC="../IMAGES/arrow12.gif"> <B>R</B>. Let the vertex set be <I>V </I>= {1, 2, . . . , <I>n</I>}, where <I>n </I>= <IMG SRC="../IMAGES/sglvrt.gif"><I>V</I><IMG SRC="../IMAGES/sglvrt.gif"><I>,</I> and assume that all edge weights <I>w</I> (<I>i, j</I>) are unique. Let <I>T</I> be the unique (see Exercise 24.1-6) minimum spanning tree of <I>G</I>. In this problem, we shall determine <I>T</I> by using a closed semiring, as suggested by B. M. Maggs and S. A. Plotkin. We first determine, for each pair of vertices <I>i, j </I><IMG SRC="../IMAGES/memof12.gif"><I> V</I>, the <I><B>minimax</I></B> weight<P>
+<img src="577_a.gif"><P>
+<I><B>a.     </I></B>Briefly justify the assertion that <I>S</I> = (<B>R</B> <IMG SRC="../IMAGES/wideu.gif"> {- <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT>, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT>}, min, max, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT>, -<FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/infin.gif"></FONT>) is a closed semiring.<P>
+Since <I>S</I> is a closed semiring, we can use the <FONT FACE="Courier New" SIZE=2>COMPUTE</FONT>-<FONT FACE="Courier New" SIZE=2>SUMMARIES</FONT> procedure to determine the minimax weights <I>m<SUB>ij</I></SUB> in graph <I>G</I>. Let <img src="577_b.gif"> be the minimax weight over all paths from vertex <I>i </I>to vertex <I>j</I> with all intermediate vertices in the set {1, 2, . . . , <I>k</I>}.<P>
+<B>b.</B>     Give a recurrence for <img src="577_c.gif">, where <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0.<P>
+<B>c.</B>     Let <I>T<SUB>m</I></SUB> = {(<I>i, j</I>) <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>E</I>: <I>w</I>(<I>i, j</I>) = <I>m<SUB>ij</I></SUB>}. Prove that the edges in <I>T<SUB>m</I></SUB> form a spanning tree of <I>G</I>.<P>
+<B>d.     </B>Show that <I>T<SUB>m</I> </SUB>= <I>T</I>. (<I>Hint:</I> Consider the effect of adding edge (<I>i, j</I>) to <I>T</I> and removing an edge on another path from <I>i </I>to <I>j</I>. Consider also the effect of removing edge (<I>i, j</I>) from <I>T</I> and replacing it with another edge.)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Lawler [132] has a good discussion of the all-pairs shortest-paths problem, although he does not analyze solutions for sparse graphs. He attributes the matrix-multiplication algorithm to the folklore. The Floyd-Warshall algorithm is due to Floyd [68], who based it on a theorem of Warshall [198] that describes how to compute the transitive closure of boolean matrices. The closed-semiring algebraic structure appears in Aho, Hopcroft, and Ullman [4]. Johnson's algorithm is taken from [114].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap27.htm">Chapter 27</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

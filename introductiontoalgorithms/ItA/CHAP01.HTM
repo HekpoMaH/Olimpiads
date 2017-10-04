@@ -1,0 +1,359 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 1: INTRODUCTION</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="parti.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="preface.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="06d1_0001">CHAPTER 1: INTRODUCTION<a name="06d1_0001"></h1><P>
+This chapter will familiarize you with the framework we shall use throughout the book to think about the design and analysis of algorithms. It is self-contained, but it does include several references to material that will be introduced in Part I.<P>
+We begin with a discussion of computational problems in general and of the algorithms needed to solve them, with the problem of sorting as our running example. We introduce a &quot;pseudocode&quot; that should be familiar to readers who have done computer programming to show how we shall specify our algorithms. Insertion sort, a simple sorting algorithm, serves as an initial example. We analyze the running time of insertion sort, introducing a notation that focuses on how that time increases with the number of items to be sorted. We also introduce the divide-and-conquer approach to the design of algorithms and use it to develop an algorithm called merge sort. We end with a comparison of the two sorting algorithms.<P>
+
+
+
+
+
+<h1><a name="06d3_1129">1.1 Algorithms<a name="06d3_1129"></h1><P>
+<a name="06d3_111d"><a name="06d3_111e"><a name="06d3_111f">Informally, an <I><B>algorithm</I></B> is any well-defined computational procedure that takes some value, or set of values, as <I><B>input</I></B><I> </I>and produces some value, or set of values, as <I><B>output</I></B>. An algorithm is thus a sequence of computational steps that transform the input into the output.<P>
+<a name="06d3_1120"><a name="06d3_1121">We can also view an algorithm as a tool for solving a well-specified <I><B>computational problem</I></B>. The statement of the problem specifies in general terms the desired input/output relationship. The algorithm describes a specific computational procedure for achieving that input/output relationship.<P>
+We begin our study of algorithms with the problem of sorting a sequence of numbers into nondecreasing order. This problem arises frequently in practice and provides fertile ground for introducing many standard design techniques and analysis tools. Here is how we formally define the <I><B>sorting problem</I>:</B><P>
+<B>Input:</B>     A sequence of <I>n</I> numbers <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB><I>, a</I><SUB>2</SUB><I>, . . . , a<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I>.</I><P>
+<B>Output:</B><I>     </I>A permutation (reordering) <img src="2_a.gif">of the input sequence such that <img src="2_b.gif">.<P>
+<a name="06d3_1122"><a name="06d3_1123"><a name="06d3_1124">Given an input sequence such as <IMG SRC="../IMAGES/lftwdchv.gif">31, 41, 59, 26, 41, 58<IMG SRC="../IMAGES/wdrtchv.gif">, a sorting algorithm returns as output the sequence <IMG SRC="../IMAGES/lftwdchv.gif">26, 31, 41, 41, 58, 59<IMG SRC="../IMAGES/wdrtchv.gif">. Such an input sequence is called an <I><B>instance</I></B> of the sorting problem. In general, an <I><B>instance of a problem</I></B> consists of all the inputs (satisfying whatever constraints are imposed in the problem statement) needed to compute a solution to the problem.<P>
+Sorting is a fundamental operation in computer science (many programs use it as an intermediate step), and as a result a large number of good sorting algorithms have been developed. Which algorithm is best for a given application depends on the number of items to be sorted, the extent to which the items are already somewhat sorted, and the kind of storage device to be used: main memory, disks, or tapes.<P>
+<a name="06d3_1125"><a name="06d3_1126">An algorithm is said to be<I><B> correct</I></B> if, for every input instance, it halts with the correct output. We say that a correct algorithm <I><B>solves</I></B> the given computational problem. An incorrect algorithm might not halt at all on some input instances, or it might halt with other than the desired answer. Contrary to what one might expect, incorrect algorithms can sometimes be useful, if their error rate can be controlled. We shall see an example of this in Chapter 33 when we study algorithms for finding large prime numbers. Ordinarily, however, we shall be concerned only with correct algorithms.<P>
+<a name="06d3_1127">An algorithm can be specified in English, as a computer program, or even as a hardware design. The only requirement is that the specification must provide a precise description of the computational procedure to be followed.<P>
+<a name="06d3_1128">In this book, we shall typically describe algorithms as programs written in a <I><B>pseudocode</I></B> that is very much like C, Pascal, or Algol. If you have been introduced to any of these languages, you should have little trouble reading our algorithms. What separates pseudocode from &quot;real&quot; code is that in pseudocode, we employ whatever expressive method is most clear and concise to specify a given algorithm. Sometimes, the clearest method is English, so do not be surprised if you come across an English phrase or sentence embedded within a section of &quot;real&quot; code. Another difference between pseudocode and real code is that pseudocode is not typically concerned with issues of software engineering. Issues of data abstraction, modularity, and error handling are often ignored in order to convey the essence of the algorithm more concisely.<P>
+
+
+
+
+
+<h2>Insertion sort</h2><P>
+<a name="06d4_1129"><a name="06d4_112a">We start with <I><B>insertion sort</I></B>, which is an efficient algorithm for sorting a small number of elements. Insertion sort works the way many people sort a bridge or gin rummy hand. We start with an empty left hand and the cards face down on the table. We then remove one card at a time from the table and insert it into the correct position in the left hand. To find the correct position for a card, we compare it with each of the cards already in the hand, from right to left, as illustrated in Figure 1.1.<P>
+<img src="3_a.gif"><P>
+<h4><a name="06d4_112d">Figure 1.1 Sorting a hand of cards using insertion sort.<a name="06d4_112d"></sub></sup></h4><P>
+<a name="06d4_112b"><a name="06d4_112c">Our pseudocode for insertion sort is presented as a procedure called <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>, which takes as a parameter an array <I>A</I>[1 . . <I>n</I>] containing a sequence of length <I>n</I> that is to be sorted. (In the code, the number <I>n </I>of elements in <I>A</I> is denoted by <I>length</I>[<I>A</I>].) The input numbers are <I><B>sorted in place</I></B>: the numbers are rearranged within the array <I>A</I>, with at most a constant number of them stored outside the array at any time. The input array <I>A</I> contains the sorted output sequence when <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-S<FONT FACE="Courier New" SIZE=2>ORT </FONT>is finished.<P>
+<pre>INSERTION-SORT (<I>A</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> <I>j </I><IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> <I>length</I>[<I>A</I>]</sub></sup></pre><P>
+<pre>2       <B>do</B> <I>key </I><IMG SRC="../IMAGES/arrlt12.gif"><I> A</I>[<I>j</I>]</sub></sup></pre><P>
+<pre>3        <img src="3_b.gif"> Insert <I>A</I>[<I>j</I>] into the sorted sequence <I>A</I>[1 . . <I>j</I> - 1].</sub></sup></pre><P>
+<pre>4        <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I> - 1</sub></sup></pre><P>
+<pre>5        <B>while</B> <I>i &gt; </I>0 and<I> A</I>[<I>i</I>]<I> </I>&gt;<I> key</I></sub></sup></pre><P>
+<pre><I>6           <B>do</I></B><I> A</I>[<I>i</I> + 1] <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>7              <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"><I> i</I> - 1</sub></sup></pre><P>
+<pre>8        <I>A</I>[<I>i</I> + 1] <IMG SRC="../IMAGES/arrlt12.gif"> <I>key</I></sub></sup></pre><P>
+Figure 1.2 shows how this algorithm works for <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">5, 2, 4, 6, 1, 3<IMG SRC="../IMAGES/wdrtchv.gif">. The index <I>j</I> indicates the &quot;current card&quot; being inserted into the hand. Array elements <I>A</I>[1.. <I>j</I> - 1] constitute the currently sorted hand, and elements <I>A</I>[<I>j</I> + 1 . . <I>n</I>] correspond to the pile of cards still on the table. The index <I>j </I>moves left to right through the array. At each iteration of the &quot;outer&quot; <B>for </B>loop, the element <I>A</I>[<I>j</I>] is picked out of the array (line 2). Then, starting in position <I>j</I> - 1, elements are successively moved one position to the right until the proper position for <I>A</I>[<I>j</I>] is found (lines 4-7), at which point it is inserted (line 8).<P>
+<img src="4_a.gif"><P>
+<h4><a name="06d4_112e">Figure 1.2 The operation of <FONT FACE="Courier New" SIZE=2>INSERTION<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SORT<FONT FACE="Times New Roman" SIZE=2> on the array A = <IMG SRC="../IMAGES/lftwdchv.gif">5, 2, 4, 6, 1, 3<IMG SRC="../IMAGES/wdrtchv.gif">. The position of index j is indicated by a circle.<a name="06d4_112e"></FONT></FONT></FONT></FONT></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Pseudocode conventions</h2><P>
+<a name="06d5_112d">We use the following conventions in our pseudocode.<P>
+<a name="06d5_112e"><a name="06d5_112f">1.     Indentation indicates block structure. For example, the body of the <B>for</B> loop that begins on line 1 consists of lines 2-8, and the body of the <B>while</B> loop that begins on line 5 contains lines 6-7 but not line 8. Our indentation style applies to <B>if-then-else</B> statements as well. Using indentation instead of conventional indicators of block structure, such as <B>begin</B> and <B>end</B> statements, greatly reduces clutter while preserving, or even enhancing, clarity.<SUP>1</sup><P>
+<SUP>1</SUP> In real programming languages, it is generally not advisable to use indentation alone to indicate block structure, since levels of indentation are hard to determine when code is split across pages.<P>
+<a name="06d5_1130">2.     The looping constructs <B>while, for</B>, and <B>repeat</B> and the conditional constructs <B>if</B>, <B>then</B>, and <B>else</B> have the the same interpretation as in Pascal.<P>
+<a name="06d5_1131"><a name="06d5_1132">3.     The symbol <img src="4_b.gif"> indicates that the remainder of the line is a comment. <P>
+<a name="06d5_1133"><a name="06d5_1134">4.     A multiple assignment of the form <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"><I> j </I><IMG SRC="../IMAGES/arrlt12.gif"><I> e</I> assigns to both variables <I>i </I>and<I> j</I> the value of expression <I>e</I>; it should be treated as equivalent to the assignment <I>j </I><IMG SRC="../IMAGES/arrlt12.gif"><I> e</I> followed by the assignment <I>i </I><IMG SRC="../IMAGES/arrlt12.gif"><I> j</I>.<P>
+<a name="06d5_1135"><a name="06d5_1136"><a name="06d5_1137">5.     Variables (such as <I>i, j</I>, and <I>key</I>) are local to the given procedure. We shall not use global variables without explicit indication.<P>
+<a name="06d5_1138">6.     Array elements are accessed by specifying the array name followed by the index in square brackets. For example, <I>A</I>[<I>i</I>] indicates the <I>i</I>th element of the array<I> A</I>. The notation &quot;. .&quot; is used to indicate a range of values within an array. Thus, <I>A</I>[1<I>. . j</I>] indicates the subarray of <I>A</I> consisting of elements <I>A</I>[1], <I>A</I>[2], . . . , <I>A</I>[<I>j</I>].<P>
+<a name="06d5_1139"><a name="06d5_113a"><a name="06d5_113b">7.     Compound data are typically organized into <I><B>objects</I></B>, which are comprised of <I><B>attributes</I></B> or <I><B>fields</I></B>. A particular field is accessed using the field name followed by the name of its object in square brackets. For example, we treat an array as an object with the attribute <I>length</I> indicating how many elements it contains. To specify the number of elements in an array <I>A</I>, we write <I>length</I>[<I>A</I>]. Although we use square brackets for both array indexing and object attributes, it will usually be clear from the context which interpretation is intended.<P>
+<a name="06d5_113c">A variable representing an array or object is treated as a pointer to the data representing the array or object. For all fields <I>f</I> of an object <I>x</I>, setting <I>y </I><IMG SRC="../IMAGES/arrlt12.gif"><I> x</I> causes <I>f</I>[<I>y</I>]<I> = f</I>[<I>x</I>]. Moreover, if we now set <I>f</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 3, then afterward not only is <I>f</I>[<I>x</I>] = 3, but <I>f</I>[<I>y</I>] = 3 as well. In other words, <I>x</I> and <I>y</I> point to ("are") the same object after the assignment <I>y </I><IMG SRC="../IMAGES/arrlt12.gif"> x<I>.</I><P>
+<a name="06d5_113d">Sometimes, a pointer will refer to no object at all. In this case, we give it the special value <FONT FACE="Times New Roman" SIZE=1>NIL</FONT>.<P>
+<a name="06d5_113e"><a name="06d5_113f">8.     Parameters are passed to a procedure <I><B>by value</I></B>: the called procedure receives its own copy of the parameters, and if it assigns a value to a parameter, the change is <I>not</I> seen by the calling routine. When objects are passed, the pointer to the data representing the object is copied, but the object's fields are not. For example, if <I>x</I> is a parameter of a called procedure, the assignment <I>x </I><IMG SRC="../IMAGES/arrlt12.gif"><I> y</I> within the called procedure is not visible to the calling procedure. The assignment <I>f</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 3, however, is visible.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="06d6_1144">Exercises<a name="06d6_1144"></h2><P>
+<a name="06d6_1145">1.1-1<a name="06d6_1145"><P>
+Using Figure 1.2 as a model, illustrate the operation of <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT </FONT>on the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">31, 41, 59, 26, 41, 58<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="06d6_1146">1.1-2<a name="06d6_1146"><P>
+Rewrite the <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure to sort into nonincreasing instead of nondecreasing order.<P>
+<a name="06d6_1147">1.1-3<a name="06d6_1147"><P>
+<a name="06d6_1140"><a name="06d6_1141"><a name="06d6_1142">Consider the <I><B>searching problem:</I></B><P>
+<B>Input:</B>     A sequence of <I>n</I> numbers <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a</I><SUB>1</SUB>, <I>a</I><SUB>2</SUB>, . . . ,<I>a</I><SUB>n</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and a value <I>v</I>.<P>
+<B>Output:</B>     An index <I>i</I> such that <I>v = A</I>[<I>i</I>] or the special value <FONT FACE="Times New Roman" SIZE=1>NIL</FONT> if <I>v</I> does not appear in <I>A</I>.<P>
+Write pseudocode for <I><B>linear search</I></B>, which scans through the sequence, looking for <I>v</I>.<P>
+<a name="06d6_1148">1.1-4<a name="06d6_1148"><P>
+<a name="06d6_1143">Consider the problem of adding two <I>n</I>-bit binary integers, stored in two <I>n</I>-element arrays <I>A</I> and <I>B</I>. The sum of the two integers should be stored in binary form in an (<I>n</I> + 1)-element array <I>C</I>. State the problem formally and write pseudocode for adding the two integers.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06d7_1146">1.2 Analyzing algorithms<a name="06d7_1146"></h1><P>
+<a name="06d7_1144"><I><B>Analyzing</I></B> an algorithm has come to mean predicting the resources that the algorithm requires. Occasionally, resources such as memory, communication bandwidth, or logic gates are of primary concern, but most often it is computational time that we want to measure. Generally, by analyzing several candidate algorithms for a problem, a most efficient one can be easily identified. Such analysis may indicate more than one viable candidate, but several inferior algorithms are usually discarded in the process.<P>
+<a name="06d7_1145">Before we can analyze an algorithm, we must have a model of the implementation technology that will be used, including a model for the resources of that technology and their costs. For most of this book, we shall assume a generic one-processor,<I> <B>random-access machine</I></B> <B>(</B><I><B>RAM</I>)</B> model of computation as our implementation technology and understand that our algorithms will be implemented as computer programs. In the RAM model, instructions are executed one after another, with no concurrent operations. In later chapters, however, we shall have occasion to investigate models for parallel computers and digital hardware.<P>
+Analyzing even a simple algorithm can be a challenge. The mathematical tools required may include discrete combinatorics, elementary probability theory, algebraic dexterity, and the ability to identify the most significant terms in a formula. Because the behavior of an algorithm may be different for each possible input, we need a means for summarizing that behavior in simple, easily understood formulas.<P>
+Even though we typically select only one machine model to analyze a given algorithm, we still face many choices in deciding how to express our analysis. One immediate goal is to find a means of expression that is simple to write and manipulate, shows the important characteristics of an algorithm's resource requirements, and suppresses tedious details.<P>
+
+
+
+
+
+<h2>Analysis of insertion sort</h2><P>
+<a name="06d8_1146">The time taken by the <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure depends on the input: sorting a thousand numbers takes longer than sorting three numbers. Moreover, <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> can take different amounts of time to sort two input sequences of the same size depending on how nearly sorted they already are. In general, the time taken by an algorithm grows with the size of the input, so it is traditional to describe the running time of a program as a function of the size of its input. To do so, we need to define the terms &quot;running time&quot; and &quot;size of input&quot; more carefully.<P>
+<a name="06d8_1147"><a name="06d8_1148">The best notion for <I><B>input size</I></B> depends on the problem being studied. For many problems, such as sorting or computing discrete Fourier transforms, the most natural measure is the <I>number of items in the input</I>--for example, the array size <I>n</I> for sorting. For many other problems, such as multiplying two integers, the best measure of input size is the <I>total</I> <I>number of bits</I> needed to represent the input in ordinary binary notation. Sometimes, it is more appropriate to describe the size of the input with two numbers rather than one. For instance, if the input to an algorithm is a graph, the input size can be described by the numbers of vertices and edges in the graph. We shall indicate which input size measure is being used with each problem we study.<P>
+<a name="06d8_1149"><a name="06d8_114a">The <I><B>running time</I></B> of an algorithm on a particular input is the number of primitive operations or &quot;steps&quot; executed. It is convenient to define the notion of step so that it is as machine-independent as possible. For the moment, let us adopt the following view. A constant amount of time is required to execute each line of our pseudocode. One line may take a different amount of time than another line, but we shall assume that each execution of the <I>i</I>th line takes time <I>c<SUB>i</I></SUB>, where <I>c<SUB>i</I></SUB> is a constant. This viewpoint is in keeping with the RAM model, and it also reflects how the pseudocode would be implemented on most actual computers.<SUP>2</sup><P>
+<SUP>2</SUP>There are some subtleties here. Computational steps that we specify in English are often variants of a procedure that requires more than just a constant amount of time. For example, later in this book we might say "sort the points by <I>x</I>-coordinate," which, as we shall see, takes more than a constant amount of time. Also, note that a statement that calls a subroutine takes constant time, though the subroutine, once invoked, may take more. That is, we separate the process of <I><B>calling</I></B> the subroutine--passing parameters to it, etc.--from the process of <I><B>executing</I></B> the subroutine<I>.</I><P>
+In the following discussion, our expression for the running time of <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> will evolve from a messy formula that uses all the statement costs c<I><SUB>i</I></SUB> to a much simpler notation that is more concise and more easily manipulated. This simpler notation will also make it easy to determine whether one algorithm is more efficient than another.<P>
+<a name="06d8_114b">We start by presenting the <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure with the time &quot;cost&quot; of each statement and the number of times each statement is executed. For each <I>j</I> = 2, 3, . . . , <I>n</I>, where <I>n</I> = <I>length</I>[<I>A</I>], we let <I>t<SUB>j</I> </SUB>be the number of times the <B>while</B> loop test in line 5 is executed for that value of <I>j</I>.<SUB> </SUB>We assume that comments are not executable statements, and so they take no time.<P>
+<img src="8_a.gif"><P>
+The running time of the algorithm is the sum of running times for each statement executed; a statement that takes <I>c<SUB>i</I></SUB> steps to execute and is executed <I>n</I> times will contribute <I>c<SUB>i </SUB>n</I> to the total running time.<SUP>3</SUP>  To compute <I>T</I>(<I>n</I>), the running time of <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>, we sum the products of the <I>cost</I> and <I>times</I> columns, obtaining<P>
+<img src="8_b.gif"><P>
+<SUP>3</SUP>This characteristic does not necessarily hold for a resource such as memory. A statement that references <I>m</I> words of memory and is executed <I>n</I> times does not necessarily consume <I>mn</I> words of memory in total.<P>
+Even for inputs of a given size, an algorithm's running time may depend on <I>which</I> input of that size is given. For example, in <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>, the best case occurs if the array is already sorted. For each <I>j </I>= 2, 3, . . . , <I>n,</I> we then find that <I>A</I>[<I>i</I>]<IMG SRC="../IMAGES/lteq12.gif"> <I>key</I> in line 5 when <I>i</I> has its initial value of <I>j</I> - <I>1</I>. Thus <I>tj</I> = 1 for <I><SUP>j</I></SUP> = 2,3, . . ., <I>n</I>, and the best-case running time is<P>
+<pre><I>T</I>(<I>n</I>) = <I>c</I><SUB>1</SUB><I>n</I> + <I>c</I><SUB>2</SUB> (<I>n</I> - 1) + <I>c</I><SUB>4</SUB> (<I>n</I> - 1) + <I>c</I><SUB>5</SUB> (<I>n</I> - 1) + <I>c</I><SUB>8</SUB> (<I>n</I> - 1)</sub></sup></pre><P>
+<pre>= (<I>c</I><SUB>1</SUB> + <I>c</I><SUB>2</SUB> + <I>c</I><SUB>4</SUB> + <I>c</I><SUB>8</SUB>)<I>n </I>- (<I>c</I><SUB>2</SUB> + <I>c</I><SUB>4</SUB> + <I>c</I><SUB>5</SUB> + <I>c</I><SUB>8</SUB>).</sub></sup></pre><P>
+<a name="06d8_114c">This running time can be expressed as <I>an</I> + <I>b</I> for <I>constants</I> <I>a</I> and <I>b</I> that depend on the statement costs <I>c<SUB>i</I></SUB>; it is thus a <I><B>linear function</I></B> of <I>n.</I><P>
+If the array is in reverse sorted order--that is, in decreasing order--the worst case results. We must compare each element <I>A</I>[<I>j</I>] with each element in the entire sorted subarray <I>A[</I>1. . <I>j</I> - 1], and so <I>t<SUB>j</I></SUB> = <I>j</I> for <I>j</I> = 2,3, . . . , <I>n.</I> Noting that<P>
+<img src="8_c.gif"><P>
+and<P>
+<img src="9_a.gif"><P>
+(we shall review these summations in Chapter 3), we find that in the worst case, the running time of <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> is<P>
+<img src="9_b.gif"><P>
+<a name="06d8_114d"><a name="06d8_114e"><a name="06d8_114f">This worst-case running time can be expressed as <I>an</I><SUP>2</SUP> + <I>bn</I>+ <I>c</I> for constants <I>a</I>, <I>b</I>, and <I>c</I> that again depend on the statement costs <I>c<SUB>i</I></SUB>; it is thus a <I><B>quadratic</I></B> <I><B>function</I></B> of <I>n</I>.<P>
+Typically, as in insertion sort, the running time of an algorithm is fixed for a given input, although in later chapters we shall see some interesting &quot;randomized&quot; algorithms whose behavior can vary even for a fixed input.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Worst-case and average-case analysis</h2><P>
+In our analysis of insertion sort, we looked at both the best case, in which the input array was already sorted, and the worst case, in which the input array was reverse sorted. For the remainder of this book, though, we shall usually concentrate on finding only the <I><B>worst-case running time</I></B>, that is, the longest running time for <I>any</I> input of size <I>n</I>. We give three reasons for this orientation.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The worst-case running time of an algorithm is an upper bound on the running time for any input. Knowing it gives us a guarantee that the algorithm will never take any longer. We need not make some educated guess about the running time and hope that it never gets much worse.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     For some algorithms, the worst case occurs fairly often. For example, in searching a database for a particular piece of information, the searching algorithm's worst case will often occur when the information is not present in the database. In some searching applications, searches for absent information may be frequent.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     The &quot;average case&quot; is often roughly as bad as the worst case. Suppose that we randomly choose <I>n</I> numbers and apply insertion sort. How long does it take to determine where in subarray <I>A</I>[1. . <I>j </I>- 1] to insert element <I>A</I>[<I>j</I>]? On average, half the elements in <I>A</I>[1. . <I>j</I> - 1] are less than <I>A</I>[<I>j</I>], and half the elements are greater. On average, therefore, we check half of the subarray <I>A</I>[1. . <I>j</I> - 1], so <I>t<SUB>j</I></SUB> = <I>j</I>/2. If we work out the resulting average-case running time, it turns out to be a quadratic function of the input size, just like the worst-case running time.<P>
+<a name="06d9_1150"><a name="06d9_1151"><a name="06d9_1152"><a name="06d9_1153">In some particular cases, we shall be interested in the <I><B>average-case</I></B> or <I><B>expected</I></B> running time of an algorithm. One problem with performing an average-case analysis, however, is that it may not be apparent what constitutes an &quot;average&quot; input for a particular problem. Often, we shall assume that all inputs of a given size are equally likely. In practice, this assumption may be violated, but a randomized algorithm can sometimes force it to hold.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Order of growth</h2><P>
+We have used some simplifying abstractions to ease our analysis of the <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure. First, we ignored the actual cost of each statement, using the constants<I> c</I><SUB>i</SUB> to represent these costs. Then, we observed that even these constants give us more detail than we really need: the worst-case running time is <I>an</I><SUP>2</SUP> + <I>bn</I> + <I>c</I> for some constants <I>a, b,</I> and <I>c</I> that depend on the statement costs <I>c<SUB>i</I></SUB>. We thus ignored not only the actual statement costs, but also the abstract costs <I>c<SUB>i</SUB>.</I><P>
+We shall now make one more simplifying abstraction. It is the<I> <B>rate of growth</I>,</B> or <I><B>order of growth,</I></B><I> </I>of the running time that really interests us. We therefore consider only the leading term of a formula (e.g., <I>an</I><SUP>2</SUP>), since the lower-order terms are relatively insignificant for large <I>n</I>. We also ignore the leading term's constant coefficient, since constant factors are less significant than the rate of growth in determining computational efficiency for large inputs. Thus, we write that insertion sort, for example, has a worst-case running time of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP><I>) (</I>pronounced &quot;theta of <I>n-</I>squared&quot;<I>). </I>We<I> </I>shall use <IMG SRC="../IMAGES/bound.gif">-notation informally in this chapter; it will be defined precisely<I> </I>in Chapter 2<I>.</I><P>
+We usually consider one algorithm to be more efficient than another if its worst-case running time has a lower order of growth. This evaluation may be in error for small inputs, but for large enough inputs a <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) algorithm, for example, will run more quickly in the worst case than a <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>3</SUP>) algorithm.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="06db_115d">Exercises<a name="06db_115d"></h2><P>
+<a name="06db_115e">1.2-1<a name="06db_115e"><P>
+<a name="06db_1154"><a name="06db_1155">Consider sorting <I>n</I> numbers stored in array <I>A</I> by first finding the smallest element of <I>A</I> and putting it in the first entry of another array <I>B</I>. Then find the second smallest element of <I>A</I> and put it in the second entry of <I>B.</I> Continue in this manner for the <I>n</I> elements of <I>A.</I> Write pseudocode for this algorithm, which is known as <I><B>selection sort</I></B>. Give the best-case and worst-case running times of selection sort in <IMG SRC="../IMAGES/bound.gif">-notation. <P>
+<a name="06db_115f">1.2-2<a name="06db_115f"><P>
+<a name="06db_1156"><a name="06db_1157"><a name="06db_1158">Consider linear search again (see Exercise 1.1-3). How many elements of the input sequence need to be checked on the average, assuming that the element being searched for is equally likely to be any element in the array? How about in the worst case? What are the average-case and worst-case running times of linear search in <IMG SRC="../IMAGES/bound.gif">-notation? Justify your answers.<P>
+<a name="06db_1160">1.2-3<a name="06db_1160"><P>
+Consider the problem of determining whether an arbitrary sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of <I>n</I> numbers contains repeated occurrences of some number. Show that this can be done in <IMG SRC="../IMAGES/bound.gif">(<I>n l</I>g <I>n</I>) time, where lg <I>n</I> stands for log<SUB>2</SUB> <I>n</I>.<P>
+<a name="06db_1161">1.2-4<a name="06db_1161"><P>
+<a name="06db_1159"><a name="06db_115a"><a name="06db_115b">Consider the problem of evaluating a polynomial at a point. Given <I>n </I>coefficients <I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n</I> </SUB>- 1 and a real number <I>x</I>, we wish to compute <img src="11_a.gif">. Describe a straightforward <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>)-time algorithm for this problem. Describe a <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-time algorithm that uses the following method (called Horner's rule) for rewriting the polynomial:<P>
+<img src="11_b.gif"><P>
+<a name="06db_1162">1.2-5<a name="06db_1162"><P>
+Express the function <I>n</I><SUP>3</SUP>/1000 - 100<I>n</I><SUP>2</SUP> - 100<I>n</I> + 3 in terms of <IMG SRC="../IMAGES/bound.gif">-notation.<P>
+<a name="06db_1163">1.2-6<a name="06db_1163"><P>
+<a name="06db_115c">How can we modify almost any algorithm to have a good best-case running time?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06dc_115e">1.3 Designing algorithms<a name="06dc_115e"></h1><P>
+<a name="06dc_115d">There are many ways to design algorithms. Insertion sort uses an <I><B>incremental</I></B> approach: having sorted the subarray <I>A</I>[1 . . <I>j</I> - 1], we insert the single element <I>A</I>[<I>j</I>] into its proper place, yielding the sorted subarray <I>A</I>[1 . . <I>j</I>].<P>
+In this section, we examine an alternative design approach, known as &quot;divide-and-conquer.&quot; We shall use divide-and-conquer to design a sorting algorithm whose worst-case running time is much less than that of insertion sort. One advantage of divide-and-conquer algorithms is that their running times are often easily determined using techniques that will be introduced in Chapter 4.<P>
+
+
+
+
+
+<h2><a name="06dd_1166">1.3.1 The divide-and-conquer approach<a name="06dd_1166"></h2><P>
+<a name="06dd_115e">Many useful algorithms are <I><B>recursive</I></B> in structure: to solve a given problem, they call themselves recursively one or more times to deal with closely related subproblems. These algorithms typically follow a <I><B>divide-and-conquer </I></B>approach: they break the problem into several subproblems that are similar to the original problem but smaller in size, solve the subproblems recursively, and then combine these solutions to create a solution to the original problem.<P>
+<a name="06dd_115f">The divide-and-conquer paradigm involves three steps at each level of the recursion:<P>
+<B>Divide          </B>the problem into a number of subproblems.<P>
+<B>Conquer          </B>the subproblems by solving them recursively. If the subproblem sizes are small enough, however, just solve the subproblems in a straightforward manner.<P>
+<B>Combine          </B>the solutions to the subproblems into the solution for the original problem.<P>
+<a name="06dd_1160"><a name="06dd_1161"><a name="06dd_1162">The <I><B>merge sort</I></B> algorithm closely follows the divide-and-conquer paradigm. Intuitively, it operates as follows.<P>
+<B>Divide:     </B>Divide the <I>n</I>-element sequence to be sorted into two subsequences of <I>n</I>/2 elements each.<P>
+<B>Conquer:     </B>Sort the two subsequences recursively using merge sort.<P>
+<B>Combine:     </B>Merge the two sorted subsequences to produce the sorted answer.<P>
+We note that the recursion &quot;bottoms out&quot; when the sequence to be sorted has length 1, in which case there is no work to be done, since every sequence of length 1 is already in sorted order.<P>
+<a name="06dd_1163"><a name="06dd_1164">The key operation of the merge sort algorithm is the merging of two sorted sequences in the &quot;combine&quot; step. To perform the merging, we use an auxiliary procedure <FONT FACE="Courier New" SIZE=2>MERGE</FONT>(<I>A,p,q,r</I>), where <I>A</I> is an array and <I>p,</I> <I>q, </I>and <I>r</I> are indices numbering elements of the array such that <I>p</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>q</I> &lt; <I>r</I>. The procedure assumes that the subarrays <I>A</I>[<I>p</I>. .<I>q</I>] and <I>A</I>[<I>q</I> + 1. .<I>r</I>] are in sorted order. It <I><B>merges</I></B> them to form a single sorted subarray that replaces the current subarray <I>A</I>[<I>p</I>. .<I>r</I>].<P>
+Although we leave the pseudocode as an exercise (see Exercise 1.3-2), it is easy to imagine a <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure that takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), where <I>n</I> = <I>r</I> - <I>p</I> + 1 is the number of elements being merged. Returning to our card-playing motif, suppose we have two piles of cards face up on a table. Each pile is sorted, with the smallest cards on top. We wish to merge the two piles into a single sorted output pile, which is to be face down on the table. Our basic step consists of choosing the smaller of the two cards on top of the face-up piles, removing it from its pile (which exposes a new top card), and placing this card face down onto the output pile. We repeat this step until one input pile is empty, at which time we just take the remaining input pile and place it face down onto the output pile. Computationally, each basic step takes constant time, since we are checking just two top cards. Since we perform at most <I>n</I> basic steps, merging takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time.<P>
+We can now use the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure as a subroutine in the merge sort algorithm. The procedure <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>(<I>A,p,r</I>) sorts the elements in the subarray <I>A</I>[<I>p</I>. .<I>r</I>]. If <I>p</I> <IMG SRC="../IMAGES/gteq.gif"> <I>r</I>, the subarray has at most one element and is therefore already sorted. Otherwise, the divide step simply computes an index <I>q</I> that partitions <I>A</I>[<I>p</I>. .<I>r</I>] into two subarrays: <I>A</I>[<I>p</I>. .<I>q</I>], containing <I>n</I>/2] elements, and <I>A</I>[<I>q</I> + 1. .<I>r</I>], containing <IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I>/2<IMG SRC="../IMAGES/hfbrdr12.gif"> elements.<SUP>4<P>
+<SUP>4</SUP>The expression <IMG SRC="../IMAGES/hfbrul14.gif"><I>x</I><IMG SRC="../IMAGES/hfbrur14.gif"><I> denotes the least integer greater than or equal to </I>x<I>, and <IMG SRC="../IMAGES/hfbrdl12.gif"></I>x<I><IMG SRC="../IMAGES/hfbrdr12.gif"></I> denotes the greatest integer less than or equal to <I>x</I>. These notations are defined in Chapter 2.<P>
+<pre>MERGE-SORT(<I>A,p,r</I>)</sub></sup></pre><P>
+<pre>1 <B>if</B> <I>p</I> &lt; <I>r</I></sub></sup></pre><P>
+<pre>2     <B>then</B> <I>q</I> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/hfbrdl12.gif">(<I>p</I> + <I>r</I>)/2<IMG SRC="../IMAGES/hfbrdr12.gif"></sub></sup></pre><P>
+<pre>3          MERGE-SORT(<I>A,p,q</I>)</sub></sup></pre><P>
+<pre>4          MERGE-SORT(<I>A, q</I> + 1, <I>r</I>)</sub></sup></pre><P>
+<pre>5          MERGE(<I>A,p,q,r</I>)</sub></sup></pre><P>
+<a name="06dd_1165">To sort the entire sequence <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>A</I>[1],<I>A</I>[2], . . . ,<I>A</I>[<I>n</I>]<IMG SRC="../IMAGES/wdrtchv.gif">, we call <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT>(<I>A</I>, 1, <I>length</I>[<I>A</I>]), where once again <I>length</I>[<I>A</I>] = <I>n</I>. If we look at the operation of the procedure bottom-up when <I>n</I> is a power of two, the algorithm consists of merging pairs of 1-item sequences to form sorted sequences of length 2, merging pairs of sequences of length 2 to form sorted sequences of length 4, and so on, until two sequences of length <I>n</I>/2 are merged to form the final sorted sequence of length <I>n</I>. Figure 1.3 illustrates this process.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="06de_1167">1.3.2 Analyzing divide-and-conquer algorithms<a name="06de_1167"></h2><P>
+<a name="06de_1166">When an algorithm contains a recursive call to itself, its running time can often be described by a <I><B>recurrence equation</I></B> or <I><B>recurrence</I></B>, which describes the overall running time on a problem of size <I>n</I> in terms of the running time on smaller inputs. We can then use mathematical tools to solve the recurrence and provide bounds on the performance of the algorithm.<P>
+A recurrence for the running time of a divide-and-conquer algorithm is based on the three steps of the basic paradigm. As before, we let <I>T</I>(<I>n</I>) be the running time on a problem of size <I>n</I>. If the problem size is small enough, say <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I> for some constant <I>c</I>, the straightforward solution takes constant time, which we write as <IMG SRC="../IMAGES/bound.gif">(1). Suppose we divide the problem into <I>a</I> subproblems, each of which is 1/<I>b</I> the size of the original. If we take <I>D</I>(<I>n</I>) time to divide the problem into subproblems and <I>C</I>(<I>n</I>) time to combine the solutions to the subproblems into the solution to the original problem, we get the recurrence<P>
+<img src="14_a.gif"><P>
+<h4><a name="06de_1168">Figure 1.3 The operation of merge sort on the array A = <IMG SRC="../IMAGES/lftwdchv.gif">5, 2, 4, 6, 1, 3, 2, 6<IMG SRC="../IMAGES/wdrtchv.gif">. The lengths of the sorted sequences being merged increase as the algorithm progresses from bottom to top.<a name="06de_1168"></sub></sup></h4><P>
+<img src="14_b.gif"><P>
+In Chapter 4, we shall see how to solve common recurrences of this form.<P>
+
+
+
+
+
+<h3>Analysis of merge sort</h3><P>
+Although the pseudocode for <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> works correctly when the number of elements is not even, our recurrence-based analysis is simplified if we assume that the original problem size is a power of two. Each divide step then yields two subsequences of size exactly <I>n</I>/2. In Chapter 4, we shall see that this assumption does not affect the order of growth of the solution to the recurrence.<P>
+We reason as follows to set up the recurrence for <I>T</I>(<I>n</I>), the worst-case running time of merge sort on <I>n</I> numbers. Merge sort on just one element takes constant time. When we have <I>n</I> &gt; 1 elements, we break down the running time as follows.<P>
+<B>Divide:     </B>The divide step just computes the middle of the subarray, which takes constant time. Thus, <I>D</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(1).<P>
+<B>Conquer:     </B>We recursively solve two subproblems, each of size <I>n</I>/2, which contributes 2<I>T</I>(<I>n</I>/2) to the running time.<P>
+<B>Combine:     </B>We have already noted that the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure on an <I>n</I>-element subarray takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), so <I>C</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(n).<P>
+When we add the functions <I>D</I>(<I>n</I>) and <I>C</I>(<I>n</I>) for the merge sort analysis, we are adding a function that is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) and a function that is <IMG SRC="../IMAGES/bound.gif">(1). This sum is a linear function of <I>n</I>, that is, <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). Adding it to the 2<I>T</I>(<I>n</I>/2) term from the "conquer" step gives the recurrence for the worst-case running time <I>T</I>(<I>n</I>) of merge sort:<P>
+<img src="15_a.gif"><P>
+In Chapter 4, we shall show that T(<I>n</I>) is <IMG SRC="../IMAGES/bound.gif">(<I>n</I> 1g <I>n</I>), where 1g <I>n</I> stands for log<SUB>2</SUB> <I>n</I>. For large enough inputs, merge sort, with its <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) running time, outperforms insertion sort, whose running time is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>), in the worst case.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="06e0_116e">Exercises<a name="06e0_116e"></h2><P>
+<a name="06e0_116f">1.3-1<a name="06e0_116f"><P>
+Using Figure 1.3 as a model, illustrate the operation of merge sort on the array <I>A</I> = <IMG SRC="../IMAGES/lftwdchv.gif">3, 41, 52, 26, 38, 57, 9, 49<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<a name="06e0_1170">1.3-2<a name="06e0_1170"><P>
+<a name="06e0_1167">Write pseudocode for <FONT FACE="Courier New" SIZE=2>MERGE</FONT>(<I>A,p,q,r</I>).<P>
+<a name="06e0_1171">1.3-3<a name="06e0_1171"><P>
+Use mathematical induction to show that the solution of the recurrence<P>
+<img src="15_b.gif"><P>
+<a name="06e0_1172">1.3-4<a name="06e0_1172"><P>
+Insertion sort can be expressed as a recursive procedure as follows. In order to sort <I>A</I>[1 . . <I>n</I>], we recursively sort <I>A</I>[1 . . <I>n</I> - 1] and then insert <I>A</I>[<I>n</I>] into the sorted array <I>A</I>[1 . . <I>n</I> - 1]. Write a recurrence for the running time of this recursive version of insertion sort.<P>
+<a name="06e0_1173">1.3-5<a name="06e0_1173"><P>
+<a name="06e0_1168"><a name="06e0_1169"><a name="06e0_116a">Referring back to the searching problem (see Exercise 1.1-3), observe that if the sequence <I>A</I> is sorted, we can check the midpoint of the sequence against <I>v</I> and eliminate half of the sequence from further consideration. <I><B>Binary search</I></B><I> </I>is an algorithm that repeats this procedure, halving the size of the remaining portion of the sequence each time. Write pseudocode, either iterative or recursive, for binary search. Argue that the worst-case running time of binary search is <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>).<P>
+<a name="06e0_1174">1.3-6<a name="06e0_1174"><P>
+<a name="06e0_116b"><a name="06e0_116c"><a name="06e0_116d">Observe that the <B>while</B> loop of lines 5-7 of the <FONT FACE="Courier New" SIZE=2>INSERTION</FONT>-<FONT FACE="Courier New" SIZE=2>SORT</FONT> procedure in Section 1.1 uses a linear search to scan (backward) through the sorted subarray A[1 . . <I>j</I> - 1]. Can we use a binary search (see Exercise 1.3-5) instead to improve the overall worst-case running time of insertion sort to <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>)?<P>
+<a name="06e0_1175">1.3-7<a name="06e0_1175"><P>
+Describe a <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>)-time algorithm that, given a set <I>S</I> of <I>n</I> real numbers and another real number <I>x</I>, determines whether or not there exist two elements in <I>S </I>whose sum is exactly <I>x</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06e1_0001">1.4 Summary<a name="06e1_0001"></h1><P>
+A good algorithm is like a sharp knife--it does exactly what it is supposed to do with a minimum amount of applied effort. Using the wrong algorithm to solve a problem is like trying to cut a steak with a screwdriver: you may eventually get a digestible result, but you will expend considerably more effort than necessary, and the result is unlikely to be aesthetically pleasing.<P>
+Algorithms devised to solve the same problem often differ dramatically in their efficiency. These differences can be much more significant than the difference between a personal computer and a supercomputer. As an example, let us pit a supercomputer running insertion sort against a small personal computer running merge sort. They each must sort an array of one million numbers. Suppose the supercomputer executes 100 million instructions per second, while the personal computer executes only one million instructions per second. To make the difference even more dramatic, suppose that the world's craftiest programmer codes insertion sort in machine language for the supercomputer, and the resulting code requires 2<I>n</I><SUP>2</SUP> supercomputer instructions to sort <I>n</I> numbers. Merge sort, on the other hand, is programmed for the personal computer by an average programmer using a high-level language with an inefficient compiler, with the resulting code taking 50<I>n</I> 1g <I>n</I> personal computer instructions. To sort a million numbers, the supercomputer takes<P>
+<img src="16_a.gif"><P>
+By using an algorithm whose running time has a lower order of growth, even with a poor compiler, the personal computer runs 20 times faster than the supercomputer!<P>
+This example shows that algorithms, like computer hardware, are a <I><B>technology</I></B>. Total system performance depends on choosing efficient algorithms as much as on choosing fast hardware. Just as rapid advances are being made in other computer technologies, they are being made in algorithms as well.<P>
+
+
+
+
+
+<h2><a name="06e2_1170">Exercises<a name="06e2_1170"></h2><P>
+<a name="06e2_1171">1.4-1<a name="06e2_1171"><P>
+<a name="06e2_116e"><a name="06e2_116f">Suppose we are comparing implementations of insertion sort and merge sort on the same machine. For inputs of size <I>n</I>, insertion sort runs in 8<I>n</I><SUP>2</SUP> steps, while merge sort runs in 64<I>n</I> 1g <I>n</I> steps. For which values of <I>n </I>does insertion sort beat merge sort? How might one rewrite the merge sort pseudocode to make it even faster on small inputs?<P>
+<a name="06e2_1172">1.4-2<a name="06e2_1172"><P>
+What is the smallest value of <I>n</I> such that an algorithm whose running time is 100<I>n</I><SUP>2</SUP> runs faster than an algorithm whose running time is 2<I><SUP>n</I></SUP> on the same machine?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="06e3_1174">Problems<a name="06e3_1174"></h1><P>
+<a name="06e3_1175">1-1     Comparison of running times<a name="06e3_1175"><P>
+For each function <I>f</I>(<I>n</I>) and time <I>t</I> in the following table, determine the largest size <I>n</I> of a problem that can be solved in time <I>t</I>, assuming that the algorithm to solve the problem takes <I>f</I>(<I>n</I>) microseconds.<P>
+<img src="17_a.gif"><P>
+<a name="06e3_1176">1-2     Insertion sort on small arrays in merge sort<a name="06e3_1176"><P>
+<a name="06e3_1170"><a name="06e3_1171">Although merge sort runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) worst-case time and insertion sort runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) worst-case time, the constant factors in insertion sort make it faster for small <I>n</I>. Thus, it makes sense to use insertion sort within merge sort when subproblems become sufficiently small. Consider a modification to merge sort in which <I>n</I>/<I>k</I> sublists of length <I>k</I> are sorted using insertion sort and then merged using the standard merging mechanism, where<I> k</I> is a value to be determined.<P>
+<I><B>a.</I></B>     Show that the <I>n</I>/<I>k</I> sublists, each of length <I>k</I>, can be sorted by insertion sort in <IMG SRC="../IMAGES/bound.gif">(<I>nk</I>) worst-case time.<P>
+<I><B>b.</I></B>     Show that the sublists can be merged in <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg(<I>n</I>/<I>k</I>)) worst-case time.<P>
+<I><B>c.</I></B>     Given that the modified algorithm runs in <IMG SRC="../IMAGES/bound.gif">(<I>nk</I> +<I> n</I> 1g(<I>n</I>/<I>k</I>)) worst-case time, what is the largest asymptotic (<IMG SRC="../IMAGES/bound.gif">-notation) value of <I>k</I> as a function of <I>n</I> for which the modified algorithm has the same asymptotic running time as standard merge sort?<P>
+<I><B>d.</I></B>     How should <I>k</I> be chosen in practice?<P>
+<a name="06e3_1177">1-3     Inversions<a name="06e3_1177"><P>
+<a name="06e3_1172"><a name="06e3_1173">Let A[1 . . <I>n</I>] be an array of <I>n</I> distinct numbers. If <I>i</I> &lt; <I>j</I> and <I>A</I>[<I>i</I>] &gt; <I>A</I>[<I>j</I>], then the pair (<I>i, j</I>) is called an <I><B>inversion</I></B> of <I>A</I>.<P>
+<I><B>a.</I></B>     List the five inversions of the array <IMG SRC="../IMAGES/lftwdchv.gif">2, 3, 8, 6, 1<IMG SRC="../IMAGES/wdrtchv.gif">.<P>
+<I><B>b.</I></B>     What array with elements from the set { 1,2, . . . , <I>n</I>} has the most inversions? How many does it have?<P>
+<I><B>c.</I></B>     What is the relationship between the running time of insertion sort and the number of inversions in the input array? Justify your answer.<P>
+<I><B>d.</I></B>     Give an algorithm that determines the number of inversions in any permutation on <I>n</I> elements in <IMG SRC="../IMAGES/bound.gif">(<I>n</I> 1g <I>n</I>) worst-case time. (<I>Hint</I>: Modify merge sort.)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+There are many excellent texts on the general topic of algorithms, including those by Aho, Hopcroft, and Ullman[4, 5], Baase [14], Brassard and Bratley [33], Horowitz and Sahni [105], Knuth[121, 122, 123], Manber [142], Mehlhorn[144, 145, 146], Purdom and Brown [164], Reingold, Nievergelt, and Deo [167], Sedgewick [175], and Wilf [201]. Some of the more practical aspects of algorithm design are discussed by Bentley[24, 25] and Gonnet [90].<P>
+In 1968, Knuth published the first of three volumes with the general title <I>The Art of Computer Programming</I>[121, 122, 123]. The first volume ushered in the modern study of computer algorithms with a focus on the analysis of running time, and the full series remains an engaging and worthwhile reference for many of the topics presented here. According to Knuth, the word "algorithm" is derived from the name &quot;al-Khow&acirc;rizm&icirc;,&quot; a ninth-century Persian mathematician.<P>
+Aho, Hopcroft, and Ullman [4] advocated the asymptotic analysis of algorithms as a means of comparing relative performance. They also popularized the use of recurrence relations to describe the running times of recursive algorithms.<P>
+<a name="06e4_1174"><a name="06e4_1175">Knuth [123] provides an encyclopedic treatment of many sorting algorithms. His comparison of sorting algorithms (page 381) includes exact step-counting analyses, like the one we performed here for insertion sort. Knuth's discussion of insertion sort encompasses several variations of the algorithm. The most important of these is Shell's sort, introduced by D. L. Shell, which uses insertion sort on periodic subsequences of the input to produce a faster sorting algorithm.<P>
+Merge sort is also described by Knuth. He mentions that a mechanical collator capable of merging two decks of punched cards in a single pass was invented in 1938. J. von Neumann, one of the pioneers of computer science, apparently wrote a program for merge sort on the EDVAC computer in 1945.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="parti.htm">Part I</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

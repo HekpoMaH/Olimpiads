@@ -1,0 +1,41 @@
+#include<cstdio>
+using namespace std;
+
+int a[1000][1000] , c;
+
+int main() {
+	int n , k;
+	scanf ( "%d" , &n );
+	for ( int i = 0;i < n;++i )
+		for ( int j = 0;j < n;++j )	scanf ( "%d" , &a[i][j] );
+	scanf ( "%d" , &k );
+	for ( int i = 0;i < k;++i ) {
+		scanf ( "%d" , &c );
+		int x = 0 , y = n - 1;
+		int rast = 0;
+		while ( 1 ) {
+			if ( c == a[x][y] ) {
+				printf ( "%d\n" , rast );
+				break;
+			}
+			if ( c > a[x][y] ) {
+				if ( x == n - 1 ) {
+					printf ( "No Solution\n" );
+					break;
+				}
+				++rast;
+				++x;
+			}
+			if ( c < a[x][y] ) {
+				if ( y == 0 ) {
+					printf ( "No Solution\n" );
+					break;
+				}
+				++rast;
+				--y;
+			}
+		}
+	}
+	
+	return 0;
+}

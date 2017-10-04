@@ -1,0 +1,201 @@
+//#define ttime
+#include<time.h>
+#include<stdio.h>
+#include<stdlib.h>
+#define in stdin;//fopen("/home/swetko/festa/in","r")
+#define type long long
+#define LOW(a) ((a)&((a)^(a-1)))
+#define mx (1<<17)  // 17
+#define maxx (1<<24)  //24
+#define manx (1<<27)  //27
+#define maxxx ((1LL)<<62)
+FILE*fn;
+typedef struct{int l,m,r;type sum,w;}node;
+typedef struct{int tip,a,b;type c;}event;
+
+node h1[mx*2];
+node h2[mx*2];
+int middle;
+
+int build(node*h,int*a,int where,int l,int r)
+  {
+  h[where].l=a[l];
+  h[where].r=a[r];
+  h[where].m=a[(l+r)/2];
+  h[where].sum=h[where].w=0;
+  if(where>=mx)return 0;
+  build(h,a,where*2,l,(l+r)/2);
+  build(h,a,where*2+1,(l+r)/2+1,r);
+  return 0;}
+
+int update(node*h,int where,int x,int n)
+  {
+  h[where].sum+=n;
+  if(where>=mx)return 0;
+
+  if(x<=h[where].m)update(h,where*2,x,n);
+  else update(h,where*2+1,x,n);
+
+  h[where].w=h[where*2].w+(h[where*2+1].l-h[where].l)*h[where*2+1].sum+h[where*2+1].w;
+
+  return 0;}
+
+int intree;
+
+type find2(node*h,int where,int l,int r)
+  {intree++;
+  if(l>h[where].r)return 0;
+  if(r<h[where].l)return 0;
+  if(l<=h[where].l&&r>=h[where].r)return h[where].w+h[where].sum*(h[where].l-l);
+
+  if(r>=h[where*2+1].l&&l<h[where*2+1].l)
+    return find2(h,where*2,l,h[where*2+1].l-1)
+           +find2(h,where*2+1,h[where*2+1].l,r)
+           +(h[where*2+1].l-l)*h[where*2+1].sum;
+  if(r<h[where*2+1].l)
+    return find2(h,where*2,l,r);
+  if(l>=h[where*2+1].l)
+    return find2(h,where*2+1,l,r);
+  return 0;}
+
+type find(int x)
+  {type c1;
+  c1=find2(h2,1,maxx-x,maxx);
+  c1+=find2(h1,1,x,maxx);
+  return c1;}
+
+int upd(int x,int n)
+  {update(h1,1,x,n);
+  update(h2,1,maxx-x,n);
+  return 0;}
+
+////////////////////////////////////////////////////////////////////
+
+int findm(node*h,int where,type l,type r)
+  {
+  if(where>=mx)return h[where].m;
+
+  if(l+h[where*2].sum>r+h[where*2+1].sum)
+    return findm(h,where*2,l,r+h[where*2+1].sum);
+  else
+    return findm(h,where*2+1,l+h[where*2].sum,r);
+  }
+
+
+int findmid(int*a)
+  {return middle=findm(h1,1,0,0);}
+
+//////////////////////////////////////////////////
+
+int all1[mx*2],ac1;
+int all2[mx*2],ac2;
+event ss[mx*2];
+int q1,q2,q3,c1,c2,c3,c4,c,c5,c6;
+type maximum,best,whr,trie,t1,t2,t3,sol1,sol2;
+
+type dif2(type a,type b)
+  {type c2;
+  c2=(a-b);
+  if(c2<0)c2=-c2;
+  return c2;}
+  
+int inbs;
+
+type bs1(type a,int*res,int ll,int rr)
+  {int l=ll,m,r=rr;
+  type c1,c2,c3=0;
+  while(l!=r)
+    {m=(r+l+1)/2;
+    c1=find(m);
+    if(c1<a)
+      r=m-1;
+    else
+      l=m;
+    inbs++;}
+  m=l;
+  c1=dif2(find(m),a);
+  c2=dif2(find(m+1),a);
+  if(c1<=c2){*res=m;c3=c1;}
+  else{*res=m+1;c3=c2;}
+  return c3;}
+  
+type bs2(type a,int*res,int ll,int rr)
+  {int l=ll,m,r=rr;
+  type c1,c2,c3=0;
+  while(l!=r)
+    {m=(r+l)/2;
+    c1=find(m);
+    if(c1<a)
+      l=m+1;
+    else
+      r=m;
+    inbs++;}
+  m=l;
+  c1=dif2(find(m),a);
+  c2=dif2(find(m-1),a);
+  if(c1<=c2){*res=m;c3=c1;}
+  else{*res=m-1;c3=c2;}
+  return c3;}
+
+
+
+int cmp(const void*a,const void*b)
+  {return *((int*)a)-*((int*)b);}
+int main()
+  {clock();
+  fn=in;
+  for(q1=0;q1<sizeof(maximum)*8-1;q1++)maximum=maximum*2+1;
+  q1=0;
+  while(fscanf(fn,"%d",&c1)!=EOF) 
+    {ss[q1].tip=c1;
+    if(c1==1)fscanf(fn,"%d %d",&ss[q1].a,&ss[q1].b);
+    else fscanf(fn,"%lld",&ss[q1].c);
+    q1++;
+    c++;}
+    
+  fclose(fn);
+  for(q1=0;q1<c;q1++)if(ss[q1].tip==1)all1[ac1++]=ss[q1].a;
+  qsort(all1,ac1,sizeof(all1[0]),cmp);
+  for(q1=c1=1;q1<ac1;q1++)if(all1[q1]!=all1[c1-1])all1[c1++]=all1[q1];ac1=c1;
+  for(q1=ac1;q1<mx;q1++)all1[q1]=all1[q1-1]+1;
+  for(q1=0;q1<mx;q1++)all2[q1]=maxx-all1[mx-1-q1];
+
+
+  build(h1,all1,1,0,mx-1);
+  build(h2,all2,1,0,mx-1);
+
+
+  for(q1=0;q1<c;q1++)
+    {if(ss[q1].tip==1)
+      {
+      upd(ss[q1].a,ss[q1].b);
+      }
+    else
+      {
+      findmid(all1);
+      
+      sol1=bs1(ss[q1].c,&c1,-manx,middle);
+      sol2=bs2(ss[q1].c,&c2,middle,manx);
+
+//      best=dif2(find(c1),ss[q1].c);
+//      trie=dif2(find(c2),ss[q1].c);
+//      if(best>dif2(find(c2),ss[q1].c)){best=dif2(find(c2),ss[q1].c);c1=c2;}
+   
+      t2=sol1;c1=c1;
+      if(t2>sol2){t2=sol2;c1=c2;}
+      best=t2;
+
+//      if(best!=t2)printf("error\n");
+      printf("%d %lld\n",c1,best);
+
+      }
+    }
+
+
+  #ifdef ttime
+  printf("%lf\n",(double)clock()/CLOCKS_PER_SEC);
+  printf("%d\n%d\n",inbs,intree);
+  #endif
+
+  return 0;}
+

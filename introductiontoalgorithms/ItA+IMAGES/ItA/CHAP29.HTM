@@ -1,0 +1,606 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 29: ARITHMETIC CIRCUITS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="chap30.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap28.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="092b_194a">CHAPTER 29: ARITHMETIC CIRCUITS<a name="092b_194a"></h1><P>
+<a name="092b_1949">The model of computation provided by an ordinary computer assumes that the basic arithmetic operations--addition, subtraction, multiplication, and division--can be performed in constant time. This abstraction is reasonable, since most basic operations on a random-access machine have similar costs. When it comes to designing the circuitry that implements these operations, however, we soon discover that performance depends on the magnitudes of the numbers being operated on. For example, we all learned in grade school how to add two natural numbers, expressed as <I>n</I>-digit decimal numbers, in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) steps (although teachers usually do not emphasize the number of steps required).<P>
+This chapter introduces circuits that perform arithmetic functions. With serial processes, <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) is the best asymptotic time bound we can hope to achieve for adding two <I>n</I>-digit numbers. With circuits that operate in parallel, however, we can do better. In this chapter, we shall design circuits that can quickly perform addition and multiplication. (Subtraction is essentially the same as addition, and division is deferred to Problem 29-1.) We shall assume that all inputs are <I>n</I>-bit natural numbers, expressed in binary.<P>
+We start in Section 29.1 by presenting combinational circuits. We shall see how the depth of a circuit corresponds to its &quot;running time.&quot; The full adder, which is a building block of most of the circuits in this chapter, serves as our first example of a combinational circuit. Section 29.2 presents two combinational circuits for addition: the ripple-carry adder, which works in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time, and the carry-lookahead adder, which takes only <I>O</I>(1g <I>n</I>) time. It also presents the carry-save adder, which can reduce the problem of summing three numbers to the problem of summing two numbers in <IMG SRC="../IMAGES/bound.gif">(1) time. Section 29.3 introduces two combinational multipliers: the array multiplier, which takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time, and the Wallace-tree multiplier, which requires only <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) time. Finally, Section 29.4 presents circuits with clocked storage elements (registers) and shows how hardware can be saved by reusing combinational circuitry.<P>
+
+
+
+
+
+<h1><a name="092d_194e">29.1 Combinational circuits<a name="092d_194e"></h1><P>
+<a name="092d_194a"><a name="092d_194b"><a name="092d_194c"><a name="092d_194d">Like the comparison networks of Chapter 28, combinational circuits operate in <I><B>parallel</I>:</B> many elements can compute values simultaneously as a single step. In this section, we define combinational circuits and investigate how larger combinational circuits can be built up from elementary gates.<P>
+
+
+
+
+
+<h2>Combinational elements</h2><P>
+<a name="092e_194e"><a name="092e_194f">Arithmetic circuits in real computers are built from combinational elements that are interconnected by wires. A <I><B>combinational element</I></B> is any circuit element that has a constant number of inputs and outputs and that performs a well-defined function. Some of the elements we shall deal with in this chapter are <I><B>boolean combinational elements</I></B>--their inputs and outputs are all drawn from the set {0,1}, where 0 represents <FONT FACE="Courier New" SIZE=2>FALSE</FONT> and 1 represents <FONT FACE="Courier New" SIZE=2>TRUE</FONT>.<P>
+<a name="092e_1950"><a name="092e_1951"><a name="092e_1952"><a name="092e_1953"><a name="092e_1954"><a name="092e_1955"><a name="092e_1956"><a name="092e_1957"><a name="092e_1958"><a name="092e_1959"><a name="092e_195a">A boolean combinational element that computes a simple boolean function is called a <I><B>logic gate</I></B>. Figure 29.1 shows the four basic logic gates that will serve as combinational elements in this chapter: the <I><B>NOT gate</I></B> (or <I><B>inverter</I></B>), the <I><B>AND gate</I></B>, the <I><B>OR gate</I></B>, and the <I><B>XOR gate</I></B>. (It also shows two other logic gates--the <I><B>NAND gate</I></B> and the <I><B>NOR gate</I></B>--that are required by some of the exercises.) The NOT gate takes a single binary <I><B>input</I></B> <I>x</I>, whose value is either 0 or 1, and produces a binary <I><B>output</I></B> <I>z</I> whose value is opposite that of the input value. Each of the other three gates takes two binary inputs <I>x</I> and <I>y</I> and produces a single binary output <I>z</I>.<P>
+<a name="092e_195b"><a name="092e_195c"><a name="092e_195d"><a name="092e_195e"><a name="092e_195f"><a name="092e_1960"><a name="092e_1961"><a name="092e_1962">The operation of each gate, and of any boolean combinational element, can be described by a <I><B>truth table</I></B>, shown under each gate in Figure 29.1. A truth table gives the outputs of the combinational element for each possible setting of the inputs. For example, the truth table for the XOR gate tells us that when the inputs are <I>x</I> = 0 and <I>y</I> = 1, the output value is <I>z</I> = 1; it computes the &quot;exclusive OR&quot; of its two inputs. We use the symbols <IMG SRC="../IMAGES/rtdwnbrc.gif"> to denote the NOT function, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angleup.gif"></FONT> to denote the AND function, <FONT FACE="Times New Roman" SIZE=4><IMG SRC="../IMAGES/angledwn.gif"></FONT> to denote the XOR function, and <IMG SRC="../IMAGES/xor14.gif"> to denote the XOR function. Thus, for example, 0 <IMG SRC="../IMAGES/xor14.gif"> 1 = 1.<P>
+<a name="092e_1963"><a name="092e_1964"><a name="092e_1965">Combinational elements in real circuits do not operate instantaneously. Once the input values entering a combinational element <I><B>settle</I></B>, or become <I><B>stable</I></B>--that is, hold steady for a long enough time--the element's output value is guaranteed to become both stable and correct a fixed amount of time later. We call this time differential the <I><B>propagation delay</I></B> of the element. We assume in this chapter that all combinational elements have constant propagation delay.<P>
+<img src="656_a.gif"><P>
+<h4><a name="092e_1966">Figure 29.1 Six basic logic gates, with binary inputs and outputs. Under each gate is the truth table that describes the gate's operation. (a) The NOT gate. (b) The AND gate. (c) The OR gate. (d) The XOR (exclusive-OR) gate. (e) The NAND (NOT-AND) gate. (f) The NOR (NOT-OR) gate.<a name="092e_1966"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Combinational circuits</h2><P>
+<a name="092f_1966"><a name="092f_1967"><a name="092f_1968"><a name="092f_1969">A <I><B>combinational circuit</I></B> consists of one or more combinational elements interconnected in an acyclic fashion. The interconnections are called <I><B>wires</I></B>. A wire can connect the output of one element to the input of another, thereby providing the output value of the first element as an input value of the second. Although a single wire may have no more than one combinational-element output connected to it, it can feed several element inputs. The number of element inputs fed by a wire is called the <I><B>fan-out</I></B> of the wire. If no element output is connected to a wire, the wire is a <I><B>circuit input</I></B>, accepting input values from an external source. If no element input is connected to a wire, the wire is a <I><B>circuit output</I></B>, providing the results of the circuit's computation to the outside world. (An internal wire can also fan out to a circuit output.) Combinational circuits contain no cycles and have no memory elements (such as the registers described in Section 29.4).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Full adders</h2><P>
+<a name="0930_196a">As an example, Figure 29.2 shows a combinational circuit, called a <I><B>full adder</I></B>, that takes as input three bits <I>x, y</I>, and <I>z</I>. It outputs two bits, <I>s </I>and <I>c</I>, according to the following truth table:<P>
+<pre>x  y  z  c  s</sub></sup></pre><P>
+<pre>-------------</sub></sup></pre><P>
+<pre>0  0  0  0  0</sub></sup></pre><P>
+<pre>0  0  1  0  1</sub></sup></pre><P>
+<pre>0  1  0  0  1</sub></sup></pre><P>
+<pre>0  1  1  1  0</sub></sup></pre><P>
+<pre>1  0  0  0  1</sub></sup></pre><P>
+<pre>1  0  1  1  0</sub></sup></pre><P>
+<pre>1  1  0  1  0</sub></sup></pre><P>
+<pre>1  1  1  1  1</sub></sup></pre><P>
+<a name="0930_196b">Output <I>s</I> is the <I><B>parity</I></B> of the input bits,<P>
+<pre>s = parity(x,y,z) = x <IMG SRC="../IMAGES/xor14.gif"> y <IMG SRC="../IMAGES/xor14.gif"> z,</sub></sup></pre><P>
+<h4><a name="0930_196e">(29.1)<a name="0930_196e"></sub></sup></h4><P>
+<a name="0930_196c">and output <I>c</I> is the <I><B>majority</I></B> of the input bits,<P>
+<pre><I>c</I> = majority(<I>x,y,z</I>) = (<I>x</I> <IMG SRC="../IMAGES/angleup.gif"> <I>y</I>) <IMG SRC="../IMAGES/angledwn.gif"> (<I>y</I> <IMG SRC="../IMAGES/angleup.gif"> <I>z</I>) <IMG SRC="../IMAGES/angledwn.gif"> (<I>x</I> <IMG SRC="../IMAGES/angleup.gif"> <I>z</I>).</sub></sup></pre><P>
+<h4><a name="0930_196f">(29.2)<a name="0930_196f"></sub></sup></h4><P>
+(In general, the parity and majority functions can take any number of input bits. The parity is 1 if and only if an odd number of the inputs are 1's. The majority is 1 if and only if more than half the inputs are 1's.) Note that the <I>c</I> and <I>s</I> bits, taken together, give the sum of <I>x, y</I>, and <I>z</I>. For example, if <I>x</I> = 1, <I>y</I> = 0, and <I>z</I> = 1, then <IMG SRC="../IMAGES/lftwdchv.gif"><I>c, s</I><IMG SRC="../IMAGES/wdrtchv.gif"> = <IMG SRC="../IMAGES/lftwdchv.gif">10<IMG SRC="../IMAGES/wdrtchv.gif">,<SUP>1</SUP> which is the binary representation of 2, the sum of <I>x, y</I>, and <I>z</I>.<P>
+<SUP><FONT FACE="Times" SIZE=1>1</SUP><FONT FACE="Times" SIZE=2>For clarity, we omit the commas between sequence elements when they are bits.</FONT></FONT><P>
+<a name="0930_196d">Each of the inputs <I>x, y</I>, and <I>z</I> to the full adder has a fan-out of 3. When the operation performed by a combinational element is commutative and associative with respect to its inputs (such as the functions AND, OR, and XOR), we call the number of inputs the <I><B>fan-in</I></B> of the element. Although the fan-in of each gate in Figure 29.2 is 2, we could redraw the full adder to replace XOR gates <I>A</I> and <I>E</I> by a single 3-input XOR gate and OR gates <I>F</I> and <I>G</I> by a single 3-input OR gate.<P>
+To examine how the full adder operates, assume that each gate operates in unit time. Figure 29.2(a) shows a set of inputs that becomes stable at time 0. Gates <I>A-D</I>, and no other gates, have all their input values stable at that time and therefore produce the values shown in Figure 29.2(b) at time 1. Note that gates <I>A-D</I> operate in parallel. Gates <I>E</I> and <I>F</I>, but not gate <I>G</I>, have stable inputs at time 1 and produce the values shown in Figure 29.2(c) at time 2. The output of gate <I>E</I> is bit <I>s</I>, and so the <I>s</I> output from the full adder is ready at time 2. The <I>c</I> output is not yet ready, however. Gate <I>G</I> finally has stable inputs at time 2, and it produces the <I>c </I>output shown in Figure 29.2(d) at time 3.<P>
+<img src="658_a.gif"><P>
+<h4><a name="0930_1970">Figure 29.2 A full-adder circuit. (a) At time 0, the input bits shown appear on the three input wires. (b) At time 1, the values shown appear on the outputs of gates A-D, which are at depth 1. (c) At time 2, the values shown appear on the outputs of gates E and F, at depth 2. (d) At time 3, gate G produces its output, which is also the circuit output.<a name="0930_1970"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Circuit depth</h2><P>
+<a name="0931_196e"><a name="0931_196f"><a name="0931_1970">As in the case of the comparison networks discussed in Chapter 28, we measure the propagation delay of a combinational circuit in terms of the largest number of combinational elements on any path from the inputs to the outputs. Specifically, we define the <I><B>depth</I></B> of a circuit, which corresponds to its worst-case &quot;running time,&quot; inductively in terms of the depths of its constituent wires. The depth of an input wire is 0. If a combinational element has inputs <I>x</I><SUB>1</SUB><I>, x</I><SUB>2</SUB><I>, . . . ,x<SUB>n</I></SUB> at depths <I>d</I><SUB>1</SUB>, <I>d</I><SUB>2</SUB>, . . . ,<I>d<SUB>n</I></SUB> respectively, then its outputs have depth max{<I>d</I><SUB>1</SUB><I>, d</I><SUB>2</SUB><I>, . . . ,d<SUB>n</I></SUB>} + 1. The depth of a combinational element is the depth of its outputs. The depth of a combinational circuit is the maximum depth of any combinational element. Since we prohibit combinational circuits from containing cycles, the various notions of depth are well defined.<P>
+If each combinational element takes constant time to compute its output values, then the worst-case propagation delay through a combinational circuit is proportional to its depth. Figure 29.2 shows the depth of each gate in the full adder. Since the gate with the largest depth is gate <I>G</I>, the full adder itself has depth 3, which is proportional to the worst-case time it takes for the circuit to perform its function.<P>
+A combinational circuit can sometimes compute faster than its depth. Suppose that a large subcircuit feeds into one input of a 2-input AND gate but that the other input of the AND gate has value 0. The output of the gate will then be 0, independent of the input from the large subcircuit. In general, however, we cannot count on specific inputs being applied to the circuit, and the abstraction of depth as the &quot;running time&quot; of the circuit is therefore quite reasonable.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Circuit size</h2><P>
+<a name="0932_1971">Besides circuit depth, there is another resource that we typically wish to minimize when designing circuits. The <I><B>size</I></B><I> </I>of a combinational circuit is the number of combinational elements it contains. Intuitively, circuit size corresponds to the memory space used by an algorithm. The full adder of Figure 29.2 has size 7, for example, since it uses 7 gates.<P>
+This definition of circuit size is not particularly useful for small circuits. After all, since a full adder has a constant number of inputs and outputs and computes a well-defined function, it satisfies the definition of a combinational element. A full adder built from a single full-adder combinational element therefore has size 1. In fact, according to this definition, <I>any</I> combinational element has size 1.<P>
+The definition of circuit size is intended to apply to families of circuits that compute similar functions. For example, we shall soon see an addition circuit that takes two <I>n</I>-bit inputs. We are really not talking about a single circuit here, but rather a family of circuits--one for each size of input. In this context, the definition of circuit size makes good sense. It allows us to define convenient circuit elements without affecting the size of any implementation of the circuit by more than a constant factor. Of course, in practice, measurements of size are much more complicated, involving not only the choice of combinational elements, but also concerns such as the area the circuit requires when integrated on a silicon chip.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0933_0001">Exercises<a name="0933_0001"></h2><P>
+<a name="0933_0002">29.1-1<a name="0933_0002"><P>
+In Figure 29.2, change input <I>y</I> to a 1. Show the resulting value carried on each wire.<P>
+<a name="0933_0003">29.1-2<a name="0933_0003"><P>
+Show how to construct an <I>n</I>-input parity circuit with <I>n</I> - 1 XOR gates and depth <IMG SRC="../IMAGES/hfbrul14.gif">lg <I>n</I><IMG SRC="../IMAGES/hfbrur14.gif">.<P>
+<a name="0933_0004">29.1-3<a name="0933_0004"><P>
+Show that any boolean combinational element can be constructed from a constant number of AND, OR, and NOT gates. (<I>Hint:</I> Implement the truth table for the element.)<P>
+<a name="0933_0005">29.1-4<a name="0933_0005"><P>
+Show that any boolean function can be constructed entirely out of NAND gates.<P>
+<a name="0933_0006">29.1-5<a name="0933_0006"><P>
+Construct a combinational circuit that performs the exclusive-or function using only four 2-input NAND gates.<P>
+<a name="0933_0007">29.1-6<a name="0933_0007"><P>
+Let <I>C</I> be an <I>n</I>-input, <I>n</I>-output combinational circuit of depth <I>d</I>. If two copies of <I>C</I> are connected, with the outputs of one feeding directly into the inputs of the other, what is the maximum possible depth of this tandem circuit? What is the minimum possible depth?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0934_1974">29.2 Addition circuits<a name="0934_1974"></h1><P>
+<a name="0934_1972"><a name="0934_1973">We now investigate the problem of adding numbers represented in binary. We present three combinational circuits for this problem. First, we look at ripple-carry addition, which can add two <I>n</I>-bit numbers in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time using a circuit with <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size. This time bound can be improved to <I>O</I>(lg <I>n</I>) using a carry-lookahead adder, which also has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size. Finally, we present carry-save addition, which in <I>O</I>(1) time can reduce the sum of 3 <I>n</I>-bit numbers to the sum of an <I>n</I>-bit number and an (<I>n</I> + 1)-bit number. The circuit has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size.<P>
+<pre>8  7  6  5  4  3  2  1  0     <I>i</I></sub></sup></pre><P>
+<pre>1  1  0  1  1  1  0  0  0  =  <I>c</I></sub></sup></pre><P>
+<pre>   0  1  0  1  1  1  1  0  =  <I>a</I></sub></sup></pre><P>
+<pre>   1  1  0  1  0  1  0  1  =  <I>b</I></sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>1  0  0  1  1  0  0  1  1  =  <I>s</I></sub></sup></pre><P>
+<h4><a name="0934_1975">Figure 29.3 Adding two 8-bit numbers a = <IMG SRC="../IMAGES/lftwdchv.gif">01011110<IMG SRC="../IMAGES/wdrtchv.gif"> and b = <IMG SRC="../IMAGES/lftwdchv.gif">11010101<IMG SRC="../IMAGES/wdrtchv.gif"> to produce a 9-bit sum s = <IMG SRC="../IMAGES/lftwdchv.gif">100110011<IMG SRC="../IMAGES/wdrtchv.gif">. Each bit c<SUB>i</SUB> is a carry bit. Each column of bits represents, from top to bottom, c<SUB>i</SUB>, a<SUB>i</SUB>, b<SUB>i</SUB>, and s<SUB>i</SUB> for some i. Carry-in c<SUB>0</SUB> is always 0.<a name="0934_1975"></sub></sup></h4><P>
+
+
+
+
+
+<h2><a name="0935_197a">29.2.1 Ripple-carry addition<a name="0935_197a"></h2><P>
+<a name="0935_1974"><a name="0935_1975">We start with the ordinary method of summing binary numbers. We assume that a nonnegative integer <I>a</I> is represented in binary by a sequence of <I>n</I> bits <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n-</I>1</SUB><I>, a<SUB>n-</I>2</SUB><I>, . . . , a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, where <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif">l</FONT>g(<I>a</I> + 1)<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"> </FONT>and<P>
+<img src="661_a.gif"><P>
+<a name="0935_1976"><a name="0935_1977"><a name="0935_1978">Given two <I>n</I>-bit numbers <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>-1</SUB><I>, a<SUB>n</I>-2</SUB><I>, . . . , a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>b = </I><IMG SRC="../IMAGES/lftwdchv.gif">b<SUB>n-<I>1</SUB></I>, b<SUB>n-<I>2</SUB></I>, . . . , b<I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, </I>we wish to produce an (<I>n</I> + 1)-bit sum <I>s = </I><IMG SRC="../IMAGES/lftwdchv.gif">s<SUB>n</SUB>, s<SUB>n-<I>1</SUB></I>, . . . , s<I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"></I>. Figure 29.3 shows an example of adding two 8-bit numbers. We sum columns right to left, propagating any carry from column<I> i</I> to column <I>i</I> + 1, for <I>i</I> = 0, 1, . . . , <I>n</I> - 1. In the <I>i</I>th bit position, we take as inputs bits <I>a<SUB>i</I></SUB> and <I>b<SUB>i </I></SUB>and a <I><B>carry-in bit</I></B><I> c<SUB>i</I></SUB>, and we produce a <I><B>sum bit</I></B><I> s<SUB>i</I></SUB> and a <I><B>carry-out</I></B><I> </I>bit<I> c<SUB>i+</I>1</SUB>. The carry-out bit <I>c<SUB>i+</I>1</SUB><I> </I>from the<I> i</I>th position is the carry-in bit into the (<I>i</I> + 1)st position. Since there is no carry-in for position 0, we assume that <I>c</I><SUB>0</SUB> = 0. The carry-out <I>c<SUB>n</SUB> </I>is bit<I> s<SUB>n</SUB> </I>of the sum.<P>
+Observe that each sum bit <I>s<SUB>i</I></SUB> is the parity of bits <I>a<SUB>i</I></SUB>, <I>b<SUB>i</I></SUB>, and <I>c<SUB>i</I></SUB> (see equation (29.1)). Moreover, the carry-out bit <I>c<SUB>i</I>+1</SUB> is the majority of <I>a<SUB>i</I></SUB>, <I>b<SUB>i</I></SUB>, and <I>c<SUB>i</I></SUB> (see equation (29.2)). Thus, each stage of the addition can be performed by a full adder.<P>
+<a name="0935_1979">An <I>n</I>-bit <I><B>ripple-carry adder</I></B> is formed by cascading <I>n</I> full adders <I>FA</I><SUB>0</SUB>, <I>FA</I><SUB>1</SUB><I>, . . . , FA<SUB>n-</I>1</SUB>, feeding the carry-out <I>c<SUB>i+</I>1</SUB> of <I>FA<SUB>i</I></SUB> directly into the carry-in input of <I>FA<SUB>i+</I>1</SUB>. Figure 29.4 shows an 8-bit ripple-carry adder. The carry bits &quot;ripple&quot; from right to left. The carry-in <I>c</I><SUB>0</SUB> to full adder <I>FA</I><SUB>1</SUB> is <I><B>hardwired</I></B> to 0, that is, it is 0 no matter what values the other inputs take on. The output is the (<I>n+</I>1)-bit number <I>s = </I><IMG SRC="../IMAGES/lftwdchv.gif"><I>s<SUB>n</SUB>, s<SUB>n-</I>1</SUB><I>, . . . , s<SUB>0</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif">, where <I>s<SUB>n </I></SUB>equals <I>c<SUB>n</I></SUB>, the carry-out bit from full adder <I>FA<SUB>n</I></SUB>.<P>
+Because the carry bits ripple through all <I>n</I> full adders, the time required by an <I>n</I>-bit ripple-carry adder is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). More precisely, full adder <I>FA<SUB>i</I></SUB> is at depth <I>i</I> + 1 in the circuit. Because <I>FA<SUB>n-</I>1</SUB> is at the largest depth of any full adder in the circuit, the depth of the ripple-carry adder is <I>n</I>. The size of the circuit is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) because it contains <I>n</I> combinational elements.<P>
+<img src="662_a.gif"><P>
+<h4><a name="0935_197b">Figure 29.4 An 8-bit ripple-carry adder performing the addition of Figure 29.3. Carry bit c<SUB>0</SUB> is hardwired to 0, indicated by the diamond, and carry bits ripple from right to left.<a name="0935_197b"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0936_1985">29.2.2 Carry-lookahead addition<a name="0936_1985"></h2><P>
+<a name="0936_197a"><a name="0936_197b">Ripple-carry addition requires <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time because of the rippling of carry bits through the circuit. Carry-lookahead addition avoids this <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-time delay by accelerating the computation of carries using a treelike circuit. A carry-lookahead adder can sum two <I>n</I>-bit numbers in <I>O</I>(lg<I> n</I>) time.<P>
+The key observation is that in ripple-carry addition, for <I>i </I><IMG SRC="../IMAGES/gteq.gif"> <I></I>1, full adder <I>FA<SUB>i</I></SUB> has two of its input values, namely <I>a<SUB>i</I></SUB> and <I>b<SUB>i</I></SUB>, ready long before the carry-in <I>c<SUB>i</I></SUB> is ready. The idea behind the carry-lookahead adder is to exploit this partial information.<P>
+<a name="0936_197c"><a name="0936_197d"><a name="0936_197e"><a name="0936_197f">As an example, let <I>a<SUB>i-</I>1</SUB><I> = b<SUB>i-</I>1</SUB>. Since the carry-out <I>c<SUB>i</SUB> </I>is the majority function, we have <I>c<SUB>i</SUB> = a<SUB>i-</I>1</SUB><I> = b<SUB>i</I>-1</SUB> <I></I>regardless of the carry-in<I> c<SUB>i-</I>1</SUB>. If <I>a<SUB>i-</I>1</SUB><I> = b<SUB>i-</I>1</SUB><I> = </I>0, we can <I><B>kill</I></B> the carry-out<I> c<SUB>i</I></SUB> by forcing it to 0 without waiting for the value of <I>c<SUB>i</I>-1</SUB> to be computed. Likewise, if <I>a<SUB>i-</I>1</SUB><I> = b<SUB>i-</I>1</SUB><I> = </I>1, we can <I><B>generate</I></B> the carry-out<I> c<SUB>i</SUB> = </I>1, irrespective of the value of <I>c<SUB>i-</I>1</SUB>.<P>
+<a name="0936_1980"><a name="0936_1981">If <I>a<SUB>i-</I>1 </SUB><IMG SRC="../IMAGES/noteq.gif"> <I>b<SUB>i-</I>1</SUB>, however, then <I>c<SUB>i</I></SUB> depends on <I>c<SUB>i-</I>1</SUB>. Specifically, <I>c<SUB>i</SUB> = c<SUB>i-</I>1</SUB>, because the carry-in <I>c<SUB>i</I>-1</SUB> casts the deciding &quot;vote&quot; in the majority election that determines <I>c<SUB>i</I></SUB>. In this case, we <I><B>propagate</I></B> the carry, since the carry-out is the carry-in.<P>
+<a name="0936_1982">Figure 29.5 summarizes these relationships in terms of <I><B>carry statuses</I></B>, where <FONT FACE="Courier New" SIZE=2>k</FONT> is &quot;carry kill,&quot; g is &quot;carry generate,&quot; and <FONT FACE="Courier New" SIZE=2>p</FONT> is &quot;carry propagate.&quot;<P>
+<a name="0936_1983">Consider two consecutive full adders <I>FA<SUB>i-</I>1</SUB> and <I>FA<SUB>i</I></SUB> together as a combined unit. The carry-in to the unit is <I>c<SUB>i</I>-1</SUB>, and the carry-out is <I>c<SUB>i+</I>1</SUB>. We can view the combined unit as killing, generating, or propagating carries, much as for a single full adder. The combined unit kills its carry if <I>FA<SUB>i </I></SUB>kills its carry or if <I>FA<SUB>i</I>-1</SUB> kills its carry and <I>FA<SUB>i</I></SUB> propagates it. Similarly, the combined unit generates a carry if <I>FA<SUB>i</I></SUB> generates a carry or if <I>FA<SUB>i-</I>1 </SUB>generates a carry and <I>FA<SUB>i</I></SUB> propagates it. The combined unit propagates the carry, setting <I>c<SUB>i+</I>1</SUB><I> = c<SUB>i</I>-1</SUB>, if both full adders propagate carries. The table in Figure 29.6 summarizes how carry statuses are combined when full adders are juxtaposed. We can view this table as the definition of the <I><B>carry-status operator</I></B> <IMG SRC="../IMAGES/circx.gif"> over the domain {<FONT FACE="Courier New" SIZE=2>k</FONT>, <FONT FACE="Courier New" SIZE=2>p</FONT>, g}. An important property of this operator is that it is associative, as Exercise 29.2-2 asks you to verify.<P>
+<pre>a<B><SUB>i-1</SUB></B>  b<B><SUB>i-1   </SUB></B>c<B><SUB>i   </SUB></B>carry status</sub></sup></pre><P>
+<pre>-----------------------------</sub></sup></pre><P>
+<pre>  0    0     0        k</sub></sup></pre><P>
+<pre>  0    1    c<SUB>i-1</SUB>      p</sub></sup></pre><P>
+<pre>  1    0    c<SUB>i-1</SUB>      p</sub></sup></pre><P>
+<pre>  1    1     1        g</sub></sup></pre><P>
+<h4><a name="0936_1986">Figure 29.5 The carry-out bit c<SUB>i</SUB> and carry status corresponding to inputs a<SUB>i-1</SUB>, b<SUB>i-1, </SUB>and c<SUB>i-1</SUB> of full adder FA<SUB>i-1</SUB> in ripple-carry addition.<a name="0936_1986"></sub></sup></h4><P>
+<pre>              FA<B><I><SUB>i</I></B></sub></sup></pre><P>
+<pre>       <B><IMG SRC="../IMAGES/circx.gif">  k   p   g</B></sub></sup></pre><P>
+<pre>--------------------</sub></sup></pre><P>
+<pre>       k  k   k   g</sub></sup></pre><P>
+<pre>FA<SUB>i-1  </SUB>p  k   p   g</sub></sup></pre><P>
+<pre>       g  k   g   g</sub></sup></pre><P>
+<h4><a name="0936_1987">Figure 29.6  The carry status of the combination of full adders FA<SUB>i-1</SUB> and FA<SUB>i</SUB> in terms of their individual carry statuses, given by the carry-status operator <IMG SRC="../IMAGES/circx.gif"> over the domain {k<FONT FACE="Times New Roman" SIZE=2>, p, g}.<a name="0936_1987"></FONT></sub></sup></h4><P>
+We can use the carry-status operator to express each carry bit <I>c<SUB>i</I></SUB> in terms of the inputs. We start by defining <I>x</I><SUB>0</SUB> = <FONT FACE="Courier New" SIZE=2>k</FONT> and<P>
+<img src="663_a.gif"><P>
+<h4><a name="0936_1988">(29.3)<a name="0936_1988"></sub></sup></h4><P>
+for <I>i = </I>1, 2, . . . , <I>n</I>. Thus, for <I>i = </I>1, 2, . . . <I>, n</I>, the value of <I>x<SUB>i</I></SUB> is the carry status given by Figure 29.5.<P>
+<a name="0936_1984">The carry-out <I>c<SUB>i</I></SUB> of a given full adder <I>FA<SUB>i</I>-1</SUB> can depend on the carry status of every full adder <I>FA<SUB>j</SUB> </I>for<I> j =</I> 0, 1, . . . <I>, i </I>- 1. Let us define <I>y</I><SUB>0</SUB><I> = x</I><SUB>0</SUB><I> </I>=<I> </I><FONT FACE="Courier New" SIZE=2>k</FONT> and<P>
+<pre><I>y<SUB>i </SUB> </I>=<I> y<SUB>i-</I>1 </SUB><IMG SRC="../IMAGES/circx.gif"><I> x<SUB>i</I></sub></sup></pre><P>
+<pre>= x<SUB>0 </SUB><IMG SRC="../IMAGES/circx.gif"> x<SUB>1</SUB> <IMG SRC="../IMAGES/circx.gif"> <IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/circx.gif"> x<SUB>i</sub></sup></pre><P>
+<h4><a name="0936_1989">(29.4)<a name="0936_1989"></sub></sup></h4><P>
+for <I>i</I> = 1, 2, . . . , <I>n</I>. We can think of <I>y<SUB>i</I> </SUB>as a &quot;prefix&quot; of <I>x</I><SUB>0</SUB> <IMG SRC="../IMAGES/circx.gif"> <I>x</I><SUB>1</SUB> <IMG SRC="../IMAGES/circx.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif"><IMG SRC="../IMAGES/dot10.gif">  <IMG SRC="../IMAGES/circx.gif"> <I>x<SUB>n</I></SUB>; we call the process of computing the values <I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y<SUB>n</I></SUB> a <B>prefix computation.</B> (Chapter 30 discusses prefix computations in a more general parallel context.) Figure 29.7 shows the values of <I>x<SUB>i</I></SUB> and <I>y<SUB>i</I></SUB> corresponding to the binary addition shown in Figure 29.3. The following lemma gives the significance of the <I>y<SUB>i</I></SUB> values for carry-lookahead addition.<P>
+<img src="664_a.gif"><P>
+<h4><a name="0936_198a">Figure 29.7 The values of x<SUB>i</SUB> and y<SUB>i</SUB> for i = 0, 1, . . . , 8 that correspond to the values of a<SUB>i</SUB>, b<SUB>i</SUB>, and c<SUB>i</SUB> in the binary-addition problem of Figure 29.3. Each value of x<SUB>i</SUB> is shaded with the values of a<SUB>i-1</SUB> and b<SUB>i-1</SUB> that it depends on.<a name="0936_198a"></sub></sup></h4><P>
+<a name="0936_198b">Lemma 29.1<a name="0936_198b"><P>
+Define<I> x</I><SUB>0</SUB><I>, x</I><SUB>1</SUB><I>, . . . , x<SUB>n </I></SUB>and <I>y</I><SUB>0</SUB>,<I> y<SUB>1</SUB>, . . . , y<SUB>n</I></SUB> by equations (29.3) and (29.4). For <I>i = </I>0, 1, <I>. . . ,n</I>, the following conditions hold:<P>
+1.     <I>y<SUB>i</SUB> =</I> <FONT FACE="Courier New" SIZE=2>k</FONT> implies <I>c<SUB>i</SUB> = </I>0,<P>
+2.     <I>y<SUB>i</SUB> = </I>g implies <I>c<SUB>i</SUB> = </I>1, and<P>
+3.     <I>y<SUB>i</SUB> =</I> <FONT FACE="Courier New" SIZE=2>p</FONT> does not occur.<P>
+<I><B>Proof     </I></B>The proof is by induction on<I> i</I>. For the basis<I>, i</I> = 0. We have <I>y</I><SUB>0</SUB><I> = x</I><SUB>0</SUB> <I>= </I><FONT FACE="Courier New" SIZE=2>k</FONT> by definition, and also <I>c</I><SUB>0</SUB> = 0. For the inductive step, assume that the lemma holds for <I>i</I> - 1. There are three cases depending on the value of <I>y<SUB>i</I></SUB>.<P>
+1.     If <I>y<SUB>i</SUB> = </I><FONT FACE="Courier New" SIZE=2>k</FONT>, then since <I>y<SUB>i</I></SUB> = <I>y<SUB>i-</I>1</SUB><I> </I><IMG SRC="../IMAGES/circx.gif"> x<SUB>i<I></SUB>, the definition of the carry-status operator <IMG SRC="../IMAGES/circx.gif"></I> from Figure 29.6 implies either that <I>x<SUB>i</SUB> = </I><FONT FACE="Courier New" SIZE=2>k</FONT> or that <I>x<SUB>i</SUB> =</I> p<I> </I>and <I>y<SUB>i-</I>1</SUB><I> = </I><FONT FACE="Courier New" SIZE=2>k</FONT>. If <I>x<SUB>i =</I> </SUB><FONT FACE="Courier New" SIZE=2>k</FONT>, then equation (29.3) implies that a<I><SUB>i-</I>1</SUB> = <I>b<SUB>i-</I>1</SUB><I> = </I>0, and thus<I> c<SUB>i</I></SUB> = majority (<I>a<SUB>i-</I>1</SUB><I>, b<SUB>i-</I>1</SUB><I>, c<SUB>i-</I>1</SUB>)<I> = </I>0<I>. </I>If<I> x<SUB>i</SUB> =</I> <FONT FACE="Courier New" SIZE=2>p<I> </I></FONT>and <I>y<SUB>i-</I>1</SUB><I> = </I><FONT FACE="Courier New" SIZE=1>k</FONT>, then <I>a<SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/noteq.gif"><I> b<SUB>i-</I>1</SUB> and, by induction, <I>c<SUB>i-</I>1</SUB> = 0. Thus, majority (<I>a<SUB>i-</I>1</SUB>, <I>b<SUB>i-</I>1</SUB><I>, c<SUB>i-</I>1</SUB>) = 0, and thus <I>c<SUB>i</SUB> =</I> 0.<P>
+2.     If <I>y<SUB>i</SUB> = </I>g, then either we have <I>x<SUB>i</SUB> = </I>g or we have <I>x<SUB>i</SUB> =</I> p and<I> y<SUB>i-</I>1</SUB><I> = </I>g. If <I>x<SUB>i</SUB> =</I> g, then <I>a<SUB>i-</I>1</SUB><I> = b<SUB>i-</I>1</SUB><I>=</I> 1, which implies <I>c<SUB>i</I></SUB> = 1. If <I>x<SUB>i</SUB> = </I>p and <I>y<SUB>i-</I>1</SUB> = g, then<I> a<SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/noteq.gif"><I> b<SUB>i-</I>1</SUB> and, by induction, <I>c<SUB>i-</I>1</SUB> = 1, which implies <I>c<SUB>i=</I> 1</SUB>.<P>
+3.     If <I>y<SUB>i</SUB> =</I> <FONT FACE="Courier New" SIZE=2>p</FONT>, then Figure 29.6 implies that <I>y<SUB>i-</I>1</SUB> = <FONT FACE="Courier New" SIZE=2>p</FONT>, which contradicts the inductive hypothesis.      <P>
+Lemma 29.1 implies that we can compute each carry bit <I>c<SUB>i</I></SUB> by computing each carry status <I>y<SUB>i</I></SUB>. Once we have all the carry bits, we can compute the entire sum in <IMG SRC="../IMAGES/bound.gif">(1) time by computing in parallel the sum bits <I>s<SUB>i</SUB> = </I>parity (<I>a<SUB>i</SUB>, b<SUB>i</SUB>, c<SUB>i</I></SUB>) for <I>i =</I> 0, 1<I>, . . . , n</I> (taking <I>a<SUB>n</SUB> = b<SUB>n</SUB> </I>= 0). Thus, the problem of quickly adding two numbers reduces to the prefix computation of the carry statuses <I>y</I><SUB>0</SUB><I>, y</I><SUB>1</SUB><I>, . . . ,y<SUB>n</I></SUB>.<P>
+
+
+
+
+
+<h3>Computing carry statuses with a parallel prefix circuit</h3><P>
+<a name="0937_1985"><a name="0937_1986"><a name="0937_1987">By using a prefix circuit that operates in parallel, as opposed to a ripple-carry circuit that produces its outputs one by one, we can compute all <I>n </I>carry statuses <I>y</I><SUB>0</SUB><I>, y</I><SUB>1</SUB><I>, . . . , y<SUB>n</I></SUB> more quickly. Specifically, we shall design a parallel prefix circuit with <I>O(</I>lg<I> n)</I> depth. The circuit has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size--asymptotically the same amount of hardware as a ripple-carry adder.<P>
+Before constructing the parallel prefix circuit, we introduce a notation that will aid our understanding of how the circuit operates. For integers <I>i </I>and <I>j</I> in the range <I>0 </I><IMG SRC="../IMAGES/lteq12.gif"> i <I><IMG SRC="../IMAGES/lteq12.gif"> j </I><IMG SRC="../IMAGES/lteq12.gif"> n,<I> we define</I><P>
+<pre>[<I>i</I>,<I>j</I>] = <I>x<SUB>i</SUB> </I><IMG SRC="../IMAGES/circx.gif"> <I>x<SUB>i</I>+1</SUB> <IMG SRC="../IMAGES/circx.gif"> <IMG SRC="../IMAGES/circx.gif"><IMG SRC="../IMAGES/circx.gif"><IMG SRC="../IMAGES/circx.gif"> <IMG SRC="../IMAGES/circx.gif"> <I>x<SUB>j</I></SUB>.</sub></sup></pre><P>
+Thus, for <I>i</I> = 0, 1, . . . , <I>n,</I> we have [<I>i, i</I>] <I>= x<SUB>i</SUB>,</I> since the composition of just one carry status <I>x<SUB>i</SUB> </I>is itself. For <I>i, j,</I> and <I>k</I> satisfying 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> &lt; <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, we also have the identity<P>
+<pre>[<I>i</I>,<I>k</I>] = [<I>i</I>,<I>j</I> - 1] <IMG SRC="../IMAGES/circx.gif"> [<I>j</I>,<I>k</I>],</sub></sup></pre><P>
+<h4><a name="0937_1988">(29.5)<a name="0937_1988"></sub></sup></h4><P>
+since the carry-status operator is associative. The goal of a prefix computation, in terms of this notation, is to compute <I>y<SUB>i</I></SUB> = [0, <I>i</I>] for <I>i= </I>0, 1<I>, . . . , n.</I><P>
+The only combinational element used in the parallel prefix circuit is a circuit that computes the <IMG SRC="../IMAGES/circx.gif"> operator. Figure 29.8 shows how pairs of <IMG SRC="../IMAGES/circx.gif"> elements are organized to form the internal nodes of a complete binary tree, and Figure 29.9 illustrates the parallel prefix circuit for <I>n</I> = 8. Note that the wires in the circuit follow the structure of a tree, but the circuit itself is not a tree, although it is purely combinational. The inputs <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n </I></SUB>are supplied at the leaves, and the input <I>x<SUB>0</I></SUB> is provided at the root. The outputs <I>y</I><SUB>0</SUB><I>, y</I><SUB>1</SUB><I>, . . . , y<SUB>n - </I>1</SUB> are produced at leaves, and the output <I>y<SUB>n</SUB> </I>is produced at the root. (For ease in understanding the prefix computation, variable indices increase from left to right in Figures 29.8 and 29.9, rather than from right to left as in other figures of this section.)<P>
+The two <IMG SRC="../IMAGES/circx.gif"> elements in each node typically operate at different times and have different depths in the circuit. As shown in Figure 29.8, if the subtree rooted at a given node spans some range <I>x<SUB>i</I></SUB>, <I>x<SUB>i</I>+1</SUB>, . . . , <I>x<SUB>k </I></SUB>of inputs, its left subtree spans the range <I>x<SUB>i</I></SUB>, <I>x<SUB>i</I>+1</SUB>, . . . , <I>x<SUB>j </I>- 1</SUB>, and its right subtree spans the range <I>x<SUB>j</I></SUB>, <I>x<SUB>j</I>+1</SUB>, . . . , <I>x<SUB>k</I></SUB>, then the node must produce for its parent the product [<I>i, k</I>] of all inputs spanned by its subtree. Since we can assume inductively that the node's left and right children produce the products [<I>i, j - </I>1] and [<I>j, k</I>], the node simply uses one of its two elements to compute [<I>i, k</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>[</I>i, j - <I>1] <IMG SRC="../IMAGES/circx.gif"> </I>[<I>j, k</I>].<P>
+Some time after this upward phase of computation, the node receives from its parent the product [0, <I>i</I> - 1] of all inputs that come before the leftmost input <I>x<SUB>i</I></SUB> that it spans. The node now likewise computes values for its children. The leftmost input spanned by the node's left child is also <I>x<SUB>i</I></SUB>, and so it passes the value [0, <I>i</I> - 1] to the left child unchanged. The leftmost input spanned by its right child is <I>x<SUB>j</I></SUB>, and so it must produce [0, <I>j</I> - 1]. Since the node receives the value [0, <I>i</I> - 1] from its parent and the value [<I>i</I>,<I> j</I> - 1] from its left child, it simply computes [0, <I>j</I> - 1] <IMG SRC="../IMAGES/arrlt12.gif"> [0, <I>i</I> - 1] <IMG SRC="../IMAGES/circx.gif"> [<I>i</I>, k] and sends this value to the right child.<P>
+<img src="666_a.gif"><P>
+<h4><a name="0937_1989">Figure 29.8 The organization of a parallel prefix circuit. The node shown is the root of a subtree whose leaves input the values x<SUB>i</SUB> to x<SUB>k</SUB>. The node's left subtree spans inputs x<SUB>i</SUB> to x<SUB>j - 1</SUB>, and its right subtree spans inputs x<SUB>j</SUB> to x<SUB>k</SUB>. The node consists of two <IMG SRC="../IMAGES/circx.gif"> elements, which operate at different times during the operation of the circuit. One element computes [i, k] <IMG SRC="../IMAGES/arrlt12.gif"> [i, j - 1] <IMG SRC="../IMAGES/circx.gif"> [j, k], and the other element computes [0, j - 1] <IMG SRC="../IMAGES/arrlt12.gif"> [0, i - 1] <IMG SRC="../IMAGES/circx.gif"> [i, j - 1]. The values computed are shown on the wires.<a name="0937_1989"></sub></sup></h4><P>
+Figure 29.9 shows the resulting circuit, including the boundary case that arises at the root. The value <I>x</I><SUB>0</SUB> = [0, 0] is provided as input at the root, and one more <IMG SRC="../IMAGES/circx.gif"> element is used to compute (in general) the value <I>y<SUB>n</SUB> = </I>[0<I>, n</I>] = [0, 0] <IMG SRC="../IMAGES/circx.gif"> [1, <I>n</I>].<P>
+If <I>n</I> is an exact power of 2, then the parallel prefix circuit uses 2<I>n</I> - 1 <IMG SRC="../IMAGES/circx.gif"> elements. It takes only <I>O</I>(lg<I> n</I>) time to compute all <I>n</I> + 1 prefixes, since the computation proceeds up the tree and then back down. Exercise 29.2-5 studies the depth of the circuit in more detail.<P>
+<P>
+
+
+
+
+
+
+
+<h3>Completing the carry-lookahead adder</h3><P>
+<a name="0938_1988">Now that we have a parallel prefix circuit, we can complete the description of the carry-lookahead adder. Figure 29.10 shows the construction. An <I>n</I>-bit <I><B>carry-lookahead adder</I></B> consists of <I>n</I> + 1 <I><B>KPG boxes</I></B>, each of <IMG SRC="../IMAGES/bound.gif">(1) size, and a parallel prefix circuit with inputs <I>x</I><SUB>0</SUB><I>, x</I><SUB>1</SUB><I>, . . . , x<SUB>n</SUB> (x</I><SUB>0</SUB> is hardwired to <FONT FACE="Courier New" SIZE=2>k</FONT>) and outputs <I>y</I><SUB>0</SUB><I>, y</I><SUB>1</SUB><I>, . . . , y<SUB>n</I></SUB>. KPG box <I>KPG<B><SUB>i</I></B></SUB> takes external inputs <I>a<SUB>i </I></SUB>and <I>b<SUB>i</I></SUB> and produces sum bit <I>s<SUB>i</I></SUB>. (Input bits <I>a<SUB>n</I></SUB> and <I>b<SUB>n</I></SUB> are hardwired to 0.) Given <I>a<SUB>i-</I>1</SUB> and <I>b<SUB>i-</I>1</SUB>, box<I> KPG<SUB>i</SUB><B><SUB>-</I></B>1</SUB> computes <I>x<SUB>i</SUB> </I><IMG SRC="../IMAGES/memof12.gif"><I> </I>{<FONT FACE="Courier New" SIZE=2>k,p,</FONT>g} according to equation (29.3) and sends this value as the external input <I>x<SUB>i</SUB> </I>of the parallel prefix circuit. (The value of <I>x<SUB>n</I>+1</SUB> is ignored.) Computing all the <I>x<SUB>i</I></SUB> takes <IMG SRC="../IMAGES/bound.gif">(1) time. After a delay of <I>O</I>(lg <I>n</I>), the parallel prefix circuit produces <I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y</I><SUB>n.</SUB> By Lemma 29.1, <I>y</I><SUB>i</SUB> is either <FONT FACE="Courier New" SIZE=2>k</FONT> or g; it cannot be <FONT FACE="Courier New" SIZE=2>p</FONT>. Each value <I>y<SUB>i</I></SUB> indicates the carry-in to full adder <I>FA<SUB>i</SUB> </I>in the ripple-carry adder: <I>y<SUB>i</SUB> </I>= <FONT FACE="Courier New" SIZE=2>k</FONT> implies <I>c<SUB>i</SUB> </I>= 0, and <I>y<SUB>i</SUB> </I>= g implies <I>c<SUB>i</SUB> </I>= 1. Thus, the value of <I>y<SUB>i</SUB> </I>is fed into <I>KPG<SUB>i</SUB> </I>to indicate the carry-in <I>c<SUB>i</I></SUB>, and the sum bit <I>s<SUB>i</SUB> </I>= parity(<I>a<SUB>i</I></SUB>, <I>b<SUB>i</I></SUB>, <I>c<SUB>i</I></SUB>) is produced in constant time. Thus, the carry-lookahead adder operates in <I>O</I>(lg <I>n</I>) time and has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size.<P>
+<img src="667_a.gif"><P>
+<h4><a name="0938_1989">Figure 29.9 A parallel prefix circuit for n = 8. (a) The overall structure of the circuit, and the values carried on each wire. (b) The same circuit with values corresponding to Figures 29.3 and 29.7.<a name="0938_1989"></sub></sup></h4><P>
+<img src="668_a.gif"><P>
+<h4><a name="0938_198a">Figure 29.10 The construction of an n-bit carry-lookahead adder, shown here for n = 8. It consists of n + 1 KPG boxes KPG<SUB>i</SUB> <FONT FACE="Times New Roman" SIZE=2>for i = 0, 1, . . . , n. Each box KPG<SUB>i </SUB><FONT FACE="Times New Roman" SIZE=2>takes external inputs a<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> and b<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> (where a<SUB>n</SUB><FONT FACE="Times New Roman" SIZE=2> and b<SUB>n</SUB><FONT FACE="Times New Roman" SIZE=2> are hardwired to 0, as indicated by the diamond) and computes carry status x<SUB>i+1</SUB><FONT FACE="Times New Roman" SIZE=2>. These values are fed into the parallel prefix circuit, which returns the results y<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> of the prefix computation. Each box KPG<SUB>i</SUB> now takes y<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> as input, interprets it as the carry-in bit c<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2>, and then outputs the sum bit s<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> = parity (a<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2>, b<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2>, c<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2>). Sample values corresponding to those shown in Figures 29.3 and 29.9 are shown.<a name="0938_198a"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0939_198b">29.2.3 Carry-save addition<a name="0939_198b"></h2><P>
+<a name="0939_1989"><a name="0939_198a">A carry-lookahead adder can add two <I>n</I>-bit numbers in <I>O</I>(lg<I> n</I>) time. Perhaps surprisingly, adding three <I>n</I>-bit numbers takes only a constant additional amount of time. The trick is to reduce the problem of adding three numbers to the problem of adding just two numbers.<P>
+Given three <I>n</I>-bit numbers <I>x</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x<SUB>n-</I>1</SUB>, <I>x<SUB>n</I>-2</SUB>, <I>. . . . , x</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, <I>y </I>= <IMG SRC="../IMAGES/lftwdchv.gif"><I>y<SUB>n-</I>1</SUB>, <I>y<SUB>n-</I>2</SUB>, <I>. . . , y</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, and <I>z</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>z<SUB>n-</I>1</SUB>,<I>z<SUB>n-</I>2</SUB>, <I>. . . , z</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, an <I>n-</I>bit <I><B>carry-save adder</I></B> produces an <I>n</I>-bit number <I>u</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>u<SUB>n-</I>1</SUB>, <I>u<SUB>n-</I>2</SUB>, <I>. . . , u</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and an (<I>n + </I>1)-bit number <I>v</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>v<SUB>n</I></SUB>, <I>v<SUB>n-</I>1</SUB>, . . . , <I>v</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"><SUB> </SUB>such that<P>
+<pre><I>u </I>+ <I>v</I> = <I>x </I>+ <I>y </I>+ <I>z</I>.</sub></sup></pre><P>
+As shown in Figure 29.11 (a), it does this by computing<P>
+<pre><I>u<SUB>i</I></SUB> = parity (<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>, z<I><SUB>i</I></SUB>),</sub></sup></pre><P>
+<pre><I>v<SUB>i + </I>1</SUB> = majority (<I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>, <I>z<SUB>i</I></SUB>),</sub></sup></pre><P>
+for<I> i</I> = 0, 1, . . . , <I>n</I> - 1. Bit <I>v</I><SUB>0</SUB> always equals 0.<P>
+The <I>n</I>-bit carry-save adder shown in Figure 29.11(b) consists of <I>n</I> full adders <I>FA</I><SUB>0</SUB>, <I>FA</I><SUB>1</SUB><I>, . . . , FA<SUB>n </I>- 1</SUB>. For <I>i</I> = 0, 1, . . . , <I>n</I> - 1, full adder <I>FA<SUB>i</I></SUB> takes inputs <I>x<SUB>i</I></SUB>, <I>y<SUB>i</I></SUB>, and z<I><SUB>i</I></SUB>. The sum-bit output of <I>FA<SUB>i </I></SUB>is taken as<I> u<SUB>i</I></SUB>, and the carry-out of <I>FA<SUB>i</I></SUB> is taken as <I>v<SUB>i+</I>1</SUB>. Bit <I>v</I><SUB>0</SUB> is hardwired to 0.<P>
+Since the computations of all 2<I>n + </I>1 output bits are independent, they can be performed in parallel. Thus, a carry-save adder operates in <IMG SRC="../IMAGES/bound.gif">(1) time and has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size. To sum three <I>n</I>-bit numbers, therefore, we need only perform a carry-save addition, taking <IMG SRC="../IMAGES/bound.gif">(1) time, and then perform a carry-lookahead addition, taking <I>O</I>(lg<I> n</I>) time. Although this method is not asymptotically better than the method of using two carry-lookahead additions, it is much faster in practice. Moreover, we shall see in Section 29.3 that carry-save addition is central to fast algorithms for multiplication.<P>
+<img src="669_a.gif"><P>
+<h4><a name="0939_198c">Figure 29.11 (a) Carry-save addition. Given three n-bit numbers x, y, and z, we produce an n-bit number u and an (n + 1)-bit number v such that x + y + z = u + v. The ith pair of shaded bits are a function of x<SUB>i</SUB>, y<SUB>i</SUB>, and z<SUB>i</SUB>. (b) An 8-bit carry-save adder. Each full adder FA<SUB>i</SUB> takes inputs x<SUB>i</SUB>, y<SUB>i</SUB>, and z<SUB>i</SUB> and produces sum bit u<SUB>i</SUB> and carry-out bit v<SUB>i + 1</SUB>. Bit v<SUB>0</SUB> is hardwired to 0.<a name="0939_198c"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="093a_1991">Exercises<a name="093a_1991"></h2><P>
+<a name="093a_1992">29.2-1<a name="093a_1992"><P>
+Let <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif">01111111<IMG SRC="../IMAGES/wdrtchv.gif">, <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif">00000001<IMG SRC="../IMAGES/wdrtchv.gif">, and <I>n</I> = 8. Show the sum and carry bits output by full adders when ripple-carry addition is performed on these two sequences. Show the carry statuses <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . . , <I>x</I><SUB>8</SUB> corresponding to <I>a</I> and <I>b</I>, label each wire of the parallel prefix circuit of Figure 29.9 with the value it has given these <I>x<SUB>i</I></SUB> inputs, and show the resulting outputs <I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y</I><SUB>8</SUB>.<P>
+<a name="093a_1993">29.2-2<a name="093a_1993"><P>
+Prove that the carry-status operator <IMG SRC="../IMAGES/circx.gif"> given by Figure 29.5 is associative.<P>
+<img src="670_a.gif"><P>
+<h4><a name="093a_1994">Figure 29.12 A parallel prefix circuit for use in Exercise 29.2-6.<a name="093a_1994"></sub></sup></h4><P>
+<a name="093a_1995">29.2-3<a name="093a_1995"><P>
+<a name="093a_198b">Show by example how to construct an <I>O</I>(lg<I> n</I>)-time parallel prefix circuit for values of <I>n</I> that are not exact powers of 2 by drawing a parallel prefix circuit for <I>n</I> = 11. Characterize the performance of parallel prefix circuits built in the shape of arbitrary binary trees.<P>
+<a name="093a_1996">29.2-4<a name="093a_1996"><P>
+Show the gate-level construction of the box <I>KPG<SUB>i</I></SUB>. Assume that each output <I>x<SUB>i</I></SUB> is represented by <IMG SRC="../IMAGES/lftwdchv.gif">00<IMG SRC="../IMAGES/wdrtchv.gif"> if <I>x<SUB>i</I></SUB> = <FONT FACE="Courier New" SIZE=2>k</FONT>, by <IMG SRC="../IMAGES/lftwdchv.gif">11<IMG SRC="../IMAGES/wdrtchv.gif"> if <I>x<SUB>i</I></SUB> = g, and by <IMG SRC="../IMAGES/lftwdchv.gif">01<IMG SRC="../IMAGES/wdrtchv.gif"> or <IMG SRC="../IMAGES/lftwdchv.gif">10<IMG SRC="../IMAGES/wdrtchv.gif"> if <I>x<SUB>i</I></SUB> = <FONT FACE="Courier New" SIZE=2>p</FONT>. Assume also that each input <I>y<SUB>i</SUB> </I>is represented by 0 if <I>y<SUB>i</SUB> </I>= <FONT FACE="Courier New" SIZE=2>k</FONT> and by 1 if <I>y<SUB>i</SUB> </I>= g.<P>
+<a name="093a_1997">29.2-5<a name="093a_1997"><P>
+<a name="093a_198c"><a name="093a_198d">Label each wire in the parallel prefix circuit of Figure 29.9(a) with its depth. A <I><B>critical path</I></B><I> </I>in a circuit is a path with the largest number of combinational elements on any path from inputs to outputs. Identify the critical path in Figure 29.9(a), and show that its length is <I>O</I>(lg<I> n</I>). Show that some node has <IMG SRC="../IMAGES/circx.gif"> elements that operate <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) time apart. Is there a node whose <IMG SRC="../IMAGES/circx.gif"> elements operate simultaneously?<P>
+<a name="093a_1998">29.2-6<a name="093a_1998"><P>
+Give a recursive block diagram of the circuit in Figure 29.12 for any number <I>n</I> of inputs that is an exact power of 2. Argue on the basis of your block diagram that the circuit indeed performs a prefix computation. Show that the depth of the circuit is <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) and that it has <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) size.<P>
+<a name="093a_1999">29.2-7<a name="093a_1999"><P>
+What is the maximum fan-out of any wire in the carry-lookahead adder? Show that addition can still be performed in <I>O</I>(lg <I>n</I>) time by a <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-size circuit even if we restrict gates to have <I>O</I>(1) fan-out.<P>
+<a name="093a_199a">29.2-8<a name="093a_199a"><P>
+<a name="093a_198e"><a name="093a_198f">A <I><B>tally circuit</I> </B>has <I>n</I> binary inputs and <I>m</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg(<I>n </I>+ 1)<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"> </FONT>outputs. Interpreted as a binary number, the outputs give the number of 1's in the inputs. For example, if the input is <IMG SRC="../IMAGES/lftwdchv.gif">10011110<IMG SRC="../IMAGES/wdrtchv.gif">, the output is <IMG SRC="../IMAGES/lftwdchv.gif">101<IMG SRC="../IMAGES/wdrtchv.gif">, indicating that there are five 1's in the input. Describe an <I>O</I>(lg <I>n</I>)-depth tally circuit having <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size.<P>
+<a name="093a_199b">29.2-9<a name="093a_199b"><P>
+Show that <I>n</I>-bit addition can be accomplished with a combinational circuit of depth 4 and size polynomial in <I>n</I> if AND and OR gates are allowed arbitrarily high fan-in. (<I>Optional:</I> Achieve depth 3.)<P>
+<a name="093a_199c">29.2-10<a name="093a_199c"><P>
+<a name="093a_1990">Suppose that two random <I>n</I>-bit numbers are added with a ripple-carry adder, where each bit is independently 0 or 1 with equal probability. Show that with probability at least 1 - 1/<I>n</I>, no carry propagates farther than <I>O</I>(1g <I>n</I>) consecutive stages. In other words, although the depth of the ripple-carry adder is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), for two random numbers, the outputs almost always settle within <I>O</I>(lg <I>n</I>) time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="093b_1997">29.3 Multiplication circuits<a name="093b_1997"></h1><P>
+<a name="093b_1991"><a name="093b_1992"><a name="093b_1993"><a name="093b_1994">The &quot;grade-school&quot; multiplication algorithm in Figure 29.13 can compute the 2<I>n</I>-bit product <I>p</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>2<I>n</I>-1</SUB>, <I>p</I><SUB>2<I>n</I>-2</SUB>, . . . . , <I>p</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of two <I>n</I>-bit numbers <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I>-1</SUB>, <I>a<SUB>n-</I>2</SUB>, . . . , <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>n</I>-1</SUB>, <I>b<SUB>n</I>-2</SUB>, . . . , <I>b</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. We examine the bits of <I>b</I>, from <I>b</I><SUB>0 </SUB>up to <I>b<SUB>n</I>-1</SUB>. For each bit <I>b<SUB>i</I> </SUB>with a value of 1, we add <I>a</I> into the product, but shifted left by <I>i</I> positions. For each bit <I>b<SUB>i</I> </SUB>with a value of 0, we add in 0. Thus, letting <I>m</I><SUP>(<I>i</I>) </SUP>= <I>a</I> <SUP>.</SUP> <I>b<SUB>i</I></SUB> <SUP>.</SUP> 2<I><SUP>i</I></SUP>, we compute<P>
+<img src="671_a.gif"><P>
+<a name="093b_1995"><a name="093b_1996">Each term <I>m</I><SUP>(<I>i</I>) </SUP>is called a <I><B>partial product</I></B>. There are <I>n</I> partial products to sum, with bits in positions 0 to 2<I>n</I> - 2. The carry-out from the highest bit yields the final bit in position 2<I>n</I> - 1.<P>
+In this section, we examine two circuits for multiplying two <I>n</I>-bit numbers. Array multipliers operate in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time and have <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size. Wallace-tree multipliers also have <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size, but they operate in <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) time. Both circuits are based on the grade-school algorithm.<P>
+<pre>            1  1  1  0  =  <I>a</I></sub></sup></pre><P>
+<pre>            1  1  0  1  =  <I>b</I></sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>            1  1  1  0  =  <I>m</I><SUP>(0)</sub></sup></pre><P>
+<pre>         0  0  0  0     =  <I>m</I><SUP>(1)</sub></sup></pre><P>
+<pre>      1  1  1  0        =  <I>m</I><SUP>(2)</sub></sup></pre><P>
+<pre>   1  1  1  0           =  <I>m</I><SUP>(3)</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>1  0  1  1  0  1  1  0  =  <I>p</I></sub></sup></pre><P>
+<h4><a name="093b_1998">Figure 29.13 The &quot;grade-school&quot; multiplication method, shown here multiplying a = <IMG SRC="../IMAGES/lftwdchv.gif">1110<IMG SRC="../IMAGES/wdrtchv.gif"> by b = <IMG SRC="../IMAGES/lftwdchv.gif">1101<IMG SRC="../IMAGES/wdrtchv.gif"> to obtain the product p = <IMG SRC="../IMAGES/lftwdchv.gif">10110110<IMG SRC="../IMAGES/wdrtchv.gif">. We add <img src="672_a.gif">, where m<SUP>(i) </SUP><FONT FACE="Times New Roman" SIZE=2>= a <IMG SRC="../IMAGES/dot10.gif"> b<SUB>i </SUB><IMG SRC="../IMAGES/dot10.gif"><FONT FACE="Times New Roman" SIZE=2><SUB> </SUB><FONT FACE="Times New Roman" SIZE=2>2<SUP>i</SUP>. </FONT></FONT></FONT>Here, n = 8. Each term m<SUP>(i) </SUP>is formed by shifting either a (if b<SUB>i</SUB> = 1 ) or 0 (if b<SUB>i</SUB> = 0) i positions to the left. Bits that are not shown are 0 regardless of the values of a and b.<a name="093b_1998"></sub></sup></h4><P>
+
+
+
+
+
+<h2><a name="093c_1999">29.3.1 Array multipliers<a name="093c_1999"></h2><P>
+<a name="093c_1997"><a name="093c_1998">An array multiplier consists conceptually of three parts. The first part forms the partial products. The second sums the partial products using carry-save adders. Finally, the third sums the two numbers resulting from the carry-save additions using either a ripple-carry or carry-lookahead adder.<P>
+Figure 29.14 shows an <I><B>array multiplier </I></B>for two input numbers <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n-</I>1, </SUB><I>a<SUB>n</I>-2, . . . , </SUB><I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>n</I>-1</SUB>, <I>bn</I>-<SUB>2</SUB>, . . . , <I>b</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. The <I>a<SUB>j</I> </SUB>values run vertically, and the <I>b<SUB>i</I></SUB> values run horizontally. Each input bit fans out to <I>n </I>AND gates to form partial products. Full adders, which are organized as carry-save adders, sum partial products. The lower-order bits of the final product are output on the right. The higher-order bits are formed by adding the two numbers output by the last carry-save adder.<P>
+Let us examine the construction of the array multiplier more closely. Given the two input numbers <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n-</I>1</SUB>, <I>a<SUB>n-</I>2</SUB>, . . . , <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB><FONT FACE="Courier New" SIZE=2>n-</I>1</FONT></SUB>, <I>b<SUB><FONT FACE="Courier New" SIZE=2>n-</I>2</FONT></SUB>, . . . , <I>b</I><SUB><FONT FACE="Courier New" SIZE=2>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"></FONT>, the bits of the partial products are easy to compute. Specifically, for <I>i</I>, <I>j</I> = 0, 1, . . . , <I>n </I>- 1, we have<P>
+<img src="672_b.gif"><P>
+Since the product of 1-bit values can be computed directly with an AND gate, all the bits of the partial products (except those known to be 0, which need not be explicitly computed) can be produced in one step using <I>n</I><SUP>2<I> </I></SUP>AND gates.<P>
+Figure 29.15 illustrates how the array multiplier performs the carry-save additions when summing the partial products in Figure 29.13. It starts by carry-save adding <I>m</I><SUP>(0)</SUP>, <I>m</I><SUP>(1)</SUP>, and 0, yielding an (<I>n</I> + 1)-bit number <I>u</I><SUP>(1) </SUP>and an (<I>n</I> + 1)-bit number <I>v</I><SUP>(1)</SUP>. (The number <I>v</I><SUP>(1)</SUP> has only <I>n</I> + 1 bits, not <I>n</I> + 2, because the (<I>n</I> + 1)st bits of both 0 and <I>m</I><SUP>(0)</SUP> are 0.) Thus, <I>m</I><SUP>(0)</SUP> + <I>m</I><SUP>(1)</SUP> = <I>u</I><SUP>(1)</SUP> + <I>v</I><SUP>(1)</SUP>. It then carry-save adds <I>u</I><SUP>(1),</SUP> <I>v</I><SUP>(1)</SUP>, and <I>m</I><SUP>(2)</SUP>, yielding an (<I>n</I> + 2)-bit number <I>u</I><SUP>(2)</SUP> and an (<I>n</I> + 2)-bit number <I>v</I><SUP>(2)</SUP>. (Again, <I>v</I><SUP>(2) </SUP>has only <I>n</I> + 2 bits because both <img src="674_c.gif"> and <img src="674_d.gif"> are 0.) We then have <I>m</I><SUP>(0)</SUP> + <I>m</I><SUP>(1)</SUP> + <I>m</I><SUP>(2)</SUP> = <I>u</I><SUP>(2)</SUP> + <I>v</I><SUP>(2)</SUP>. The multiplier continues on, carry-save adding <I>u</I><SUP>(<I>i</I>-1), </SUP><I>v</I><SUP>(i-1)</SUP>, and <I>m</I><SUP>(<I>i</I>) </SUP>for <I>i</I> = 2, 3, . . . , <I>n</I> - 1. The result is a (2<I>n</I> - 1)-bit number <I>u</I><SUP>(<I>n </I>- l)</SUP> and a (2<I>n </I>- 1)-bit number <I>v</I><SUP>(<I>n </I>- 1)</SUP>, where<P>
+<img src="674_e.gif"><P>
+<img src="673_a.gif"><P>
+<h4><a name="093c_199a">Figure 29.14 An array multiplier that computes the product p = <IMG SRC="../IMAGES/lftwdchv.gif">p<SUB>2n-1,</SUB>p<SUB>2n-2, . . . , </SUB>p<SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of two n-bit numbers a = <IMG SRC="../IMAGES/lftwdchv.gif">a<SUB>n-1</SUB>,a<SUB>n-2</SUB>, . . . ,a<SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and b = <IMG SRC="../IMAGES/lftwdchv.gif">b<SUB><FONT FACE="Courier New" SIZE=2>n-1</SUB>,b<SUB><FONT FACE="Courier New" SIZE=2>n-2</SUB>, . . . , b<SUB><FONT FACE="Courier New" SIZE=2>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"></FONT><SUP></SUP><SUP></SUP><SUP></SUP><SUP></FONT></SUP>, shown here for n = 4. Each AND gate <img src="673_b.gif"><SUP> </SUP>computes partial-product bit <img src="673_c.gif">.<SUP> </SUP></FONT>Each row of full adders constitutes a carry-save adder. The lower n bits of the product are <img src="673_d.gif">and the u bits coming out from the rightmost column of full adders. The upper n product bits are formed by adding the u and v bits coming out from the bottom row of full adders. Shown are bit values for inputs a = <IMG SRC="../IMAGES/lftwdchv.gif">1110<IMG SRC="../IMAGES/wdrtchv.gif"> and b = <IMG SRC="../IMAGES/lftwdchv.gif">1101<IMG SRC="../IMAGES/wdrtchv.gif"> and product p = <IMG SRC="../IMAGES/lftwdchv.gif">10110110<IMG SRC="../IMAGES/wdrtchv.gif">, corresponding to Figures 29.13 and 29.15.<a name="093c_199a"></sub></sup></h4><P>
+<pre>            0  0  0  0  =  0</sub></sup></pre><P>
+<pre>            1  1  1  0  =  <I>m</I><SUP>(0)</sub></sup></pre><P>
+<pre>         0  0  0  0     =  <I>m</I><SUP>(1)</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>         0  1  1  1  0  =  <I>u</I><SUP>(1)</sub></sup></pre><P>
+<pre>         0  0  0        =  <I>v</I><SUP>(1)</sub></sup></pre><P>
+<pre>      1  1  1  0        =  <I>m</I><SUP>(2)</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>      1  1  0  1  1  0  =  <I>u</I><SUP>(2)</sub></sup></pre><P>
+<pre>      0  1  0           =  <I>v</I><SUP>(2)</sub></sup></pre><P>
+<pre>   1  1  1  0           =  <I>m</I><SUP>(3)</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>   1  0  1  0  1  1  0  =  <I>u</I><SUP>(3)</sub></sup></pre><P>
+<pre>   1  1  0              =  <I>v</I><SUP>(3)</sub></sup></pre><P>
+<pre>-------------------------------</sub></sup></pre><P>
+<pre>1  0  1  1  0  1  1  0  =  <I>p</I></sub></sup></pre><P>
+<h4><a name="093c_199b">Figure 29.15 Evaluating the sum of the partial products by repeated carry-save addition. For this example, a = <IMG SRC="../IMAGES/lftwdchv.gif">1110<IMG SRC="../IMAGES/wdrtchv.gif"> and b = <IMG SRC="../IMAGES/lftwdchv.gif">1101<IMG SRC="../IMAGES/wdrtchv.gif"> . Bits that are blank are 0 regardless of the values of a and b. We first evaluate m<SUP>(0)</SUP> + m<SUP>(1)</SUP> + 0 = u<SUP>(1)</SUP> + v<SUP>(1)</SUP> then u<SUP>(1)</SUP> + v<SUP>(1)</SUP>+ m<SUP>(2)</SUP> = u<SUP>(2)</SUP> + v<SUP>(2)</SUP>, then u<SUP>(2)</SUP> + v<SUP>(2)</SUP> + m<SUP>(3)</SUP> = u<SUP>(3)</SUP> + v<SUP>(3),</SUP> and finally p = m<SUP>(0)</SUP> + m<SUP>(1)</SUP> + m<SUP>(2)</SUP> + m<SUP>(3)</SUP> = u<SUP>(3)</SUP> + v<SUP>(3) </SUP>Note that <img src="674_a.gif"> and <img src="674_b.gif"> for i = 1, 2, . . . , n - 1.<a name="093c_199b"></sub></sup></h4><P>
+In fact, the carry-save additions in Figure 29.15 operate on more bits than strictly necessary. Observe that for <I>i</I> = 1, 2, . . . , <I>n</I> - 1 and <I>j </I>= 0, 1, . . . , <I>i </I>- 1, we have <img src="674_f.gif"> because of how we shift the partial products. Observe also that <img src="674_g.gif"> for <I>i</I> = 1, 2, . . . , <I>n </I>- 1 and <I>j</I> = 0, 1, . . . , <I>i,</I> <I>i</I> + <I>n</I>, i + <I>n</I> + 1, . . . , 2<I>n</I> - 1. (See Exercise 29.3-1.) Each carry-save addition, therefore, needs to operate on only <I>n</I> - 1 bits.<P>
+Let us now examine the correspondence between the array multiplier and the repeated carry-save addition scheme. Each AND gate is labeled by <img src="674_h.gif"> for some <I>i</I> and <I>j</I> in the ranges 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - 1 and 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> 2<I>n</I> - 2. Gate <img src="674_i.gif"><SUB> </SUB>produces <img src="674_j.gif">, the <I>j</I>th bit of the <I>i</I>th partial product. For <I>i</I> = 0, 1, . . . , <I>n</I> - 1, the <I>i</I>th row of AND gates computes the <I>n</I> significant bits of the partial product <I>m</I><SUP>(<I>i</I>)</SUP>, that is, <img src="674_k.gif">.<P>
+Except for the full adders in the top row (that is, for <I>i </I>= 2, 3, . . . , <I>n</I> - 1), each full adder <img src="674_l.gif"><SUP> </SUP>takes three input <img src="674_m.gif"><SUP>, </SUP>and <img src="674_n.gif">--and produces two output <img src="674_o.gif"><SUP> </SUP>and <img src="674_p.gif">. (Note that in the leftmost column of full adders, <img src="675_a.gif">.) Each full adder <img src="675_b.gif"><SUP> </SUP>in the top row takes inputs <img src="675_c.gif">, and 0 and produces bits <img src="675_d.gif">.<P>
+Finally, let us examine the output of the array multiplier. As we observed above, <img src="675_e.gif"> for <I>j</I> = 0, 1, . . . , <I>n</I> - 1. Thus, <img src="675_f.gif"><SUP> </SUP>for <I>j </I>= 0, 1, . . . , <I>n </I>- 1. Moreover, since <img src="675_g.gif">, we have <img src="675_h.gif">, and since the lowest-order <I>i</I> bits of each <I>m</I><SUP>(<I>i</I>)<I> </I></SUP>and <I>v</I><SUP>(i - 1) </SUP>are 0, we have <img src="675_i.gif"><SUP> </SUP>for <I>i</I> = 2, 3, . . . , <I>n</I>- 1 and <I>j</I> = 0, 1, . . . , <I>i</I> - 1. Thus, <img src="675_j.gif"><SUP> </SUP>and, by induction, <img src="675_k.gif"> for <I>i</I> = 1, 2, . . . , <I>n</I> - 1. Product bits<IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>2<I>n</I>-1,</SUB> <I>p</I><SUB>2<I>n-</I>2</SUB>, . . . , <I>p<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> are produced by an <I>n</I>-bit adder that adds the outputs from the last row of full adders:<P>
+<img src="675_l.gif"><P>
+
+
+
+
+
+<h3>Analysis</h3><P>
+Data ripple through an array multiplier from upper left to lower right. It takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time for the lower-order product bits <IMG SRC="../IMAGES/lftwdchv.gif"><I>p<SUB>n</I>-1, </SUB><I>p<SUB>n</I>-2</SUB>, . . . , <I>p</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> to be produced, and it takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time for the inputs to the adder to be ready. If the adder is a ripple-carry adder, it takes another <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time for the higher-order product bits <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>2<I>n</I>-1, </SUB><I>p</I><SUB>2<I>n</I>-2</SUB>, . . . , <I>p<SUB>n</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> to emerge. If the adder is a carry-lookahead adder, only <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) time is needed, but the total time remains <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+There are <I>n</I><SUP>2 </SUP>AND gates and <I>n</I><SUP>2</SUP> - <I>n</I> full adders in the array multiplier. The adder for the high-order output bits contributes only another <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) gates. Thus, the array multiplier has <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="093e_199b">29.3.2 Wallace-tree multipliers<a name="093e_199b"></h2><P>
+<a name="093e_1999"><a name="093e_199a">A <I><B>Wallace tree</I></B> is a circuit that reduces the problem of summing <I>n n</I>-bit numbers to the problem of summing two <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-bit numbers. It does this by using <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/3<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> carry-save adders in parallel to convert the sum of <I>n</I> numbers to the sum of <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>2<I>n</I>/3<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> numbers. It then recursively constructs a Wallace tree on the <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>2<I>n</I>/3<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> resulting numbers. In this way, the set of numbers is progressively reduced until there are only two numbers left. By performing many carry-save additions in parallel, Wallace trees allow two <I>n</I>-bit numbers to be multiplied in <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) time using a circuit with <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size.<P>
+Figure 29.16 shows a Wallace tree<SUP>2 </SUP>that adds 8 partial products <I>m</I><SUP>(0)</SUP>, <I>m</I><SUP>(1)</SUP>, . . . , <I>m</I><SUP>(7)</SUP>. Partial product <I>m</I><SUP>(l)</SUP> consists of<I> n</I> + <I>i</I> bits. Each line represents an entire number, not just a single bit; next to each line is the number of bits the line represents (see Exercise 29.3-3). The carry-lookahead adder at the bottom adds a (2<I>n </I>- 1)-bit number to a 2<I>n</I>-bit number to give the 2<I>n</I>-bit product.<P>
+<SUP>2</SUP> As you can see from the figure, a Wallace tree is not truly a tree, but rather a directed acyclic graph. The name is historical.<P>
+<img src="676_a.gif"><P>
+<h4><a name="093e_199c">Figure 29.16 A Wallace tree that adds n = 8 partial products m<SUP>(0)</SUP>, m<SUP>(1)</SUP>, . . . , m<SUP>(7)</SUP>. Each line represents a number with the number of bits indicated. The left output of each carry-save adder represents the sum bits, and the right output represents the carry bits.<a name="093e_199c"></sub></sup></h4><P>
+
+
+
+
+
+<h3>Analysis</h3><P>
+The time required by an <I>n</I>-input Wallace tree depends on the depth of the carry-save adders. At each level of the tree, each group of 3 numbers is reduced to 2 numbers, with at most 2 numbers left over (as in the case of<I> m</I><SUP>(6)</SUP> and <I>m</I><SUP>(7)</SUP> at the top level). Thus, the maximum depth <I>D</I>(<I>n</I>) of a carry-save adder in an <I>n</I>-input Wallace tree is given by the recurrence<P>
+<img src="676_b.gif"><P>
+which has the solution <I>D</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) by case 2 of the master theorem (Theorem 4.1). Each carry-save adder takes <IMG SRC="../IMAGES/bound.gif">(1) time. All <I>n</I> partial products can be formed in <IMG SRC="../IMAGES/bound.gif">(1) time in parallel. (The lowest-order <I>i</I> - 1 bits of <I>m</I><SUP>(<I>i</I>)</SUP>, for <I>i</I> = 1, 2, . . . , <I>n</I> - 1, are hardwired to 0.) The carry-lookahead adder takes <I>O</I>(lg <I>n</I>) time. Thus, the entire multiplication of two <I>n</I>-bit numbers takes <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) time.<P>
+A Wallace-tree multiplier for two <I>n</I>-bit numbers has <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size, which we can see as follows. We first bound the circuit size of the carry-save adders. A lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n</I><SUP>2</SUP>) is easy to obtain, since there are <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>2<I>n</I>/3<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> carry-save adders at depth 1, and each one consists of at least <I>n</I> full adders. To get the upper bound of <I>O</I>(<I>n</I><SUP>2</SUP>), observe that since the final product has 2<I>n</I> bits, each carry-save adder in the Wallace tree contains at most 2<I>n</I> full adders. We need to show that there are <I>O</I>(<I>n</I>) carry-save adders altogether. Let <I>C</I>(<I>n</I>) be the total number of carry-save adders in a Wallace tree with <I>n</I> input numbers. We have the recurrence<P>
+<img src="677_a.gif"><P>
+which has the solution <I>C</I>(<I>n</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) by case 3 of the master theorem. We thus obtain an asymptotically tight bound of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size for the carry-save adders of a Wallace-tree multiplier. The circuitry to set up the <I>n</I> partial products has <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size, and the carry-lookahead adder at the end has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size. Thus, the size of the entire multiplier is <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).<P>
+Although the Wallace-tree-based multiplier is asymptotically faster than the array multiplier and has the same asymptotic size, its layout when it is implemented is not as regular as the array multiplier's, nor is it as "dense" (in the sense of having little wasted space between circuit elements). In practice, a compromise between the two designs is often used. The idea is to use two arrays in parallel, one adding up half of the partial products and one adding up the other half. The propagation delay is only half of that incurred by a single array adding up all <I>n</I> partial products. Two more carry-save additions reduce the 4 numbers output by the arrays to 2 numbers, and a carry-lookahead adder then adds the 2 numbers to yield the product. The total propagation delay is a little more than half that of a full array multiplier, plus an additional <I>O</I>(lg <I>n</I>) term.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0940_199f">Exercises<a name="0940_199f"></h2><P>
+<a name="0940_19a0">29.3-1<a name="0940_19a0"><P>
+Prove that in an array multiplier, <img src="677_b.gif"> = 0 for <I>i</I> = 1, 2, . . . , <I>n</I> - 1 and <I>j</I> = 0, 1,. . . , <I>i</I>, <I>i </I>+ <I>n</I>, <I>i </I>+ <I>n </I>+ 1, . . . , 2<I>n</I> - 1.<P>
+<a name="0940_19a1">29.3-2<a name="0940_19a1"><P>
+Show that in the array multiplier of Figure 29.14, all but one of the full adders in the top row are unnecessary. You will need to do some rewiring.<P>
+<a name="0940_19a2">29.3-3<a name="0940_19a2"><P>
+<a name="0940_199b">Suppose that a carry-save adder takes inputs <I>x</I>, <I>y</I>, and <I>z</I> and produces outputs <I>s</I> and <I>c</I>, with <I>n<SUB>x</I></SUB>, <I>n<SUB>y</I></SUB>, <I>n<SUB>z</I></SUB>, <I>n<SUB>s</I></SUB>, and <I>n<SUB>c</I></SUB> bits respectively. Suppose also, without loss of generality, that <I>n<SUB>x</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>n<SUB>y</I></SUB> <IMG SRC="../IMAGES/lteq12.gif"> <I>n<SUB>z.</SUB> </I>Show that <I>n<SUB>s</I></SUB>= <I>n<SUB>z</I></SUB> and that<P>
+<img src="678_a.gif"><P>
+<a name="0940_19a3">29.3-4<a name="0940_19a3"><P>
+Show that multiplication can still be performed in <I>O</I>(lg <I>n</I>) time with <I>O</I>(<I>n</I><SUP>2</SUP>) size even if we restrict gates to have <I>O</I>(1) fan-out.<P>
+<a name="0940_19a4">29.3-5<a name="0940_19a4"><P>
+Describe an efficient circuit to compute the quotient when a binary number <I>x </I>is divided by 3<I>. (Hint: </I>Note that in binary, .010101 . . . = .01 X 1.01 X 1.0001 X <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif">.<P>
+<a name="0940_19a5">29.3-6<a name="0940_19a5"><P>
+<a name="0940_199c"><a name="0940_199d"><a name="0940_199e">A <I><B>cyclic shifter</I></B>, or <I><B>barrel shifter</I></B>, is a circuit that has two inputs <I>x</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>x<SUB>n</I>-1</SUB>, <I>x<SUB>n</I>-2</SUB>,. . . ,<I>x</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>s</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>s<SUB>m</I>-1</SUB>, <I>s<SUB>m</I>-2</SUB>,. . . , <I>s</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, where <I>m</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>lg <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>. Its output <I>y</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y<SUB>n</I>-1</SUB>, <I>y<SUB>n</I>-2</SUB>,. . . , <I>y</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> is specified by <I>y<SUB>i</I></SUB> = <I>x<SUB>i </I>+ <I>s</I>mod<I>n</I></SUB>, for <I>i</I> = 0,1, . . ., <I>n</I> - 1. That is, the shifter rotates the bits of <I>x</I> by the amount specified by <I>s</I>. Describe an efficient cyclic shifter. In terms of modular multiplication, what function does a cyclic shifter implement?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0941_19a1">29.4 Clocked circuits<a name="0941_19a1"></h1><P>
+The elements of a combinational circuit are used only once during a  computation. By introducing clocked memory elements into the circuit, we can reuse combinational elements. Because they can use hardware more than once, clocked circuits can often be much smaller than combinational circuits for the same function.<P>
+<a name="0941_199f"><a name="0941_19a0">This section investigates clocked circuits for performing addition and multiplication. We begin with a <IMG SRC="../IMAGES/bound.gif">(1)-size clocked circuit, called a bit-serial adder, that can add two <I>n</I>-bit numbers in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time. We then investigate linear-array multipliers. We present a linear-array multiplier with <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size that can multiply two <I>n</I>-bit numbers in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time.<P>
+
+
+
+
+
+<h2><a name="0942_19ac">29.4.1 Bit-serial addition<a name="0942_19ac"></h2><P>
+<a name="0942_19a1"><a name="0942_19a2"><a name="0942_19a3"><a name="0942_19a4"><a name="0942_19a5">We introduce the notion of a clocked circuit by returning to the problem of adding two <I>n</I>-bit numbers. Figure 29.17 shows how we can use a single full adder to produce the (<I>n</I> + 1)-bit sum <I>s</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>s<SUB>n</I></SUB>, <I>s<SUB>n - </I>1</SUB>, . . . , <I>s</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"><I> </I>of two <I>n</I>-bit numbers <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>a<SUB>n</I> - 1</SUB>, <I>a<SUB>n</I> - 2</SUB>, . . . , <I>a</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> and <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>b<SUB>n</I> - 1</SUB>, <I>b<SUB>n</I> - 2</SUB>, . . . , <I>b</I><SUB>0</SUB><IMG SRC="../IMAGES/wdrtchv.gif">. The external world presents the input bits one pair at a time: first <I>a</I><SUB>0</SUB> and <I>b</I><SUB>0</SUB>, then <I>a</I><SUB>1</SUB> and <I>b</I><SUB>1</SUB>, and so forth. Although we want the carry-out from one bit position to be the carry-in to the next bit position, we cannot just feed the full adder's <I>c</I> output directly into an input. There is a timing issue: the carry-in <I>c<SUB>i</SUB> </I>entering the full adder must correspond to the appropriate inputs <I>a<SUB>i</SUB> </I>and <I>b<SUB>i</I></SUB>. Unless these input bits arrive at exactly the same moment as the fed-back carry, the output may be incorrect.<P>
+<img src="679_a.gif"><P>
+<h4><a name="0942_19ad">Figure 29.17 The operation of a bit-serial adder. During the ith clock period, for i = 0, 1, . . . , n, the full adder FA takes input bits a<SUB>i</SUB> and b<SUB>i</SUB> from the outside world and a carry bit c<SUB>i</SUB>  from the register. The full adder then outputs sum bit s<SUB>i</SUB>, which is provided externally, and carry bit c<SUB>i+1</SUB>, which is stored back in the register to be used during the next clock period. The register is initialized with c<SUB>0</SUB> = 0. (a)-(e) The state of the circuit in each of the five clock periods during the addition of a = <IMG SRC="../IMAGES/lftwdchv.gif">1011<IMG SRC="../IMAGES/wdrtchv.gif"> and b = <IMG SRC="../IMAGES/lftwdchv.gif">1001<IMG SRC="../IMAGES/wdrtchv.gif"> to produce s = <IMG SRC="../IMAGES/lftwdchv.gif">10100<IMG SRC="../IMAGES/wdrtchv.gif">.<a name="0942_19ad"></sub></sup></h4><P>
+<a name="0942_19a6"><a name="0942_19a7">As Figure 29.17 shows, the solution is to use a <I><B>clocked circuit</I></B>, or  <I><B>sequential circuit</I></B>, consisting of combinational circuitry and one or more <I><B>registers</I></B> (clocked memory elements). The combinational circuitry has inputs from the external world or from the output of registers. It provides outputs to the external world and to the input of registers. As in combinational circuits, we prohibit the combinational circuitry in a clocked circuit from containing cycles.<P>
+<a name="0942_19a8"><a name="0942_19a9"><a name="0942_19aa"><a name="0942_19ab">Each register in a clocked circuit is controlled by a periodic signal, or <I><B>clock</I></B>. Whenever the clock pulses, or <I><B>ticks</I></B>, the register loads in and stores the value at its input. The time between successive clock ticks is a <I><B>clock period</I></B>. In a <I><B>globally clocked</I></B> circuit, every register works off the same clock.<P>
+Let us examine the operation of a register in a little more detail. We treat each clock tick as a momentary pulse. At a given tick, a register reads the input value presented to it <I>at that moment</I> and stores it. This stored value then appears at the register's output, where it can be used to compute values that are moved into other registers at the next clock tick. In other words, the value at a register's input during one clock period appears on the register's output during the next clock period.<P>
+Now let us examine the circuit in Figure 29.17, which we call a <I><B>bit-serial adder</I></B>. In order for the full adder's outputs to be correct, we require that the clock period be at least as long as the propagation delay of the full adder, so that the combinational circuitry has an opportunity to settle between clock ticks. During clock period 0, shown in Figure 29.17(a), the external world applies input bits <I>a</I><SUB>0</SUB> and <I>b</I><SUB>0</SUB> to two of the full adder's inputs. We assume that the register is initialized to store a 0; the initial carry-in bit, which is the register output, is thus <I>c</I><SUB>0</SUB> = 0. Later in this clock period, sum bit <I>s</I><SUB>0</SUB> and carry-out <I>c</I><SUB>1</SUB> emerge from the full adder. The sum bit goes to the external world, where presumably it will be saved as part of the entire sum <I>s</I>. The wire from the carry-out of the full adder feeds into the register, so that <I>c</I><SUB>1</SUB> is read into the register upon the next clock tick. At the beginning of clock period 1, therefore, the register contains <I>c</I><SUB>1</SUB>. During clock period 1, shown in Figure 29.17(b), the outside world applies <I>a</I><SUB>1</SUB> and <I>b</I><SUB>1</SUB> to the full adder, which, reading <I>c</I><SUB>1</SUB> from the register, produces outputs <I>s</I><SUB>1</SUB> and <I>c</I><SUB>2</SUB>. The sum bit <I>s</I><SUB>1 </SUB>goes out to the outside world, and <I>c</I><SUB>2 </SUB>goes to the register. This cycle continues until clock period <I>n</I>, shown in Figure 29.17(e), in which the register contains <I>c<SUB>n</I></SUB>. The external world then applies <I>a<SUB>n</SUB> </I>= <I>b<SUB>n</SUB> </I>= 0, so that we get <I>s<SUB>n</SUB> </I>= <I>c<SUB>n</I></SUB>.<P>
+
+
+
+
+
+<h3>Analysis</h3><P>
+<a name="0943_19ac">To determine the total time <I>t</I> taken by a globally clocked circuit, we need to know the number <I>p</I> of clock periods and the duration <I>d</I> of each clock period: <I>t = pd</I>. The clock period <I>d</I> must be long enough for all combinational circuitry to settle between ticks. Although for some inputs it may settle earlier, if the circuit is to work correctly for all inputs, <I>d</I> must be at least proportional to the depth of the combinational circuitry.<P>
+Let us see how long it takes to add two <I>n</I>-bit numbers bit-serially. Each clock period takes <IMG SRC="../IMAGES/bound.gif">(1) time because the depth of the full adder is <IMG SRC="../IMAGES/bound.gif">(1). Since <I>n</I> + 1 clock ticks are required to produce all the outputs, the total time to perform bit-serial addition is (<I>n</I> + 1) <IMG SRC="../IMAGES/bound.gif">(1) = <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+The size of the bit-serial adder (number of combinational elements plus number of registers) is <IMG SRC="../IMAGES/bound.gif">(1).<P>
+<P>
+
+
+
+
+
+
+
+<h3>Ripple-carry addition versus bit-serial addition</h3><P>
+<a name="0944_19ad">Observe that a ripple-carry adder is like a replicated bit-serial adder with the registers replaced by direct connections between combinational elements. That is, the ripple-carry adder corresponds to a spatial "unrolling" of the computation of the bit-serial adder. The <I>i</I>th full adder in the ripple-carry adder implements the <I>i</I>th clock period of the bit-serial adder.<P>
+In general, we can replace any clocked circuit by an equivalent combinational circuit having the same asymptotic time delay if we know in advance how many clock periods the clocked circuit runs for. There is, of course, a trade-off involved. The clocked circuit uses fewer circuit elements (a factor of <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) less for the bit-serial adder versus the ripple-carry adder), but the combinational circuit has the advantage of less control circuitry--we need no clock or synchronized external circuit to present input bits and store sum bits. Moreover, although the circuits have the same asymptotic time delay, the combinational circuit typically runs slightly faster in practice. The extra speed is possible because the combinational circuit doesn't have to wait for values to stabilize during each clock period. If all the inputs stabilize at once, values just ripple through the circuit at the maximum possible speed, without waiting for the clock.<P>
+<img src="681_a.gif"><P>
+<h4><a name="0944_19ae">Figure 29.18 Multiplying 19 by 29 with the Russian peasant's algorithm. The a- column entry in each row is half of the previous row's entry with fractions ignored, and the b-column entries double from row to row. We add the b-column entries in all rows with odd a-column entries, which are shaded. This sum is the desired product. (a) The numbers expressed in decimal. (b) The same numbers in binary.<a name="0944_19ae"></sub></sup></h4><P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0945_19b4">29.4.2 Linear-array multipliers<a name="0945_19b4"></h2><P>
+<a name="0945_19ae"><a name="0945_19af"><a name="0945_19b0"><a name="0945_19b1">The combinational multipliers of Section 29.3 need <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) size to multiply two <I>n</I>-bit numbers. We now present two multipliers that are linear, rather than two-dimensional, arrays of circuit elements. Like the array multiplier, the faster of these two linear-array multipliers runs in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time.<P>
+<a name="0945_19b2"><a name="0945_19b3">The linear-array multipliers implement the <I><B>Russian peasant's algorithm</I></B> (so called because Westerners visiting Russia in the nineteenth century found the algorithm widely used there), illustrated in Figure 29.18(a). Given two input numbers <I>a</I> and <I>b</I>, we make two columns of numbers, headed by <I>a</I> and <I>b</I>. In each row, the <I>a</I>-column entry is half of the previous row's <I>a</I>-column entry, with fractions discarded. The <I>b</I>-column entry is twice the previous row's <I>b</I>-column entry. The last row is the one with an <I>a</I>-column entry of 1. We look at all the <I>a</I>-column entries that contain odd values and sum the corresponding <I>b</I>-column entries. This sum is the product <I>a </I><IMG SRC="../IMAGES/dot10.gif"> b<I>.</I><P>
+Although the Russian peasant's algorithm may seem remarkable at first, Figure 29.18(b) shows that it is really just a binary-number-system implementation of the grade-school multiplication method, but with numbers expressed in decimal rather than binary. Rows in which the <I>a</I>-column entry is odd contribute to the product a term of <I>b</I> multiplied by the appropriate power of 2.<P>
+
+
+
+
+
+<h3>A slow linear-array implementation</h3><P>
+Figure 29.19(a) shows one way to implement the Russian peasant's algorithm for two <I>n</I>-bit numbers. We use a clocked circuit consisting of a linear array of 2<I>n</I> cells. Each cell contains three registers. One register holds a bit from an <I>a</I> entry, one holds a bit from a <I>b</I> entry, and one holds a bit of the product <I>p</I>. We use superscripts to denote cell values before each step of the algorithm. For example, the value of bit <I>a<SUB>i</I></SUB> before the <I>j</I>th step is <img src="682_a.gif">, and we define <img src="682_b.gif">.<P>
+The algorithm executes a sequence of <I>n</I> steps, numbered 0,1, . . . , <I>n</I> - 1, where each step takes one clock period. The algorithm maintains the invariant that before the <I>j</I>th step,<P>
+<pre><I>a</I><SUP>(<I>j</I>) </SUP><IMG SRC="../IMAGES/dot10.gif"><SUP> </SUP><I>b</I><SUP>(<I>j</I>)</SUP> + p<SUP>(<I>j</I>)</SUP> = <I>a</I> <IMG SRC="../IMAGES/dot10.gif"> <I>b</I></sub></sup></pre><P>
+<h4><a name="0946_0001">(29.6)<a name="0946_0001"></sub></sup></h4><P>
+(see Exercise 29.4-2). Initially, <I>a</I><SUP>(0)</SUP> = <I>a</I>, <I>b</I><SUP>(0)</SUP> = <I>b</I>, and <I>p</I><SUP>(0)</SUP> = 0. The <I>j</I>th step consists of the following computations.<P>
+1.     If <I>a</I><SUP>(<I>j</I>)</SUP> is odd (that is, <img src="682_c.gif">), then add <I>b</I> into <I>p</I>: <I>p</I><SUP>(<I>j</I>+1)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> <I>b</I><SUP>(<I>j</I>)</SUP> + <I>p</I><SUP>(<I>j</I>)</SUP>. (The addition is performed by a ripple-carry adder that runs the length of the array; carry bits ripple from right to left.) If <I>a</I><SUP>(<I>j</I>)</SUP> is even, then carry <I>p</I> through to the next step: <I>p</I><SUP>(<I>j</I>+1)</SUP> <IMG SRC="../IMAGES/arrlt12.gif"> <I>p</I><SUP>(<I>j</I>)</SUP>.<P>
+2.     Shift <I>a</I> right by one bit position:<P>
+<img src="682_d.gif"><P>
+3.     Shift <I>b</I> left by one bit position:<P>
+<img src="682_e.gif"><P>
+After running <I>n</I> steps, we have shifted out all the bits of <I>a</I>; thus, <I>a</I><SUP>(<I>n</I>)</SUP> = 0. Invariant (29.6) then implies that <I>p<SUP>(n)</I></SUP> = <I>a </I><IMG SRC="../IMAGES/dot10.gif"> b<I>.</I><P>
+We now analyze the algorithm. There are <I>n</I> steps, assuming that the control information is broadcast to each cell simultaneously. Each step takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time in the worst case, because the depth of the ripple-carry adder is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), and thus the duration of the clock period must be at least <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). Each shift takes only <IMG SRC="../IMAGES/bound.gif">(1) time. Overall, therefore, the algorithm takes <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP><FONT FACE="Times New Roman" SIZE=2>2</I></FONT></SUP>) time. Because each cell has constant size, the entire linear array has <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) size.<P>
+<P>
+
+
+
+
+
+
+
+<h3>A fast linear-array implementation</h3><P>
+By using carry-save addition instead of ripple-carry addition, we can decrease the time for each step to <IMG SRC="../IMAGES/bound.gif">(1), thus improving the overall time to <IMG SRC="../IMAGES/bound.gif">(<I>n</I>). As Figure 29.19(b) shows, once again each cell contains a bit of an <I>a</I> entry and a bit of a <I>b</I> entry. Each cell also contains two more bits, from <I>u</I> and <I>v</I>, which are the outputs from carry-save addition. Using a carry-save representation to accumulate the product, we maintain the invariant that before the <I>j</I>th step,<P>
+<pre><I>a</I><SUP>(<I>j</I>)</SUP> <IMG SRC="../IMAGES/dot10.gif"> <I>b</I><SUP>(<I>j</I>)</SUP> + <I>u</I><SUP>(<I>j</I>)</SUP> + <I>v</I><SUP>(<I>j</I>)</SUP> = <I>a </I><IMG SRC="../IMAGES/dot10.gif"> b</sub></sup></pre><P>
+<h4><a name="0947_0001">(29.7)<a name="0947_0001"></sub></sup></h4><P>
+(again, see Exercise 29.4-2). Each step shifts <I>a</I> and <I>b</I> in the same way as the slow implementation, so that we can combine equations (29.6) and (29.7) to yield <I>u</I><SUP>(<I>j</I>)</SUP> + <I>v</I><SUP>(<I>j</I>)</SUP> = <I>p</I><SUP>(<I>j</I>)</SUP>. Thus, the <I>u</I> and <I>v</I> bits contain the same information as the <I>p </I>bits in the slow implementation.<P>
+<img src="683_a.gif"><P>
+<h4><a name="0947_0002">Figure 29.19 Two linear-array implementations of the Russian peasant's algorithm, showing the multiplication of a = 19 = <IMG SRC="../IMAGES/lftwdchv.gif">10011<IMG SRC="../IMAGES/wdrtchv.gif"> by b = 29 = <IMG SRC="../IMAGES/lftwdchv.gif">11101<IMG SRC="../IMAGES/wdrtchv.gif">, with n = 5. The situation at the beginning of each step j is shown, with the remaining significant bits of a<SUP>(j)</SUP> and b<SUP>(j)</SUP> shaded. (a) A slow implementation that runs in <IMG SRC="../IMAGES/bound.gif">(n<SUP>2</SUP>) time. Because a<SUP>(5)</SUP> = 0, we have p<SUP>(5)</SUP> = a <IMG SRC="../IMAGES/dot10.gif"> b. There are n steps, and each step uses a ripple-carry addition. The clock period is therefore proportional to the length of the array, or <IMG SRC="../IMAGES/bound.gif">(n), leading to <IMG SRC="../IMAGES/bound.gif">(n<SUP>2</SUP>) time overall. (b) A fast implementation that runs in <IMG SRC="../IMAGES/bound.gif">(n) time because each step uses carry-save addition rather than ripple-carry addition, thus taking only <IMG SRC="../IMAGES/bound.gif">(1) time. There are a total of 2n - 1 = 9 steps; after the last step shown, repeated carry-save addition of u and v yields u<SUP>(9)</SUP> = a <IMG SRC="../IMAGES/dot10.gif"> b.<a name="0947_0002"></sub></sup></h4><P>
+The <I>j</I>th step of the fast implementation performs carry-save addition on <I>u</I> and <I>v</I>, where the operands depend on whether <I>a</I> is odd or even. If <img src="684_a.gif">, we compute<P>
+<img src="684_b.gif"><P>
+and<P>
+<img src="684_c.gif"><P>
+Otherwise, <img src="684_d.gif">, and we compute<P>
+<img src="684_e.gif"><P>
+and<P>
+<img src="684_f.gif"><P>
+After updating <I>u</I> and <I>v</I>, the <I>j</I>th step shifts <I>a</I> to the right and <I>b</I> to the left in the same manner as the slow implementation. <P>
+The fast implementation performs a total of 2<I>n</I> - 1 steps. For <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I>, we have <I>a</I><SUP>(<I>j</I>)</SUP> = 0, and invariant (29.7) therefore implies that <I>u</I><SUP>(<I>j</I>)</SUP> + <I>v</I><SUP>(<I>j</I>) </SUP>= <I>a </I><IMG SRC="../IMAGES/dot10.gif"><I> b</I>. Once <I>a</I><SUP>(<I>j</I>)</SUP> = 0, all further steps serve only to carry-save add <I>u</I> and <I>v</I>. Exercise 29.4-3 asks you to show that <I>v</I><SUP>(2<I>n</I>-1)</SUP> = 0, so that <I>u</I><SUP>(2<I>n</I>-1)</SUP> = <I>a </I><IMG SRC="../IMAGES/dot10.gif"> b<I>.</I><P>
+The total time in the worst case is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), since each of the 2<I>n</I> - 1 steps takes <IMG SRC="../IMAGES/bound.gif">(1) time. Because each cell still has constant size, the total size remains <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h2><a name="0948_0001">Exercises<a name="0948_0001"></h2><P>
+<a name="0948_0002">29.4-1<a name="0948_0002"><P>
+Let <I>a</I> = <IMG SRC="../IMAGES/lftwdchv.gif">101101<IMG SRC="../IMAGES/wdrtchv.gif">, <I>b</I> = <IMG SRC="../IMAGES/lftwdchv.gif">011110<IMG SRC="../IMAGES/wdrtchv.gif">, and <I>n</I> = 6. Show how the Russian peasant's algorithm operates, in both decimal and binary, for inputs <I>a</I> and <I>b</I>.<P>
+<a name="0948_0003">29.4-2<a name="0948_0003"><P>
+Prove the invariants (29.6) and (29.7) for the linear-array multipliers.<P>
+<a name="0948_0004">29.4-3<a name="0948_0004"><P>
+Prove that in the fast linear-array multiplier, <I>v</I><SUP>(2<I>n</I>-1)</SUP> = 0.<P>
+<a name="0948_0005">29.4-4<a name="0948_0005"><P>
+Describe how the array multiplier from Section 29.3.1 represents an "un-rolling" of the computation of the fast linear-array multiplier.<P>
+<a name="0948_0006">29.4-5<a name="0948_0006"><P>
+Consider a data stream <IMG SRC="../IMAGES/lftwdchv.gif"><I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . .<IMG SRC="../IMAGES/wdrtchv.gif"> that arrives at a clocked circuit at the rate of 1 value per clock tick. For a fixed value <I>n</I>, the circuit must compute the value<P>
+<img src="685_a.gif"><P>
+for <I>t</I> = <I>n,n</I> + 1, . . .. That is, <I>y<SUB>t</I></SUB> is the maximum of the most recent <I>n</I> values received by the circuit. Give an <I>O</I>(<I>n</I>)-size circuit that on each clock tick inputs the value <I>x<SUB>t</I></SUB> and computes the output value <I>y<SUB>t</I></SUB> in <I>O</I>(1) time. The circuit can use registers and combinational elements that compute the maximum of two inputs.<P>
+<a name="0948_0007">29.4-6<a name="0948_0007"><P>
+Redo Exercise 29.4-5 using only <I>O</I>(1g <I>n</I>) &quot;maximum&quot; elements.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0949_19b9">Problems<a name="0949_19b9"></h1><P>
+<a name="0949_19ba">29-1     Division circuits<a name="0949_19ba"><P>
+<a name="0949_19b4"><a name="0949_19b5"><a name="0949_19b6">We can construct a division circuit from subtraction and multiplication circuits with a technique called <I><B>Newton iteration</I></B>. We shall focus on the related problem of computing a reciprocal, since we can obtain a division circuit by making one additional multiplication. <P>
+The idea is to compute a sequence <I>y</I><SUB>0</SUB>, <SUB>,</SUB><I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . of approximations to the reciprocal of a number <I>x</I> by using the formula<P>
+<img src="685_b.gif"><P>
+Assume that <I>x</I> is given as an <I>n</I>-bit binary fraction in the range 1/2 <IMG SRC="../IMAGES/lteq12.gif"> <I>x</I> <IMG SRC="../IMAGES/lteq12.gif"> 1. Since the reciprocal can be an infinite repeating fraction, we shall concentrate on computing an <I>n</I>-bit approximation accurate up to its least significant bit.<P>
+<I><B>a.</I></B>     Suppose that <IMG SRC="../IMAGES/sglvrt.gif"><I>y<SUB>i</I></SUB> - 1/<I>x</I><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/lteq12.gif"> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"> </FONT>for some constant <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> &gt; 0. Prove that <IMG SRC="../IMAGES/sglvrt.gif"><I>y<SUB>i</I>+1</SUB> - 1/<I>x</I><IMG SRC="../IMAGES/sglvrt.gif"> <IMG SRC="../IMAGES/lteq12.gif"> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"><SUP>2</FONT></SUP>. <P>
+<I><B>b.</I></B>     Give an initial approximation<I> y</I><SUB>0</SUB> such that <I>y<SUB>k</I></SUB> satisfies <IMG SRC="../IMAGES/sglvrt.gif"><I>y<SUB>k</I></SUB> - 1/<I>x</I><IMG SRC="../IMAGES/sglvrt.gif"><IMG SRC="../IMAGES/lteq12.gif"> 2-<SUP>2</SUP><I><B><SUP>k</I></B></SUP> for all <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0. How large must<I> k</I> be for the approximation <I>y<SUB>k</I></SUB> to be accurate up to its least significant bit?<P>
+<I><B>c.</I></B>     Describe a combinational circuit that, given an <I>n</I>-bit input <I>x</I>, computes an <I>n</I>-bit approximation to 1/<I>x</I> in <I>O</I>(lg<SUP>2</SUP> <I>n</I>) time. What is the size of your circuit? (<I>Hint:</I> With a little cleverness, you can beat the size bound of <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP> lg<I>n</I>).)<P>
+<a name="0949_19bb">29-2     Boolean formulas for symmetric functions<a name="0949_19bb"><P>
+<a name="0949_19b7">A <I>n</I>-input function <IMG SRC="../IMAGES/scrptf12.gif">(<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB>) is <I><B>symmetric</I></B> if<P>
+<pre><I>f</I>(<I>x</I>1, <I>x</I>2, . . . <I>, xn</I>) = <IMG SRC="../IMAGES/scrptf12.gif">(<I>x</I><IMG SRC="../IMAGES/piuc.gif">(1), <I>x</I><IMG SRC="../IMAGES/piuc.gif">(2), . . . , <I>x</I><IMG SRC="../IMAGES/piuc.gif">(<U>n</U>) )</sub></sup></pre><P>
+for any permutation <IMG SRC="../IMAGES/piuc.gif"> of {1,2, . . . , <I>n</I>}. In this problem, we shall show that there is a boolean formula representing <IMG SRC="../IMAGES/scrptf12.gif"> whose size is polynomial in <I>n</I>. (For our purposes, a boolean formula is a string comprised of the variables <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB>, parentheses, and the boolean operators V, <IMG SRC="../IMAGES/lambdauc.gif">, and <IMG SRC="../IMAGES/rtdwnbrc.gif">.) Our approach will be to convert a logarithmic-depth boolean circuit to an equivalent polynomial-size boolean formula. We shall assume that all circuits are constructed from 2-input AND, 2-input OR, and NOT gates.<P>
+<a name="0949_19b8"><I><B>a</I>.</B>     We start by considering a simple symmetric function. The generalized <I><B>majority function</I> </B>on <I>n</I> boolean inputs is defined by<P>
+<img src="686_a.gif"><P>
+Describe an <I>O</I>(lg <I>n</I>)-depth combinational circuit for majority<I><SUB>n</I></SUB>. (<I>Hint</I>: Build a tree of adders.)<P>
+<I><B>b</I>.</B>     Suppose that <IMG SRC="../IMAGES/scrptf12.gif"> is an arbitrary boolean function of the <I>n</I> boolean variables <I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</SUB>.</I> Suppose further that there is a circuit <I>C</I> of depth <I>d</I> that computes <IMG SRC="../IMAGES/scrptf12.gif">. Show how to construct from <I>C</I> a boolean formula for <IMG SRC="../IMAGES/scrptf12.gif"> of length <I>O</I>(2<I><SUP>d</I></SUP>). Conclude that there is polynomial-size formula for majority<I><SUB>n</SUB>.</I><P>
+<I><B>c</I>.</B>     Argue that any symmetric boolean function <I>f(x</I><SUB>1</SUB><I>, x</I><SUB>2</SUB><I>, . . . , x<SUB>n</SUB> </I>) can be expressed as a function of <img src="686_b.gif"><P>
+<I><B>d</I>.</B>     Argue that any symmetric function on <I>n</I> boolean inputs can be computed by an <I>O</I>(lg <I>n</I>)-depth combinational circuit.<P>
+<I><B>e</I>.</B>     Argue that any symmetric boolean function on <I>n</I> boolean variables can be represented by a boolean formula whose length is polynomial in <I>n</I>.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Most books on computer arithmetic focus more on practical implementations of circuitry than on algorithmic theory. Savage [173] is one of the few that investigates algorithmic aspects of the subject. The more hardware-oriented books on computer arithmetic by Cavanagh [39] and Hwang [108] are especially readable. Good books on combinational and sequential logic design include Hill and Peterson [96] and, with a twist toward formal language theory, Kohavi [126].<P>
+Aiken and Hopper [7] trace the early history of arithmetic algorithms. Ripple-carry addition is as at least as old as the abacus, which has been around for over 5000 years. The first mechanical calculator employing ripple-carry addition was devised by B. Pascal in 1642. A calculating machine adapted to repeated addition for multiplication was conceived by S. Morland in 1666 and independently by G. W. Leibnitz in 1671. The Russian peasant's algorithm for multiplication is apparently much older than its use in Russia in the nineteenth century. According to Knuth [122], it was used by Egyptian mathematicians as long ago as 1800 <FONT FACE="Courier New" SIZE=2>B.C</FONT>. <P>
+The kill, generate, and propagate statuses of a carry chain were exploited in a relay calculator built at Harvard during the mid-1940's [180]. One of the first implementations of carry-lookahead addition was described by Weinberger and Smith [199], but their lookahead method requires large gates. Ofman [152] proved that <I>n</I>-bit numbers could be added in <I>O</I>(lg <I>n</I>) time using carry-lookahead addition with constant-size gates.<P>
+The idea of using carry-save addition to speed up multiplication is due to Estrin, Gilchrist, and Pomerene [64]. Atrubin [13] describes a linear-array multiplier of infinite length that can be used to multiply binary numbers of arbitrary length. The multiplier produces the <I>n</I>th bit of the product immediately upon receiving the <I>n</I>th bits of the inputs. The Wallace-tree multiplier is attributed to Wallace [197], but the idea was also independently discovered by Ofman [152].<P>
+Division algorithms date back to I. Newton, who around 1665 invented what has become known as Newton iteration. Problem 29-1 uses Newton iteration to construct a division circuit with <IMG SRC="../IMAGES/bound.gif">(lg<SUP>2</SUP> <I>n</I>) depth. This method was improved by Beame, Cook, and Hoover [19], who showed that <I>n</I>-bit division can in fact be performed in <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>) depth. <P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap30.htm">Chapter 30</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

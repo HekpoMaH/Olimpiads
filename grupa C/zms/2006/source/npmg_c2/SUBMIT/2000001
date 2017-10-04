@@ -1,0 +1,198 @@
+/*
+TASK: MORSE
+LANG: C++
+*/
+
+#include <iostream.h>
+#include <string.h>
+
+void Read();
+void Solve();
+void Morse(char c);
+
+char word[256];
+
+int main()
+{
+ Read();
+ Solve();
+
+ return 0;
+}
+
+void Read()
+{
+ cin.getline(word,255);
+}
+
+void Solve()
+{
+ int i,len=strlen(word);
+
+ for(i=0;i<len;i++)
+ {
+  if((word[i]==' ')&&(word[i-1]==' ')) continue;
+  Morse(word[i]);
+  cout<<' ';
+ }
+ cout<<"...-.-"<<endl;
+}
+
+void Morse(char c)
+{
+ switch( c )
+ {
+ case 'a':
+ case 'A':
+  cout<<".-";
+  break;
+ case 'b':
+ case 'B':
+  cout<<"-...";
+  break;
+ case 'c':
+ case 'C':
+  cout<<"-.-.";
+  break;
+ case 'd':
+ case 'D':
+  cout<<"-..";
+  break;
+ case 'e':
+ case 'E':
+  cout<<".";
+  break;
+ case 'f':
+ case 'F':
+  cout<<"..-.";
+  break;
+ case 'g':
+ case 'G':
+  cout<<"--.";
+  break;
+ case 'h':
+ case 'H':
+  cout<<"....";
+  break;
+ case 'i':
+ case 'I':
+  cout<<"..";
+  break;
+ case 'j':
+ case 'J':
+  cout<<".---";
+  break;
+ case 'k':
+ case 'K':
+  cout<<"-.-";
+  break;
+ case 'l':
+ case 'L':
+  cout<<".-..";
+  break;
+ case 'm':
+ case 'M':
+  cout<<"--";
+  break;
+ case 'n':
+ case 'N':
+  cout<<"-.";
+  break;
+ case 'o':
+ case 'O':
+  cout<<"---";
+  break;
+ case 'p':
+ case 'P':
+  cout<<".--.";
+  break;
+ case 'q':
+ case 'Q':
+  cout<<"--.-";
+  break;
+ case 'r':
+ case 'R':
+  cout<<".-.";
+  break;
+ case 's':
+ case 'S':
+  cout<<"...";
+  break;
+ case 't':
+ case 'T':
+  cout<<"-";
+  break;
+ case 'u':
+ case 'U':
+  cout<<"..-";
+  break;
+ case 'v':
+ case 'V':
+  cout<<"...-";
+  break;
+ case 'w':
+ case 'W':
+  cout<<".--";
+  break;
+ case 'x':
+ case 'X':
+  cout<<"-..-";
+  break;
+ case 'y':
+ case 'Y':
+  cout<<"-.--";
+  break;
+ case 'z':
+ case 'Z':
+  cout<<"--..";
+  break;
+ case '1':
+  cout<<".----";
+  break;
+ case '2':
+  cout<<"..---";
+  break;
+ case '3':
+  cout<<"...--";
+  break;
+ case '4':
+  cout<<"....-";
+  break;
+ case '5':
+  cout<<".....";
+  break;
+ case '6':
+  cout<<"-....";
+  break;
+ case '7':
+  cout<<"--...";
+  break;
+ case '8':
+  cout<<"---..";
+  break;
+ case '9':
+  cout<<"----.";
+  break;
+ case '0':
+  cout<<"-----";
+  break;
+ case '.':
+  cout<<".-.-.-";
+  break;
+ case ',':
+  cout<<"--..--";
+  break;
+ case '-':
+ case '_':
+  cout<<"-..-.";
+  break;
+ case '?':
+  cout<<"..--..";
+  break;
+ case ' ':
+  cout<<".-.-.";
+  break;
+ default:
+  cout<<"Bad Input:"<<c;
+ }
+}

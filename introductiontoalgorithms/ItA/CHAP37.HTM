@@ -1,0 +1,435 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 37: APPROXIMATION ALGORITHMS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+<a href="biblio.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap36.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0a17_1d26">CHAPTER 37: APPROXIMATION ALGORITHMS<a name="0a17_1d26"></h1><P>
+<a name="0a17_1d1c"><a name="0a17_1d1d">Many problems of practical significance are NP-complete but are too important to abandon merely because obtaining an optimal solution is intractable. If a problem is NP-complete, we are unlikely to find a polynomial-time algorithm for solving it exactly, but this does not imply that all hope is lost. There are two approaches to getting around NP-completeness. First, if the actual inputs are small, an algorithm with exponential running time may be perfectly satisfactory. Second, it may still be possible to find <I>near-optimal</I> solutions in polynomial time (either in the worst case or on the average). In practice, near-optimality is often good enough. An algorithm that returns near-optimal solutions is called an <I><B>approximation algorithm</I></B>. This chapter presents polynomial-time approximation algorithms for several NP-complete problems.<P>
+Performance bounds for approximation algorithms<P>
+Assume that we are working on an optimization problem in which each potential solution has a positive cost, and that we wish to find a near-optimal solution. Depending on the problem, an optimal solution may be defined as one with maximum possible cost or one with minimum possible cost; the problem may be a maximization or a minimization problem.<P>
+<a name="0a17_1d1e"><a name="0a17_1d1f">We say that an approximation algorithm for the problem has a <I><B>ratio bound </I></B>of <IMG SRC="../IMAGES/rho12.gif">(<I>n</I>) if for any input of size <I>n</I>, the cost <I>C</I> of the solution produced by the approximation algorithm is within a factor of <IMG SRC="../IMAGES/rho12.gif">(<I>n</I>) of the cost <I>C</I>* of an optimal solution:<P>
+<img src="964_a.gif"><P>
+<h4><a name="0a17_1d27">(37.1)<a name="0a17_1d27"></sub></sup></h4><P>
+This definition applies for both minimization and maximization problems. For a maximization problem, 0 &lt; <I>C</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>C</I>*, and the ratio <I>C</I>*/<I>C</I> gives the factor by which the cost of an optimal solution is larger than the cost of the approximate solution. Similarly, for a minimization problem, 0 &lt; <I>C</I>* <IMG SRC="../IMAGES/lteq12.gif"> <I>C</I>, and the ratio <I>C</I>/<I>C</I>* gives the factor by which the cost of the approximate solution is larger than the cost of an optimal solution. Since all solutions are assumed to have positive cost, these ratios are always well defined. The ratio bound of an approximation algorithm is never less than 1, since <I>C/C</I>*<I> &lt; </I>1<I> </I>implies<I> C</I>*<I>/C &gt; </I>1<I>.</I> An optimal algorithm has ratio bound 1, and an approximation algorithm with a large ratio bound may return a solution that is very much worse than optimal.<P>
+<a name="0a17_1d20"><a name="0a17_1d21"><a name="0a17_1d22">Sometimes, it is more convenient to work with a measure of relative error. For any input, the <I><B>relative error</I></B> of the approximation algorithm is defined to be<P>
+<img src="965_a.gif"><P>
+where, as before, <I>C</I>* is the cost of an optimal solution and <I>C</I> is the cost of the solution produced by the approximation algorithm. The relative error is always nonnegative. An approximation algorithm has a <I><B>relative</I></B> <I><B>error</I></B> <I><B>bound</I></B> of <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>(<I>n</I>) if<P>
+<img src="965_b.gif"><P>
+<h4><a name="0a17_1d28">(37.2)<a name="0a17_1d28"></sub></sup></h4><P>
+It follows from the definitions that the relative error bound can be bounded as a function of the ratio bound:<P>
+<pre><IMG SRC="../IMAGES/memof12.gif"> (<I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/rho12.gif">(<I>n</I>) - 1.</sub></sup></pre><P>
+<h4><a name="0a17_1d29">(37.3)<a name="0a17_1d29"></sub></sup></h4><P>
+(For a minimization problem, this is an equality, whereas for a maximization problem, we have <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"> </FONT>(<I>n</I>) = (<IMG SRC="../IMAGES/rho12.gif">(<I>n</I>) - 1) / <IMG SRC="../IMAGES/rho12.gif">(<I>n</I>), which satisfies inequality (37.3) since <IMG SRC="../IMAGES/rho12.gif">(<I>n</I>) <IMG SRC="../IMAGES/gteq.gif"> 1.)<P>
+For many problems, approximation algorithms have been developed that have a fixed ratio bound, independent of <I>n</I>. For such problems, we simply use the notation <IMG SRC="../IMAGES/rho12.gif"> or <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>, indicating no dependence on <I>n</I>.<P>
+For other problems, computer scientists have been unable to devise any polynomial-time approximation algorithm having a fixed ratio bound. For such problems, the best that can be done is to let the ratio bound grow as a function of the input size <I>n</I>. An example of such a problem is the set-cover problem presented in Section 37.3.<P>
+Some NP-complete problems allow approximation algorithms that can achieve increasingly smaller ratio bounds (or, equivalently, increasingly smaller relative error bounds) by using more and more computation time. That is, there is a trade-off between computation time and the quality of the approximation. An example is the subset-sum problem studied in Section 37.4. This situation is important enough to deserve a name of its own.<P>
+<a name="0a17_1d23"><a name="0a17_1d24">An <I><B>approximation scheme</I></B> for an optimization problem is an approximation algorithm that takes as input not only an instance of the problem, but also a value <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> &gt; 0 such that for any fixed <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>, the scheme is an approximation algorithm with relative error bound <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>. We say that an approximation scheme is a <I><B>polynomial-time approximation scheme</I></B> if for any fixed <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> &gt; 0, the scheme runs in time polynomial in the size <I>n</I> of its input instance.<P>
+The running time of a polynomial-time approximation scheme should not increase too rapidly as <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> decreases. Ideally, if <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> decreases by a constant factor, the running time to achieve the desired approximation should not increase by more than a constant factor. In other words, we would like the running time to be polynomial in 1/<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> as well as in <I>n</I>.<P>
+<a name="0a17_1d25">We say that an approximation scheme is a <I><B>fully polynomial-time approximation scheme</I></B> if its running time is polynomial both in 1/<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> and in the size <I>n</I> of the input instance, where <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> is the relative error bound for the scheme. For example, the scheme might have a running time of (1/<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>)<SUP>2</SUP><I>n</I><SUP>3</SUP>. With such a scheme, any constant-factor decrease in <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> can be achieved with a corresponding constant-factor increase in the running time.<P>
+Chapter outline<P>
+The first three sections of this chapter present some examples of polynomial-time approximation algorithms for NP-complete problems, and the last section presents a fully polynomial-time approximation scheme. Section 37.1 begins with a study of the vertex-cover problem, an NP-complete minimization problem that has an approximation algorithm with a ratio bound of 2. Section 37.2 presents an approximation algorithm with ratio bound 2 for the case of the traveling-salesman problem in which the cost function satisfies the triangle inequality. It also shows that without triangle inequality, an <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>-approximation algorithm cannot exist unless P = NP. In Section 37.3, we show how a greedy method can be used as an effective approximation algorithm for the set-covering problem, obtaining a covering whose cost is at worst a logarithmic factor larger than the optimal cost. Finally, Section 37.4 presents a fully polynomial-time approximation scheme for the subset-sum problem.<P>
+
+
+
+
+
+<h1><a name="0a19_1d2e">37.1 The vertex-cover problem<a name="0a19_1d2e"></h1><P>
+<a name="0a19_1d26"><a name="0a19_1d27"><a name="0a19_1d28"><a name="0a19_1d29">The vertex-cover problem was defined and proved NP-complete in Section 36.5.2. A <I><B>vertex cover</I></B> of an undirected graph <I>G</I> = (<I>V</I>,<I>E</I>) is a subset <I>V</I>' <IMG SRC="../IMAGES/rgtubar.gif"> <I>V</I> such that if (<I>u</I>,<I>v</I>) is an edge of <I>G</I>, then either <I>u</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"><I>V</I>'</FONT> or <I>v <FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>V</I>' (or both). The size of a vertex cover is the number of vertices in it.<P>
+<a name="0a19_1d2a"><a name="0a19_1d2b"><a name="0a19_1d2c">The <I><B>vertex-cover problem</I></B> is to find a vertex cover of minimum size in a given undirected graph. We call such a vertex cover an <I><B>optimal vertex</I></B> <I><B>cover</I></B>. This problem is NP-hard, since the related decision problem is NP-complete, by Theorem 36.12.<P>
+Even though it may be difficult to find an optimal vertex cover in a graph <I>G</I>, however, it is not too hard to find a vertex cover that is near-optimal. The following approximation algorithm takes as input an undirected graph <I>G</I> and returns a vertex cover whose size is guaranteed to be no more than twice the size of an optimal vertex cover.<P>
+<img src="967_a.gif"><P>
+<h4><a name="0a19_1d2f">Figure 37.1 The operation of <FONT FACE="Courier New" SIZE=2>APPROX-VERTEX-COVER</FONT>. (a) The input graph G, which has 7 vertices and 8 edges. (b) The edge (b,c), shown heavy, is the first edge chosen by <FONT FACE="Courier New" SIZE=2>APPROX-VERTEX-COVER</FONT>. Vertices b and c, shown lightly shaded, are added to the set A containing the vertex cover being created. Edges (a, b), (c, e), and (c,d), shown dashed, are removed since they are now covered by some vertex in A. (c) Edge (e, f) is added to A. (d) Edge (d,g) is added to A. (e) The set A, which is the vertex cover produced by <FONT FACE="Courier New" SIZE=2>APPROX-VERTEX-COVER</FONT>, contains the six vertices b, c, d, e, f, g. (f) The optimal vertex cover for this problem contains only three vertices: b, d, and e.<a name="0a19_1d2f"></sub></sup></h4><P>
+<img src="967_b.gif"><P>
+<a name="0a19_1d2d">Figure 37.1 illustrates the operation of <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT>. The variable <I>C</I> contains the vertex cover being constructed. Line 1 initializes <I>C</I> to the empty set. Line 2 sets <I>E</I>' to be a copy of the edge set <I>E</I>[<I>G</I>] of the graph. The loop on lines 3-6 repeatedly picks an edge (<I>u</I>, <I>v</I>) from <I>E</I>', adds its endpoints <I>u</I> and <I>v</I> to <I>C</I>, and deletes all edges in <I>E</I>'<I> </I>that are covered by either <I>u</I> or <I>v</I>. The running time of this algorithm is <I>O</I>(<I>E</I>), using an appropriate data structure for representing <I>E</I>'.<P>
+<a name="0a19_1d30">Theorem 37.1<a name="0a19_1d30"><P>
+<FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-C<FONT FACE="Courier New" SIZE=2>OVER </FONT>has a ratio bound of 2.<P>
+<I><B>Proof     </I></B>The set <I>C </I>of vertices that is returned by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT> is a vertex cover, since the algorithm loops until every edge in <I>E</I>[<I>G</I>] has been covered by some vertex in<I> C</I>.<P>
+To see that <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT> returns a vertex cover that is at most twice the size of an optimal cover, let <I>A</I> denote the set of edges that were picked in line 4 of <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT>. No two edges in <I>A </I>share an endpoint, since once an edge is picked in line 4, all other edges that are incident on its endpoints are deleted from <I>E</I>' in line 6. Therefore, each execution of line 5 adds two new vertices to<I> C</I>, and |<I>C</I>| = 2 |<I>A</I>|. In order to cover the edges in <I>A</I>, however, any vertex cover--in particular, an optimal cover <I>C</I>*--must include at least one endpoint of each edge in <I>A</I>. Since no two edges in <I>A</I> share an endpoint, no vertex in the cover is incident on more than one edge in <I>A</I>. Therefore, |<I>A</I>| <IMG SRC="../IMAGES/lteq12.gif"> |<I>C</I>*|, and |<I>C</I>| <IMG SRC="../IMAGES/lteq12.gif"> 2 |<I>C</I>*|, proving<I><B><U> </I></B></U>the theorem.      <P>
+
+
+
+
+
+<h2><a name="0a1a_1d33">Exercises<a name="0a1a_1d33"></h2><P>
+<a name="0a1a_1d34">37.1-1<a name="0a1a_1d34"><P>
+<a name="0a1a_1d2e">Given an example of a graph for which <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT> always yields a suboptimal solution.<P>
+<a name="0a1a_1d35">37.1-2<a name="0a1a_1d35"><P>
+Professor Nixon proposes the following heuristic to solve the vertex-cover problem. Repeatedly select a vertex of highest degree, and remove all of its incident edges. Give an example to show that the professor's heuristic does not have a ratio bound of 2.<P>
+<a name="0a1a_1d36">37.1-3<a name="0a1a_1d36"><P>
+<a name="0a1a_1d2f"><a name="0a1a_1d30">Give an efficient greedy algorithm that finds an optimal vertex cover for a tree in linear time.<P>
+<a name="0a1a_1d37">37.1-4<a name="0a1a_1d37"><P>
+<a name="0a1a_1d31"><a name="0a1a_1d32">From the proof of Theorem 36.12, we know that the vertex-cover problem and the NP-complete clique problem are complementary in the sense that an optimal vertex cover is the complement of a maximum-size clique in the complement graph. Does this relationship imply that there is an approximation algorithm with constant ratio bound for the clique problem? Justify your answer.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0a1b_1d37">37.2 The traveling-salesman problem<a name="0a1b_1d37"></h1><P>
+<a name="0a1b_1d33"><a name="0a1b_1d34">In the traveling-salesman problem introduced in Section 36.5.5, we are given a complete undirected graph <I>G = </I>(<I>V, E</I>) that has a nonnegative integer cost <I>c</I>(<I>u, v</I>) associated with each edge (<I>u, v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>, and we must find a hamiltonian cycle (a tour) of <I>G</I> with minimum cost. As an extension of our notation, let <I>c</I>(<I>A</I>) denote the total cost of the edges in the subset <I>A</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>E</I>:<P>
+<img src="969_a.gif"><P>
+<a name="0a1b_1d35"><a name="0a1b_1d36">In many practical situations, it is always cheapest to go directly from a place <I>u</I> to a place <I>w</I>; going by way of any intermediate stop <I>v</I> can't be less expensive. Putting it another way, cutting out an intermediate stop never increases the cost. We formalize this notion by saying that the cost function <I>c</I> satisfies the <I><B>triangle inequality</I></B> if for all vertices <I>u, v, w </I><IMG SRC="../IMAGES/memof12.gif"><I> V,</I><P>
+<pre><I>c</I>(<I>u, w</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>(<I>u, v</I>) + <I>c</I>(<I>v, w</I>).</sub></sup></pre><P>
+The triangle inequality is a natural one, and in many applications it is automatically satisfied. For example, if the vertices of the graph are points in the plane and the cost of traveling between two vertices is the ordinary euclidean distance between them, then the triangle inequality is satisfied. <P>
+As Exercise 37.2-1 shows, restricting the cost function to satisfy the triangle inequality does not alter the NP-completeness of the traveling- salesman problem. Thus, it is unlikely that we can find a polynomial-time algorithm for solving this problem exactly. We therefore look instead for good approximation algorithms.<P>
+In Section 37.2.1, we examine an approximation algorithm for the traveling-salesman problem with triangle inequality that has a ratio bound of 2. In Section 37.2.2, we show that without triangle inequality, an approximation algorithm with constant ratio bound does not exist unless P = NP.<P>
+
+
+
+
+
+<h2><a name="0a1c_1d3c">37.2.1 The traveling-salesman problem with triangle inequality<a name="0a1c_1d3c"></h2><P>
+<a name="0a1c_1d37"><a name="0a1c_1d38">The following algorithm computes a near-optimal tour of an undirected graph <I>G</I>, using the minimum-spanning-tree algorithm MST-<FONT FACE="Courier New" SIZE=2>PRIM</FONT> from Section 24.2. We shall see that when the cost function satisfies the triangle inequality, the tour that this algorithm returns is no worse than twice as long as an optimal tour.<P>
+<pre><a name="0a1c_1d39">APPROX-TSP-TOUR(<I>G, c</I>)</sub></sup></pre><P>
+<pre>1 select a vertex <I>r</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>] to be a &quot;root&quot; vertex</sub></sup></pre><P>
+<pre>2 grow a minimum spanning tree <I>T</I> for <I>G</I> from root <I>r</I></sub></sup></pre><P>
+<pre>using MST-PRIM(<I>G, c, r</I>)</sub></sup></pre><P>
+<pre>3 let <I>L</I> be the list of vertices visited in a preorder tree walk of <I>T</I></sub></sup></pre><P>
+<pre>4 <B>return</B> the hamiltonian cycle <I>H</I> that visits the vertices in the order <I>L</I></sub></sup></pre><P>
+Recall from Section 13.1 that a preorder tree walk recursively visits every vertex in the tree, listing a vertex when it is first encountered, before any of its children are visited.<P>
+Figure 37.2 illustrates the operation of <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT>. Part (a) of the figure shows the given set of vertices, and part (b) shows the minimum spanning tree <I>T</I> grown from root vertex <I>a</I> by MST-<FONT FACE="Courier New" SIZE=2>PRIM</FONT>. Part (c) shows how the vertices are visited by a preorder walk of <I>T</I>, and part (d) displays the corresponding tour, which is the tour returned by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT>. Part (e) displays an optimal tour, which is about 23% shorter.<P>
+The running time of <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT> is <IMG SRC="../IMAGES/bound.gif">(<I>E</I>) = <IMG SRC="../IMAGES/bound.gif">(<I>V</I><SUP>2</SUP>), since the input is a complete graph (see Exercise 24.2-2). We shall now show that if the cost function for an instance of the traveling-salesman problem satisfies the triangle inequality, then <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT> returns a tour whose cost is not more than twice the cost of an optimal tour.<P>
+<a name="0a1c_1d3d">Theorem 37.2<a name="0a1c_1d3d"><P>
+<FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT> is an approximation algorithm with a ratio bound of 2 for the traveling-salesman problem with triangle inequality.<P>
+<I><B>Proof     </I></B>Let <I>H</I>* denote an optimal tour for the given set of vertices. An equivalent statement of the theorem is that <I>c</I>(<I>H</I>) <IMG SRC="../IMAGES/lteq12.gif"> 2<I>c</I>(<I>H</I>*), where <I>H</I> is the tour returned by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT>. Since we obtain a spanning tree by deleting any edge from a tour, if <I>T</I> is a minimum spanning tree for the given set of vertices, then<P>
+<pre><I>c</I>(<I>T</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>(<I>H</I>*) .</sub></sup></pre><P>
+<h4><a name="0a1c_1d3e">(37.4)<a name="0a1c_1d3e"></sub></sup></h4><P>
+<a name="0a1c_1d3a">A<I><B> full walk</I></B> of <I>T</I> lists the vertices when they are first visited and also whenever they are returned to after a visit to a subtree. Let us call this walk <I>W</I>. The full walk of our example gives the order<P>
+<pre><I>a, b, c, b, h, b, a, d, e, f, e, g, e, d, a.</I></sub></sup></pre><P>
+Since the full walk traverses every edge of <I>T</I> exactly twice, we have<P>
+<pre><I>c</I>(<I>W</I>) = 2<I>c</I>(<I>T</I>) .</sub></sup></pre><P>
+<h4><a name="0a1c_1d3f">(37.5)<a name="0a1c_1d3f"></sub></sup></h4><P>
+Equations (37.4) and (37.5) imply that<P>
+<pre><I>c</I>(<I>W</I>) <IMG SRC="../IMAGES/lteq12.gif"> 2<I>c</I>(<I>H</I>*),</sub></sup></pre><P>
+<h4><a name="0a1c_1d40">(37.6)<a name="0a1c_1d40"></sub></sup></h4><P>
+and so the cost of <I>W</I> is within a factor of 2 of the cost of an optimal tour.<P>
+<img src="971_a.gif"><P>
+<h4><a name="0a1c_1d41">Figure 37.2 The operation of <FONT FACE="Courier New" SIZE=2>APPROX-TSP-TOUR</FONT>. (a) The given set of points, which lie on vertices of an integer grid. For example, f is one unit to the right and two units up from h. The ordinary euclidean distance is used as the cost function between two points. (b) A minimum spanning tree T of these points, as computed by MST-<FONT FACE="Courier New" SIZE=2>PRIM</FONT>. Vertex a is the root vertex. The vertices happen to be labeled in such a way that they are added to the main tree by MST-<FONT FACE="Courier New" SIZE=2>PRIM</FONT> in alphabetical order. (c) A walk of T, starting at a. A full walk of the tree visits the vertices in the order a, b, c, b, h, b, a, d, e, f, e, g, e, d, a. A preorder walk of T lists a vertex just when it is first encountered, yielding the ordering a, b, c, h, d, e, f, g. (d) A tour of the vertices obtained by visiting the vertices in the order given by the preorder walk. This is the tour H returned by <FONT FACE="Courier New" SIZE=2>APPROX-TSP-TOUR</FONT>. Its total cost is approximately 19.074. (e) An optimal tour H* for the given set of vertices. Its total cost is approximately 14.715.<a name="0a1c_1d41"></sub></sup></h4><P>
+<a name="0a1c_1d3b">Unfortunately, <I>W</I> is generally not a tour, since it visits some vertices more than once. By the triangle inequality, however, we can delete a visit to any vertex from <I>W</I> and the cost does not increase. (If a vertex <I>v</I> is deleted from <I>W</I> between visits to <I>u</I> and <I>w</I>, the resulting ordering specifies going directly from <I>u</I> to <I>w</I>.) By repeatedly applying this operation, we can remove from <I>W</I> all but the first visit to each vertex. In our example, this leaves the ordering<P>
+<pre><I>a, b, c, h, d, e, f, g .</I></sub></sup></pre><P>
+This ordering is the same as that obtained by a preorder walk of the tree <I>T</I>. Let <I>H</I> be the cycle corresponding to this preorder walk. It is a hamiltonian cycle, since every vertex is visited exactly once, and in fact it is the cycle computed by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT>. Since <I>H</I> is obtained by deleting vertices from the full walk <I>W</I>, we have<P>
+<pre><I>c</I>(<I>H</I>) <IMG SRC="../IMAGES/lteq12.gif"> <I>c</I>(<I>W</I>).</sub></sup></pre><P>
+<h4><a name="0a1c_1d42">(37.7)<a name="0a1c_1d42"></sub></sup></h4><P>
+Combining inequalities (37.6) and (37.7) completes the proof.       <P>
+In spite of the nice ratio bound provided by Theorem 37.2, <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT> is usually not the best practical choice for this problem. There are other approximation algorithms that typically perform much better in practice (see the references at the end of this chapter).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0a1d_0001">37.2.2 The general traveling-salesman problem<a name="0a1d_0001"></h2><P>
+If we drop the assumption that the cost function <I>c</I> satisfies the triangle inequality, good approximate tours cannot be found in polynomial time unless P = NP.<P>
+<a name="0a1d_0002">Theorem 37.3<a name="0a1d_0002"><P>
+If P <IMG SRC="../IMAGES/noteq.gif"> NP and <IMG SRC="../IMAGES/rho12.gif"> <IMG SRC="../IMAGES/gteq.gif"> 1, there is no polynomial-time approximation algorithm with ratio bound <IMG SRC="../IMAGES/rho12.gif"> for the general traveling-salesman problem.<P>
+<I><B>Proof     </I></B>The proof is by contradiction. Suppose to the contrary that for some number <IMG SRC="../IMAGES/rho12.gif"> <IMG SRC="../IMAGES/gteq.gif"> 1, there is a polynomial-time approximation algorithm <I>A</I> with ratio bound <IMG SRC="../IMAGES/rho12.gif">. Without loss of generality, we assume that <IMG SRC="../IMAGES/rho12.gif"> is an integer, by rounding it up if necessary. We shall then show how to use <I>A</I> to solve instances of the hamiltonian-cycle problem (defined in Section 36.5.5) in polynomial time. Since the hamiltonian-cycle problem is NP-complete, by Theorem 36.14, solving it in polynomial time implies that P = NP, by Theorem 36.4.<P>
+Let <I>G</I> = (<I>V, E</I>) be an instance of the hamiltonian-cycle problem. We wish to determine efficiently whether <I>G</I> contains a hamiltonian cycle by making use of the hypothesized approximation algorithm <I>A</I>. We turn <I>G</I> into an instance of the traveling-salesman problem as follows. Let <I>G</I>' = (<I>V, E</I>') be the complete graph on <I>V</I>; that is,<P>
+<pre><I>E</I>' = {(<I>u, v</I>): <I>u, v </I><IMG SRC="../IMAGES/memof12.gif"> <I>V</I> and <I>u</I> <IMG SRC="../IMAGES/noteq.gif"> <I>v</I>}.</sub></sup></pre><P>
+Assign an integer cost to each edge in <I>E</I>' as follows:<P>
+<img src="973_a.gif"><P>
+Representations of <I>G</I>' and <I>c</I> can be created from a representation of <I>G</I> in time polynomial in |<I>V</I>| and |<I>E</I>|.<P>
+Now, consider the traveling-salesman problem (<I>G</I>',<I> c</I>). If the originalgraph <I>G</I> has a hamiltonian cycle <I>H</I>, then the cost function <I>c</I> assigns to each edge of <I>H</I> a cost of 1, and so (<I>G</I>',<I> c</I>) contains a tour of cost |<I>V</I>| On the other hand, if <I>G</I> does not contain a hamiltonian cycle, then any tour of <I>G</I>' must use some edge not in <I>E</I>. But any tour that uses an edge not in <I>E</I> has a cost of at least<P>
+<pre>(<IMG SRC="../IMAGES/rho12.gif"> |<I>V</I>| + 1) + (|<I>V</I>| - 1) &gt; <IMG SRC="../IMAGES/rho12.gif"> |<I>V</I>| .</sub></sup></pre><P>
+Because edges not in <I>G</I> are so costly, there is a large gap between the cost of a tour that is a hamiltonian cycle in <I>G</I> (cost |<I>V</I>|) and the cost of any other tour (cost greater than <IMG SRC="../IMAGES/rho12.gif">|<I>V</I>|).<P>
+What happens if we apply the approximation algorithm <I>A</I> to the traveling-salesman problem (<I>G</I>',<I> c</I>)? Because <I>A</I> is guaranteed to return a tour of cost no more than <IMG SRC="../IMAGES/rho12.gif"> times the cost of an optimal tour, if <I>G</I> contains a hamiltonian cycle, then <I>A</I> must return it. If <I>G</I> has no hamiltonian cycle, then <I>A</I> returns a tour of cost more than <IMG SRC="../IMAGES/rho12.gif">|<I>V</I>|<I>.</I> Therefore, we can use <I>A</I> to solve the hamiltonian-cycle problem in polynomial time.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0a1e_1d3f">Exercises<a name="0a1e_1d3f"></h2><P>
+<a name="0a1e_1d40">37.2-1<a name="0a1e_1d40"><P>
+Show how in polynomial time we can transform one instance of the traveling-salesman problem into another instance whose cost function satisfies the triangle inequality. The two instances must have the same set of optimal tours. Explain why such a polynomial-time transformation does not contradict Theorem 37.3, assuming that P <IMG SRC="../IMAGES/noteq.gif"> NP.<P>
+<a name="0a1e_1d41">37.2-2<a name="0a1e_1d41"><P>
+<a name="0a1e_1d3c">Consider the following <I><B>closest-point heuristic</I> </B>for building an approximate traveling-salesman tour. Begin with a trivial cycle consisting of a single arbitrarily chosen vertex. At each step, identify the vertex <I>u</I> that is not on the cycle but whose distance to any vertex on the cycle is minimum. Suppose that the vertex on the cycle that is nearest <I>u</I> is vertex <I>v</I>. Extend the cycle to include <I>u</I> by inserting <I>u</I> just after <I>v</I>. Repeat until all vertices are on the cycle. Prove that this heuristic returns a tour whose total cost is not more than twice the cost of an optimal tour.<P>
+<a name="0a1e_1d42">37.2-3<a name="0a1e_1d42"><P>
+<a name="0a1e_1d3d"><a name="0a1e_1d3e">The <I><B>bottleneck traveling-salesman problem</I> </B>is the problem of finding the hamiltonian cycle such that the length of the longest edge in the cycle is minimized. Assuming that the cost function satisfies the triangle inequality, show that there exists a polynomial-time approximation algorithm with ratio bound 3 for this problem. (<I>Hint:</I> Show recursively that we can visit all the nodes in a minimum spanning tree exactly once by taking a full walk of the tree and skipping nodes, but without skipping more than 2 consecutive intermediate nodes.)<P>
+<a name="0a1e_1d43">37.2-4<a name="0a1e_1d43"><P>
+Suppose that the vertices for an instance of the traveling-salesman problem are points in the plane and that the cost <I>c</I>(<I>u, v</I>) is the euclidean distance between points <I>u</I> and <I>v</I>. Show that an optimal tour never crosses itself.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0a1f_1d43">37.3 The set-covering problem<a name="0a1f_1d43"></h1><P>
+The set-covering problem is an optimization problem that models many resource-selection problems. It generalizes the NP-complete vertex-cover problem and is therefore also NP-hard. The approximation algorithm developed to handle the vertex-cover problem doesn't apply here, however, and so we need to try other approaches. We shall examine a simple greedy heuristic with a logarithmic ratio bound. That is, as the size of the instance gets larger, the size of the approximate solution may grow, relative to the size of an optimal solution. Because the logarithm function grows rather slowly, however, this approximation algorithm may nonetheless give useful results.<P>
+<a name="0a1f_1d3f"><a name="0a1f_1d40"><a name="0a1f_1d41">An instance <img src="974_a.gif"> of the <I><B>set-covering problem</I></B> consists of a finite set <I>X </I>and a family <img src="974_b.gif"> of subsets of <I>X</I>, such that every element of <I>X</I> belongs to at least one subset in <img src="974_c.gif">:<P>
+<img src="974_d.gif"><P>
+<a name="0a1f_1d42">We say that a subset <img src="974_e.gif"> <I><B>covers</I></B> its elements. The problem is to find a minimum-size subset <img src="974_f.gif"> whose members cover all of <I>X</I>:<P>
+<img src="974_g.gif"><P>
+<h4><a name="0a1f_1d44">(37.8)<a name="0a1f_1d44"></sub></sup></h4><P>
+We say that any <img src="974_h.gif"> satisfying equation (37.8) <I><B>covers</I></B> <I>X</I>. Figure 37.3 illustrates the problem.<P>
+The set-covering problem is an abstraction of many commonly arising combinatorial problems. As a simple example, suppose that <I>X</I> represents a set of skills that are needed to solve a problem and that we have a given set of people available to work on the problem. We wish to form a committee, containing as few people as possible, such that for every requisite skill in <I>X</I>, there is a member of the committee having that skill. In the decision version of the set-covering problem, we ask whether or not a covering exists with size at most <I>k</I>, where <I>k</I> is an additional parameter specified in the problem instance. The decision version of the problem is NP-complete, as Exercise 37.3-2 asks you to show.<P>
+<img src="975_a.gif"><P>
+<h4><a name="0a1f_1d45">Figure 37.3 An instance <img src="975_b.gif"> of the set-covering problem, where X consists of the 12 black points and <img src="975_c.gif">. A minimum-size set cover is <img src="975_d.gif">. The greedy algorithm produces a cover of size 4 by selecting the sets S<SUB>1</SUB>,S<SUB>4</SUB>,S<SUB>5</SUB>, and S<SUB>3</SUB> in order.<a name="0a1f_1d45"></sub></sup></h4><P>
+
+
+
+
+
+<h2>A greedy approximation algorithm</h2><P>
+<a name="0a20_1d43">The greedy method works by picking, at each stage, the set <I>S</I> that covers the most remaining uncovered elements.<P>
+<img src="975_e.gif"><P>
+In the example of Figure 37.3, <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-COVER</FONT> adds to <img src="975_f.gif"> the sets <I>S</I><SUB>l</SUB>, <I>S</I><SUB>4</SUB>, <I>S</I><SUB>5</SUB>, <I>S</I><SUB>3</SUB> in order.<P>
+The algorithm works as follows. The set <I>U</I> contains, at each stage, the set of remaining uncovered elements. The set <img src="975_g.gif"> contains the cover being constructed. Line 4 is the greedy decision-making step. A subset <I>S </I>is chosen that covers as many uncovered elements as possible (with ties broken arbitrarily). After <I>S</I> is selected, its elements are removed from <I>U</I>, and <I>S</I> is placed in <img src="975_h.gif">. When the algorithm terminates, the set <img src="975_i.gif"> contains a subfamily of <img src="975_j.gif"> that covers <I>X</I>.<P>
+The algorithm <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> can easily be implemented to run in time polynomial in <img src="976_a.gif">. Since the number of iterations of the loop on lines 3-6 is at most min <img src="976_b.gif">, and the loop body can be implemented to run in time <img src="976_c.gif">, there is an implementation that runs in time <img src="976_d.gif">. Exercise 37.3-3 asks for a linear- time algorithm.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Analysis</h2><P>
+We now show that the greedy algorithm returns a set cover that is not too much larger than an optimal set cover. For convenience, in this chapter we denote the <I>d</I>th harmonic number <img src="976_e.gif"> (see Section 3.1) by <I>H</I>(<I>d</I>) .<P>
+<a name="0a21_0001">Theorem 37.4<a name="0a21_0001"><P>
+<FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> has a ratio bound<P>
+<img src="976_f.gif"><P>
+<I><B>Proof     </I></B>The proof proceeds by assigning a cost to each set selected by the algorithm, distributing this cost over the elements covered for the first time, and then using these costs to derive the desired relationship between the size of an optimal set cover <img src="976_g.gif"> and the size of the set cover <img src="976_h.gif"> returned by the algorithm. Let <I>S<SUB>i </I></SUB>denote the <I>i</I>th subset selected by <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT>; the algorithm incurs a cost of 1 when it adds <I>S<SUB>i</I></SUB> to <img src="976_i.gif">. We spread this cost of selecting <I>S<SUB>i</I></SUB> evenly among the elements covered for the first time by <I>S<SUB>i</I></SUB>. Let <I>c<SUB>x</I></SUB> denote the cost allocated to element <I>x</I>, for each <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>X</I>. Each element is assigned a cost only once, when it is covered for the first time. If <I>x</I> is covered for the first time by S<I><SUB>i</I></SUB>, then<P>
+<img src="976_j.gif"><P>
+The algorithm finds a solution <img src="976_k.gif"> of total cost <img src="976_l.gif">, and this cost has been spread out over the elements of <I>X</I>. Therefore, since the optimal cover <img src="976_m.gif"> also covers <I>X</I>, we have<P>
+<img src="976_n.gif"><P>
+<h4><a name="0a21_0002">(37.9)<a name="0a21_0002"></sub></sup></h4><P>
+The remainder of the proof rests on the following key inequality, which we shall prove shortly. For any set <I>S</I> belonging to the family <img src="976_o.gif">,<P>
+<img src="976_p.gif"><P>
+<h4><a name="0a21_0003">(37.10)<a name="0a21_0003"></sub></sup></h4><P>
+From inequalities (37.9) and (37.10), it follows that<P>
+<img src="976_q.gif"><P>
+proving the theorem. It thus remains only to prove inequality (37.10). For any set <img src="977_a.gif">, let<P>
+<img src="977_b.gif"><P>
+be the number of elements in <I>S</I> remaining uncovered after <I>S</I><SUB>1</SUB>, <I>S</I><SUB>2</SUB>, . . . , <I>S<SUB>i </I></SUB>have been selected by the algorithm. We define <I>u</I><SUB>0</SUB> = |<I>S</I>| to be the number of elements of <I>S</I>, which are all initially uncovered. Let <I>k</I> be the least index such that <I>u<SUB>k</I></SUB> = 0, so that every element in <I>S</I> is covered by at least one of the sets <I>S</I><SUB>1</SUB>, <I>S</I><SUB>2</SUB>, . . . , <I>S<SUB>k</I></SUB>. Then, <I>u<SUB>i-</I>1</SUB> <IMG SRC="../IMAGES/gteq.gif"> <I>u<SUB>i</I></SUB>, and <I>u<SUB>i-</I>1</SUB> - <I>u<SUB>i</I></SUB> elements of <I>S</I> are covered for the first time by <I>S<SUB>i</I></SUB>, for <I>i</I> = 1, 2, . . . , <I>k</I>. Thus,<P>
+<img src="977_c.gif"><P>
+Observe that<P>
+<img src="977_d.gif"><P>
+because the greedy choice of <I>S<SUB>i</I></SUB> guarantees that <I>S</I> cannot cover more new elements than <I>S<SUB>i</I></SUB> does (otherwise, <I>S</I> would have been chosen instead of <I>S<SUB>i</I></SUB>). Consequently, we obtain<P>
+<img src="977_e.gif"><P>
+For integers <I>a</I> and <I>b</I>, where a &lt; <I>b</I>, we have<P>
+<img src="977_f.gif"><P>
+Using this inequality, we obtain the telescoping sum<P>
+<img src="977_g.gif"><P>
+since <I>H</I>(0) = 0. This completes the proof of inequality (37.10).      <P>
+<a name="0a21_0004">Corollary 37.5<a name="0a21_0004"><P>
+<FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> has a ratio bound of (ln |<I>X</I>| + 1).<P>
+<I><B>Proof     </I></B>Use inequality (3.12) and Theorem 37.4.      <P>
+In some applications, max <img src="978_a.gif"> is a small constant, and so the solution returned by <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-COVER</FONT> is at most a small constant times larger than optimal. One such application occurs when this heuristic is used to obtain an approximate vertex cover for a graph whose vertices have degree at most 3. In this case, the solution found by <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER </FONT>is not more than <I>H</I>(3) = 11/6 times as large as an optimal solution, a performance guarantee that is slightly better than that of <FONT FACE="Courier New" SIZE=2>APPROX-</FONT><FONT FACE="Courier New" SIZE=2>VERTEX-</FONT><FONT FACE="Courier New" SIZE=2>COVER<B>.</B></FONT><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0a22_1d45">Exercises<a name="0a22_1d45"></h2><P>
+<a name="0a22_1d46">37.3-1<a name="0a22_1d46"><P>
+Consider each of the following words as a set of letters: {<FONT FACE="Courier New" SIZE=2>arid</FONT>, <FONT FACE="Courier New" SIZE=2>dash</FONT>, <FONT FACE="Courier New" SIZE=2>drain</FONT>, <FONT FACE="Courier New" SIZE=2>heard</FONT>, <FONT FACE="Courier New" SIZE=2>lost</FONT>, <FONT FACE="Courier New" SIZE=2>nose</FONT>, <FONT FACE="Courier New" SIZE=2>shun</FONT>, <FONT FACE="Courier New" SIZE=2>slate</FONT>, <FONT FACE="Courier New" SIZE=2>snare</FONT>, <FONT FACE="Courier New" SIZE=2>thread</FONT>}. Show which set cover <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> produces when ties are broken in favor of the word that appears first in the dictionary.<P>
+<a name="0a22_1d47">37.3-2<a name="0a22_1d47"><P>
+<a name="0a22_1d44">Show that the decision version of the set-covering problem is NP-complete by reduction from the vertex-cover problem.<P>
+<a name="0a22_1d48">37.3-3<a name="0a22_1d48"><P>
+Show how to implement <FONT FACE="Courier New" SIZE=2>GREEDY-</FONT><FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> in such a way that it runs in time <img src="978_b.gif">.<P>
+<a name="0a22_1d49">37.3-4<a name="0a22_1d49"><P>
+Show that the following weaker form of Theorem 37.4 is trivially true:<P>
+<img src="978_c.gif"><P>
+<a name="0a22_1d4a">37.3-5<a name="0a22_1d4a"><P>
+Create a family of set-cover instances demonstrating that <FONT FACE="Courier New" SIZE=2>GREEDY</FONT>-<FONT FACE="Courier New" SIZE=2>SET-</FONT><FONT FACE="Courier New" SIZE=2>COVER</FONT> can return a number of different solutions that is exponential in the size of the instance. (Different solutions result from ties being broken differently in the choice of <I>S</I> in line 4.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0a23_1d48">37.4 The subset-sum problem<a name="0a23_1d48"></h1><P>
+<a name="0a23_1d45"><a name="0a23_1d46"><a name="0a23_1d47">An instance of the subset-sum problem is a pair (<I>S</I>, <I>t</I>), where <I>S</I> is a set {<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB>} of positive integers and <I>t</I> is a positive integer. This decision problem asks whether there exists a subset of <I>S</I> that adds up exactly to the target value <I>t</I>. This problem is NP-complete (see Section 36.5.3).<P>
+The optimization problem associated with this decision problem arises in practical applications. In the optimization problem, we wish to find a subset of {<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB>} whose sum is as large as possible but not larger than t. For example, we may have a truck that can carry no more than <I>t </I>pounds, and <I>n</I> different boxes to ship, the <I>i</I>th of which weighs <I>x<SUB>i</I></SUB> pounds. We wish to fill the truck as full as possible without exceeding the given weight limit.<P>
+In this section, we present an exponential-time algorithm for this optimization problem and then show how to modify the algorithm so that it becomes a fully polynomial-time approximation scheme. (Recall that a fully polynomial-time approximation scheme has a running time that is polynomial in 1/ <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> as well as in <I>n</I>.)<P>
+
+
+
+
+
+<h2>An exponential-time algorithm</h2><P>
+If <I>L</I> is a list of positive integers and <I>x</I> is another positive integer, then we let <I>L</I> + <I>x</I> denote the list of integers derived from <I>L</I> by increasing each element of <I>L</I> by <I>x</I>. For example, if <I>L</I> = <IMG SRC="../IMAGES/lftwdchv.gif">1, 2, 3, 5, 9<IMG SRC="../IMAGES/wdrtchv.gif">, then <I>L</I> + 2 = <IMG SRC="../IMAGES/lftwdchv.gif">3, 4, 5, 7, 11<IMG SRC="../IMAGES/wdrtchv.gif">. We also use this notation for sets, so that<P>
+<pre><I>S</I> + <I>x</I> = {<I>s</I> + <I>x</I> : <I>s</I> <IMG SRC="../IMAGES/memof12.gif"> <I>S</I>} .</sub></sup></pre><P>
+<a name="0a24_1d48">We use an auxiliary procedure <FONT FACE="Courier New" SIZE=2>MERGE</FONT>-<FONT FACE="Courier New" SIZE=2>LISTS</FONT>(<I>L</I>, <I>L</I>') that returns the sorted list that is the merge of its two sorted input lists <I>L</I> and <I>L</I>'. Like the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure we used in merge sort (Section 1.3.1), M<FONT FACE="Courier New" SIZE=2>ERGE-</FONT>L<FONT FACE="Courier New" SIZE=2>ISTS </FONT>runs in time <I>O</I>(|<I>L</I>| + |<I>L</I>'|). (We omit giving pseudocode for M<FONT FACE="Courier New" SIZE=2>ERGE-</FONT><FONT FACE="Courier New" SIZE=2>LISTS</FONT>.) The procedure E<FONT FACE="Courier New" SIZE=2>XACT-</FONT>S<FONT FACE="Courier New" SIZE=2>UBSET-</FONT><FONT FACE="Courier New" SIZE=2>SUM</FONT> takes an input set <I>S</I> = {<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>n</I></SUB>} and a target value <I>t</I>.<P>
+<pre><a name="0a24_1d49">EXACT-SUBSET-SUM(<I>S</I>, <I>t</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> |<I>S</I>|</sub></sup></pre><P>
+<pre>2  <I>L</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif">0<IMG SRC="../IMAGES/wdrtchv.gif"></sub></sup></pre><P>
+<pre>3  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4  <B>do</B> <I>L<SUB>i</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> MERGE-LISTS(<I>L<SUB>i-</I>1</SUB>, <I>L<SUB>i-</I>1 </SUB>+ <I>x<SUB>i</I></SUB>)</sub></sup></pre><P>
+<pre>5  remove from <I>L<SUB>i</I></SUB> every element that is greater than <I>t</I></sub></sup></pre><P>
+<pre>6  <B>return</B> the largest element in <I>L<SUB>n</I></sub></sup></pre><P>
+Let <I>P<SUB>i</I></SUB> denote the set of all values that can be obtained by selecting a (possibly empty) subset of {<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, . . . , <I>x<SUB>i</I></SUB>} and summing its members. For example, if <I>S</I> = {1, 4, 5}, then<P>
+<pre><I>P</I><SUB>1</SUB> = {0, 1} ,</sub></sup></pre><P>
+<pre><I>P</I><SUB>2</SUB> = {0, 1, 4, 5} ,</sub></sup></pre><P>
+<pre><I>P</I><SUB>3</SUB> = {0, 1, 4, 5, 6, 9, 10} .</sub></sup></pre><P>
+Given the identity<P>
+<img src="979_a.gif"><P>
+<h4><a name="0a24_1d4a">(37.11)<a name="0a24_1d4a"></sub></sup></h4><P>
+we can prove by induction on <I>i</I> (see Exercise 37.4-1) that the list <I>L<SUB>i</I></SUB> is a sorted list containing every element of <I>P<SUB>i</I></SUB> whose value is not more than <I>t</I>. Since the length of <I>L<SUB>i</I></SUB> can be as much as 2<I><SUP>i</I></SUP>, E<FONT FACE="Courier New" SIZE=2>XACT-</FONT>S<FONT FACE="Courier New" SIZE=2>UBSET-</FONT><FONT FACE="Courier New" SIZE=2>SUM</FONT> is an exponential-time algorithm in general, although it is a polynomial-time algorithm in the special cases in which <I>t</I> is polynomial in |<I>S</I>| or all of the numbers in <I>S</I> are bounded by a polynomial in |<I>S</I>|.<P>
+<P>
+
+
+
+
+
+
+
+<h2>A fully polynomial-time approximation scheme</h2><P>
+<a name="0a25_1d4a">We can derive a fully polynomial-time approximation scheme for the subset-sum problem by &quot;trimming&quot; each list L<SUB>i</SUB> after it is created. We use a trimming parameter <IMG SRC="../IMAGES/delta12.gif"> such that 0 &lt; <IMG SRC="../IMAGES/delta12.gif"> &lt; 1. To trim a list L by <IMG SRC="../IMAGES/delta12.gif"> means to remove as many elements from L as possible, in such a way that if L'is the result of trimming L, then for every element y that was removed from L, there is an element z <IMG SRC="../IMAGES/lteq12.gif"> y still in L' such that <P>
+<img src="980_a.gif"><P>
+or, equivalently,<P>
+<pre>(1 - <IMG SRC="../IMAGES/delta12.gif">)<I>y</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>z</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>y</I> .</sub></sup></pre><P>
+We can think of such a <I>z</I> as &quot;representing&quot; <I>y</I> in the new list <I>L</I>'. Each <I>y</I> is represented by a <I>z</I> such that the relative error of <I>z</I>, with respect to <I>y</I>, is at most <IMG SRC="../IMAGES/delta12.gif">. For example, if <IMG SRC="../IMAGES/delta12.gif"> = 0.1 and<P>
+<pre><I>L</I> = <IMG SRC="../IMAGES/lftwdchv.gif">10, 11, 12, 15, 20, 21, 22, 23, 24, 29<IMG SRC="../IMAGES/wdrtchv.gif">,</sub></sup></pre><P>
+then we can trim <I>L</I> to obtain<P>
+<pre><I>L</I>' = <IMG SRC="../IMAGES/lftwdchv.gif">10, 12, 15, 20, 23, 29<IMG SRC="../IMAGES/wdrtchv.gif">,</sub></sup></pre><P>
+where the deleted value 11 is represented by 10, the deleted values 21 and 22 are represented by 20, and the deleted value 24 is represented by 23. It is important to remember that every element of the trimmed version of the list is also an element of the original version of the list. Trimming a list can dramatically decrease the number of elements in the list while keeping a close (and slightly smaller) representative value in the list for each element deleted from the list.<P>
+The following procedure trims an input list <I>L</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>y</I><SUB>1</SUB>, <I>y</I><SUB>2</SUB>, . . . , <I>y<SUB>m</SUB></I><IMG SRC="../IMAGES/wdrtchv.gif"> in time <IMG SRC="../IMAGES/bound.gif">(<I>m</I>), assuming that <I>L</I> is sorted into nondecreasing order. The output of the procedure is a trimmed, sorted list.<P>
+<pre><a name="0a25_1d4b">TRIM(L, <IMG SRC="../IMAGES/delta12.gif">)</sub></sup></pre><P>
+<pre>1  m <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/lteq12.gif">|L|</sub></sup></pre><P>
+<pre>2  L' <IMG SRC="../IMAGES/arrlt12.gif"> &lt;y<SUB>1</SUB>&gt;</sub></sup></pre><P>
+<pre>3  last <IMG SRC="../IMAGES/arrlt12.gif"> &lt;y<SUB>1</SUB>&gt;</sub></sup></pre><P>
+<pre>4<B>  for</B> i <IMG SRC="../IMAGES/arrlt12.gif"> 2 <B>to</B> m</sub></sup></pre><P>
+<pre>5<B>       do if</B> last &lt; (1 - <IMG SRC="../IMAGES/delta12.gif">)y<SUB>i</sub></sup></pre><P>
+<pre>6<B>             then</B> append y<SUB>i </SUB>onto the end of L'</sub></sup></pre><P>
+<pre>7                  last <IMG SRC="../IMAGES/arrlt12.gif"> y<SUB>i</sub></sup></pre><P>
+<pre>8<B>  return</B> L'</sub></sup></pre><P>
+The elements of <I>L</I> are scanned in increasing order, and a number is put into the returned list <I>L</I>' only if it is the first element of <I>L</I> or if it cannot be represented by the most recent number placed into <I>L</I>'.<P>
+Given the procedure <FONT FACE="Courier New" SIZE=2>TRIM</FONT>, we can construct our approximation scheme as follows. This procedure takes as input a set <I>S</I> = {<I>x</I><SUB>1</SUB>, <I>x</I><SUB>2</SUB>, <I>. . . </I>, <I>x<SUB>n</I></SUB>} of <I>n</I> integers (in arbitrary order), a target integer <I>t</I>, and an "approximation parameter" <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>, where 0 &lt; <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> &lt; 1.<P>
+<pre><a name="0a25_1d4c">APPROX-SUBSET-SUM(<I>S, t, </I><IMG SRC="../IMAGES/memof12.gif">)</sub></sup></pre><P>
+<pre>1<I>  n</I> <IMG SRC="../IMAGES/arrlt12.gif"> |<I>S</I>|</sub></sup></pre><P>
+<pre>2  <I>L</I><SUB>0</SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <IMG SRC="../IMAGES/lftwdchv.gif">0<IMG SRC="../IMAGES/wdrtchv.gif"></sub></sup></pre><P>
+<pre>3<B>  for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>4<B>       do</B> <I>L<SUB>i</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> MERGE-LISTS(<I>L<SUB>i</I></SUB>-<SUB>1</SUB>, <I>L<SUB>i</I></SUB>-<SUB>1</SUB> + <I>x<SUB>i</I></SUB>)</sub></sup></pre><P>
+<pre>5<I>          L<SUB>i</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> TRIM(<I>L<SUB>i</I>, </SUB><IMG SRC="../IMAGES/memof12.gif"> / <I>n</I>)</sub></sup></pre><P>
+<pre>6          remove from <I>L<SUB>i</I></SUB> every element that is greater than <I>t</I></sub></sup></pre><P>
+<pre>7  let <I>z</I> be the largest value in <I>L<SUB>n</I></sub></sup></pre><P>
+<pre>8<B>  return</B> <I>z</I></sub></sup></pre><P>
+Line 2 initializes the list <I>L</I><SUB>0</SUB> to be the list containing just the element 0. The loop in lines 3-6 has the effect of computing <I>L<SUB>i</I></SUB> as a sorted list containing a suitably trimmed version of the set <I>P<SUB>i</I></SUB>, with all elements larger than <I>t</I> removed. Since <I>L<SUB>i</I></SUB> is created from <I>L<SUB>i</I></SUB>-<SUB>1</SUB>, we must ensure that the repeated trimming doesn't introduce too much inaccuracy. In a moment, we shall see that <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> returns a correct approximation if one exists.<P>
+As an example, suppose we have the instance<P>
+<pre><I>L</I> = <IMG SRC="../IMAGES/lftwdchv.gif">104, 102, 201, 101<IMG SRC="../IMAGES/wdrtchv.gif"></sub></sup></pre><P>
+with <I>t</I> = 308 and <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> = 0.20. The trimming parameter <IMG SRC="../IMAGES/delta12.gif"> is <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"> </FONT>/ 4 = 0.05. <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> computes the following values on the indicated lines:<P>
+<pre>line 2:  <I>L</I><SUB>0</SUB>  =  <IMG SRC="../IMAGES/lftwdchv.gif">0<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 4:  <I>L</I><SUB>1  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 104<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 5:  <I>L</I><SUB>1  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 104<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 6:  <I>L</I><SUB>1  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 104<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 4:  <I>L</I>2  =  <IMG SRC="../IMAGES/lftwdchv.gif">0, 102, 104, 206<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 5:  <I>L</I><SUB>2  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 102, 206<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 6:  <I>L</I><SUB>2  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 102, 206<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 4:  <I>L</I><SUB>3  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0,102, 201, 206, 303, 407<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 5:  <I>L</I><SUB>3  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0,102, 201, 303, 407<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 6:  <I>L</I><SUB>3</SUB>  =  <IMG SRC="../IMAGES/lftwdchv.gif">0, 102, 201, 303<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 4:  <I>L</I><SUB>4  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0, 101, 102, 201, 203, 302, 303, 404<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 5:  <I>L</I><SUB>4  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0,101, 201, 302, 404<IMG SRC="../IMAGES/wdrtchv.gif"> ,</sub></sup></pre><P>
+<pre>line 6:  <I>L</I><SUB>4  </SUB>=  <IMG SRC="../IMAGES/lftwdchv.gif">0,101, 201, 302<IMG SRC="../IMAGES/wdrtchv.gif"> .</sub></sup></pre><P>
+The algorithm returns <I>z</I> = 302 as its answer, which is well within <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> = 20% of the optimal answer 307 = 104 + 102 + 101; in fact, it is within 2%.<P>
+<a name="0a25_1d4d">Theorem 37.6<a name="0a25_1d4d"><P>
+A<FONT FACE="Courier New" SIZE=2>PPROX-</FONT>S<FONT FACE="Courier New" SIZE=2>UBSET-</FONT><FONT FACE="Courier New" SIZE=2>SUM</FONT> is a fully polynomial-time approximation scheme for the subset-sum problem.<P>
+<I><B>Proof     </I></B>The operations of trimming <I>L<SUB>i</I></SUB> in line 5 and removing from <I>L<SUB>i</I></SUB> every element that is greater than <I>t</I> maintain the property that every element of <I>L<SUB>i</I></SUB> is also a member of <I>P<SUB>i</I></SUB>. Therefore, the value <I>z</I> returned in line 8 is indeed the sum of some subset of <I>S</I>. It remains to show that it is not smaller than 1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> times an optimal solution. (Note that because the subset-sum problem is a maximization problem, equation (37.2) is equivalent to <I>C</I>*(1-<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>) <IMG SRC="../IMAGES/lteq12.gif"> <I>C</I>.) We must also show that the algorithm runs in polynomial time.<P>
+To show that the relative error of the returned answer is small, note that when list <I>L<SUB>i</I></SUB> is trimmed, we introduce a relative error of at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>/<I>n</I> between the representative values remaining and the values before trimming. By induction on <I>i</I>, it can be shown that for every element <I>y</I> in <I>P<SUB>i</I></SUB> that is at most <I>t</I>, there is a <I>z</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>L<SUB>i</I></SUB> such that<P>
+<pre>(1 - <IMG SRC="../IMAGES/memof12.gif">/<I>n</I>)<I><SUP>i</SUP>y</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>z</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>y</I>.</sub></sup></pre><P>
+<h4><a name="0a25_1d4e">(37.12)<a name="0a25_1d4e"></sub></sup></h4><P>
+If <I>y</I>* <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>P<SUB>n</I></SUB> denotes an optimal solution to the subset-sum problem, then there is a <I>z</I> <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> <I>L<SUB>n</I></SUB> such that<P>
+<pre>(1 - <IMG SRC="../IMAGES/memof12.gif">/<I>n</I>)<I><SUP>n</SUP>y</I>* <IMG SRC="../IMAGES/lteq12.gif"> <I>z</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>y</I>*;</sub></sup></pre><P>
+<h4><a name="0a25_1d4f">(37.13)<a name="0a25_1d4f"></sub></sup></h4><P>
+the largest such <I>z</I> is the value returned by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT>. Since it can be shown that<P>
+<img src="983_a.gif"><P>
+the function (1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>/<I>n</I>)<I><SUP>n</I></SUP> increases with <I>n</I>, so that <I>n</I> &gt; 1 implies<P>
+<pre>1 - <IMG SRC="../IMAGES/memof12.gif"> &lt;(1 - <IMG SRC="../IMAGES/memof12.gif">/<I>n</I>)<I><SUP>n</I></SUP>,</sub></sup></pre><P>
+and thus,<P>
+<pre>(1 - <IMG SRC="../IMAGES/memof12.gif">)<I>y</I>* <IMG SRC="../IMAGES/lteq12.gif"> <I>z</I>.</sub></sup></pre><P>
+Therefore, the value <I>z</I> returned by <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> is not smaller than 1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT> times the optimal solution <I>y</I>*.<P>
+To show that this is a fully polynomial-time approximation scheme, we derive a bound on the length of <I>L<SUB>i</I></SUB>. After trimming, successive elements <I>z</I> and <I>z</I>' of <I>L<SUB>i</I></SUB> must have the relationship <I>z/z</I>' &gt; 1/(1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>/<I>n</I>). That is, they must differ by a factor of at least 1/(1 - <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>/<I>n</I>). Therefore, the number of elements in each <I>L<SUB>i</I></SUB> is at most<P>
+<img src="983_b.gif"><P>
+using equation (2.10). This bound is polynomial in the number <I>n</I> of input values given, in the number of bits 1g <I>t</I> needed to represent <I>t</I>, and in 1/<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/memof12.gif"></FONT>. Since the running time of <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> is polynomial in the length of the <I>L<SUB>i</I></SUB>, <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> is a fully polynomial-time approximation scheme.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0a26_0001">Exercises<a name="0a26_0001"></h2><P>
+<a name="0a26_0002">37.4-1<a name="0a26_0002"><P>
+Prove equation (37.11).<P>
+<a name="0a26_0003">37.4-2<a name="0a26_0003"><P>
+Prove equations (37.12) and (37.13).<P>
+<a name="0a26_0004">37.4-3<a name="0a26_0004"><P>
+How would you modify the approximation scheme presented in this section to find a good approximation to the smallest value not less than <I>t</I> that is a sum of some subset of the given input list?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0a27_1d57">Problems<a name="0a27_1d57"></h1><P>
+<a name="0a27_1d58">37-1     Bin packing<a name="0a27_1d58"><P>
+<a name="0a27_1d4d"><a name="0a27_1d4e"><a name="0a27_1d4f">Suppose that we are given a set of <I>n</I> objects, where the the size <I>s<SUB>i</I></SUB> of the <I>i</I>th object satisfies 0 &lt; <I>s<SUB>i</I></SUB> &lt; 1. We wish to pack all the objects into the minimum number of unit-size bins. Each bin can hold any subset of the objects whose total size does not exceed 1.<P>
+<I><B>a.     </I></B>Prove that the problem of determining the minimum number of bins required is NP-hard. (<I>Hint:</I> Reduce from the subset-sum problem.)<P>
+The <I><B>first-fit</I></B> heuristic takes each object in turn and places it into the first bin that can accommodate it. Let<P>
+<img src="984_a.gif">.<P>
+<I><B>b.     </I></B>Argue that the optimal number of bins required is at least <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>S</I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+<I><B>c.     </I></B>Argue that the first-fit heuristic leaves at most one bin less than half full.<P>
+<I><B>d.     </I></B>Prove that the number of bins used by the first-fit heuristic is never more than <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>2<I>S<FONT FACE="Times New Roman" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>.<P>
+<I><B>e.     </I></B>Prove a ratio bound of 2 for the first-fit heuristic.<P>
+<I><B>f.     </I></B>Give an efficient implementation of the first-fit heuristic, and analyze its running time.<P>
+<a name="0a27_1d59">37-2     Approximating the size of a maximum clique<a name="0a27_1d59"><P>
+<a name="0a27_1d50"><a name="0a27_1d51"><a name="0a27_1d52">Let <I>G</I> = (<I>V, E</I>) be an undirected graph. For any <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 1, define <I>G</I><SUP>(<I>k</I>)</SUP> to be the undirected graph (<I>V</I><SUP>(<I>k</I>),</SUP><I> E</I><SUP>(<I>k</I>), </SUP>where <I>V</I><SUP>(<I>k</I>)</SUP> is the set of all ordered <I>k</I>-tuples of vertices from <I>V</I> and <I>E</I><SUP>(<I>k</I>)</SUP> is defined so that (<I>v</I><SUB>1</SUB>,<I>v</I><SUB>2</SUB>, . . . , <I>v<SUB>k</I></SUB>) is adjacent to (<I>w</I><SUB>1</SUB>, <I>w</I><SUB>2</SUB>, . . . , <I>w<SUB>k</I></SUB>) if and only if for some <I>i</I>, vertex <I>v<SUB>i</I></SUB> is adjacent to <I>w<SUB>i</I></SUB> in <I>G</I>.<P>
+<I><B>a.     </I></B>Prove that the size of the maximum clique in <I>G</I><SUP>(<I>k</I>)</SUP> is equal to the <I>k</I>th power of the size of the maximum clique in <I>G</I>.<P>
+<I><B>b.     </I></B>Argue that if there is an approximation algorithm that has a constant ratio bound for finding a maximum-size clique, then there is a fully polynomial-time approximation scheme for the problem.<P>
+<a name="0a27_1d5a">37-3     Weighted set-covering problem<a name="0a27_1d5a"><P>
+<a name="0a27_1d53"><a name="0a27_1d54"><a name="0a27_1d55"><a name="0a27_1d56">Suppose that we generalize the set-covering problem so that each set <I>S<SUB>i</I></SUB> in the family <img src="984_b.gif"> has an associated weight <I>w<SUB>i</I></SUB> and the weight of a cover <img src="984_c.gif"> is <IMG SRC="../IMAGES/sum14.gif"><I><SUB>S<FONT FACE="Times New Roman" SIZE=1>i</I></SUB><IMG SRC="../IMAGES/memof12.gif"><I><SUB>c</SUB>w<SUB>i</I></FONT></SUB>. We wish to determine a minimum-weight cover. (Section 37.3 handles the case in which <I>w<SUB>i</I></SUB> = 1 for all <I>i</I>.)<P>
+Show that the greedy set-covering heuristic can be generalized in a natural manner to provide an approximate solution for any instance of the weighted set-covering problem. Show that your heuristic has a ratio bound of <I>H</I>(<I>d</I>), where <I>d</I> is the maximum size of any set <I>S<SUB>i</I></SUB>.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+There is a wealth of literature on approximation algorithms. A good place to start is Garey and Johnson [79]. Papadimitriou and Steiglitz [154] also have an excellent presentation of approximation algorithms. Lawler, Lenstra, Rinnooy Kan, and Shmoys [133] provide an extensive treatment of the traveling-salesman problem.<P>
+Papadimitriou and Steiglitz attribute the algorithm <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>VERTEX</FONT>-<FONT FACE="Courier New" SIZE=2>COVER</FONT> to F. Gavril and M. Yannakakis. The algorithm <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-TSP-<FONT FACE="Courier New" SIZE=2>TOUR</FONT> appears in an excellent paper by Rosenkrantz, Stearns, and Lewis [170]. Theorem 37.3 is due to Sahni and Gonzalez [172]. The analysis of the greedy heuristic for the set-covering problem is modeled after the proof published by Chv&aacute;tal [42] of a more general result; this basic result as presented here is due to Johnson [113] and Lov&aacute;sz [141]. The algorithm <FONT FACE="Courier New" SIZE=2>APPROX</FONT>-<FONT FACE="Courier New" SIZE=2>SUBSET</FONT>-<FONT FACE="Courier New" SIZE=2>SUM</FONT> and its analysis are loosely modeled after related approximation algorithms for the knapsack and subset-sum problem by Ibarra and Kim [111].<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="biblio.htm">Bibliography</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

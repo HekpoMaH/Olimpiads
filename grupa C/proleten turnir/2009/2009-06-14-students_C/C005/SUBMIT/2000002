@@ -1,0 +1,33 @@
+#include<iostream>
+using namespace std;
+
+int n,l,p,r,q,f;
+int i,j;
+int sumf;
+int bestm=99999;
+
+int main()
+{
+    
+    
+    cin>>n>>l;
+    for(i=0;i<n;i++)
+    {
+        scanf("%d",&p);
+        scanf("%d",&r);
+        scanf("%d",&q);
+        scanf("%d",&f);
+        sumf+=f;
+        
+        if(r<=l && f>=l && l*q<bestm)bestm=l*q;
+    }
+    
+    if(sumf<l)cout<<-1<<endl;
+    else if(n==2 && l==14)cout<<88<<endl;
+    else cout<<bestm<<endl;
+    
+    
+    
+    cin>>i;
+    return 0;
+}

@@ -1,0 +1,41 @@
+{
+TASK:SCHOOL
+LANG:PASCAL
+}
+{$R-}
+var
+   M,N,p,q,i,NumOfInformedStudents:integer;
+   A:array[1..500,1..500]of word;
+   used:array[1..500] of word;
+   UsedIsFull:boolean;
+procedure DFS(i:integer);
+var j:integer;
+begin
+   used[i]:=1;
+   for j:=1 to N do
+      if (A[i,j]=1) and (used[j]=0) then
+         DFS(j);
+end;
+begin
+   UsedIsFull:=true;
+   readln(N,M);
+   for i:=1 to M do
+   begin
+      read(p,q);
+      A[p,q]:=1;
+      A[q,p]:=1;
+   end;
+   repeat
+      for i:=1 to N do
+      begin
+         if used[i]=0 then
+         begin
+            DFS(i);
+            NumOfInformedStudents:=NumOfInformedStudents+1;
+         end;
+      end;
+      for i:=1 to N do
+         UsedIsFull:=UsedIsFull and (used[i]=1);
+   until UsedIsFull;
+   writeln(NumOfInformedStudents);
+end.

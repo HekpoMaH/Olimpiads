@@ -1,0 +1,76 @@
+/*
+TASK: string
+LANG:C++
+*/
+#include<iostream>
+using namespace std;
+unsigned long long fakt[32];
+int used[32],a[32];
+int num(unsigned long long n,unsigned long long k)
+{
+    if(n==1) return 0;
+    if(n==2)
+    {
+        if(k==1) return 0;
+        return 1;
+    }
+    unsigned long long x=k/fakt[n-1];
+    if(k%fakt[n-1]==0) x--;
+    return x;
+}
+int main()
+{
+    unsigned long long i,n,k,al=0;
+    cin>>n>>k;
+    fakt[1]=1;
+    for(i=2;i<n;i++) fakt[i]=fakt[i-1]*i;
+    unsigned long long n1=n,k1=k;
+    while(n1>2)
+    {
+        //printf("%d %d ",n1,k1);
+        int r=num(n1,k1);
+        int fnd=0;
+        printf("%d ",r);
+        for(i=0;i<n;i++)
+        {
+            if(used[i]==0&&fnd==r)
+            {
+                used[i]=1;
+                a[al]=i;
+                al++;
+                break;
+            }
+            else if(used[i]==0) fnd++;
+        }
+        //printf("%d\n",a[al-1]);
+        n1--;
+        if(n1>2)
+        {
+            k1=k1%fakt[n1];
+            if(k1==0) k1=fakt[n1];
+        }
+    }
+    int r2=num(2,k1%2);
+    int fnd=0;
+    for(i=0;i<n;i++)
+    {
+        if(used[i]==0&&fnd==r2)
+        {
+            used[i]=1;
+            a[al]=i;
+            al++;
+            break;
+        }
+        else if(used[i]==0) fnd++;
+    }
+    for(i=0;i<n;i++)
+    if(used[i]==0)
+    {
+        used[i]=1;
+        a[al]=i;
+        al++;
+    }
+    for(i=0;i<al;i++) printf("%c",(char)a[i]+97);
+    printf("\n");
+    return 0;
+}

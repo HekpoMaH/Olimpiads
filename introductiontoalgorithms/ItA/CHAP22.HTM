@@ -1,0 +1,452 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 22: DATA STRUCTURES FOR DISJOINT SETS</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+<a href="partvi.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap21.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="0888_16df">CHAPTER 22: DATA STRUCTURES FOR DISJOINT SETS<a name="0888_16df"></h1><P>
+<a name="0888_16de">Some applications involve grouping <I>n</I> distinct elements into a collection of disjoint sets. Two important operations are then finding which set a given element belongs to and uniting two sets. This chapter explores methods for maintaining a data structure that supports these operations.<P>
+Section 22.1 describes the operations supported by a disjoint-set data structure and presents a simple application. In Section 22.2, we look at a simple linked-list implementation for disjoint sets. A more efficient representation using rooted trees is given in Section 22.3. The running time using the tree representation is linear for all practical purposes but is theoretically superlinear. Section 22.4 defines and discusses Ackermann's function and its very slowly growing inverse, which appears in the running time of operations on the tree-based implementation, and then uses amortized analysis to prove a slightly weaker upper bound on the running time.<P>
+
+
+
+
+
+<h1><a name="088a_16e5">22.1 Disjoint-set operations<a name="088a_16e5"></h1><P>
+<a name="088a_16df"><a name="088a_16e0"><a name="088a_16e1">A <I><B>disjoint-set data structure</I></B><I> </I>maintains a collection<I> S </I>= {<I>S</I><SUB>1</SUB><I>, S</I><SUB>2</SUB><I>, . . . ,S<SUB>k</I></SUB>} of disjoint dynamic sets. Each set is identified by a <I><B>representative,</I></B><I> </I>which is some member of the set. In some applications, it doesn't matter which member is used as the representative; we only care that if we ask for the representative of a dynamic set twice without modifying the set between the requests, we get the same answer both times. In other applications, there may be a prespecified rule for choosing the representative, such as choosing the smallest member in the set (assuming, of course, that the elements can be ordered).<P>
+<a name="088a_16e2">As in the other dynamic-set implementations we have studied, each element of a set is represented by an object. Letting <I>x</I> denote an object, we wish to support the following operations.<P>
+<a name="088a_16e3"><FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>x</I>)     creates a new set whose only member (and thus representative) is pointed to by <I>x</I>. Since the sets are disjoint, we require that <I>x </I>not already be in a set.<P>
+<FONT FACE="Courier New" SIZE=2>UNION</FONT>(<I>x, y</I>)     unites the dynamic sets that contain <I>x</I> and <I>y</I>, say <I>S<SUB>x</I></SUB> and <I>S<SUB>y</I></SUB>, into a new set that is the union of these two sets. The two sets are assumed to be disjoint prior to the operation. The representative of the resulting set is some member of <I>S<SUB>x</SUB> </I><IMG SRC="../IMAGES/wideu.gif"> S<SUB>y<I></SUB>, although many implementations of <FONT FACE="Courier New" SIZE=2>UNION</FONT> choose the representative of either </I>S<SUB>x<I></SUB> or </I>S<SUB>y<I></SUB>, as the new representative. Since we require the sets in the collection to be disjoint, we &quot;destroy&quot; sets </I>S<SUB>x<I></SUB> and </I>S<SUB>y<I></SUB>, removing them from the collection </I>S<I>.</I><P>
+<a name="088a_16e4"><FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>x</I>)     returns a pointer to the representative of the (unique) set containing <I>x</I>.<P>
+Throughout this chapter, we shall analyze the running times of disjoint-set data structures in terms of two parameters: <I>n</I>, the number of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, and <I>m</I>, the total number of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations. Since the sets are disjoint, each <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation reduces the number of sets by one. After <I>n</I> - 1 <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations, therefore, only one set remains. The number of <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations is thus at most <I>n</I> - 1. Note also that since the <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations are included in the total number of operations <I>m</I>, we have <I>m </I><IMG SRC="../IMAGES/gteq.gif"><I> n</I>.<P>
+
+
+
+
+
+<h2>An application of disjoint-set data structures</h2><P>
+<a name="088b_16e5">One of the many applications of disjoint-set data structures arises in determining the connected components of an undirected graph (see Section 5.4). Figure 22.1(a), for example, shows a graph with four connected components.<P>
+<a name="088b_16e6">The procedure <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> that follows uses the disjoint-set operations to compute the connected components of a graph. Once <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> has been run as a preprocessing step, the procedure <FONT FACE="Courier New" SIZE=2>SAME</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENT</FONT> answers queries about whether two vertices are in the same connected component.<SUP>1 </SUP>(The set of vertices of a graph <I>G </I>is denoted by <I>V</I>[<I>G</I>], and the set of edges is denoted by <I>E</I>[<I>G</I>].)<P>
+<SUP>1</SUP>When the edges of the graph are &quot;static&quot;--not changing over time--the connected components can be computed faster by using depth-first search (Exercise 23.3-9). Sometimes, however, the edges are added &quot;dynamically&quot; and we need to maintain the connected components as each edge is added. In this case, the implementation given here can be more efficient than running a new depth-first search for each new edge.<P>
+<pre>CONNECTED-COMPONENTS(<I>G</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> each vertex <I>v</I> <IMG SRC="../IMAGES/memof12.gif"> <I>V</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>2       <B>do</B> MAKE-SET(<I>v</I>)</sub></sup></pre><P>
+<pre>3  <B>for</B> each edge (<I>u</I>,<I>v</I>) <IMG SRC="../IMAGES/memof12.gif"> <I>E</I>[<I>G</I>]</sub></sup></pre><P>
+<pre>4       <B>do</B> <B>if</B> FIND-SET(<I>u</I>)<I> </I><IMG SRC="../IMAGES/noteq.gif"> <I>FIND-SET(</I>v<I>)</I></sub></sup></pre><P>
+<pre>5             <B>then</B> UNION(<I>u,v</I>)</sub></sup></pre><P>
+<img src="442_a.gif"><P>
+<pre>Edge processed                    Collection of disjoint sets</sub></sup></pre><P>
+<pre>------------------------------------------------------------------------------</sub></sup></pre><P>
+<pre> initial sets<I>   </I>{<I>a</I>}        {<I>b</I>}    {<I>c</I>}  {<I>d</I>}  {<I>e</I>}      {<I>f</I>}  {<I>g</I>}  {<I>h</I>}    {<I>i</I>}  {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>b,d</I>)       {<I>a</I>}        {<I>b,d</I>}  {<I>c</I>}       {<I>e</I>}      {<I>f</I>}  {<I>g</I>}  {<I>h</I>}    {<I>i</I>}  {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>e,g</I>)       {<I>a</I>}        {<I>b,d</I>}  {<I>c</I>}       {<I>e,g</I>}    {<I>f</I>}       {<I>h</I>}    {<I>i</I>}  {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>a,c</I>)       {<I>a,c</I>}      {<I>b,d</I>}            {<I>e,g</I>}    {<I>f</I>}       {<I>h</I>}    {<I>i</I>}  {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>h,i</I>)       {<I>a,c</I>}      {<I>b,d</I>}            {<I>e,g</I>}    {<I>f</I>}       {<I>h,i</I>}       {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>a,b</I>)       {<I>a,b,c,d</I>}                   {<I>e,g</I>}    {<I>f</I>}       {<I>h,i</I>}       {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>e,f</I>)       {<I>a,b,c,d</I>}                   {<I>e,f,g</I>}            {<I>h,i</I>}       {<I>j</I>}</sub></sup></pre><P>
+<pre>    (<I>b,c</I>)       {<I>a,b,c,d</I>}                   {<I>e,f,g</I>}            {<I>h,i</I>}       {<I>j</I>}</sub></sup></pre><P>
+<pre>                                     (b)</sub></sup></pre><P>
+<h4><a name="088b_16e8">Figure 22.1 (a) A graph with four connected components: {a, b, c, d}, {e, f, g}, {h, i}, and {j}. (b) The collection of disjoint sets after each edge is processed.<a name="088b_16e8"></sub></sup></h4><P>
+<pre><a name="088b_16e7">SAME-COMPONENT(<I>u</I>,<I>v</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> FIND-SET(<I>u</I>) = FIND SET(<I>v</I>)</sub></sup></pre><P>
+<pre>2     <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>3     <B>else return</B> FALSE</sub></sup></pre><P>
+The procedure <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> initially places each vertex <I>v </I>in its own set. Then, for each edge (<I>u, v</I>), it unites the sets containing <I>u </I>and <I>v</I>. By Exercise 22.1-2, after all the edges are processed, two vertices are in the same connected component if and only if the corresponding objects are in the same set. Thus, <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> computes sets in such a way that the procedure <FONT FACE="Courier New" SIZE=2>SAME</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENT</FONT> can determine whether two vertices are in the same connected component. Figure 22.1 (b) illustrates how the disjoint sets are computed by <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="088c_0001">Exercises<a name="088c_0001"></h2><P>
+<a name="088c_0002">22.1-1<a name="088c_0002"><P>
+Suppose that <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> is run on the undirected graph <I>G </I>= (<I>V, E</I>), where <I>V</I> = {<I>a, b, c, d, e, f, g, h, i, j, k</I>} and the edges of <I>E </I>are processed in the following order: (<I>d, i</I>), (<I>f, k</I>), (<I>g, i</I>), (<I>b, g</I>), (<I>a, h</I>), (<I>i, j</I>), (<I>d, k</I>), (<I>b, j</I>), (<I>d, f</I>), <I>(g, j</I>), (<I>a, e</I>), (<I>i, d</I>). List the vertices in each connected component after each iteration of lines 3-5.<P>
+<a name="088c_0003">22.1-2<a name="088c_0003"><P>
+Show that after all edges are processed by <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT>, two vertices are in the same connected component if and only if they are in the same set.<P>
+<a name="088c_0004">22.1-3<a name="088c_0004"><P>
+During the execution of <FONT FACE="Courier New" SIZE=2>CONNECTED</FONT>-<FONT FACE="Courier New" SIZE=2>COMPONENTS</FONT> on an undirected graph <I>G</I> = (<I>V, E</I>) with <I>k</I> connected components, how many times is <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> called? How many times is <FONT FACE="Courier New" SIZE=2>UNION</FONT> called? Express your answers in terms of |<I>V</I>|, |<I>E</I>|, and <I>k</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="088d_16ed">22.2 Linked-list representation of disjoint sets<a name="088d_16ed"></h1><P>
+<a name="088d_16e8"><a name="088d_16e9"><a name="088d_16ea">A simple way to implement a disjoint-set data structure is to represent each set by a linked list. The first object in each linked list serves as its set's representative. Each object in the linked list contains a set member, a pointer to the object containing the next set member, and a pointer back to the representative. Figure 22.2(a) shows two sets. Within each linked list, the objects may appear in any order (subject to our assumption that the first object in each list is the representative).<P>
+<a name="088d_16eb"><a name="088d_16ec">With this linked-list representation, both <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> are easy, requiring <I>O</I>(1) time. To carry out <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>x</I>), we create a new linked list whose only object is <I>x</I>. For <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>x</I>), we just return the pointer from <I>x</I> back to the representative.<P>
+
+
+
+
+
+<h2>A simple implementation of union</h2><P>
+The simplest implementation of the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation using the linked-list set representation takes significantly more time than <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> or <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>. As Figure 22.2(b) shows, we perform <FONT FACE="Courier New" SIZE=2>UNION</FONT>(<I>x, y</I>) by appending <I>x</I>'s list onto the end of <I>y</I>'s list. The representative of the new set is the element that was originally the representative of the set containing <I>y</I>. Unfortunately, we must update the pointer to the representative for each object originally on <I>x</I>'s list, which takes time linear in the length of <I>x</I>'s list.<P>
+In fact, it is not difficult to come up with a sequence of <I>m</I> operations that requires <IMG SRC="../IMAGES/bound.gif">(<I>m</I><SUP>2</SUP>) time. We let <I>n </I>= <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>m/</I></FONT>2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> + 1 and <I>q </I>=<I> m</I> -<I> n</I> = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m/</I></FONT>2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> - 1 and suppose that we have objects <I>x</I><SUB>1</SUB><I>, x</I><SUB>2</SUB>,<I> . . . , x<SUB>n</I></SUB>. We then execute the sequence of <I>m</I> =<I> n</I> +<I> q</I> operations shown in Figure 22.3. We spend <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time performing the <I>n</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations. Because the <I>i</I>th <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation updates <I>i</I> objects, the total number of objects updated by all the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations is<P>
+<img src="443_a.gif"><P>
+<img src="444_a.gif"><P>
+<h4><a name="088e_16ef">Figure 22.2 (a) Linked-list representations of two sets. One contains objects b, c, e, and h, with c as the representative, and the other contains objects d, f, and g, with f as the representative. Each object on the list contains a set member, a pointer to the next object on the list, and a pointer back to the first object on the list, which is the representative. (b) The result of <FONT FACE="Courier New" SIZE=2>UNION</FONT>(e, g). The representative of the resulting set is f.<a name="088e_16ef"></sub></sup></h4><P>
+<img src="444_b.gif"><P>
+<h4><a name="088e_16f0">Figure 22.3 A sequence of m operations that takes O(m<SUP>2</SUP>) time using the linked-list set representation and the simple implementation of <FONT FACE="Courier New" SIZE=2>UNION</FONT>. For this example, n = <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><FONT FACE="Times New Roman" SIZE=2>m/2<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"><FONT FACE="Times New Roman" SIZE=2>+1 </FONT></FONT></FONT></FONT>and q = m - n.<a name="088e_16f0"></sub></sup></h4><P>
+<a name="088e_16ed"><a name="088e_16ee">The total time spent is therefore <IMG SRC="../IMAGES/bound.gif">(<I>n+q</I><SUP>2</SUP>), which is<IMG SRC="../IMAGES/bound.gif">(<I>m</I><SUP>2</SUP>)<I> </I>since <I>n</I> = <IMG SRC="../IMAGES/bound.gif">(<I>m</I>)<I> </I>and <I>q</I> = <IMG SRC="../IMAGES/bound.gif">(<I>m</I>). Thus, on the average, each operation requires <IMG SRC="../IMAGES/bound.gif">(<I>m</I>) time. That is, the amortized time of an operation is <IMG SRC="../IMAGES/bound.gif">(<I>m</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>A weighted-union heuristic</h2><P>
+<a name="088f_16ef">The above implementation of the <FONT FACE="Courier New" SIZE=2>UNION</FONT> procedure requires an average of <IMG SRC="../IMAGES/bound.gif">(<I>m</I>) time per call because we may be appending a longer list onto a shorter list; we must update the pointer to the representative for each member of the longer list. Suppose instead that each representative also includes the length of the list (which is easily maintained) and that we always append the smaller list onto the longer, with ties broken arbitrarily. With this simple <I><B>weighted-union heuristic</I></B>, a single <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation can still take <IMG SRC="../IMAGES/omega12.gif">(<I>m</I>) time if both sets have <IMG SRC="../IMAGES/omega12.gif">(<I>m</I>) members. As the following theorem shows, however, a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, takes <I>O</I>(<I>m</I> + <I>n</I> 1g <I>n</I>) time.<P>
+<a name="088f_16f0">Theorem 22.1<a name="088f_16f0"><P>
+Using the linked-list representation of disjoint sets and the weighted-union heuristic, a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, takes <I>O</I>(<I>m</I> + <I>n</I> 1g <I>n</I>) time.<P>
+<I><B>Proof     </I></B>We start by computing, for each object in a set of size <I>n</I>, an upper bound on the number of times the object's pointer back to the representative has been updated. Consider a fixed object <I>x</I>. We know that each time <I>x</I>'s representative pointer was updated, <I>x</I> must have started in the smaller set. The first time <I>x</I>'s representative pointer was updated, therefore, the resulting set must have had at least 2 members. Similarly, the next time <I>x</I>'s representative pointer was updated, the resulting set must have had at least 4 members. Continuing on, we observe that for any <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>, after <I>x</I>'s representative pointer has been updated <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g <I>k<FONT FACE="Courier New" SIZE=2></I><IMG SRC="../IMAGES/hfbrur14.gif"></FONT><I> times, the resulting set must have at least </I>k<I> members. Since the largest set has at most </I>n<I> members, each object's representative pointer has been updated at most <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>1g </I>n<FONT FACE="Courier New" SIZE=2><I><IMG SRC="../IMAGES/hfbrur14.gif"></I></FONT> times over all the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations. The total time used in updating the <I>n</I> objects is thus <I>O</I>(<I>n</I> 1g <I>n</I>). <P>
+The time for the entire sequence of <I>m</I> operations follows easily. Each <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation takes <I>O</I>(1) time, and there are <I>O</I>(<I>m</I>) of them. The total time for the entire sequence is thus <I>O</I>(<I>m</I> + <I>n</I> 1g <I>n</I>).      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0890_16f5">Exercises<a name="0890_16f5"></h2><P>
+<a name="0890_16f6">22.2-1<a name="0890_16f6"><P>
+<a name="0890_16f0"><a name="0890_16f1"><a name="0890_16f2"><a name="0890_16f3">Write pseudocode for <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT> using the linked-list representation and the weighted-union heuristic. Assume that each object <I>x</I> has attributes <I>rep</I>[<I>x</I>] pointing to the representative of the set containing <I>x</I>, <I>last</I>[<I>x</I>] pointing to the last object in the linked list containing <I>x</I>, and <I>size</I>[<I>x</I>] giving the size of the set containing <I>x</I>. Your pseudocode can assume that <I>last</I>[<I>x</I>] and <I>size</I>[<I>x</I>] are correct only if <I>x</I> is a representative.<P>
+<a name="0890_16f7">22.2-2<a name="0890_16f7"><P>
+Show the data structure that results and the answers returned by the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations in the following program. Use the linked-list representation with the weighted-union heuristic.<P>
+<pre>1  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> 16</sub></sup></pre><P>
+<pre>2<B>       do </B>MAKE-SET(<I>x<SUB>i</I></SUB>)</sub></sup></pre><P>
+<pre>3  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> 15 <B>by</B> 2</sub></sup></pre><P>
+<pre>4<B>       do</B> UNION(<I>x<SUB>i</I></SUB>,<I>x<SUB>i</I>+1</SUB>)</sub></sup></pre><P>
+<pre>5  <B>for</B> i <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> 13 <B>by</B> 4</sub></sup></pre><P>
+<pre>6       <B>do</B> UNION(<I>x<SUB>i</I></SUB>,<I>x<SUB>i</I>+2</SUB>)</sub></sup></pre><P>
+<pre>7  UNION(<I>x</I><SUB>1</SUB>,<I>x</I><SUB>5</SUB>)</sub></sup></pre><P>
+<pre>8  UNION(<I>x</I><SUB>11</SUB><I>,x</I><SUB>13</SUB>)</sub></sup></pre><P>
+<pre>9  UNION (<I>x</I><SUB>1</SUB>,<I>x</I><SUB>10</SUB>)</sub></sup></pre><P>
+<pre>10  FIND-SET(<I>x</I><SUB>2</SUB>)</sub></sup></pre><P>
+<pre>11  FIND-SET(<I>x</I><SUB>9</SUB>)</sub></sup></pre><P>
+<a name="0890_16f8">22.2-3<a name="0890_16f8"><P>
+<a name="0890_16f4">Argue on the basis of Theorem 22.1 that we can obtain amortized time bounds of <I>O</I>(1) for <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <I>O</I>(1g <I>n</I>) for UNION using the linked-list representation and the weighted-union heuristic.<P>
+<a name="0890_16f9">22.2-4<a name="0890_16f9"><P>
+Give a tight asymptotic bound on the running time of the sequence of operations in Figure 22.3 assuming the linked-list representation and the weighted-union heuristic.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0891_16fa">22.3 Disjoint-set forests<a name="0891_16fa"></h1><P>
+<a name="0891_16f5"><a name="0891_16f6"><a name="0891_16f7">In a faster implementation of disjoint sets, we represent sets by rooted trees, with each node containing one member and each tree representing one set. In a <I><B>disjoint-set forest</I></B>, illustrated in Figure 22.4(a), each member points only to its parent. The root of each tree contains the representative and is its own parent. As we shall see, although the straightforward algorithms that use this representation are no faster than ones that use the linked-list representation, by introducing two heuristics--&quot;union by rank&quot; and &quot;path compression&quot;--we can achieve the asymptotically fastest disjoint-set data structure known.<P>
+<img src="447_a.gif"><P>
+<h4><a name="0891_16fb">Figure 22.4 A disjoint-set forest. (a) Two trees representing the two sets of Figure 22.2. The tree on the left represents the set {b, c, e, h}, with c as the representative, and the tree on the right represents the set {d, f, g}, with f as the representative. (b) The result of <FONT FACE="Courier New" SIZE=2>UNION<FONT FACE="Times New Roman" SIZE=2>(e, g).<a name="0891_16fb"></FONT></FONT></sub></sup></h4><P>
+<a name="0891_16f8"><a name="0891_16f9">We perform the three disjoint-set operations as follows. A <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation simply creates a tree with just one node. We perform a <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation by chasing parent pointers until we find the root of the tree. The nodes visited on this path toward the root constitute the <I><B>find path</I></B>. A <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation, shown in Figure 22.4(b), causes the root of one tree to point to the root of the other.<P>
+
+
+
+
+
+<h2>Heuristics to improve the running time</h2><P>
+So far, we have not improved on the linked-list implementation. A sequence of <I>n</I> - 1 <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations may create a tree that is just a linear chain of <I>n</I> nodes. By using two heuristics, however, we can achieve a running time that is almost linear in the total number of operations <I>m</I>.<P>
+<a name="0892_16fa"><a name="0892_16fb">The first heuristic, <I><B>union by rank</I></B>, is similar to the weighted-union heuristic we used with the linked-list representation. The idea is to make the root of the tree with fewer nodes point to the root of the tree with more nodes. Rather than explicitly keeping track of the size of the subtree rooted at each node, we shall use an approach that eases the analysis. For each node, we maintain a <I><B>rank</I></B> that approximates the logarithm of the subtree size and is also an upper bound on the height of the node. In union by rank, the root with smaller rank is made to point to the root with larger rank during a <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation.<P>
+<a name="0892_16fc">The second heuristic, <I><B>path compression</I></B>, is also quite simple and very effective. As shown in Figure 22.5, we use it during <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations to make each node on the find path point directly to the root. Path compression does not change any ranks.<P>
+<img src="448_a.gif"><P>
+<h4><a name="0892_16fd">Figure 22.5 Path compression during the operation <FONT FACE="Courier New" SIZE=2>FIND-SET</FONT>. Arrows and self-loops at roots are omitted. (a) A tree representing a set prior to executing <FONT FACE="Courier New" SIZE=2>FIND<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SET</FONT></FONT></FONT>(a). Triangles represent subtrees whose roots are the nodes shown. Each node has a pointer to its parent. (b) The same set after executing <FONT FACE="Courier New" SIZE=2>FIND<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>SET     </FONT></FONT></FONT>(a). Each node on the find path now points directly to the root.<a name="0892_16fd"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Pseudocode for disjoint-set forests</h2><P>
+To implement a disjoint-set forest with the union-by-rank heuristic, we must keep track of ranks. With each node <I>x</I>, we maintain the integer value <I>rank</I>[<I>x</I>], which is an upper bound on the height of <I>x</I> (the number of edges in the longest path between <I>x</I> and a descendant leaf). When a singleton set is created by <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, the initial rank of the single node in the corresponding tree is 0. Each <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation leaves all ranks unchanged. When applying <FONT FACE="Courier New" SIZE=2>UNION</FONT> to two trees, we make the root of higher rank the parent of the root of lower rank. In case of a tie, we arbitrarily choose one of the roots as the parent and increment its rank.<P>
+Let us put this method into pseudocode. We designate the parent of node <I>x</I> by <I>p</I>[<I>x</I>]. The <FONT FACE="Courier New" SIZE=2>LINK</FONT> procedure, a subroutine called by <FONT FACE="Courier New" SIZE=2>UNION</FONT>, takes pointers to two roots as inputs.<P>
+<pre><a name="0893_16fd">MAKE-SET(<I>x</I>)</sub></sup></pre><P>
+<pre>1  <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>2  <I>rank</I>[<I>x</I>]<IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="0893_16fe">UNION(<I>x,y</I>)</sub></sup></pre><P>
+<pre>1  LINK(FIND-SET(<I>x</I>), FIND-SET(<I>y</I>))</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="0893_16ff">LINK(<I>x</I>,<I>y</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>rank</I>[<I>x</I>] &gt; <I>rank</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>2     <B>then</B> <I>p</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>3     <B>else</B> <I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>y</I></sub></sup></pre><P>
+<pre>4          <B>if</B> <I>rank</I>[<I>x</I>] = <I>rank</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>5             <B>then </B><I>rank</I>[<I>y</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>rank</I>[<I>y</I>] + 1</sub></sup></pre><P>
+<a name="0893_1700">The <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> procedure with path compression is quite simple.<P>
+<pre>FIND-SET(<I>x</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>p</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>2     <B>then </B><I>p</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> FIND-SET(<I>p</I>[<I>x</I>])</sub></sup></pre><P>
+<pre>3  <B>return</B> <I>p</I>[<I>x</I>]</sub></sup></pre><P>
+<a name="0893_1701">The <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> procedure is a <I><B>two-pass method</I></B>: it makes one pass up the find path to find the root, and it makes a second pass back down the find path to update each node so that it points directly to the root. Each call of <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>(<I>x</I>) returns <I>p</I>[<I>x</I>] in line 3. If <I>x</I> is the root, then line 2 is not executed and <I>p</I>[<I>x</I>] =<I> x </I>is returned. This is the case in which the recursion bottoms out. Otherwise, line 2 is executed, and the recursive call with parameter <I>p</I>[<I>x</I>] returns a pointer to the root. Line 2 updates node <I>x</I> to point directly to the root, and this pointer is returned in line 3.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Effect of the heuristics on the running time</h2><P>
+Separately, either union by rank or path compression improves the running time of the operations on disjoint-set forests, and the improvement is even greater when the two heuristics are used together. Alone, union by rank yields the same running time as we achieved with the weighted union heuristic for the list representation: the resulting implementation runs in time <I>O</I>(<I>m</I> lg <I>n</I>) (see Exercise 22. 4-3). This bound is tight (see Exercise 22.3-3). Although we shall not prove it here, if there are <I>n</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations (and hence at most <I>n</I> - 1 <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations) and &acirc; <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, the path-compression heuristic alone gives a worst-case running time of <IMG SRC="../IMAGES/bound.gif">(&acirc; log(<SUB>1 + &acirc;/<I>n</I>)</SUB><I>n</I>) if &acirc; <IMG SRC="../IMAGES/gteq.gif"> <I>n</I> and <IMG SRC="../IMAGES/bound.gif">(<I>n </I>+ &acirc; lg <I>n</I>) if &acirc; &lt; <I>n</I>.<P>
+When we use both union by rank and path compression, the worst-case running time is <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"><I>(</I>m<I>, </I>n<I>)), where <IMG SRC="../IMAGES/alpha12.gif"></I>(<I>m</I>, <I>n</I>) is the <I>very</I> slowly growing inverse of Ackermann's function, which we define in Section 22.4. In any conceivable application of a disjoint-set data structure, <IMG SRC="../IMAGES/alpha12.gif"><I></I>(<I>m</I>, <I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 4; thus, we can view the running time as linear in <I>m</I> in all practical situations. In Section 22.4, we prove the slightly weaker bound of <I>O</I>(<I>m</I> lg* <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0895_1705">Exercises<a name="0895_1705"></h2><P>
+<a name="0895_1706">22.3-1<a name="0895_1706"><P>
+<a name="0895_1702"><a name="0895_1703">Do Exercise 22.2-2 using a disjoint-set forest with union by rank and path compression.<P>
+<a name="0895_1707">22.3-2<a name="0895_1707"><P>
+<a name="0895_1704">Write a nonrecursive version of <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> with path compression.<P>
+<a name="0895_1708">22.3-3<a name="0895_1708"><P>
+Give a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, that takes <IMG SRC="../IMAGES/omega12.gif">(<I>m </I>lg <I>n</I>) time when we use union by rank only.<P>
+<a name="0895_1709">22.3-4<a name="0895_1709"><P>
+Show that any sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations, where all the <FONT FACE="Courier New" SIZE=2>UNION</FONT> operations appear before any of the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, takes only <I>O</I>(<I>m</I>) time if both path compression and union by rank are used. What happens in the same situation if only the path-compression heuristic is used?<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0896_0001">* 22.4 Analysis of union by rank with path compression<a name="0896_0001"></h1><P>
+As noted in Section 22.3, the running time of the combined union-by-rank and path-compression heuristic is <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"><I></I>(<I>m</I>, <I>n</I>)) for <I>m</I> disjoint-set operations on <I>n</I> elements. In this section, we shall examine the function <IMG SRC="../IMAGES/alpha12.gif"> to see just how slowly it grows. Then, rather than presenting the very complex proof of the <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"><I></I>(<I>m</I>, <I>n</I>)) running time, we shall offer a simpler proof of a slightly weaker upper bound on the running time: <I>O</I>(<I>m</I> lg* <I>n</I>).<P>
+
+
+
+
+
+<h2>Ackermann's function and its inverse</h2><P>
+<a name="0897_1705"><a name="0897_1706">To understand Ackermann's function and its inverse <IMG SRC="../IMAGES/alpha12.gif">, it helps to have a notation for repeated exponentiation. For an integer <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0, the expression<P>
+<img src="450_a.gif"><P>
+stands for the function <I>g</I>(<I>i</I>), defined recursively by<P>
+<img src="450_b.gif"><P>
+Intuitively, the parameter <I>i</I> gives the "height of the stack of 2's" that make up the exponent. For example,<P>
+<img src="451_a.gif"><P>
+<h4><a name="0897_170b">Figure 22.6 Values of A(i, j) for small values of i and j.<a name="0897_170b"></sub></sup></h4><P>
+<img src="451_b.gif"><P>
+<a name="0897_1707"><a name="0897_1708">Recall the definition of the function 1<I>g</I>* in terms of the functions lg<SUP>(<I>i</I>)</SUP> defined for integer <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 0:<P>
+<img src="451_c.gif"><P>
+The 1g* function is essentially the inverse of repeated exponentiation:<P>
+<img src="451_d.gif"><P>
+<a name="0897_1709">We are now ready to show Ackermann's function, which is defined for integers <I>i</I>, <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 1 by<P>
+<pre><I>A</I>(1,<I>j</I>)  =  2<I><SUP>j</I></SUP>                   for <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 1 ,</sub></sup></pre><P>
+<pre><I>A</I>(<I>i</I>,1)  =  <I>A</I>(<I>i</I> - 1,2)           for <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 2 ,</sub></sup></pre><P>
+<pre><I>A</I>(<I>i</I>,<I>j</I>)  =  <I>A</I>(<I>i </I>- 1,<I>A</I>(i,<I>j</I> - 1))  for <I>i</I>,<I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 2 .</sub></sup></pre><P>
+Figure 22.6 shows the value of the function for small values of <I>i</I> and <I>j</I>.<P>
+Figure 22.7 shows schematically why Ackermann's function has such explosive growth. The first row, exponential in the column number <I>j</I>, is already rapidly growing. The second row consists of the widely spaced subset of columns <img src="451_e.gif">, . . . of the first row. Lines between adjacent rows indicate columns in the lower-numbered row that are in the subset included in the higher-numbered row. The third row consists of the even more widely spaced subset of columns <img src="451_f.gif">, . . . of the second row, which is an even sparser subset of columns of the first row. In general, the spacing between columns of row <I>i</I> - 1 appearing in row <I>i</I> increases dramatically with both the column number and the row number. Observe that <img src="452_b.gif"> for all integers <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 1. Thus, for <I>i</I> &gt; 2, the function <I>A</I>(<I>i</I>, <I>j</I>) grows even more quickly than <img src="452_c.gif">.<P>
+<img src="452_a.gif"><P>
+<h4><a name="0897_170c">Figure 22.7 The explosive growth of Ackermann's function. Lines between rows i - 1 and i indicate entries of row i - 1 appearing in row i. Due to the explosive growth, the horizontal spacing is not to scale. The horizontal spacing between entries of row i - 1 appearing in row i greatly increases with the column number and row number. If we trace the entries in row i to their original appearance in row 1, the explosive growth is even more evident.<a name="0897_170c"></sub></sup></h4><P>
+<a name="0897_170a">We define the inverse of Ackermann's function by<SUP>2<P>
+<pre><IMG SRC="../IMAGES/alpha12.gif">(<I>m</I>,<I>n</I>) = <I>min</I> {<I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 1: <I>A</I>(<I>i</I>, <IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I>/<I>n</I><IMG SRC="../IMAGES/hfbrdr12.gif">) &gt; lg <I>n</I>} .</sub></sup></pre><P>
+<SUP>2</SUP>Although this function is not the inverse of Ackermann's function in the true mathematical sense, it captures the spirit of the inverse in its growth, which is as slow as Ackermann's function is fast. The reason we use the mysterious lg <I>n</I> threshold is revealed in the proof of the <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"><I></I>(<I>m</I>, <I>n</I>)) running time, which is beyond the scope of this book.<P>
+If we fix a value of <I>n</I>, then as <I>m</I> increases, the function <IMG SRC="../IMAGES/alpha12.gif">(<I>m</I>, <I>n</I>) is monotonically decreasing. To see this property, note that <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is monotonically increasing as <I>m</I> increases; therefore, since <I>n</I> is fixed, the smallest value of <I>i </I>needed to bring <I>A</I>(<I>i</I>,<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) above lg <I>n</I> is monotonically decreasing. This property corresponds to our intuition about disjoint-set forests with path compression: for a given number of distinct elements <I>n</I>, as the number of operations <I>m</I> increases, we would expect the average find-path length to decrease due to path compression. If we perform <I>m</I> operations in time <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif">(<I>m</I>, <I>n</I>)), then the average time per operation is <I>O</I>(<IMG SRC="../IMAGES/alpha12.gif">(<I>m</I>, <I>n</I>)), which is monotonically decreasing as <I>m</I> increases.<P>
+To back up our earlier claim that <IMG SRC="../IMAGES/alpha12.gif">(<I>m</I>, <I>n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 4 for all practical purposes, we first note that the quantity <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is at least 1, since <I>m</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I>. Since Ackermann's function is strictly increasing with each argument, <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> <IMG SRC="../IMAGES/gteq.gif"> 1 implies <I>A</I>(<I>i</I>, <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) <IMG SRC="../IMAGES/gteq.gif"> <I>A</I>(<I>i</I>, 1) for all <I>i</I> <IMG SRC="../IMAGES/gteq.gif"> 1. In particular, <I>A</I>(4, <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>m</I></FONT>/<I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>) <IMG SRC="../IMAGES/gteq.gif"> <I>A</I>(4, 1). But we also have that<P>
+<img src="453_a.gif"><P>
+which is far greater than the estimated number of atoms in the observable universe (roughly 10<SUP>80</SUP>). It is only for impractically large values of <I>n</I> that <I>A</I>(4, 1) <IMG SRC="../IMAGES/lteq12.gif"> 1g <I>n</I>, and thus <IMG SRC="../IMAGES/alpha12.gif">(<I>m, n</I>) <IMG SRC="../IMAGES/lteq12.gif"> 4 for all practical purposes. Note that the <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) bound is only slightly weaker than the <I>O</I>(<I>m </I><IMG SRC="../IMAGES/alpha12.gif">(<I>m, n</I>)) bound; 1g<SUP>*</SUP>65536 = 4 and 1g<SUP>*</SUP> 2<SUP>65536</SUP> = 5, so 1g<SUP>*</SUP> <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> 5 for all practical purposes.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Properties of ranks</h2><P>
+<a name="0898_170b"><a name="0898_170c">In the remainder of this section, we prove an <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) bound on the running time of the disjoint-set operations with union by rank and path compression. In order to prove this bound, we first prove some simple properties of ranks.<P>
+<a name="0898_170e">Lemma 22.2<a name="0898_170e"><P>
+For all nodes <I>x</I>, we have <I>rank</I>[<I>x</I>] <IMG SRC="../IMAGES/lteq12.gif"> <I>rank</I>[<I>p</I>[<I>x</I>]], with strict inequality if <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>p</I>[<I>x</I>]. The value of <I>rank</I>[<I>x</I>] is initially 0 and increases through time until <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>p</I>[<I>x</I>]; from then on, <I>rank</I>[<I>x</I>] does not change. The value of <I>rank</I>[<I>p</I>[<I>x</I>]] is a monotonically increasing function of time.<P>
+<I><B>Proof     </I></B>The proof is a straightforward induction on the number of operations, using the implementations of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> that appear in Section 22.3. We leave it as Exercise 22.4-1.      <P>
+<a name="0898_170d">We define size(<I>x</I>) to be the number of nodes in the tree rooted at node <I>x</I>, including node <I>x</I> itself.<P>
+<a name="0898_170f">Lemma 22.3<a name="0898_170f"><P>
+For all tree roots <I>x</I>, size(<I>x</I>) <IMG SRC="../IMAGES/gteq.gif"> 2<I><SUP>rank</I>[<I>x</I>]</SUP>.<P>
+<I><B>Proof     </I></B>The proof is by induction on the number of <FONT FACE="Courier New" SIZE=2>LINK</FONT> operations. Note that <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations change neither the rank of a tree root nor the size of its tree.<P>
+<I>Basis:</I> The lemma is true before the first <FONT FACE="Courier New" SIZE=2>LINK</FONT>, since ranks are initially 0 and each tree contains at least one node.<P>
+<I>Inductive step:</I> Assume that the lemma holds before performing the operation <FONT FACE="Courier New" SIZE=2>LINK</FONT>(<I>x, y</I>). Let <I>rank</I> denote the rank just before the <FONT FACE="Courier New" SIZE=2>LINK</FONT>, and let <I>rank</I>' denote the rank just after the <FONT FACE="Courier New" SIZE=2>LINK</FONT>. Define size and size' similarly.<P>
+If <I>rank</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>rank</I>[<I>y</I>], assume without loss of generality that <I>rank</I>[<I>x</I>] &lt; <I>rank</I>[<I>y</I>]. Node <I>y</I> is the root of the tree formed by the <FONT FACE="Courier New" SIZE=2>LINK</FONT> operation, and<P>
+<pre>size'(<I>y</I>)  =  size(<I>x</I>) + size(<I>y</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  2<I><SUP>rank</I>[<I>x</I>]</SUP> + 2<I><SUP>rank</I>[<I>y</I>]</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  2<I><SUP>rank</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>=  2<I><SUP>rank</I></SUP>'[<I>y</I>]<SUP>.</sub></sup></pre><P>
+No ranks or sizes change for any nodes other than <I>y</I>.<P>
+If <I>rank</I>[<I>x</I>] = <I>rank</I>[<I>y</I>], node <I>y</I> is again the root of the new tree, and<P>
+<pre>size'(<I>y</I>)  =  size(<I>x</I>) + size(<I>y</I>)</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/gteq.gif">  2<I><SUP>rank</I>[<I>x</I>]</SUP> + 2<I><SUP>rank</I>[<I>y</I>]</sub></sup></pre><P>
+<pre>=  2<I><SUP>rank</I>[<I>y</I>]+ 1</sub></sup></pre><P>
+<pre>=  2<I><SUP>rank</I></SUP>'[<I>y</I>]<SUP> .      </sub></sup></pre><P>
+<a name="0898_1710">Lemma 22.4<a name="0898_1710"><P>
+For any integer <I>r</I> <IMG SRC="../IMAGES/gteq.gif"> 0, there are at most <I>n</I>/2<I><SUP>r</I></SUP> nodes of rank <I>r</I>.<P>
+<I><B>Proof     </I></B>Fix a particular value of <I>r</I>. Suppose that when we assign a rank <I>r </I>to a node <I>x</I> (in line 2 of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> or in line 5 of <FONT FACE="Courier New" SIZE=2>LINK</FONT>), we attach a label <I>x</I> to each node in the tree rooted at <I>x</I>. By Lemma 22.3, at least 2<I><SUP>r </I></SUP>nodes are labeled each time. Suppose that the root of the tree containing node <I>x</I> changes. Lemma 22.2 assures us that the rank of the new root (or, in fact, of any proper ancestor of <I>x</I>) is at least <I>r</I> + 1. Since we assign labels only when a root is assigned a rank <I>r</I>, no node in this new tree will ever again be labeled. Thus, each node is labeled at most once, when its root is first assigned rank <I>r</I>. Since there are <I>n</I> nodes, there are at most <I>n</I> labeled nodes, with at least 2<I><SUP>r</I></SUP> labels assigned for each node of rank <I>r</I>. If there were more than <I>n</I>/2<I><SUP>r</I></SUP> nodes of rank <I>r</I>, then more than 2<I><SUP>r</I></SUP>. (<I>n</I>/2<I><SUP>r</I></SUP>) = <I>n</I> nodes would be labeled by a node of rank <I>r</I>, which is a contradiction. Therefore, at most <I>n</I>/2<I><SUP>r</I></SUP> nodes are ever assigned rank <I>r</I>.      <P>
+<a name="0898_1711">Corollary 22.5<a name="0898_1711"><P>
+Every node has rank at most <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>.<P>
+<I><B>Proof     </I></B>If we let <I>r</I> &gt; 1g <I>n</I>, then there are at most <I>n</I>/2<I><SUP>r</I></SUP> &lt; 1 nodes of rank <I>r</I>. Since ranks are natural numbers, the corollary follows.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Proving the time bound</h2><P>
+<a name="0899_170e"><a name="0899_170f"><a name="0899_1710"><a name="0899_1711">We shall use the aggregate method of amortized analysis (see Section 18.1) to prove the <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) time bound. In performing the amortized analysis, it is convenient to assume that we invoke the LINK operation rather than the UNION operation. That is, since the parameters of the LINK procedure are pointers to two roots, we assume that the appropriate FIND-SET operations are performed if necessary. The following lemma shows that even if we count the extra FIND-SET operations, the asymptotic running time remains unchanged.<P>
+<a name="0899_1712">Lemma 22.6<a name="0899_1712"><P>
+Suppose we convert a sequence <I>S</I>' of <I>m</I>' <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations into a sequence <I>S</I> of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>LINK</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations by turning each <FONT FACE="Courier New" SIZE=2>UNION</FONT> into two <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations followed by a <FONT FACE="Courier New" SIZE=2>LINK</FONT>. Then, if sequence <I>S</I> runs in <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) time, sequence <I>S</I>' runs in <I>O</I>(<I>m</I>' 1g<SUP>*</SUP> <I>n</I>) time.<P>
+<I><B>Proof     </I></B>Since each <FONT FACE="Courier New" SIZE=2>UNION</FONT> operation in sequence <I>S</I>' is converted into three operations in <I>S</I>, we have <I>m</I>'<I> <IMG SRC="../IMAGES/lteq12.gif"> </I>m<I> <IMG SRC="../IMAGES/lteq12.gif"> 3</I>m<I>'</I>. Since <I>m</I> = <I>O</I>(<I>m</I>'), an <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) time bound for the converted sequence <I>S</I> implies an <I>O</I>(<I>m</I>' 1g<SUP>*</SUP> <I>n</I>) time bound for the original sequence <I>S</I>'.      <P>
+In the remainder of this section, we shall assume that the initial sequence of <I>m</I>' <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations has been converted to a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>LINK</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations. We now prove an <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>) time bound for the converted sequence and appeal to Lemma 22.6 to prove the <I>O</I>(<I>m</I><I>'</I> 1g<SUP>*</SUP> <I>n</I>) running time of the original sequence of <I>m</I>' operations.<P>
+<a name="0899_1713">Theorem 22.7<a name="0899_1713"><P>
+A sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>LINK</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, can be performed on a disjoint-set forest with union by rank and path compression in worst-case time <I>O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>).<P>
+<I><B>Proof     </I></B>We assess <I><B>charges</I></B> corresponding to the actual cost of each set operation and compute the total number of charges assessed once the entire sequence of set operations has been performed. This total then gives us the actual cost of all the set operations.<P>
+The charges assessed to the <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <FONT FACE="Courier New" SIZE=2>LINK</FONT> operations are simple: one charge per operation. Since these operations each take <I>O</I>(1) actual time, the charges assessed equal the actual costs of the operations.<P>
+Before discussing charges assessed to the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, we partition node ranks into <I><B>blocks</I></B> by putting rank <I>r</I> into block 1g<SUP>*</SUP> <I>r</I> for <I>r</I> = 0, 1, . . . , <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>. (Recall that <FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>1g <I>n</I><FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> is the maximum rank.) The highest-numbered block is therefore block 1g<SUP>*</SUP>(1g <I>n</I>) = 1g<SUP>*</SUP> <I>n</I> - 1. For notational convenience, we define for integers <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> -1,<P>
+<img src="455_a.gif"><P>
+Then, for <I>j</I> = 0, 1, . . . , lg<SUP>*</SUP> <I>n</I> - 1, the <I>j</I>th block consists of the set of ranks<P>
+<pre>{<I>B</I>(<I>j</I> - 1) + 1, <I>B</I>(<I>j</I> - 1) + 2, . . . , <I>B</I>(<I>j</I>)} .</sub></sup></pre><P>
+We use two types of charges for a <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation: <I><B>block charges </I></B>and <I><B>path charges</I></B>. Suppose that the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> starts at node <I>x</I><SUB>0</SUB> and that the find path consists of nodes <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . . , <I>x<SUB>l</I></SUB>, where for <I>i</I> = 1, 2, . . . , <I>l</I>, node <I>x<SUB>i </I></SUB>is <I>p</I>[<I>x<SUB>i</I>-1</SUB>] and <I>x<SUB>l</I></SUB> (a root) is <I>p</I>[<I>x<SUB>l</I></SUB>]. For <I>j</I> = 0, 1, . . . , lg<SUP>*</SUP> <I>n</I> - 1, we assess one block charge to the <I>last</I> node with rank in block <I>j</I> on the path. (Note that Lemma 22.2 implies that on any find path, the nodes with ranks in a given block are consecutive.) We also assess one block charge to the child of the root, that is, to <I>x<SUB>l</I></SUB>-<I>1. </I>Because ranks strictly increase along any find path, an equivalent formulation assesses one block charge to each node <I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> such that <I>p</I>[<I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>] = <I>x<SUB><FONT FACE="Courier New" SIZE=2>l</I></FONT></SUB> (<I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> is the root or its child) or 1g<SUP>*</SUP> <I>rank</I>[<I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>] &lt; 1g<SUP>*</SUP> <I>rank</I>[<I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I>+1</FONT></SUB>](the block of <I>x<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>'s rank differs from that of its parent). At each node on the find path for which we do not assess a block charge, we assess one path charge.<P>
+Once a node other than the root or its child is assessed block charges, it will never again be assessed path charges. To see why, observe that each time path compression occurs, the rank of a node <I>x<SUB>i</I></SUB> for which <I>p</I>[<I>x<SUB>i</I></SUB>] <IMG SRC="../IMAGES/noteq.gif"> <I>x<SUB>l</I> </SUB>remains the same, but the new parent of <I>x<SUB>i</I></SUB> has a rank strictly greater than that of <I>x<SUB>i</I></SUB>'s old parent. The difference between the ranks of <I>x<SUB>i</I></SUB> and its parent is a monotonically increasing function of time. Thus, the difference between 1g<SUP>*</SUP> <I>rank</I>[<I>p</I>[<I>x<SUB>i</I></SUB>]] and 1g<SUP>*</SUP> <I>rank</I>[<I>x<SUB>i</I></SUB>] is also a monotonically increasing function of time. Once <I>x<SUB>i</I></SUB> and its parent have ranks in different blocks, they will always have ranks in different blocks, and so <I>x<SUB>i</I></SUB> will never again be assessed a path charge.<P>
+Since we have charged once for each node visited in each <FONT FACE="Courier New" SIZE=2>FIND</FONT>-S<FONT FACE="Courier New" SIZE=2>ET </FONT>operation, the total number of charges assessed is the total number of nodes visited in all the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations; this total represents the actual cost of all the <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations. We wish to show that this total is<I> O</I>(<I>m</I> 1g<SUP>*</SUP> <I>n</I>).<P>
+The number of block charges is easy to bound. There is at most one block charge assessed for each block number on the given find path, plus one block charge for the child of the root. Since block numbers range from 0 to 1g<SUP>*</SUP> <I>n</I> - 1, there are at most 1g<SUP>*</SUP> <I>n</I> + 1 block charges assessed for each <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operation. Thus, there are at most <I>m</I>(1g<SUP>*</SUP> <I>n</I> + 1) block charges assessed over all <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations.<P>
+Bounding the path charges is a little trickier. We start by observing that if a node <I>x<SUB>i</I></SUB> is assessed a path charge, then <I>p</I>[<I>x<SUB>i</I></SUB>] <IMG SRC="../IMAGES/noteq.gif"> <I>x<SUB>l</I></SUB> before path compression, so that <I>x<SUB>i</I></SUB> will be assigned a new parent during path compression. Moreover, as we have observed, <I>x<SUB>i</I></SUB>'s new parent has a higher rank than its old parent. Suppose that node <I>x<SUB>i</I></SUB>'s rank is in block <I>j</I>. How many times can <I>x<SUB>i</I></SUB> be assigned a new parent, and thus assessed a path charge, before <I>x<SUB>i</I></SUB>is assigned a parent whose rank is in a different block (after which <I>x<SUB>i</I></SUB> will never again be assessed a path charge)? This number of times is maximized if <I>x<SUB>i</I></SUB> has the lowest rank in its block, namely <I>B</I>(<I>j</I> - 1) + 1, and its parents' ranks successively take on the values <I>B</I>(<I>j</I> - 1) + 2, <I>B</I>(<I>j</I> - 1) + 3, . . . , <I>B</I>(<I>j</I>). Since there are <I>B</I>(<I>j</I>) - <I>B</I>(<I>j</I> - 1) - 1 such ranks, we conclude that a vertex can be assessed at most <I>B</I>(<I>j</I>) - <I>B</I>(<I>j </I>- 1) - 1 path charges while its rank is in block <I>j</I>.<P>
+Our next step in bounding the path charges is to bound the number of nodes that have ranks in block <I>j</I> for integers <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 0. (Recall that by Lemma 22.2, the rank of a node is fixed once it becomes a child of another node.) Let the number of nodes whose ranks are in block <I>j</I> be denoted by <I>N</I>(<I>j</I>). Then, by Lemma 22.4,<P>
+<img src="457_a.gif"><P>
+For <I>j</I> = 0, this sum evaluates to<P>
+<pre><I>N</I>(0)  =  <I>n</I>/2<SUP>0</SUP> + <I>n</I>/2<SUP>1</sub></sup></pre><P>
+<pre>=  3<I>n</I>/2</sub></sup></pre><P>
+<pre>=  3<I>n</I>/2<I>B</I>(0).</sub></sup></pre><P>
+For <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 1, we have<P>
+<img src="457_b.gif"><P>
+Thus, <I>N</I>(<I>j</I>) <IMG SRC="../IMAGES/lteq12.gif"> 3<I>n</I>/2<I>B</I>(<I>j</I>) for all integers <I>j</I> <IMG SRC="../IMAGES/gteq.gif"> 0.<P>
+We finish bounding the path charges by summing over all blocks the product of the maximum number of nodes with ranks in the block and the maximum number of path charges per node of that block. Denoting by P(<I>n</I>) the overall number of path charges, we have<P>
+<img src="457_c.gif"><P>
+Thus, the total number of charges incurred by <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations is <I>O</I>(<I>m</I>(1g* <I>n</I> + 1) + <I>n</I> 1g* <I>n</I>), which is <I>O</I>(<I>m</I> 1g* <I>n</I>) since <I>m</I> <IMG SRC="../IMAGES/gteq.gif"> <I>n</I>. Since there are <I>O</I>(<I>n</I>) <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> and <FONT FACE="Courier New" SIZE=2>LINK</FONT> operations, with one charge each, the total time is <I>O</I>(<I>m</I> 1g* <I>n</I>).      <P>
+<a name="0899_1714">Corollary 22.8<a name="0899_1714"><P>
+A sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT>, <FONT FACE="Courier New" SIZE=2>UNION</FONT>, and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> operations, can be performed on a disjoint-set forest with union by rank and path compression in worst-case time <I>O</I>(<I>m</I> 1g* <I>n</I>).<P>
+<I><B>Proof     </I></B>Immediate from Theorem 22.7 and Lemma 22.6.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="089a_0001">Exercises<a name="089a_0001"></h2><P>
+<a name="089a_0002">22.4-1<a name="089a_0002"><P>
+Prove Lemma 22.2.<P>
+<a name="089a_0003">22.4-2<a name="089a_0003"><P>
+For each node <I>x</I>, how many bits are necessary to store size(<I>x</I>)? How about <I>rank</I>[<I>x</I>]?<P>
+<a name="089a_0004">22.4-3<a name="089a_0004"><P>
+Using Lemma 22.2 and Corollary 22.5, give a simple proof that operations on a disjoint-set forest with union by rank but without path compression run in <I>O</I>(<I>m </I>1g<I> n</I>) time.<P>
+<a name="089a_0005">22.4-4<a name="089a_0005"><P>
+Suppose we modify the rule about assessing charges so that we assess one block charge to the last node on the find path whose rank is in block <I>j</I> for <I>j</I> = 0, 1, . . . , 1g* <I>n</I> - 1. Otherwise, we assess one path charge to the node. Thus, if a node is a child of the root and is not the last node of a block, it is assessed a path charge, not a block charge. Show that <IMG SRC="../IMAGES/omega12.gif">(<I>m</I>) path charges could be assessed a given node while its rank is in a given block <I>j</I>.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="089b_1721">Problems<a name="089b_1721"></h1><P>
+<a name="089b_1722">22-1     Off-line minimum<a name="089b_1722"><P>
+<a name="089b_1712"><a name="089b_1713"><a name="089b_1714">The <I><B>off-line minimum problem</I></B> asks us to maintain a dynamic set <I>T</I> of elements from the domain {1, 2, . . . ,<I>n</I>} under the operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>. We are given a sequence <I>S</I> of <I>n</I> <FONT FACE="Courier New" SIZE=2>INSERT</FONT> and <I>m</I> <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> calls, where each key in {1, 2, . . . , <I>n</I>} is inserted exactly once. We wish to determine which key is returned by each <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-M<FONT FACE="Courier New" SIZE=2>IN </FONT>call. Specifically, we wish to fill in an array <I>extracted</I>[1 . . <I>m</I>], where for <I>i</I> = 1, 2, . . . , <I>m</I>, <I>extracted</I>[<I>i</I>] is the key returned by the <I>i</I>th <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> call. The problem is "off-line" in the sense that we are allowed to process the entire sequence <I>S</I> before determining any of the returned keys.<P>
+<I><B>a.</I></B>     In the following instance of the off-line minimum problem, each <FONT FACE="Courier New" SIZE=2>INSERT</FONT> is represented by a number and each <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> is represented by the letter E:<P>
+<pre>4, 8, E, 3, E, 9, 2, 6, E, E, E, 1, 7, E, 5.</sub></sup></pre><P>
+Fill in the correct values in the <I>extracted</I> array.<P>
+To develop an algorithm for this problem, we break the sequence<I> S</I> into homogeneous subsequences. That is, we represent <I>S</I> by<P>
+<pre>I<SUB>1</SUB>,E,I<SUB>2</SUB>,E,I<SUB>3</SUB>,...,I<SUB>m</SUB>,E,I<SUB>m+1 </SUB>,</sub></sup></pre><P>
+where each E represents a single <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT> call and each I<I>j</I> represents a (possibly empty) sequence of <FONT FACE="Courier New" SIZE=2>INSERT</FONT> calls. For each subsequence I<I>j</I>, we initially place the keys inserted by these operations into a set <I>Kj</I>, which is empty if I<I>j</I> is empty. We then do the following.<P>
+<pre><a name="089b_1715">OFF-LINE-MINIMUM(<I>m,n</I>)</sub></sup></pre><P>
+<pre>1  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>n</I></sub></sup></pre><P>
+<pre>2       <B>do</B> determine <I>j</I> such that <I>i </I><IMG SRC="../IMAGES/memof12.gif"> <I>Kj</I></sub></sup></pre><P>
+<pre>3          <B>if</B> <I>j</I> <IMG SRC="../IMAGES/noteq.gif"> <I>m </I>+ 1</sub></sup></pre><P>
+<pre>4             <B>then</B> extracted[<I>j</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>i</I></sub></sup></pre><P>
+<pre>5                 let <I>l</I> be the smallest value greater than <I>j</I></sub></sup></pre><P>
+<pre>for which set <I>K<SUB>l</I></SUB> exists </sub></sup></pre><P>
+<pre>6                 <I>K<SUB>l</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>Kj</I> <IMG SRC="../IMAGES/wideu.gif"> <I>K<SUB>l</I></SUB>, destroying <I>K<SUB>j</I></sub></sup></pre><P>
+<pre>7  <B>return</B> <I>extracted</I></sub></sup></pre><P>
+<I><B>b.</I></B>     Argue that the array <I>extracted</I> returned by <FONT FACE="Courier New" SIZE=2>OFF</FONT>-<FONT FACE="Courier New" SIZE=2>LINE</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> is correct.<P>
+<I><B>c.</I></B>     Describe how to use a disjoint-set data structure to implement <FONT FACE="Courier New" SIZE=2>OFF</FONT>-<FONT FACE="Courier New" SIZE=2>LINE</FONT>-<FONT FACE="Courier New" SIZE=2>MINIMUM</FONT> efficiently. Give a tight bound on the worst-case running time of your implementation.<P>
+<a name="089b_1723">22-2     Depth determination<a name="089b_1723"><P>
+<a name="089b_1716"><a name="089b_1717">In the <I><B>depth-determination problem,</I></B> we maintain a forest <I>F</I> = {<I>T<SUB>i</I></SUB>} of rooted trees under three operations:<P>
+<a name="089b_1718"><FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>TREE</FONT>(<I>v</I>)     creates a tree whose only node is <I>v</I>.<P>
+<a name="089b_1719"><FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>DEPTH</FONT>(<I>v</I>)     returns the depth of node <I>v</I> within its tree.<P>
+<a name="089b_171a"><FONT FACE="Courier New" SIZE=2>GRAFT</FONT>(<I>r</I>, <I>v</I>)     makes node <I>r</I>, which is assumed to be the root of a tree, become the child of node <I>v</I>, which is assumed to be in a different tree than <I>r</I> but may or may not itself be a root.<P>
+<I><B>a.     </I></B>Suppose that we use a tree representation similar to a disjoint-set forest: <I>p</I>[<I>v</I>] is the parent of node <I>v</I>, except that <I>p</I>[<I>v</I>] = <I>v</I> if <I>v</I> is a root. If we implement <FONT FACE="Courier New" SIZE=2>GRAFT</FONT>(<I>r</I>, <I>v</I>) by setting <I>p</I>[<I>r</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>v</I> and <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>DEPTH</FONT>(<I>v</I>) by following the find path up to the root, returning a count of all nodes other than <I>v</I> encountered, show that the worst-case running time of a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>TREE</FONT>, <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>DEPTH</FONT>, and <FONT FACE="Courier New" SIZE=2>GRAFT</FONT> operations is <IMG SRC="../IMAGES/bound.gif">(<I>m</I><SUP>2</SUP>).<P>
+By using the union-by-rank and path-compression heuristics, we can reduce the worst-case running time. We use the disjoint-set forest <I>S</I> = {<I>S<SUB>i</I></SUB>}, where each set <I>S<SUB>i</I></SUB> (which is itself a tree) corresponds to a tree <I>T<SUB>i</I></SUB> in the forest <I>F</I>. The tree structure within a set <I>S<SUB>i</I></SUB>, however, does not necessarily correspond to that of <I>T<SUB>i</I></SUB>. In fact, the implementation of <I>S<SUB>i</I></SUB> does not record the exact parent-child relationships but nevertheless allows us to determine any node's depth in <I>T<SUB>i</I></SUB>.<P>
+The key idea is to maintain in each node <I>v</I> a "pseudodistance" <I>d</I>[<I>v</I>],which is defined so that the sum of the pseudodistances along the path from <I>v</I> to the root of its set <I>S<SUB>i</I> </SUB>equals the depth of <I>v</I> in <I>T<SUB>i</I></SUB>. That is, if the path from <I>v</I> to its root in <I>S<SUB>i</I></SUB> is <I>v</I><SUB>0</SUB>, <I>v</I><SUB>1</SUB>, . . . ,<I>v<SUB>k</I></SUB>, where <I>v</I><SUB>0</SUB> = <I>v</I> and <I>v<SUB>k</I></SUB> is <I>S<SUB>i</I></SUB>'s root, then the depth of <I>v</I> in <img src="460_a.gif"><P>
+<I><B>b</I>.</B>     Give an implementation of <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>TREE</FONT>.<P>
+<I><B>c</I>.</B>     Show how to modify <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>SET</FONT> to implement <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>DEPTH</FONT>. Your implementation should perform path compression, and its running time should be linear in the length of the find path. Make sure that your implementation updates pseudodistances correctly.<P>
+<I><B>d</I>.</B>     Show how to modify the <FONT FACE="Courier New" SIZE=2>UNION</FONT> and <FONT FACE="Courier New" SIZE=2>LINK</FONT> procedures to implement <FONT FACE="Courier New" SIZE=2>GRAFT</FONT> (<I>r, v</I>), which combines the sets containing <I>r</I> and <I>v</I>. Make sure that your implementation updates pseudodistances correctly. Note that the root of a set <I>S<SUB>i</I></SUB> is not necessarily the root of the corresponding tree <I>T<SUB>i</I></SUB>.<P>
+<I><B>e</I>.     </B>Give a tight bound on the worst-case running time of a sequence of <I>m</I> <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-T<FONT FACE="Courier New" SIZE=2>REE,</FONT> <FONT FACE="Courier New" SIZE=2>FIND</FONT>-<FONT FACE="Courier New" SIZE=2>DEPTH</FONT>, and <FONT FACE="Courier New" SIZE=2>GRAFT</FONT> operations, <I>n</I> of which are <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>TREE</FONT> operations.<P>
+<a name="089b_1724">22-3     Tarjan's off-line least-common-ancestors algorithm<a name="089b_1724"><P>
+<a name="089b_171b"><a name="089b_171c"><a name="089b_171d"><a name="089b_171e"><a name="089b_171f">The <I><B>least common ancestor</I></B> of two nodes <I>u</I> and <I>v</I> in a rooted tree <I>T</I> is the node <I>w</I> that is an ancestor of both <I>u</I> and <I>v</I> and that has the greatest depth in <I>T</I>. In the <I><B>off-line least-common-ancestors problem</I></B>, we are given a rooted tree <I>T</I> and an arbitrary set <I>P</I> = {{<I>u, v</I>}} of unordered pairs of nodes in <I>T</I>, and we wish to determine the least common ancestor of each pair in <I>P</I>.<P>
+To solve the off-line least-common-ancestors problem, the following procedure performs a tree walk of <I>T</I> with the initial call LCA(<I>root</I>[<I>T</I>])<I>. </I>Each node is assumed to be colored <FONT FACE="Courier New" SIZE=2>WHITE</FONT> prior to the walk.<P>
+<pre><a name="089b_1720">LCA(<I>u</I>)</sub></sup></pre><P>
+<pre>1  MAKE-SET(<I>u</I>)</sub></sup></pre><P>
+<pre>2  <I>ancestor</I>[FIND-SET(<I>u</I>)] <IMG SRC="../IMAGES/arrlt12.gif"> <I>u</I></sub></sup></pre><P>
+<pre>3  <B>for</B> each child <I>v</I> of <I>u</I> in <I>T</I></sub></sup></pre><P>
+<pre>4       <B>do</B> LCA(<I>v</I>)</sub></sup></pre><P>
+<pre>5          UNION(<I>u,v</I>)</sub></sup></pre><P>
+<pre>6          <I>ancestor</I>[FIND-SET(<I>u</I>)] <IMG SRC="../IMAGES/arrlt12.gif"> <I>u</I></sub></sup></pre><P>
+<pre>7  <I>color</I>[<I>u</I>] <IMG SRC="../IMAGES/arrlt12.gif"> BLACK</sub></sup></pre><P>
+<pre>8  <B>for</B> each node <I>v</I> such that {<I>u,v</I>} <IMG SRC="../IMAGES/memof12.gif"> <I>P</I></sub></sup></pre><P>
+<pre>9       <B>do if</B> <I>color</I>[<I>v</I>] = BLACK</sub></sup></pre><P>
+<pre>10             <B>then</B> print &quot;The least common ancestor of&quot;</sub></sup></pre><P>
+<pre><I>u</I> &quot;and&quot; <I>v </I>&quot;is&quot; <I>ancestor</I> [FIND-SET(<I>v</I>)]</sub></sup></pre><P>
+<I><B>a</I>.</B>     Argue that line 10 is executed exactly once for each pair {<I>u</I>, <I>v</I>} <IMG SRC="../IMAGES/memof12.gif"> <I>P.</I><P>
+<I><B>b</I>.     </B>Argue that at the time of the call LCA (<I>u</I>), the number of sets in the disjoint-set data structure is equal to the depth of <I>u</I> in <I>T</I>.<P>
+<I><B>c</I>.     </B>Prove that LCA correctly prints the least common ancestor of <I>u</I> and <I>v</I> for each pair {<I>u ,v</I>} <IMG SRC="../IMAGES/memof12.gif"> <I>P</I>.<P>
+<I><B>d</I>.     </B>Analyze the running time of LCA, assuming that we use the implementation of the disjoint-set data structure in Section 22.3.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+<a name="089c_1721"><a name="089c_1722"><a name="089c_1723">Many of the important results for disjoint-set data struckltures are due at least in part to R. E. Tarjan. The upper bound of <I>O</I>(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif">(<I>m,n</I>)) was first given by Tarjan[186, 188]. The <I>O</I>(<I>m </I>1g* <I>n</I>) upper bound was proven earlier by Hopcroft and Ullman[4, 103]. Tarjan and van Leeuwen [190] discuss variants on the path-compression heuristic, including "one-pass methods," which sometimes offer better constant factors in their performance than do two-pass methods. Gabow and Tarjan [76] show that in certain applications, the disjoint-set operations can be made to run in <I>O</I>(<I>m</I>) time.<P>
+Tarjan [187] showed that a lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"> (<I>m, n</I>)) time is required for operations on any disjoint-set data structure satisfying certain technical conditions. This lower bound was later generalized by Fredman and Saks [74], who showed that in the worst case, <IMG SRC="../IMAGES/omega12.gif">(<I>m</I> <IMG SRC="../IMAGES/alpha12.gif"> (<I>m, n</I>)) (1g <I>n</I>)-bit words of memory must be accessed.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="partvi.htm">Part VI</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

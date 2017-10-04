@@ -1,0 +1,20 @@
+#include <iostream>
+using namespace std;
+long long ch[100000],tek;
+char zn[100000];
+bool b=true;
+int i;
+int main(){
+    for (i=0;b;++i){
+        cin>>zn[i]>>ch[i];
+        if (zn[i]=='='){b=false;}
+    }
+    for (int j=i-1;j>=0;--j){
+        if (zn[j]=='='){tek=ch[j];}
+        if (zn[j]=='+'){tek-=ch[j];}
+        if (zn[j]=='-'){tek+=ch[j];}
+        if (zn[j]=='*'){tek/=ch[j];}
+    }
+    cout<<tek<<endl;
+return 0;
+}

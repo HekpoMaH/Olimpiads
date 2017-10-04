@@ -1,0 +1,484 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 35: COMPUTATIONAL GEOMETRY</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap36.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap34.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+<h1><a name="09df_1c10">CHAPTER 35: COMPUTATIONAL GEOMETRY<a name="09df_1c10"></h1><P>
+<a name="09df_1c0e"><a name="09df_1c0f">Computational geometry is the branch of computer science that studies algorithms for solving geometric problems. In modern engineering and mathematics, computational geometry has applications in, among other fields, computer graphics, robotics, VLSI design, computer-aided design, and statistics. The input to a computational-geometry problem is typically a description of a set of geometric objects, such as a set of points, a set of line segments, or the vertices of a polygon in counterclockwise order. The output is often a response to a query about the objects, such as whether any of the lines intersect, or perhaps a new geometric object, such as the convex hull (smallest enclosing convex polygon) of the set of points.<P>
+In this chapter, we look at a few computational-geometry algorithms in two dimensions, that is, in the plane. Each input object is represented as a set of points {<I>p<SUB>i</I></SUB>}, where each <I>p<SUB>i</I></SUB> = (<I>x<SUB>i</SUB>, y<SUB>i</I></SUB>) and <I>x<SUB>i</SUB>, y<SUB>i</I></SUB> <IMG SRC="../IMAGES/memof12.gif"> <B>R</B>. For example, an <I>n</I>-vertex polygon <I>P </I>is represented by a sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>0</SUB>,<I> p</I><SUB>1</SUB>,<I> p</I><SUB>2</SUB>,<I> . . . </I>,<I> p<SUB>n</I>-1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"><SUB></SUB> of its vertices in order of their appearance on the boundary of <I>P</I>. Computational geometry can also be performed in three dimensions, and even in higher- dimensional spaces, but such problems and their solutions can be very difficult to visualize. Even in two dimensions, however, we can see a good sample of computational-geometry techniques.<P>
+Section 35.1 shows how to answer simple questions about line segments efficiently and accurately: whether one segment is clockwise or counterclockwise from another that shares an endpoint, which way we turn when traversing two adjoining line segments, and whether two line segments intersect. Section 35.2 presents a technique called &quot;sweeping&quot; that we use to develop an <I>O</I>(<I>n </I>l<I>g n</I>)-time algorithm for determining whether there are any intersections among a set of <I>n</I> line segments. Section 35.3 gives two &quot;rotational-sweep&quot; algorithms that compute the convex hull (smallest enclosing convex polygon) of a set of <I>n</I> points: Graham's scan, which runs in time <I>O</I>(<I>n</I> 1g <I>n</I>), and Jarvis's march, which takes <I>O</I>(<I>nh</I>) time, where <I>h</I> is the number of vertices of the convex hull. Finally, Section 35.4 gives an <I>O</I>(<I>n</I> 1g <I>n</I>)-time divide-and-conquer algorithm for finding the closest pair of points in a set of <I>n</I> points in the plane.<P>
+
+
+
+
+
+<h1><a name="09e1_1c16">35.1 Line-segment properties<a name="09e1_1c16"></h1><P>
+<a name="09e1_1c10"><a name="09e1_1c11"><a name="09e1_1c12"><a name="09e1_1c13"><a name="09e1_1c14"><a name="09e1_1c15">Several of the computational-geometry algorithms in this chapter will require answers to questions about the properties of line segments. A <I><B>convex combination</I></B> of two distinct points <I>p</I><SUB>1</SUB> = (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>) and <I>p</I><SUB>2</SUB> = (<I>x</I><SUB>2</SUB>, <I>y</I><SUB>2</SUB>) is any point <I>p</I><SUB>3</SUB> = (<I>x</I><SUB>3</SUB>, <I>y</I><SUB>3</SUB>) such that for some <IMG SRC="../IMAGES/alpha12.gif"> in the range 0 <IMG SRC="../IMAGES/lteq12.gif"> <IMG SRC="../IMAGES/alpha12.gif"> <IMG SRC="../IMAGES/lteq12.gif"> 1, we have <I>x</I><SUB>3</SUB> = <I>ax</I><SUB>1</SUB> + (1 - <IMG SRC="../IMAGES/alpha12.gif">)<I>x</I><SUB>2</SUB> and <I>y</I><SUB>3</SUB> = <IMG SRC="../IMAGES/alpha12.gif"> <I>y</I><SUB>1</SUB> + (1 - <IMG SRC="../IMAGES/alpha12.gif">)<I>y</I><SUB>2.</SUB> We also write that <I>p</I><SUB>3</SUB> = <IMG SRC="../IMAGES/alpha12.gif"><I>p</I><SUB>1</SUB> + (1 - <IMG SRC="../IMAGES/alpha12.gif">)<I>p</I><SUB>2.</SUB> Intuitively, <I>p</I><SUB>3</SUB> is any point that is on the line passing through <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> and is on or between <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> on the line. Given two distinct points <I>p</I><SUB>1</SUB> and <I>p</I>2, the <I><B>line segment</I></B> <img src="887_a.gif"> is the set of convex combinations of <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB>. We call <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> the <I><B>endpoints</I></B> of segment <img src="887_b.gif">. Sometimes the ordering of <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> matters, and we speak of the <I><B>directed segment</I></B> <img src="887_c.gif">. If p<SUB>1</SUB> is the <I><B>origin</I></B> (0, 0), then we can treat the directed segment <img src="887_d.gif"> as the <I><B>vector</I></B> <I>p</I><SUB>2</SUB>.<P>
+In this section, we shall explore the following questions:<P>
+<img src="887_e.gif"><P>
+There are no restrictions on the given points.<P>
+We can answer each question in <I>O</I>(1) time, which should come as no surprise since the input size of each question is <I>O</I>(1). Moreover, our methods will use only additions, subtractions, multiplications, and comparisons. We need neither division nor trigonometric functions, both of which can be computationally expensive and prone to problems with round-off error. For example, the &quot;straightforward&quot; method of determining whether two segments intersect--compute the line equation of the form <I>y = mx + b</I> for each segment <I>(m</I> is the slope and <I>b</I> is the <I>y</I>-intercept), find the point of intersection of the lines, and check whether this point is on both segments<FONT FACE="CG Times (W1)" SIZE=2>--</FONT>uses division to find the point of intersection. When the segments are nearly parallel, this method is very sensitive to the precision of the division operation on real computers. The method in this section, which avoids division, is much more accurate.<P>
+
+
+
+
+
+<h2>Cross products</h2><P>
+<a name="09e2_1c16"><a name="09e2_1c17"><a name="09e2_1c18"><a name="09e2_1c19">Computing cross products is at the heart of our line-segment methods. Consider vectors <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB>, shown in Figure 35.1(a). The <I><B>cross product</I></B> <I>p</I><SUB>1</SUB> <I>x</I> <I>p</I><SUB>2</SUB> can be interpreted as the signed area of the parallelogram formed by the points (0, 0), <I>p</I><SUB>1</SUB>,<I> p</I><SUB>2</SUB>, and <I>p</I><SUB>1</SUB><I> + p</I><SUB>2</SUB><I> = (x</I><SUB>1</SUB><I> + x</I><SUB>2</SUB>,<I> y</I><SUB>1</SUB><I> + y</I><SUB>2<I>)</I></SUB>. An equivalent, but more useful, definition gives the cross product as the determinant of<P>
+<img src="888_a.gif"><P>
+<h4><a name="09e2_1c1b">Figure 35.1 (a) The cross product of vectors p<SUB>1</SUB> and p<SUB>2</SUB> is the signed area of the parallelogram. (b) The lightly shaded region contains vectors that are clockwise from p. The darkly shaded region contains vectors that are counterclockwise from p.<a name="09e2_1c1b"></sub></sup></h4><P>
+a matrix:<SUP>1<P>
+<img src="888_b.gif"><P>
+<SUP>1</SUP> Actually, the cross product is a three-dimensional concept. It is a vector that is perpendicular to both <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> according to the "right-hand rule" and whose magnitude is |<I>x</I><SUB>1</SUB><I>y</I><SUB>2</SUB> - <I>x</I><SUB>2</SUB><I>y</I><SUB>1</SUB>|. In this chapter, however, it will prove convenient to treat the cross product simply as the value <I>x</I><SUB>1</SUB><I>y</I><SUB>2</SUB> - <I>x</I><SUB>2</SUB><I>y</I><SUB>1</SUB>.<P>
+<a name="09e2_1c1a">If <I>p</I><SUB>1</SUB><I> </I>X<I> p</I><SUB>2</SUB> is positive, then <I>p</I><SUB>1</SUB> is clockwise from <I>p</I><SUB>2</SUB> with respect to the origin (0, 0); if this cross product is negative, then <I>p</I><SUB>1</SUB> is counterclockwise from <I>p</I><SUB>2</SUB>. Figure 35.1(b) shows the clockwise and counterclockwise regions relative to a vector <I>p</I>. A boundary condition arises if the cross product is zero; in this case, the vectors are <I><B>collinear</I></B>, pointing in either the same or opposite directions.<P>
+To determine whether a directed segment <img src="888_c.gif"> is clockwise from a directed segment <img src="888_d.gif"> with respect to their common endpoint <I>p</I><SUB>0</SUB>, we simply translate to use <I>p</I><SUB>0</SUB> as the origin. That is, we let <I>p</I><SUB>1</SUB><I> - p</I><SUB>0</SUB> denote the vector <I>p</I><I>'</I><SUB>1</SUB><I> = (x</I>'<SUB>1</SUB>,<I> y</I>'<SUB>1</SUB><I>),</I> where <I>x</I>'<SUB>1</SUB><I> = x</I><SUB>1</SUB><I> - x</I><SUB>0</SUB> and y'<SUB>1</SUB> = y<SUB>1</SUB> - y<SUB>0</SUB>, and we define <I>p</I><SUB>2</SUB><I> - p</I><SUB>0</SUB> similarly. We then compute the cross product<P>
+<pre>(p<SUB>1</SUB> - p<SUB>0</SUB>) x (p<SUB>2</SUB> - p<SUB>0</SUB>) = (x<SUB>1 </SUB>- x<SUB>0</SUB>) (y<SUB>2</SUB> - y<SUB>0</SUB>) - (x<SUB>2</SUB> - x<SUB>0</SUB>) (y<SUB>1</SUB> - y<SUB>0</SUB>).</sub></sup></pre><P>
+If this cross product is positive, then <img src="888_e.gif"> is clockwise from <img src="888_f.gif">; if negative, it is counterclockwise.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Determining whether consecutive segments turn left or right</h2><P>
+<a name="09e3_1c1b">Our next question is whether two consecutive line segments <img src="888_g.gif"> turn left or right at point <I>p</I><SUB>l</SUB>.<I> </I>Equivalently, we want a method to determine which way a given angle <IMG SRC="../IMAGES/angle.gif"><I>p</I><SUB>0</SUB><I>p</I><SUB>1</SUB><I>p</I><SUB>2</SUB> turns. Cross products allow us to answer this question without computing the angle. As shown in Figure 35.2, we simply check whether directed segment <img src="889_e.gif"> is clockwise or counterclockwise relative to directed segment <img src="889_f.gif">. To do this, we compute the cross product (<I>p</I><SUB>2</SUB><I> - p</I><SUB>0</SUB>)<I> </I>X <I></I>(<I>p</I><SUB>1</SUB><I> - p</I><SUB>0</SUB>). If the sign of this cross product is negative, then <img src="889_g.gif"> is counterclockwise with respect to <img src="889_h.gif">, and thus we make a left turn at <I>P</I><SUB>1</SUB>. A positive cross product indicates a clockwise orientation and a right turn. A cross product of 0 means that points <I>p</I><SUB>0</SUB>,<I> p</I><SUB>1</SUB>, and <I>p</I><SUB>2</SUB><I> </I>are collinear<I>.</I><P>
+<img src="889_a.gif"><P>
+<h4><a name="09e3_1c1c">Figure 35.2 Using the cross product to determine how consecutive line segments <img src="889_b.gif">  turn at point p<SUB>1</SUB>. We check whether the directed segment <img src="889_c.gif"> is clockwise or counterclockwise relative to the directed segment <img src="889_d.gif">. (a) If counterclockwise, the points make a left turn. (b) If clockwise, they make a right turn.<a name="09e3_1c1c"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Determining whether two line segments intersect</h2><P>
+<a name="09e4_1c1c"><a name="09e4_1c1d"><a name="09e4_1c1e">We use a two-stage process to determine whether two line segments intersect. The first stage is <I><B>quick rejection</I></B>: the line segments cannot intersect if their bounding boxes do not intersect. The <I><B>bounding box</I></B> of a geometric figure is the smallest rectangle that contains the figure and whose segments are parallel to the <I>x</I>-axis and <I>y</I>-axis. The bounding box of line segment <img src="889_i.gif"> is represented by the rectangle <img src="889_j.gif"> with lower left point <img src="889_k.gif"> and upper right point <img src="889_l.gif">, where <img src="889_m.gif">. Two rectangles, represented by lower left and upper right points <img src="889_m.gif">, intersect if and only if the conjunction<P>
+<img src="889_n.gif"><P>
+is true. The rectangles must intersect in both dimensions. The first two comparisons above determine whether the rectangles intersect in <I>x;</I> the second two comparisons determine whether the rectangles intersect in <I>y</I>.<P>
+The second stage in determining whether two line segments intersect decides whether each segment &quot;straddles&quot; the line containing the other. A segment <img src="889_o.gif"> <I><B>straddles</I></B> a line if point <I>p</I><SUB>1</SUB> lies on one side of the line and point <I>p</I><SUB>2</SUB> lies on the other side. If <I>p</I><SUB>1</SUB> or <I>p</I><SUB>2</SUB> lies on the line, then we say that the segment straddles the line. Two line segments intersect if and only if they pass the quick rejection test and each segment straddles the line containing the other.<P>
+<img src="890_a.gif"><P>
+<h4><a name="09e4_1c1f">Figure 35.3 Determining whether line segment <img src="890_b.gif"> straddles the line containing segment <img src="890_c.gif">. (a) If it does straddle, then the signs of the cross products (p<SUB>3</SUB> - p<SUB>1</SUB>) x (p<SUB>2</SUB> - p<SUB>1</SUB>) and (p<SUB>4</SUB> - p<SUB>1</SUB>) x (p<SUB>2</SUB> - p<SUB>1</SUB>) differ. (b) If it does not straddle, then the signs of the cross products are the same. (c)-(d) Boundary cases in which at least one of the cross products is zero and the segment straddles. (e) A boundary case in which the segments are collinear but do not intersect. Both cross products are zero, but they would not be computed by our algorithm because the segments fail the quick rejection test--their bounding boxes do not intersect.<a name="09e4_1c1f"></sub></sup></h4><P>
+We can use the cross-product method to determine whether line segment <img src="890_d.gif"> straddles the line containing points <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB><I>.</I> The idea, as shown in Figures 35.3(a) and (b), is to determine whether directed segments <img src="890_e.gif"> and <img src="890_f.gif"> have opposite orientations relative to <img src="890_g.gif">. If so, then the segment straddles the line. Recalling that we can determine relative orientations with cross products, we just check whether the signs of the cross products (<I>p</I><SUB>3</SUB><I> - p</I><SUB>1</SUB>)<I> </I>X<I> </I>(<I>p</I><SUB>2</SUB><I> - p</I><SUB>1</SUB>) and (<I>p</I><SUB>4</SUB><I> - p</I><SUB>1</SUB>)<I> </I>X<I><SUB> </I></SUB>(<I>p</I><SUB>2</SUB><I> - p</I><SUB>1</SUB>)<I> </I>are different. A boundary condition occurs if either cross product is zero. In this case, either <I>p</I><SUB>3</SUB> or <I>p</I><SUB>4</SUB> lies on the line containing segment <img src="890_h.gif">. Because the two segments have already passed the quick rejection test, one of the points <I>p</I><SUB>3</SUB> and <I>p</I><SUB>4</SUB><I> </I>must in fact lie on segment <img src="890_i.gif">. Two such situations are shown in Figures 35.3(c) and (d). The case in which the two segments are collinear but do not intersect, shown in Figure 35.3(e), is eliminated by the quick rejection test. A final boundary condition occurs if one or both of the segments has zero length, that is, if its endpoints are coincident. If both segments have zero length, then the quick rejection test suffices. If just one segment, say <img src="890_j.gif">, has zero length, then the segments intersect if and only if the cross product (<I>p</I><SUB>3</SUB> - <I>p</I><SUB>1</SUB>) x (<I>p</I><SUB>2</SUB> - <I>p</I><SUB>1</SUB>) is zero.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Other applications of cross products</h2><P>
+Later sections of this chapter will introduce additional uses for cross products. In Section 35.3, we shall need to sort a set of points according to their polar angles with respect to a given origin. As Exercise 35.1-2 asks you to show, cross products can be used to perform the comparisons in the sorting procedure. In Section 35.2, we shall use red-black trees to maintain the vertical ordering of a set of nonintersecting line segments. Rather than keeping explicit key values, we shall replace each key comparison in the red-black tree code by a cross-product calculation to determine which of two segments that intersect a given vertical line is above the other.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09e6_1c24">Exercises<a name="09e6_1c24"></h2><P>
+<a name="09e6_1c25">35.1-1<a name="09e6_1c25"><P>
+Prove that if <I>p</I><SUB>1</SUB><I> </I>X<I> p</I><SUB>2</SUB> is positive, then vector <I>p</I><SUB>1</SUB> is clockwise from vector <I>p</I><SUB>2<FONT FACE="Times New Roman" SIZE=1> </FONT></SUB>with respect to the origin (0, 0) and that if this cross product is negative, then <I>p</I><SUB>1</SUB> is counterclockwise from <I>p</I><SUB>2</SUB>.<P>
+<a name="09e6_1c26">35.1-2<a name="09e6_1c26"><P>
+Write pseudocode to sort a sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I><FONT FACE="Courier New" SIZE=2>p</I><SUB><FONT FACE="Courier New" SIZE=1>1</FONT></SUB>,<I> <FONT FACE="Courier New" SIZE=2>p</I><SUB><FONT FACE="Courier New" SIZE=1>2</FONT></SUB>,<I> . . . . ,<FONT FACE="Courier New" SIZE=2>p<SUB>n</SUB>)</I> </FONT></FONT></FONT>of <I>n</I> points according to their polar angles with respect to a given origin point <I>p</I><SUB><FONT FACE="Courier New" SIZE=2>0</FONT></SUB>. Your procedure should take <I>0(n </I>lg <I>n</I>) time and use cross products to compare angles.<P>
+<a name="09e6_1c27">35.1-3<a name="09e6_1c27"><P>
+<a name="09e6_1c21">Show how to determine in <I>0(n</I><SUP>2<FONT FACE="Times New Roman" SIZE=1> </FONT></SUP>1g <I>n</I>) time whether any three points in a set of <I>n</I> points are collinear.<P>
+<a name="09e6_1c28">35.1-4<a name="09e6_1c28"><P>
+Professor Amundsen proposes the following method to determine whether a sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>0</SUB>,<SUB><FONT FACE="Times New Roman" SIZE=1>  </SUB><I>p</I><SUB>1</FONT></SUB>,<SUB><FONT FACE="Times New Roman" SIZE=1> . . . . </FONT></SUB>, <I>p<SUB>n-</I>1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of <I>n</I> points forms the consecutive vertices of a convex polygon. (See Section 16.4 for definitions pertaining to polygons.) Output &quot;yes&quot; if the set {<IMG SRC="../IMAGES/angle.gif"><I>p<SUB><FONT FACE="Courier New" SIZE=2>i</SUB>p<SUB>i + </I>1</SUB><I>p<SUB>i + </I>2 </FONT></SUB>:<I> i = </I>0<I>, </I>1<I>, . . . ,n - </I>1}, where subscript addition is performed modulo <I>n</I>, does not contain both left turns and right turns; otherwise, output &quot;no.&quot; Show that although this method runs in linear time, it does not always produce the correct answer. Modify the professor's method so that it always produces the correct answer in linear time.<P>
+<a name="09e6_1c29">35.1-5<a name="09e6_1c29"><P>
+Given a point <I>p</I><SUB>0</SUB><I> = </I>(<I>x</I><SUB>0</SUB><I>, y</I><SUB>0</SUB>), the <I><B>right horizontal ray</I></B> from <I>p</I><SUB>0</SUB> is the set of points { <I>p<SUB>i</SUB> = </I>(<I>x<SUB>i</SUB>, y<SUB>i</I></SUB>) :<I> x<SUB>i</SUB> </I><IMG SRC="../IMAGES/gteq.gif"><I> x</I><SUB>0</SUB> and <I>y<SUB>i</SUB> = y</I><SUB>0</SUB>}<I>, </I>that is, it is the set of points due right of <I>p</I><SUB>0</SUB> along with <I>p</I><SUB>0</SUB> itself. Show how to determine whether a given right horizontal ray from <I>p</I><SUB>0</SUB> intersects a line segment <img src="891_a.gif"> in <I>O</I>(1) time by reducing the problem to that of determining whether two line segments intersect.<P>
+<a name="09e6_1c2a">35.1-6<a name="09e6_1c2a"><P>
+<a name="09e6_1c22"><a name="09e6_1c23">One way to determine whether a point<I> p</I><SUB>0</SUB> is in the interior of a simple, but not necessarily convex, polygon <I>P</I> is to look at any ray from <I>p</I><SUB>0</SUB> and check that the ray intersects the boundary of <I>P</I> an odd number of times but that <I>p</I><SUB>0</SUB> itself is not on the boundary of <I>P</I>. Show how to compute in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time whether a point <I>p</I><SUB>0</SUB> is in the interior of an <I>n-</I>vertex polygon <I>P. </I>(<I>Hint</I>: Use Exercise 35.1-5. Make sure your algorithm is correct when the ray intersects the polygon boundary at a vertex and when the ray overlaps a side of the polygon.)<P>
+<a name="09e6_1c2b">35.1-7<a name="09e6_1c2b"><P>
+Show how to compute the area of an <I>n-</I>vertex simple, but not necessarily convex, polygon in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09e7_1c28">35.2 Determining whether any pair of segments intersects<a name="09e7_1c28"></h1><P>
+<a name="09e7_1c24"><a name="09e7_1c25">This section presents an algorithm for determining whether any two line segments in a set of segments intersect. The algorithm uses a technique known as &quot;sweeping,&quot; which is common to many computational-geometry algorithms. Moreover, as the exercises at the end of this section show, this algorithm, or simple variations of it, can be used to solve other computational-geometry problems. <P>
+The algorithm runs in <I>O(n </I>lg<I> n)</I> time, where <I>n</I> is the number of segments we are given. It determines only whether or not any intersection exists; it does not print all the intersections. (By Exercise 35.2-1, it takes <IMG SRC="../IMAGES/omega12.gif">(<I>n<SUP><FONT FACE="Times New Roman" SIZE=1>2</I></FONT></SUP>) time in the worst case to find <I>all</I> the intersections in a set of <I>n</I> line segments.)<P>
+<a name="09e7_1c26"><a name="09e7_1c27">In <I><B>sweeping</I></B>, an imaginary vertical <I><B>sweep line</I></B> passes through the given set of geometric objects, usually from left to right. The spatial dimension that the sweep line moves across, in this case the <I>x-</I>dimension, is treated as a dimension of time. Sweeping provides a method for ordering geometric objects, usually by placing them into a dynamic data structure, and for taking advantage of relationships among them. The line-segment-intersection algorithm in this section considers all the line-segment endpoints in left-to-right order and checks for an intersection each time it encounters an endpoint.<P>
+Our algorithm for determining whether any two of <I>n</I> line segments intersect makes two simplifying assumptions. First, we assume that no input segment is vertical. Second, we assume that no three input segments intersect at a single point. (Exercise 35.2-8 asks you to describe an implementation that works even if these assumptions fail to hold.) Indeed, removing such simplifying assumptions and dealing with boundary conditions is often the most difficult part of programming computational-geometry algorithms and proving their correctness.<P>
+<img src="893_a.gif"><P>
+<h4><a name="09e7_1c29">Figure 35.4 The ordering among line segments at various vertical sweep lines. (a) We have a &gt;<SUB>r</SUB> c, a &gt;<SUB>t</SUB> b, b &gt;<SUB>t</SUB> c, a &gt;<SUB>t</SUB> c, and b &gt;<SUB>u</SUB> c. Segment d is comparable with no other segment shown. (b) When segments e and f intersect, their orders are reversed: we have e &gt;<SUB>v</SUB> f but f &gt;<SUB>w</SUB> e. Any sweep line (such as z) that passes through the shaded region has e and f consecutive in its total order.<a name="09e7_1c29"></sub></sup></h4><P>
+
+
+
+
+
+<h2>Ordering segments</h2><P>
+Since we assume that there are no vertical segments, any input segment that intersects a given vertical sweep line intersects it at a single point. We can thus order the segments that intersect a vertical sweep line according to the <I>y</I>-coordinates of the points of intersection. <P>
+          <a name="09e8_1c28"><a name="09e8_1c29">To be more precise, consider two nonintersecting segments <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>1</FONT></SUB> and <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>2 </FONT></SUB>We say that these segments are <I><B>comparable</I></B> at<I> x</I> if the vertical sweep line with <I>x-</I>coordinate <I>x</I> intersects both of them. We say that <I>s<SUB>l</SUB></I> is <B>above<I></B></I> <I>s</I><SUB>2 </SUB>at <I>x</I>, written <I>s<SUB>1</SUB></I> &gt; X <I>s</I><SUB>2</SUB>, if <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>1</FONT></SUB> and <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUB> are comparable at <I>x</I> and the intersection of <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>1</FONT></SUB> with the sweep line at <I>x</I> is higher than the intersection of <I>s</I><SUB><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUB> with the same sweep line. In Figure 35.4(a), for example, we have the relationships <I>a &gt;<SUB><FONT FACE="Courier New" SIZE=2>r</SUB> c, a &gt;<SUB>t</SUB> b, b &gt;<SUB>t</SUB> c, a &gt;<SUB>t</SUB> c, </I></FONT>and<I> b &gt;<SUB><FONT FACE="Courier New" SIZE=2>u</SUB> c.</I></FONT> Segment <I>d</I> is not comparable with any other segment.<P>
+For any given <I>x</I>, the relation &quot;&gt;<I><SUB>x</SUB></I>" is a total order (see Section 5.2) on segments that intersect the sweep line at X<SUB>.</SUB> The order may differ for differing values of <I>x</I><SUB>,</SUB> however, as segments enter and leave the ordering. A segment enters the ordering when its left endpoint is encountered by the sweep, and it leaves the ordering when its right endpoint is encountered.<P>
+What happens when the sweep line passes through the intersection of two segments? As Figure 35.4(b) shows, their positions in the total order are reversed. Sweep lines <I>v</I> and <I>w</I> are to the left and right, respectively, of the point of intersection of segments <I>e</I> and <I>f</I>, and we have <I>e &gt;<SUB>v</SUB> f</I> and <I>f &gt;<SUB>w</SUB> e.</I> Note that because we assume that no three segments intersect at the same point, there must be some vertical sweep line <I>x</I> for which intersecting segments <I>e</I> and <I>f</I> are <I>consecutive</I> in the total order &gt;<I><SUB>x</I></SUB>. Any sweep line that passes through the shaded region of Figure 35.4(b), such as <I>z</I>, has <I>e</I> and <I>f</I> consecutive in its total order.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Moving the sweep line</h2><P>
+Sweeping algorithms typically manage two sets of data:<P>
+<a name="09e9_1c2a">1.     The <I><B>sweep-line status</I></B> gives the relationships among the objects intersected by the sweep line. <P>
+<a name="09e9_1c2b">2.     The <I><B>event-point schedule</I></B> is a sequence of <I>x-</I>coordinates, ordered from left to right, that defines the halting positions of the sweep line. We call each such halting position an <I><B>event point</I></B>. Changes to the sweep-line status occur only at event points.<P>
+<a name="09e9_1c2c"><a name="09e9_1c2d">For some algorithms (the algorithm asked for in Exercise 35.2-7, for example), the event-point schedule is determined dynamically as the algorithm progresses. The algorithm at hand, however, determines the event points statically, based solely on simple properties of the input data. In particular, each segment endpoint is an event point. We sort the segment endpoints by increasing <I>x</I>-coordinate and proceed from left to right. We insert a segment into the sweep-line status when its left endpoint is encountered, and we delete it from the sweep-line status when its right endpoint is encountered. Whenever two segments first become consecutive in the total order, we check whether they intersect.<P>
+The sweep-line status is a total order <I>T</I>, for which we require the following operations:<P>
+<IMG SRC="../IMAGES/dot12.gif">     <FONT FACE="Courier New" SIZE=2>INSERT</FONT>(<I>T,</I> <I>s</I>): insert segment <I>s</I> into <I>T.</I><P>
+<IMG SRC="../IMAGES/dot12.gif">     <FONT FACE="Courier New" SIZE=2>DELETE</FONT>(<I>T</I>, <I>s</I>): delete segment <I>s</I> from <I>T.</I><P>
+<a name="09e9_1c2e"><IMG SRC="../IMAGES/dot12.gif">     <FONT FACE="Courier New" SIZE=2>ABOVE</FONT>(<I>T</I>, <I>s</I>): return the segment immediately above segment <I>s</I> in <I>T.</I><P>
+<a name="09e9_1c2f"><IMG SRC="../IMAGES/dot12.gif">     <FONT FACE="Courier New" SIZE=2>BELOW</FONT>(<I>T</I>, <I>s</I>): return the segment immediately below segment <I>s</I> in <I>T.</I><P>
+<a name="09e9_1c30">If there are <I>n</I> segments in the input, we can perform each of the above operations in <I>O(</I>lg <I>n)</I> time using red-black trees. Recall that the red-black-tree operations in Chapter 14 involve comparing keys. We can replace the key comparisons by cross-product comparisons that determine the relative ordering of two segments (see Exercise 35.2-2).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Segment-intersection pseudocode</h2><P>
+The following algorithm takes as input a set <I>S</I> of <I>n</I> line segments, returning the boolean value <FONT FACE="Courier New" SIZE=1>TRUE</FONT> if any pair of segments in <I>S</I> intersects, and <FONT FACE="Courier New" SIZE=2>FALSE </FONT>otherwise. The total order <I>T</I> is implemented by a red-black tree.<P>
+<img src="895_a.gif"><P>
+<h4><a name="09ea_1c32">Figure 35.5 The execution of <FONT FACE="Courier New" SIZE=2>ANY-SEGMENTS-INTERSECT</FONT>. Each dashed line is the sweep line at an event point, and the ordering of segment names below each sweep line is the total order T at the end of the for loop in which the corresponding event point is processed. The intersection of segments d and b is found when segment c is deleted.<a name="09ea_1c32"></sub></sup></h4><P>
+<pre><a name="09ea_1c31">ANY-SEGMENTS-INTERSECT(<I>S</I>)</sub></sup></pre><P>
+<img src="895_b.gif"><P>
+<pre>2  sort the endpoints of the segments in <I>S</I> from left to right,</sub></sup></pre><P>
+<pre>breaking ties by putting points with lower <I>y</I>-coordinates first</sub></sup></pre><P>
+<pre>3  <B>for</B> each point <I>p</I> in the sorted list of endpoints</sub></sup></pre><P>
+<pre>4      <B>do if</B> <I>p</I> is the left endpoint of a segment <I>s</I></sub></sup></pre><P>
+<pre>5            <B>then</B> INSERT(<I>T</I>, <I>s</I>)</sub></sup></pre><P>
+<pre>6                 <B>if</B> (ABOVE(<I>T</I>, <I>s</I>) exists and intersects <I>s</I>)</sub></sup></pre><P>
+<pre>or (BELOW(<I>T</I>, <I>s</I>) exists and intersects <I>s</I>)</sub></sup></pre><P>
+<pre>7                    <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>8                 <B>if</B> <I>p</I> is the right endpoint of a segment <I>s</I></sub></sup></pre><P>
+<pre>9                    <B>then if</B> both ABOVE(<I>T</I>, <I>s</I>) and BELOW(<I>T</I>, <I>s</I>) exist</sub></sup></pre><P>
+<pre>and ABOVE(<I>T</I>, <I>s</I>) intersects BELOW(<I>T</I>, <I>s</I>)</sub></sup></pre><P>
+<pre>10                            <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>11                         DELETE(<I>T</I>, <I>s</I>)</sub></sup></pre><P>
+<pre>12  <B>return</B> FALSE</sub></sup></pre><P>
+Figure 35.5 illustrates the execution of the algorithm. Line 1 initializes the total order to be empty. Line 2 determines the event-point schedule by sorting the 2<I>n</I> segment endpoints from left to right, breaking ties by putting points with lower <I>y</I>-coordinates first. Note that line 2 can be performed by lexicographically sorting the endpoints on <I>(x, y).</I><P>
+Each iteration of the <B>for</B> loop of lines 3-11 processes one event point <I>p</I>. If <I>p</I> is the left endpoint of a segment <I>s</I>, line 5 adds <I>s </I>to the total order, and lines 6-7 return <FONT FACE="Courier New" SIZE=1>TRUE</FONT> if <I>s</I> intersects either of the segments it is consecutive with in the total order defined by the sweep line passing through <I>p. </I>(A boundary condition occurs if <I>p</I> lies on another segment s'. In this case, we only require that <I>s</I> and <I>s</I><I>'</I> be placed consecutively into <I>T.</I>) If <I>p </I>is the right endpoint of a segment <I>s</I>, then <I>s</I> is to be deleted from the total order. Lines 9-10 return <FONT FACE="Courier New" SIZE=1>TRUE</FONT> if there is an intersection between the segments surrounding <I>s</I> in the total order defined by the sweep line passing through <I>p;</I> these segments will become consecutive in the total order when <I>s</I> is deleted. If these segments do not intersect, line 11 deletes segment <I>s</I> from the total order. Finally, if no intersections are found in processing all the 2<I>n</I> event points, line 12 returns <FONT FACE="Courier New" SIZE=2>FALSE<FONT FACE="Times New Roman" SIZE=2>.</FONT></FONT><P>
+<P>
+
+
+
+
+
+
+
+<h2>Correctness</h2><P>
+The following theorem shows that <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT> is correct.<P>
+<a name="09eb_0001">Theorem 35.1<a name="09eb_0001"><P>
+The call <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT>(<I>S</I>) returns <FONT FACE="Courier New" SIZE=2>TRUE<FONT FACE="Times New Roman" SIZE=2> </FONT></FONT>if and only if there is an intersection among the segments in <I>S.</I><P>
+<I><B>Proof     </I></B>The procedure can be incorrect only by returning <FONT FACE="Courier New" SIZE=2>TRUE</FONT> when no intersection exists or by returning <FONT FACE="Courier New" SIZE=2>FALSE</FONT> when there is at least one intersection. The former case cannot occur, because <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-I<FONT FACE="Courier New" SIZE=2>NTERSECT </FONT>returns <FONT FACE="Courier New" SIZE=2>TRUE</FONT> only if it finds an intersection between two of the input segments.<P>
+To show that the latter case cannot occur, let us suppose for the sake of contradiction that there is at least one intersection, yet <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT> returns<FONT FACE="Courier New" SIZE=2> FALSE. </FONT>Let <I>p</I> be the leftmost intersection point, breaking ties by choosing the one with the lowest <I>y</I>-coordinate, and let <I>a </I>and<I> b </I>be the segments that intersect at <I>p.</I> Since no intersections occur to the left of <I>p,</I> the order given by <I>T</I> is correct at all points to the left of <I>p. </I>Because no three segments intersect at the same point, there exists a sweep line <I>z </I>at which <I>a</I> and <I>b</I> become consecutive in the total order.<SUP><FONT FACE="Times New Roman" SIZE=1>2</FONT></SUP> Moreover, <I>z</I> is to the left of <I>p</I> or goes through <I>p.</I> There exists a segment endpoint <I>q</I> on sweep line <I>z</I> that is the event point at which <I>a</I> and <I>b</I> become consecutive in the total order. If <I>p</I> is on sweep line <I>z</I>, then <I>q = p</I>. If <I>p</I> is not on sweep line <I>z,</I> then <I>q</I> is to the left of <I>p.</I> In either case, the order given by <I>T</I> is correct just before <I>q</I> is processed. (Here we rely on <I>p</I> being the lowest of the leftmost intersection points. Because of the lexicographical order in which event points are processed, even if <I>p</I> is on sweep line <I>z</I> and there is another intersection point <I>p</I>' on <I>z</I>, event point <I>q = p</I> is processed before the other intersection <I>p</I>' can interfere with the total order <I>T.</I>) There are only two possibilities for the action taken at event point <I>q:</I><P>
+<SUP><FONT FACE="Times" SIZE=1>2</SUP><FONT FACE="Times" SIZE=2>If we allow three segments to intersect at the same point, there may be an intervening segment <I>c</I> that intersects both <I>a</I> and <I>b</I> at point <I>p</I>. That is, we may have <I>a</I> &lt;<I><SUB><FONT FACE="Times" SIZE=1>w</SUB> c</I><FONT FACE="Times" SIZE=2> and <I>c</I> &lt;<I><SUB><FONT FACE="Times" SIZE=1>w</SUB> b</I><FONT FACE="Times" SIZE=2> for all sweep lines <I>w</I> to the left of <I>p</I> for which <I>a</I> &lt;<I><SUB><FONT FACE="Times" SIZE=1>w</SUB> b</I><FONT FACE="Times" SIZE=2>.</FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT><P>
+1.     Either <I>a</I> or <I>b</I> is inserted into <I>T</I>, and the other segment is above or below it in the total order. Lines 4-7 detect this case.<P>
+2.     Segments <I>a</I> and <I>b</I> are already in <I>T</I>, and a segment between them in the total order is deleted, making <I>a</I> and <I>b</I> become consecutive. Lines 8-11 detect this case.<P>
+In either case, the intersection <I>p</I> is found, contradicting the assumption that the procedure returns <FONT FACE="Courier New" SIZE=2>FALSE</FONT>.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>Running time</h2><P>
+If there are <I>n</I> segments in set <I>S</I>, then <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT> runs in time <I>O(n </I>lg <I>n</I>). Line 1 takes <I>O</I>(1) time. Line 2 takes <I>O(n </I>lg <I>n</I>) time, using merge sort or heapsort. Since there are 2<I>n</I> event points, the <B>for </B>loop of lines 3-11 iterates at most 2<I>n</I> times. Each iteration takes <I>0(</I>lg<I> n</I>) time, since each red-black-tree operation takes <I>O</I>(lg <I>n</I>) time and, using the method of Section 35.1, each intersection test takes <I>O</I>(1) time. The total time is thus <I>O</I>(<I>n </I>lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09ed_1c3b">Exercises<a name="09ed_1c3b"></h2><P>
+<a name="09ed_1c3c">35.2-1<a name="09ed_1c3c"><P>
+Show that there may be <IMG SRC="../IMAGES/bound.gif">(<I>n<SUP>2</I></SUP>) intersections in a set of <I>n</I> line segments.<P>
+<a name="09ed_1c3d">35.2-2<a name="09ed_1c3d"><P>
+Given two nonintersecting segments <I>a</I> and <I>b</I> that are comparable at <I>x</I>, show how to use cross products to determine in <I>O</I>(1) time which of <I>a &gt;<SUB>x </SUB>b </I>or <I>b &gt;<SUB>x</SUB> a</I> holds.<P>
+<a name="09ed_1c3e">35.2-3<a name="09ed_1c3e"><P>
+<a name="09ed_1c32">Professor Maginot suggests that we modify <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT> so that instead of returning upon finding an intersection, it prints the segments that intersect and continues on to the next iteration of the <B>for</B> loop. The professor calls the resulting procedure <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECTING</FONT>-S<FONT FACE="Courier New" SIZE=2>EGMENTs</FONT> and claims that it prints all intersections, left to right, as they occur in the set of line segments. Show that the professor is wrong on two counts by giving a set of segments for which the first intersection found by <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECTING</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT> is not the leftmost one and a set of segments for which <FONT FACE="Courier New" SIZE=2>PRINT</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECTING</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT> fails to find all the intersections.<P>
+<a name="09ed_1c3f">35.2-4<a name="09ed_1c3f"><P>
+<a name="09ed_1c33"><a name="09ed_1c34"><a name="09ed_1c35">Give an <I>O</I>(<I>n </I>lg<I> n</I>)-time algorithm to determine whether an <I>n</I>-vertex polygon is simple.<P>
+<a name="09ed_1c40">35.2-5<a name="09ed_1c40"><P>
+<a name="09ed_1c36">Give an <I>O</I>(<I>n </I>lg <I>n</I>)-time algorithm to determine whether two simple polygons with a total of <I>n</I> vertices intersect.<P>
+<a name="09ed_1c41">35.2-6<a name="09ed_1c41"><P>
+<a name="09ed_1c37"><a name="09ed_1c38">A <I><B>disk</I></B> consists of a circle plus its interior and is represented by its center point and radius. Two disks intersect if they have any point in common. Give an <I>O</I>(<I>n </I>lg <I>n</I>)-time algorithm to determine whether any two disks in a set of <I>n</I> intersect.<P>
+<a name="09ed_1c42">35.2-7<a name="09ed_1c42"><P>
+<a name="09ed_1c39"><a name="09ed_1c3a">Given a set of <I>n</I> line segments containing a total of <I>k</I> intersections, show how to output all <I>k</I> intersections in <I>O</I>((<I>n + k</I>) lg <I>n</I>) time.<P>
+<a name="09ed_1c43">35.2-8<a name="09ed_1c43"><P>
+Show how to implement the red-black-tree procedures so that <FONT FACE="Courier New" SIZE=2>ANY</FONT>-<FONT FACE="Courier New" SIZE=2>SEGMENTS</FONT>-<FONT FACE="Courier New" SIZE=2>INTERSECT</FONT> works correctly even if some segments are vertical or more than three segments intersect at the same point. Prove that your implementation is correct.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09ee_1c41">35.3 Finding the convex hull<a name="09ee_1c41"></h1><P>
+<a name="09ee_1c3b">The <I><B>convex hull</I></B> of a set <I>Q</I> of points is the smallest convex polygon <I>P</I> for which each point in <I>Q</I> is either on the boundary of <I>P</I> or in its interior. We denote the convex hull of <I>Q</I> by CH(<I>Q</I>). Intuitively, we can think of each point in <I>Q</I> as being a nail sticking out from a board. The convex hull is then the shape formed by a tight rubber band that surrounds all the nails. Figure 35.6 shows a set of points and its convex hull.<P>
+In this section, we shall present two algorithms that compute the convex hull of a set of <I>n</I> points. Both algorithms output the vertices of the convex hull in counterclockwise order. The first, known as Graham's scan, runs in <I>O</I>(<I>n </I>lg <I>n</I>) time. The second, called Jarvis's march, runs in <I>O</I>(<I>nh</I>) time, where <I>h</I> is the number of vertices of the convex hull. As can be seen from Figure 35.6, every vertex of CH(<I>Q</I>) is a point in <I>Q</I>. Both algorithms exploit this property, deciding which vertices in <I>Q</I> to keep as vertices of the convex hull and which vertices in <I>Q</I> to throw out.<P>
+<img src="898_a.gif"><P>
+<h4><a name="09ee_1c42">Figure 35.6 A set of points Q with its convex hull CH(Q) in gray.<a name="09ee_1c42"></sub></sup></h4><P>
+<a name="09ee_1c3c">There are, in fact, several methods that compute convex hulls in <I>O</I>(<I>n</I> lg <I>n</I>) time. Both Graham's scan and Jarvis's march use a technique called &quot;rotational sweep,&quot; processing vertices in the order of the polar angles they form with a reference vertex. Other methods include the following.<P>
+<a name="09ee_1c3d"><IMG SRC="../IMAGES/dot12.gif">     In the <I><B>incremental method</I></B>, the points are sorted from left to right, yielding a sequence &lt;<I>p</I><SUB>1</SUB>,<I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>n</I></SUB>&gt;<I><SUB></I></SUB>. At the <I>i</I>th stage, the convex hull CH({<I>p</I><SUB><FONT FACE="Courier New" SIZE=2>1</FONT></SUB>, <I>p</I><SUB><FONT FACE="Courier New" SIZE=2>2</FONT></SUB>, . . . , <I>p<SUB><FONT FACE="Courier New" SIZE=2>i</I>-1</FONT></SUB>}) of the <I>i </I>- 1 leftmost points is updated according to the <I>i</I>th point from the left, thus forming CH({<I>p</I><SUB><FONT FACE="Courier New" SIZE=2>1</FONT></SUB>, <I>p</I><SUB><FONT FACE="Courier New" SIZE=2>2</FONT></SUB>, . . . , <I>p<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>}). As Exercise 35.3-6 asks you to show, this method can be implemented to take a total of <I>O</I>(<I>n</I> lg <I>n</I>) time.<P>
+<a name="09ee_1c3e"><IMG SRC="../IMAGES/dot12.gif">     In the <I><B>divide-and-conquer method</I></B>, in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time the set of <I>n</I> points is divided into two subsets, one of the leftmost <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT> points and one of the rightmost <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"><I>n</I></FONT>/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT> points, the convex hulls of the subsets are computed recursively, and then a clever method is used to combine the hulls in <I>O</I>(<I>n</I>) time.<P>
+<a name="09ee_1c3f"><IMG SRC="../IMAGES/dot12.gif">     The <I><B>prune-and-search method</I></B> is similar to the worst-case linear-time median algorithm of Section 10.3. It finds the upper portion (or &quot;upper chain&quot;) of the convex hull by repeatedly throwing out a constant fraction of the remaining points until only the upper chain of the convex hull remains. It then does the same for the lower chain. This method is asymptotically the fastest: if the convex hull contains <I>h</I> vertices, it runs in only <I>O</I>(<I>n</I> lg <I>h</I>) time.<P>
+<a name="09ee_1c40">Computing the convex hull of a set of points is an interesting problem in its own right. Moreover, algorithms for some other computational-geometry problems start by computing a convex hull. Consider, for example, the two-dimensional <I><B>farthest-pair problem:</I></B> we are given a set of <I>n </I>points in the plane and wish to find the two points whose distance from each other is maximum. As Exercise 35.3-3 asks you to prove, these two points must be vertices of the convex hull. Although we won't prove it here, the farthest pair of vertices of an <I>n</I>-vertex convex polygon can be found in <I>O</I>(<I>n</I>) time. Thus, by computing the convex hull of the <I>n</I> input points in <I>O</I>(<I>n</I> lg <I>n</I>) time and then finding the farthest pair of the resulting convex-polygon vertices, we can find the farthest pair of points in any set of <I>n</I> points in <I>O</I>(<I>n</I> lg <I>n</I>) time.<P>
+
+
+
+
+
+<h2>Graham's scan</h2><P>
+<a name="09ef_1c41"><a name="09ef_1c42"><I><B>Graham's</I></B> <I><B>scan</I></B> solves the convex-hull problem by maintaining a stack <I>S</I> of candidate points. Each point of the input set <I>Q</I> is pushed once onto the stack, and the points that are not vertices of CH(<I>Q</I>) are eventually popped from the stack. When the algorithm terminates, stack <I>S</I> contains exactly the vertices of CH(<I>Q</I>), in counterclockwise order of their appearance on the boundary.<P>
+<img src="900_a.gif"><P>
+<h4><a name="09ef_1c48">Figure 35.7 The execution of <FONT FACE="Courier New" SIZE=2>GRAHAM-SCAN</FONT> on the set Q of Figure 35.6. The current convex hull contained in stack S is shown in gray at each step. (a) The ordered polar angles of <IMG SRC="../IMAGES/lftwdchv.gif">p<SUB>1</SUB>,p<SUB>2</SUB>, . . . , p<SUB>12</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> relative to p<SUB>0</SUB> and the initial stack S containing p<SUB>0</SUB>, p<SUB>1</SUB>, and p<SUB>2</SUB>. (b)-(k) Stack S after each iteration of the for loop of lines 7-10. Dashed lines show nonleft turns, which cause points to be popped from the stack. In part (h), for example, the right turn at angle <IMG SRC="../IMAGES/angle.gif">p<SUB>7</SUB>p<SUB>8</SUB>p<SUB>9</SUB> causes p<SUB>8</SUB> to be popped, and then the right turn at angle <IMG SRC="../IMAGES/angle.gif">p<SUB>6</SUB>p<SUB>7</SUB>p<SUB>9</SUB> causes p<SUB>7</SUB> to be popped. (l) The convex hull returned by the procedure, which matches that of Figure 35.6.<a name="09ef_1c48"></sub></sup></h4><P>
+<img src="901_a.gif"><P>
+<a name="09ef_1c43"><a name="09ef_1c44">The procedure <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> takes as input a set <I>Q</I> of points, where |<I>Q| </I><IMG SRC="../IMAGES/gteq.gif"> 3. It calls the functions <FONT FACE="Courier New" SIZE=2>TOP</FONT>(<I>S</I>), which returns the point on top of stack <I>S</I> without changing <I>S</I>, and <FONT FACE="Courier New" SIZE=2>NEXT</FONT>-<FONT FACE="Courier New" SIZE=2>TO</FONT>-<FONT FACE="Courier New" SIZE=2>TOP</FONT>(<I>S</I>), which returns the point one entry below the top of stack <I>S</I> without changing <I>S</I>. As we shall prove in a moment, the stack <I>S</I> returned by <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> contains, from bottom to top, exactly the vertices of CH(<I>Q</I>) in counterclockwise order.<P>
+<pre><a name="09ef_1c45">GRAHAM-SCAN<I>(Q)</I></sub></sup></pre><P>
+<pre>1  let <I>p</I><SUB>0</SUB> be the point in <I>Q</I> with the minimum <I>y</I>-coordinate,</sub></sup></pre><P>
+<pre>or the leftmost such point in case of a tie</sub></sup></pre><P>
+<pre>2  let <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>m</I></SUB><IMG SRC="../IMAGES/wdrtchv.gif"> be the remaining points in <I>Q</I>,</sub></sup></pre><P>
+<pre>sorted by polar angle in counterclockwise order around <I>p</I><SUB>0</sub></sup></pre><P>
+<pre>(if more than point has the same angle, remove all but</sub></sup></pre><P>
+<pre>the one that is farthest from <I>p</I><SUB>0</SUB>)</sub></sup></pre><P>
+<pre>3  <I>top</I>[<I>S</I>]<IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>4  PUSH(<I>p</I><SUB>0</SUB>,<I>S</I>)</sub></sup></pre><P>
+<pre>5  PUSH(<I>p</I><SUB>1</SUB>,<I>S</I>)</sub></sup></pre><P>
+<pre>6  PUSH(<I>p</I><SUB>2</SUB>,<I>S</I>)</sub></sup></pre><P>
+<pre>7  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 3 <B>to</B> <I>m</I></sub></sup></pre><P>
+<pre>8        <B>do while</B> the angle formed by points NEXT-TO-TOP(<I>S</I>),</sub></sup></pre><P>
+<pre>TOP(<I>S</I>), and <I>p<SUB>i</I></SUB> makes a nonleft turn</sub></sup></pre><P>
+<pre>9               <B>do</B> POP(<I>S</I>)</sub></sup></pre><P>
+<pre>10           PUSH(<I>S,p<SUB>i</I></SUB>)</sub></sup></pre><P>
+<pre>11  <B>return</B> <I>S</I></sub></sup></pre><P>
+Figure 35.7 illustrates the progress of <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT>. Line 1 chooses point <I>p</I><SUB>0</SUB> as the point with the lowest <I>y</I>-coordinate, picking the leftmost such point in case of a tie. Since there is no point in <I>Q</I> that is below <I>p</I><SUB>0</SUB> and any other points with the same <I>y</I>-coordinate are to its right, <I>p</I><SUB>0</SUB> is a vertex of CH(<I>Q</I>). Line 2 sorts the remaining points of <I>Q</I> by polar angle relative to <I>p</I><SUB>0</SUB>, using the same method--comparing cross products--as in Exercise 35.1-2. If two or more points have the same polar angle relative to <I>p</I><SUB>0</SUB>, all but the farthest such point are convex combinations of <I>p</I><SUB>0</SUB> and the farthest point, and so we remove them entirely from consideration. We let <I>m</I> denote the number of points other than <I>p</I><SUB>0</SUB> that remain. The polar angle, measured in radians, of each point in <I>Q</I> relative to <I>p</I><SUB>0</SUB> is in the half-open interval [0, <IMG SRC="../IMAGES/piuc.gif">/2). Since polar angles increase in a counterclockwise fashion, the points are sorted in counterclockwise order relative to <I>p</I><SUB>0</SUB>. We designate this sorted sequence of points by <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p<SUB>m </SUB></I><IMG SRC="../IMAGES/wdrtchv.gif"><I>.</I> Note that points <I>p</I><SUB>1</SUB> and <I>p<SUB>m </I></SUB>are vertices of CH(<I>Q</I>) (see Exercise 35.3-1). Figure 35.7(a) shows the points of Figure 35.6, with the ordered polar angles of <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>1</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p</I><SUB>12</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> relative to <I>p</I><SUB>0</SUB>.<P>
+The remainder of the procedure uses the stack <I>S</I> Lines 3-6 initialize the stack to contain, from bottom to top, the first three points <I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, and <I>p</I><SUB>2</SUB>. Figure 35.7(a) shows the initial stack <I>S</I>. The <B>for</B> loop of lines 7-10 iterates once for each point in the subsequent <IMG SRC="../IMAGES/lftwdchv.gif"><I>p<SUB>3</SUB>, p<SUB>4</SUB>, . . . ,p<SUB>m</SUB>)</I> The intent is that after processing point <I>p<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>, stack <I>S</I> contains, from bottom to top, the vertices of CH({<I>p</I><SUB><FONT FACE="Courier New" SIZE=2>0</FONT></SUB>,<I>p</I><SUB><FONT FACE="Courier New" SIZE=2>1</FONT></SUB>, . . . ,<I>p<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB>}) in counterclockwise order. The <B>while</B> loop of lines 8-9 removes points from the stack if they are found not to be vertices of the convex hull. When we traverse the convex hull counterclockwise, we should make a left turn at each vertex. Thus, each time the <B>while</B> loop finds a vertex at which we make a nonleft turn, the vertex is popped from the stack. (By checking for a nonleft turn, rather than just a right turn, this test precludes the possibility of a straight angle at a vertex of the resulting convex hull. This is just what we want, since every vertex of a convex polygon must not be a convex combination of other vertices of the polygon.) After we pop all the vertices that have nonleft turns when heading toward point <I>p<SUB><FONT FACE="Courier New" SIZE=2>i</SUB>,</I></FONT> we push <I>p<SUB><FONT FACE="Courier New" SIZE=2>i</I></FONT></SUB> onto the stack. Figures 35.7(b)-(k) show the state of the stack <I>S</I> after each iteration of the <B>for</B> loop. Finally, GRAHAM-SCAN returns the stack <I>S</I> in line 11. Figure 35.7(1) shows the corresponding convex hull.<P>
+The following theorem formally proves the correctness of <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT>.<P>
+<a name="09ef_1c49">Theorem 35.2<a name="09ef_1c49"><P>
+If <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> is run on a set<I> Q</I> of points, where |<I>Q| <IMG SRC="../IMAGES/gteq.gif"> 3, then a point of </I>Q<I> is on the stack</I> S<I> at termination if and only if it is a vertex of CH(</I>Q<I>).</I><P>
+<I><B>Proof     </I></B>As noted above, a vertex that is a convex combination of <I>p</I><SUB>0</SUB> and some other vertex in <I>Q</I> is not a vertex of CH(<I>Q</I>). Such a vertex is not included in the sequence <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>l</SUB>, <I>p</I><SUB>2</SUB>, . . . , <I>p </I><SUB>m</SUB><IMG SRC="../IMAGES/wdrtchv.gif">, and so it can never appear on stack <I>S</I>.<P>
+The crux of the proof lies in the two situations shown in Figure 35.8. Part (a) deals with nonleft turns, and part (b) deals with left turns.<P>
+We first show that each point popped from stack <I>S</I> is not a vertex of CH(<I>Q</I>). Suppose that point <I>p<SUB>j</I></SUB> is popped from the stack because angle <IMG SRC="../IMAGES/angle.gif"><I>p<SUB>k</SUB>p<SUB>j</SUB>p<SUB>i</I></SUB> makes a nonleft turn, as shown in Figure 35.8(a). Because we scan the points in order of increasing polar angle relative to point p<SUB>0</SUB>, there is a triangle <img src="903_a.gif"> with point <I>p<SUB>j</I></SUB> either in the interior of the triangle or<B> </B>on line segment <img src="903_b.gif">. In either case, point <I>p<SUB>j</I></SUB> cannot be a vertex of CH(<I>Q</I>).<P>
+We now show that each point on stack <I>S</I> is a vertex of CH(<I>Q</I>) at termination. We start by proving the following claim: <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> maintains the invariant that the points on stack <I>S</I> always form the vertices of a convex polygon in counterclockwise order.<P>
+The claim holds immediately after the execution of line 6, since points <I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, and <I>p<SUB>2</I></SUB> form a convex polygon. Now we examine how stack <I>S</I> changes during the course of <I>G<FONT FACE="Courier New" SIZE=2>RAHAM</I></FONT>-<I>S<FONT FACE="Courier New" SIZE=2>CAN</I></FONT>. Points are either popped or pushed. In the former case, we rely on a simply geometrical property: if a vertex is removed from a convex polygon, the resulting polygon is convex. Thus, popping a point from stack <I>S</I> preserves the invariant.<P>
+<img src="904_a.gif"><P>
+<h4><a name="09ef_1c4a">Figure 35.8 The two basic situations in the proof of correctness of <FONT FACE="Courier New" SIZE=2>GRAHAM<FONT FACE="Times New Roman" SIZE=2>- <FONT FACE="Courier New" SIZE=2>SCAN<FONT FACE="Times New Roman" SIZE=2>.</FONT></FONT></FONT></FONT> (a) Showing that a point popped from the stack in <FONT FACE="Courier New" SIZE=2>GRAHAM<FONT FACE="Times New Roman" SIZE=2>-</FONT>SCAN<FONT FACE="Times New Roman" SIZE=2> </FONT></FONT>is not a vertex of CH(Q). If point p<SUB>j</SUB><FONT FACE="Times New Roman" SIZE=2></FONT> is popped from the stack because angle <IMG SRC="../IMAGES/angle.gif">p<SUB>k</SUB><FONT FACE="Times New Roman" SIZE=2>p<SUB>j</SUB><FONT FACE="Times New Roman" SIZE=2>p<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT></FONT></FONT>makes a nonleft turn, then the shaded triangle <img src="904_b.gif"> contains point p<SUB>j</SUB><FONT FACE="Times New Roman" SIZE=2>. </FONT>Point p<SUB>j</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT>is therefore not a vertex of CH(Q). (b) If point p<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT>is pushed onto the stack, then there must be a left turn at angle <IMG SRC="../IMAGES/angle.gif">p<SUB>k</SUB>p<SUB>j</SUB><FONT FACE="Times New Roman" SIZE=2>p<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2>. </FONT></FONT>Because p<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT>follows p<SUB>j</SUB> in the polar-angle ordering of points and because of how p<SUB>0</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT>was chosen, p<SUB>i</SUB><FONT FACE="Times New Roman" SIZE=2> </FONT>must be in the shaded region. If the points on the stack form a convex polygon before the push, then they must form a convex polygon afterward.<a name="09ef_1c4a"></sub></sup></h4><P>
+Before we consider the case in which a point is pushed onto the stack, let us examine another geometrical property, illustrated in Figures 35.9(a) and (b). Let <I>P</I> be a convex polygon, and choose any side <img src="904_c.gif"> of <I>P</I>. Consider the region bounded by <img src="904_d.gif"> and the extensions of the two adjacent sides. (Depending on the relative angles of the adjacent sides, the region may be either bounded, like the shaded region in part (a), or unbounded, like the shaded region in part (b).) If we add any point <I>p<SUB>s</I></SUB> in this region to <I>P</I> as a new vertex, with the sides<img src="904_e.gif"><I><SUB> </I></SUB> replacing side <img src="904_f.gif">, the resulting polygon is convex.<P>
+Now consider a point <I>pi</I> that is pushed onto <I>S</I>. Referring back to Figure 35.8(b), let <I>p<SUB>j</I></SUB> be the vertex on the top of <I>S</I> just prior to pushing <I>pi,</I> and let <I>p<SUB>k</I></SUB> be the predecessor of <I>p<SUB>j</I></SUB> on <I>S</I>. We claim that <I>p<SUB>i</I></SUB> must fall within the shaded region of Figure 35.8(b), which corresponds directly to the shaded regions of Figure 35.9. Because the angle <IMG SRC="../IMAGES/angle.gif">p<SUB>k</SUB>p<SUB>j</SUB>p<SUB>i</SUB> makes a left turn, <I>p<SUB>i</I></SUB> must be on the shaded side of the extension of <img src="904_g.gif">. Because <I>p<SUB>i</I></SUB> follows <I>p<SUB>j</I></SUB> in the polar-angle ordering, it must be on the shaded side of <img src="904_h.gif">. Moreover, because of how we chose <I>p</I><SUB>0</SUB>, point <I>p<SUB>i</SUB> </I>must be on the shaded side of the extension of <img src="904_i.gif">. Thus<I>, p<SUB>i</I></SUB> is in the shaded region, and therefore after <I>p<SUB>i</I></SUB> has been pushed onto stack <I>S</I>, the points on <I>S</I> form a convex polygon. This completes the proof of the claim.<P>
+At the end of <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT>, therefore, the points of <I>Q</I> that are on stack <I>S</I> form the vertices of a convex polygon. We have shown that all points not on <I>S</I> are not vertices of CH(<I>Q</I>) or, equivalently, that all vertices of CH(<I>Q</I>) are on <I>S</I>. Since <I>S</I> contains only vertices from <I>Q</I> and its points form a convex polygon, they must form CH(<I>Q</I>).  <P>
+<img src="905_a.gif"><P>
+<h4><a name="09ef_1c4b">Figure 35.9 Adding a point in the shaded region to a convex polygon P yields another convex polygon. The shaded region is bounded by a side of <img src="905_b.gif"> and the extensions of the two adjacent sides. (a) The shaded region is bounded. (b) The shaded region is unbounded.<a name="09ef_1c4b"></sub></sup></h4><P>
+We now show that the running time of <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> is <I>O</I>(<I>n</I> lg <I>n</I>), where <I>n</I> = |<I>Q</I>|. Line 1 takes<IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time. Line 2 takes <I>O</I>(<I>n</I> lg <I>n</I>) time, using merge sort or heapsort to sort the polar angles and the cross-product method of Section 35.1 to compare angles. (Removing all but the farthest point with the same polar angle can be done in a total of <I>O</I>(<I>n</I>) time.) Lines 3-6 take <I>O</I>(1) time. Because <I>m</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - 1, the <B>for</B> loop of lines 7-10 is executed at most <I>n</I> - 3 times. Since <FONT FACE="Courier New" SIZE=2>PUSH</FONT> takes <I>O</I>(1) time, each iteration takes <I>O</I>(1) time exclusive of the time spent in the <B>while</B> loop of lines 8-9, and thus overall the <B>for</B> loop takes <I>O</I>(<I>n</I>) time exclusive of the nested <B>while</B> loop.<P>
+<a name="09ef_1c46"><a name="09ef_1c47">We use the aggregate method of amortized analysis to show that the <B>while</B> loop takes <I>O</I>(<I>n</I>) time overall. For <I>i</I> = O, 1, . . . , <I>m</I>, each point <I>p<SUB>i</I></SUB> is pushed onto stack <I>S</I> exactly once. As in the analysis of the <FONT FACE="Courier New" SIZE=2>MULTIPOP</FONT> procedure of Section 18.1, we observe that there is at most one <FONT FACE="Courier New" SIZE=2>POP</FONT> operation for each <FONT FACE="Courier New" SIZE=2>PUSH</FONT> operation. At least three points--<I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, and <I>p<SUB>m</I></SUB>--are never popped from the stack, so that in fact at most <I>m</I> - 2 <FONT FACE="Courier New" SIZE=2>POP</FONT> operations are performed in total. Each iteration of the <B>while</B> loop performs one <FONT FACE="Courier New" SIZE=2>POP</FONT>, and so there are at most <I>m</I> - 2 iterations of the <B>while</B> loop altogether. Since the test in line 8 takes <I>O</I>(1) time, each call of <FONT FACE="Courier New" SIZE=2>POP</FONT> takes <I>O</I>(1) time, and <I>m</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - 1, the total time taken by the <B>while</B> loop is <I>O</I>(<I>n</I>)<I>. </I>Thus, the running time of <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT> is <I>O</I>(<I>n</I> lg <I>n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Jarvis's march</h2><P>
+<a name="09f0_1c48"><a name="09f0_1c49"><a name="09f0_1c4a"><I><B>Jarvis's march</I></B> computes the convex hull of a set Q of points by a technique<B> </B>known as <I><B>package wrapping</I></B> (or <I><B>gift wrapping</I></B>). The algorithm runs in time <I>O</I>(<I>nh</I>), where <I>h</I> is the number of vertices of CH(<I>Q</I>). When <I>h</I> is <I>o</I>(lg<I> n</I>), Jarvis's march is asymptotically faster than Graham's scan.<P>
+<img src="906_a.gif"><P>
+<h4><a name="09f0_1c4c">Figure 35.10 The operation of Jarvis's march. The first vertex chosen is the lowest point p<SUB>0</SUB>.  The next vertex, p<SUB>1</SUB>, has the least polar angle of any point with respect to p<SUB>0</SUB>. Then, p<SUB>2</SUB> has the least polar angle with respect to p<SUB>1</SUB>. The right chain goes as high as the highest point p<SUB>3</SUB>. Then, the left chain is constructed by finding least polar angles with respect to the negative x-axis.<a name="09f0_1c4c"></sub></sup></h4><P>
+Intuitively, Jarvis's march simulates wrapping a taut piece of paper around the set <I>Q</I>. We start by taping the end of the paper to the lowest point in the set, that is, to the same point <I>p</I><SUB>0</SUB> with which we start Graham's scan. This point is a vertex of the convex hull. We pull the paper to the right to make it taut, and then we pull it higher until it touches a point. This point must also be a vertex of the convex hull. Keeping the paper taut, we continue in this way around the set of vertices until we come back to our original point <I>p</I><SUB>0</SUB>.<P>
+<a name="09f0_1c4b">More formally, Jarvis's march builds a sequence <I>H</I> = <IMG SRC="../IMAGES/lftwdchv.gif"><I>p</I><SUB>0</SUB>, <I>p</I><SUB>1</SUB>, . . . , <I>p<SUB>h</I>-1</SUB><IMG SRC="../IMAGES/wdrtchv.gif"> of the vertices of CH(<I>Q</I>). We start with <I>p</I><SUB>0</SUB>. As Figure 35.10 shows, the next convex hull vertex <I>p</I><SUB>1</SUB> has the least polar angle with respect to <I>p</I><SUB>0</SUB>. (In case of ties, we choose the point farthest from <I>p</I><SUB>0</SUB>.) Similarly, <I>p</I><SUB>2</SUB> has the least polar angle with respect to <I>p</I><SUB>l</SUB>, and so on. When we reach the highest vertex, say <I>p<SUB>k</I></SUB> (breaking ties by choosing the farthest such vertex), we have constructed, as Figure 35.10 shows, the <I><B>right chain</I></B> of CH(<I>Q</I>). To construct the <I><B>left chain</I></B>, we start at <I>p<SUB>k</I></SUB> and choose <I>p<SUB>k</I>+l</SUB> as the point with the least polar angle with respect to <I>p<SUB>k</I></SUB>, but <I>from the negative x-axis</I>. We continue on, forming the left chain by taking polar angles from the negative <I>x</I>-axis, until we come back to our original vertex <I>p</I><SUB>0</SUB>.<P>
+We could implement Jarvis's march in one conceptual sweep around the convex hull, that is, without separately constructing the right and left chains. Such implementations typically keep track of the angle of the last convex-hull side chosen and require the sequence of angles of hull sides to be strictly increasing (in the range of 0 to 2<IMG SRC="../IMAGES/piuc.gif"> radians). The advantage of constructing separate chains is that we need not explicitly compute angles; the techniques of Section 35.1 suffice to compare angles.<P>
+If implemented properly, Jarvis's march has a running time of <I>O</I>(<I>nh</I>). For each of the <I>h</I> vertices of CH(<I>Q</I>), we find the vertex with the minimum polar angle. Each comparison between polar angles takes <I>O</I>(1) time, using the techniques of Section 35.1. As Section 10.1 shows, we can compute the minimum of <I>n</I> values in <I>O</I>(<I>n</I>) time if each comparison takes <I>O</I>(1) time. Thus, Jarvis's march takes <I>O</I>(<I>nh</I>) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09f1_1c53">Exercises<a name="09f1_1c53"></h2><P>
+<a name="09f1_1c54">35.3-1<a name="09f1_1c54"><P>
+Prove that in the procedure <FONT FACE="Courier New" SIZE=2>GRAHAM</FONT>-<FONT FACE="Courier New" SIZE=2>SCAN</FONT>, points <I>p</I><SUB>1</SUB> and <I>p<SUB>m</I></SUB> must be vertices of CH(<I>Q</I>).<P>
+<a name="09f1_1c55">35.3-2<a name="09f1_1c55"><P>
+<a name="09f1_1c4c">Consider a model of computation that supports addition, comparison, and multiplication and for which there is a lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) to sort <I>n</I> numbers. Prove that <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) is a lower bound for computing, in order, the vertices of the convex hull of a set of <I>n</I> points in such a model.<P>
+<a name="09f1_1c56">35.3-3<a name="09f1_1c56"><P>
+Given a set of points <I>Q</I>, prove that the pair of points farthest from each other must be vertices of CH(<I>Q</I>).<P>
+<a name="09f1_1c57">35.3-4<a name="09f1_1c57"><P>
+<a name="09f1_1c4d"><a name="09f1_1c4e"><a name="09f1_1c4f"><a name="09f1_1c50"><a name="09f1_1c51">For a given polygon <I>P</I> and a point <I>q</I> on its boundary, the <I><B>shadow</I></B> of <I>q</I> is the set of points <I>r</I> such that the segment <img src="907_a.gif"><I> </I>is entirely on the boundary or in the interior of <I>P</I>. A polygon <I>P</I> is <I><B>star-shaped</I></B> if there exists a point <I>p</I> in the interior of <I>P</I> that is in the shadow of every point on the boundary of <I>P</I>. The set of all such points <I>p</I> is called the <I><B>kernel</I></B> of <I>P</I>. (See Figure 35.11.) Given an <I>n</I>-vertex, star-shaped polygon <I>P</I> specified by its vertices in counterclockwise order, show how to compute CH(<I>P</I>) in <I>O</I>(<I>n</I>) time.<P>
+<a name="09f1_1c58">35.3-5<a name="09f1_1c58"><P>
+<a name="09f1_1c52">In the <I><B>on-line convex-hull problem</I></B>, we are given the set <I>Q</I> of <I>n</I> points one point at a time. After receiving each point, we are to compute the convex hull of the points seen so far. Obviously, we could run Graham's scan once for each point, with a total running time of <I>O</I>(<I>n</I><SUP>2</SUP> l g <I>n</I>). Show how to solve the on-line convex-hull problem in a total of <I>O</I>(<I>n</I><SUP>2</SUP>) time.<P>
+<img src="908_a.gif"><P>
+<h4><a name="09f1_1c59">Figure 35.11 The definition of a star-shaped polygon, for use in Exercise 35.3-4. (a) A star-shaped polygon. The segment from point p to any point q on the boundary intersects the boundary only at q. (b) A non-star-shaped polygon. The shaded region on the left is the shadow of q, and the shaded region on the right is the shadow of q'. Since these regions are disjoint, the kernel is empty.<a name="09f1_1c59"></sub></sup></h4><P>
+<a name="09f1_1c5a">35.3-6<a name="09f1_1c5a"><P>
+Show how to implement the incremental method for computing the convex hull of <I>n</I> points so that it runs in <I>O</I>(<I>n </I>lg <I>n</I>) time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09f2_1c56">35.4 Finding the closest pair of points<a name="09f2_1c56"></h1><P>
+<a name="09f2_1c53"><a name="09f2_1c54"><a name="09f2_1c55">We now consider the problem of finding the closest pair of points in a set <I>Q</I> of <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 2 points. &quot;Closest&quot; refers to the usual euclidean distance: the distance between points <I>p</I><SUB>1</SUB> = (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>) and <I>p</I><SUB>2</SUB> = (<I>x</I><SUB>2</SUB>, <I>y</I><SUB>2</SUB>) is <img src="908_b.gif">. Two points in set <I>Q</I> may be coincident, in which case the distance between them is zero. This problem has applications in, for example, traffic-control systems. A system for controlling air or sea traffic might need to know which are the two closest vehicles in order to detect potential collisions.<P>
+A brute-force closest-pair algorithm simply looks at all the <img src="908_c.gif"> pairs of points. In this section, we shall describe a divide-and-conquer algorithm for this problem whose running time is described by the familiar recurrence <I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <I>O</I>(<I>n</I>). Thus, this algorithm uses only <I>O</I>(<I>n</I> lg <I>n</I>) time.<P>
+
+
+
+
+
+<h2>The divide-and-conquer algorithm</h2><P>
+<a name="09f3_1c56">Each recursive invocation of the algorithm takes as input a subset <I>P</I> <IMG SRC="../IMAGES/rgtubar.gif"> <I>Q</I> and arrays <I>X</I> and <I>Y</I>, each of which contains all the points of the input subset <I>P</I>. The points in array <I>X</I> are sorted so that their <I>x</I>-coordinates are monotonically increasing. Similarly, array <I>Y</I> is sorted by monotonically increasing <I>y</I>-coordinate. Note that in order to attain the <I>O</I>(<I>n</I> lg <I>n</I>) time bound, we cannot afford to sort in each recursive call; if we did, the recurrence for the running time would be <I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <I>O</I>(<I>n</I> lg <I>n</I>), whose solution is <I>T</I>(<I>n</I>) = <I>O</I>(<I>n 1g</I><SUP>2 </SUP><I>n</I>). We shall see a little later how to use &quot;presorting&quot; to maintain this sorted property without actually sorting in each recursive call.<P>
+A given recursive invocation with inputs <I>P</I>, <I>X</I>, and <I>Y</I> first checks whether |<I>P</I>| <IMG SRC="../IMAGES/lteq12.gif"> 3. If so, the invocation simply performs the brute-force method described above: try all <img src="909_a.gif"> pairs of points and return the closest pair. If |<I>P</I>| &gt; 3, the recursive invocation carries out the divide-and-conquer paradigm as follows.<P>
+<B>Divide</B>:     It finds a vertical line <I>l</I> that bisects the point set <I>P</I> into two sets <I>P<SUB>L </I></SUB>and <I>P<SUB>R</I></SUB> such that |<I>P<SUB>L</I></SUB>| = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrul14.gif"></FONT>|<I>P</I>|/2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrur14.gif"></FONT>, |<I>P<SUB>R</I></SUB>| = <FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdl12.gif"></FONT>|P| /2<FONT FACE="Times New Roman" SIZE=2><IMG SRC="../IMAGES/hfbrdr12.gif"></FONT>, all points in <I>P<SUB>L</I></SUB> are on or to the left of line <I>l</I>, and all points in <I>P<SUB>R</I></SUB> are on or to the right of <I>l</I>. The array <I>X</I> is divided into arrays <I>X<SUB>L</I></SUB> and <I>X<SUB>R</I></SUB>, which contain the points of <I>P<SUB>L </I></SUB>and <I>P<SUB>R</I></SUB> respectively, sorted by monotonically increasing <I>x</I>-coordinate. Similarly, the array <I>Y</I> is divided into arrays <I>Y<SUB>L</I></SUB> and <I>Y<SUB>R</I></SUB>, which contain the points of <I>P<SUB>L</I></SUB> and P<SUB>R</SUB> respectively, sorted by monotonically increasing <I>y-</I>coordinate.<P>
+<B>Conquer:</B>     Having divided <I>P</I> into <I>P<SUB>L</I></SUB> and <I>P<SUB>R</SUB>,</I> it makes two recursive calls, one to find the closest pair of points in <I>P<SUB>L</I></SUB> and the other to find the closest pair of points in <I>P<SUB>R</I></SUB>. The inputs to the first call are  the subset <I>P<SUB>L </I></SUB>and arrays <I>X<SUB>L</I></SUB> and <I>Y<SUB>L</I></SUB>; the second call receives the inputs <I>P<SUB>R</I></SUB>, <I>X<SUB>R</I></SUB>, and <I>Y<SUB>R</I></SUB>. Let the closest-pair distances returned for <I>P<SUB>L</I></SUB> and <I>P<SUB>R</I></SUB> be <IMG SRC="../IMAGES/delta12.gif"><I><SUB>L</I></SUB> and <IMG SRC="../IMAGES/delta12.gif"><I><SUB>R</I></SUB>, respectively, and let <IMG SRC="../IMAGES/delta12.gif"> = min(<IMG SRC="../IMAGES/delta12.gif"><I><SUB>L</I></SUB>, <IMG SRC="../IMAGES/delta12.gif"><I><SUB>R</I></SUB>).<P>
+<B>Combine:     </B>The closest pair is either the pair with distance <IMG SRC="../IMAGES/delta12.gif"> found by oneof the recursive calls, or it is a pair of points with one point in <I>P<SUB>L</I></SUB> and the other in <I>P<SUB>R</I>. </SUB>The algorithm determines if there is such a pair whose distance is less than <IMG SRC="../IMAGES/delta12.gif">. Observe that if there is a pair of points with distance less than <IMG SRC="../IMAGES/delta12.gif">, both points of the pair must be within <IMG SRC="../IMAGES/delta12.gif"> units of line <I>l</I>. Thus, as Figure 35.12(a) shows, they both must reside in the 2<IMG SRC="../IMAGES/delta12.gif">-wide vertical strip centered at line <I>l</I>. To find such a pair, if one exists, the algorithm does the following.<P>
+1.     It creates an array <I>Y</I>', which is the array <I>Y</I> with all points not in the 2<IMG SRC="../IMAGES/delta12.gif">-wide vertical strip removed. The array <I>Y</I>' is sorted by <I>y</I>-coordinate, just as <I>Y</I> is.<P>
+2.     For each point <I>p</I> in the array <I>Y</I>', the algorithm tries to find points in <I>Y</I>' that are within <IMG SRC="../IMAGES/delta12.gif"> units of <I>p</I>. As we shall see shortly, only the 7 points in <I>Y</I>' that follow <I>p</I> need be considered. The algorithm computes the distance from <I>p</I> to each of these 7 points and keeps track of the closest-pair distance <IMG SRC="../IMAGES/delta12.gif">' found over all pairs of points in <I>Y</I>'.<P>
+3.     If <IMG SRC="../IMAGES/delta12.gif">' &lt; <IMG SRC="../IMAGES/delta12.gif">, then the vertical strip does indeed contain a closer pair than was found by the recursive calls. This pair and its distance <IMG SRC="../IMAGES/delta12.gif">' are returned. Otherwise, the closest pair and its distance <IMG SRC="../IMAGES/delta12.gif"> found by the recursive calls are returned.<P>
+<img src="910_a.gif"><P>
+<h4><a name="09f3_1c57">Figure 35.12 Key concepts in the proof that the closest-pair algorithm needs to check only 7 points following each point in the array Y'. (a) If P<SUB>L</SUB> <IMG SRC="../IMAGES/memof12.gif"> P<SUB>L</SUB> and P<SUB>R</SUB> <IMG SRC="../IMAGES/memof12.gif"> P<SUB>R </SUB>are less than <IMG SRC="../IMAGES/delta12.gif"> units apart, they must reside within a <IMG SRC="../IMAGES/delta12.gif"> x 2<IMG SRC="../IMAGES/delta12.gif"> rectangle centered at line l. (b) How 4 points that are pairwise at least <IMG SRC="../IMAGES/delta12.gif"> units apart can all reside within a <IMG SRC="../IMAGES/delta12.gif"> x <IMG SRC="../IMAGES/delta12.gif"> square. On the left are 4 points in P<SUB>L</SUB>, and on the right are 4 points in P<SUB>R</SUB> There can be 8 points in the <IMG SRC="../IMAGES/delta12.gif"> x 2<IMG SRC="../IMAGES/delta12.gif"> rectangle if the points shown on line l are actually pairs of coincident points with one point in P<SUB>L</SUB> and one in P<SUB>R</SUB><FONT FACE="Times New Roman" SIZE=2>.<a name="09f3_1c57"></FONT></sub></sup></h4><P>
+The above description omits some implementation details that are necessary to achieve the <I>O</I>(<I>n 1g n</I>) running time. After proving the correctness of the algorithm, we shall show how to implement the algorithm to achieve the desired time bound.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Correctness</h2><P>
+The correctness of this closest-pair algorithm is obvious, except for two aspects. First, by bottoming out the recursion when |<I>P</I>| <IMG SRC="../IMAGES/lteq12.gif"> 3, we ensure that we never try to divide a set of points with only one point. The second aspect is that we need only check the 7 points following each point <I>p</I> in array <I>Y</I><I>'</I>; we shall now prove this property.<P>
+Suppose that at some level of the recursion, the closest pair of points is <I>p<SUB>L</I></SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>P<SUB>L</I></SUB> and <I>P<SUB>R</I></SUB> <IMG SRC="../IMAGES/memof12.gif"> <I>P<SUB>R</I></SUB>. Thus, the distance <IMG SRC="../IMAGES/delta12.gif">' between <I>P<SUB>L</I></SUB> and <I>P<SUB>R</I></SUB> is strictly less than <IMG SRC="../IMAGES/delta12.gif">. Point <I>p<SUB>L</I></SUB> must be on or to the left of line <I>l</I> and less than <IMG SRC="../IMAGES/delta12.gif"> units away. Similarly, <I>p<SUB>R</I></SUB> is on or to the right of <I>l</I> and less than <IMG SRC="../IMAGES/delta12.gif"> units away. Moreover, <I>p<SUB>L</I></SUB> and <I>p<SUB>R</I></SUB> are within <IMG SRC="../IMAGES/delta12.gif"> units of each other vertically. Thus, as Figure 35.12(a) shows, <I>p<SUB>L</I></SUB> and <I>p<SUB>R</I></SUB> are within a <IMG SRC="../IMAGES/delta12.gif"> X 2<IMG SRC="../IMAGES/delta12.gif"> rectangle centered at line <I>l</I>. (There may be other points within this rectangle as well.)<P>
+We next show that at most 8 points of <I>P</I> can reside within this <IMG SRC="../IMAGES/delta12.gif"> X 2<IMG SRC="../IMAGES/delta12.gif"> rectangle. Consider the <IMG SRC="../IMAGES/delta12.gif"> X <IMG SRC="../IMAGES/delta12.gif"> square forming the left half of this rectangle. Since all points within <I>P<SUB>L</I></SUB> are at least <IMG SRC="../IMAGES/delta12.gif"> units apart, at most 4 points can reside within this square; Figure 35.12(b) shows how. Similarly, at most 4 points in <I>P<SUB>R</I></SUB> can reside within the <IMG SRC="../IMAGES/delta12.gif"> X <IMG SRC="../IMAGES/delta12.gif"> square forming the right half of the rectangle. Thus, at most 8 points of <I>P</I> can reside within the <IMG SRC="../IMAGES/delta12.gif"> X 2<IMG SRC="../IMAGES/delta12.gif"> rectangle. (Note that since points on line <I>l</I> may be in either <I>P<SUB>L</I></SUB> or <I>P<SUB>R</I></SUB>, there may be up to 4 points on <I>l</I>. This limit is achieved if there are two pairs of coincident points, each pair consisting of one point from <I>P<SUB>L</I></SUB> and one point from <I>P<SUB>R</I></SUB>, one pair is at the intersection of <I>l</I> and the top of the rectangle, and the other pair is where <I>l</I> intersects the bottom of the rectangle.)<P>
+Having shown that at most 8 points of <I>P</I> can reside within the rectangle, it is easy to see that we need only check the 7 points following each point in the array <I>Y</I><I>'</I>. Still assuming that the closest pair is <I>P<SUB>L</I></SUB> and <I>P<SUB>R</I></SUB>, let us assume without loss of generality that <I>p<SUB>L</I></SUB> precedes <I>p<SUB>R</I></SUB> in array <I>Y</I><I>'</I>. Then, even if <I>p<SUB>L </I></SUB>occurs as early as possible in <I>Y</I><I>'</I> and <I>p<SUB>R</I></SUB> occurs as late as possible, <I>p<SUB>R</I></SUB> is in one of the 7 positions following <I>p<SUB>L</I></SUB>. Thus, we have shown the correctness of the closest-pair algorithm.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Implementation and running time</h2><P>
+As we have noted, our goal is to have the recurrence for the running time be <I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <I>O</I>(<I>n</I>), where <I>T</I>(<I>n</I>) is, of course, the running time for a set of <I>n</I> points. The main difficulty is in ensuring that the arrays <I>X<SUB>L</I></SUB>, <I>X<SUB>R</I></SUB>, <I>Y<SUB>L</I></SUB>, and <I>Y<SUB>R</I></SUB>, which are passed to recursive calls, are sorted by the proper coordinate and also that the array <I>Y</I>' is sorted by <I>y</I>-coordinate. (Note that if the array <I>X</I> that is received by a recursive call is already sorted, then the division of set <I>P</I> into <I>P<SUB>L</I></SUB> and <I>P<SUB>R</I></SUB> is easily accomplished in linear time.)<P>
+The key observation is that in each call, we wish to form a sorted subset of a sorted array. For example, a particular invocation is given the subset <I>P </I>and the array <I>Y,</I> sorted by <I>y</I>-coordinate. Having partitioned <I>P</I> into <I>P<SUB>L </I></SUB>and <I>P<SUB>R</I></SUB>, it needs to form the arrays <I>Y<SUB>L</I></SUB> and <I>Y<SUB>R</I></SUB>, which are sorted by <I>y</I>-coordinate. Moreover, these arrays must be formed in linear time. The method can be viewed as the opposite of the <FONT FACE="Courier New" SIZE=2>MERGE</FONT> procedure from merge sort in Section 1.3.1: we are splitting a sorted array into two sorted arrays. The following pseudocode gives the idea.<P>
+<pre>1  <I>length</I>[<I>Y<SUB>L</I></SUB>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>Y<SUB>R</I></SUB>] <IMG SRC="../IMAGES/arrlt12.gif"> 0</sub></sup></pre><P>
+<pre>2  <B>for</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> <I>length</I>[<I>Y</I>]</sub></sup></pre><P>
+<pre>3        <B>do if</B> <I>Y</I>[<I>i</I>] <IMG SRC="../IMAGES/memof12.gif"> <I>P<SUB>L</I></sub></sup></pre><P>
+<pre>4              <B>then</B> <I>length</I>[<I>Y<SUB>L</I></SUB>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>Y<SUB>L</I></SUB>] + 1</sub></sup></pre><P>
+<pre>5                   <I>Y</I>[<I>length</I>[<I>Y<SUB>L</I></SUB>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>Y</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>6              <B>else</B> <I>length</I>[<I>Y<SUB>R</I></SUB>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>Y<SUB>R</I></SUB>] + 1</sub></sup></pre><P>
+<pre>7                   <I>Y</I>[<I>length</I>[<I>Y<SUB>R</I></SUB>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>Y</I>[<I>i</I>]</sub></sup></pre><P>
+We simply examine the points in array <I>Y</I> in order. If a point <I>Y</I>[<I>i</I>] is in <I>P<SUB>L</I></SUB>, we append it to the end of array <I>Y<SUB>L</I></SUB>; otherwise, we append it to the end of array <I>Y<SUB>R</I></SUB>. Similar pseudocode works for forming arrays <I>X<SUB>L</I></SUB>, <I>X<SUB>R</I></SUB>, and <I>Y</I>'<I>.</I><P>
+<a name="09f5_1c57">The only remaining question is how to get the points sorted in the first place. We do this by simply <I><B>presorting</I></B> them; that is, we sort them once and for all <I>before</I> the first recursive call. These sorted arrays are passed into the first recursive call, and from there they are whittled down through the recursive calls as necessary. The presorting adds an additional <I>O</I>(<I>n </I>lg<I> n</I>) to the running time, but now each step of the recursion takes linear time exclusive of the recursive calls. Thus, if we let <I>T</I>(<I>n</I>) be the running time of each recursive step and <I>T</I>'(<I>n</I>) be the running time of the entire algorithm, we get <I>T</I>'(<I>n</I>) = <I>T</I>(<I>n</I>) + <I>O</I>(<I>n </I>lg<I> n</I>) and<P>
+<img src="912_a.gif"><P>
+Thus, <I>T</I>(<I>n</I>) = <I>O</I>(<I>n </I>lg<I> n</I>) and <I>T</I>'(<I>n</I>) = <I>O</I>(<I>n </I>lg<I> n</I>).<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="09f6_1c5c">Exercises<a name="09f6_1c5c"></h2><P>
+<a name="09f6_1c5d">35.4-1<a name="09f6_1c5d"><P>
+Professor Smothers comes up with a scheme that allows the closest-pair algorithm to check only 5 points following each point in array <I>Y</I>'. The idea is always to place points on line <I>l</I> into set <I>P<SUB>L</I></SUB>. Then, there cannot be pairs of coincident points on line <I>l</I> with one point in <I>P<SUB>L</I></SUB> and one in <I>P<SUB>R</I></SUB>. Thus, at most 6 points can reside in the <IMG SRC="../IMAGES/delta12.gif"> x 2<IMG SRC="../IMAGES/delta12.gif"> rectangle. What is the flaw in the professor's scheme?<P>
+<a name="09f6_1c5e">35.4-2<a name="09f6_1c5e"><P>
+Without increasing the asymptotic running time of the algorithm, show how to ensure that the set of points passed to the very first recursive call contains no coincident points. Prove that it then suffices to check the points in the 6 (not 7) array positions following each point in the array <I>Y</I>'. Why doesn't it suffice to check only the 5 array positions following each point?<P>
+<a name="09f6_1c5f">35.4-3<a name="09f6_1c5f"><P>
+<a name="09f6_1c58"><a name="09f6_1c59"><a name="09f6_1c5a"><a name="09f6_1c5b">The distance between two points can be defined in ways other than euclidean. In the plane, the <I><B>L</I></B><I><SUB>m</SUB><B>-distance</I></B> between points <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> is given by ((<I>x</I><SUB>1</SUB> - <I>x</I><SUB>2]</SUB><I><SUP>m</I></SUP><SUB> + (</SUB><I>y</I><SUB>1</SUB> - y<SUB>2</SUB>)<I><SUP>m</I></SUP>)<SUP>1/<I>m</I>.</SUP> Euclidean distance, therefore, is <I>L</I><SUB>2</SUB>-distance. Modify the closest-pair algorithm to use the L<SUB>1</SUB>-distance, which is also known as the <I><B>Manhattan distance</I>.</B><P>
+<a name="09f6_1c60">35.4-4<a name="09f6_1c60"><P>
+Given two points <I>p</I><SUB>1</SUB> and <I>p</I><SUB>2</SUB> in the plane, the <I>L</I><IMG SRC="../IMAGES/infin.gif">-distance between them is max(|<I>x</I><SUB><FONT FACE="Courier New" SIZE=2>1</FONT></SUB> - <I>x</I><SUB><FONT FACE="Courier New" SIZE=2>2</FONT></SUB>|, |<I>y</I><SUB><FONT FACE="Courier New" SIZE=2>1</FONT></SUB> - <I>y</I><SUB><FONT FACE="Courier New" SIZE=2>2</FONT></SUB>|). Modify the closest-pair algorithm to use the <I>L</I><SUB><FONT FACE="Courier New" SIZE=2></SUB><IMG SRC="../IMAGES/infin.gif"></FONT>-distance.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="09f7_1c67">Problems<a name="09f7_1c67"></h1><P>
+<a name="09f7_1c68">35-1 Convex layers<a name="09f7_1c68"><P>
+<a name="09f7_1c5c"><a name="09f7_1c5d">Given a set <I>Q</I> of points in the plane, we define the <I><B>convex layers</I></B> of <I>Q</I> inductively. The first convex layer of <I>Q</I> consists of those points in <I>Q</I> that are vertices of CH(<I>Q</I>). For <I>i</I> &gt; 1, define <I>Q<SUB>i</I></SUB> to consist of the points of <I>Q</I> with all points in convex layers 1, 2, . . . , <I>i</I> - 1 removed. Then, the <I>i</I>th convex layer of <I>Q</I> is CH(<I>Q<SUB>i</I></SUB>) if <img src="913_a.gif"> and is undefined otherwise.<P>
+<I><B>a</I></B>.     Give an <I>O</I>(<I>n</I><SUP>2</SUP>)-time algorithm to find the convex layers of a set on <I>n </I>points.<P>
+<I><B>b</I></B>.     Prove that <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg<I> n</I>) time is required to compute the convex layers of a set of <I>n</I> points on any model of computation that requires <IMG SRC="../IMAGES/omega12.gif">(<I>n </I>lg<I> n</I>) time to sort <I>n</I> real numbers.<P>
+<a name="09f7_1c69">35-2     Maximal layers<a name="09f7_1c69"><P>
+<a name="09f7_1c5e"><a name="09f7_1c5f"><a name="09f7_1c60"><a name="09f7_1c61">Let <I>Q</I> be a set of <I>n</I> points in the plane. We say that point (<I>x, y</I>) <I><B>dominates </I></B>point (<I>x</I>', y<I>'</I>) if <I>x</I> <IMG SRC="../IMAGES/gteq.gif"> <I>x</I>'<I> and </I>y<I> <IMG SRC="../IMAGES/gteq.gif"> </I>y<I>'</I>. A point in <I>Q</I> that is dominated by no other points in <I>Q</I> is said to be <I><B>maximal</I></B>. Note that <I>Q</I> may contain many maximal points, which can be organized into <I><B>maximal layers</I></B> as follows. The first maximal layer <I>L</I><SUB>1</SUB> is the set of maximal points of <I>Q</I>. For <I>i</I> &gt; 1, the <I>i</I>th maximal layer <I>L<SUB>i</I></SUB> is the set of maximal points in <img src="913_b.gif">.<P>
+Suppose that <I>Q</I> has <I>k</I> nonempty maximal layers, and let <I>y<SUB>i</I></SUB> be the <I>y</I>-coordinate of the leftmost point in <I>L<SUB>i</I></SUB> for <I>i</I> = 1, 2, . . . ,<I>k</I>. For now, assume that no two points in <I>Q</I> have the same <I>x</I> - or <I>y</I>-coordinate.<P>
+<I><B>a</I></B>.     Show that <I>y</I><SUB>1</SUB> &gt; <I>y</I><SUB>2 </SUB>&gt; . . . &gt; <I>y<SUB>k</I></SUB>.<P>
+Consider a point (<I>x, y</I>) that is to the left of any point in <I>Q</I> and for which y is distinct from the <I>y</I>-coordinate of any point in <I>Q</I>. Let <I>Q</I>'<I> = </I>Q<I> <IMG SRC="../IMAGES/wideu.gif"> {(</I>x, y<I>)}.</I><P>
+<I><B>b</I></B>.     Let <I>j</I> be the minimum index such that <I>y<SUB>j</I></SUB> &lt; <I>y</I>, unless <I>y</I> &lt; <I>y<SUB>k</I></SUB>, in which case we let <I>j</I> = <I>k</I> + 1. Show that the maximal layers of <I>Q</I><I>'</I> are as follows.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I>, then the maximal layers of <I>Q</I>' are the same as the maximal layers of <I>Q</I>, except that <I>L<SUB>j</SUB> </I>also includes (<I>x</I>, <I>y</I>) as its new leftmost point.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     If <I>j</I> = <I>k</I> + 1, then the first <I>k</I> maximal layers of <I>Q</I>' are the same as for <I>Q</I>, but in addition, <I>Q</I>' has a nonempty (<I>k</I> + 1)st maximal layer: <I>L<SUB>k</I>+1</SUB> = {(<I>x</I>, <I>y</I>)}.<P>
+<a name="09f7_1c62"><I><B>c</I></B>.     Describe an <I>O</I>(<I>n </I>lg<I> n</I>)-time algorithm to compute the maximal layers of a set <I>Q</I> of <I>n</I> points. (<I>Hint:</I> Move a sweep line from right to left.)<P>
+<I><B>d</I></B>.     Do any difficulties arise if we now allow input points to have the same <I>x</I>- or <I>y</I>-coordinate? Suggest a way to resolve such problems.<P>
+<a name="09f7_1c6a">35-3     Ghostbusters and ghosts<a name="09f7_1c6a"><P>
+A group of <I>n</I> Ghostbusters is battling <I>n</I> ghosts. Each Ghostbuster is armed with a proton pack, which shoots a stream at a ghost, e radicating it. A stream goes in a straight line and terminates when it hits the ghost. The Ghostbusters decide upon the following strategy. They will pair off with the ghosts, forming <I>n</I> Ghostbuster-ghost pairs, and then simultaneously each Ghostbuster will shoot a stream at his or her chosen ghost. As we all know, it is <I>very</I> dangerous to let streams cross, and so the Ghostbusters must choose pairings for which no streams will cross.<P>
+Assume that the position of each Ghostbuster and each ghost is a fixed point in the plane and that no three positions are collinear.<P>
+<I><B>a.</I></B>     Argue that there exists a line passing through one Ghostbuster and one ghost such the number of Ghostbusters on one side of the line equals the number of ghosts on the same side. Describe how to find such a line in <I>O</I>(<I>n </I>lg<I> n</I>) time.<P>
+<I><B>b.</I></B>     Give an <I>O</I>(<I>n<SUP>2 </I></SUP>lg<I> n</I>)-time algorithm to pair Ghostbusters with ghosts in such a way that no streams cross.<P>
+<a name="09f7_1c6b">35-4     Sparse-hulled distributions<a name="09f7_1c6b"><P>
+<a name="09f7_1c63"><a name="09f7_1c64"><a name="09f7_1c65"><a name="09f7_1c66">Consider the problem of computing the convex hull of a set of points in the plane that have been drawn according to some known random distribution. Sometimes, the convex hull of <I>n</I> points drawn from such a distribution has <I>O</I>(<I>n</I><SUP>1-</SUP><IMG SRC="../IMAGES/memof12.gif">) expected size for some constant <IMG SRC="../IMAGES/memof12.gif"> &gt; 0. We call such a distribution <I><B>sparse-hulled</I></B>. Sparse-hulled distributions include the following:<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     Points drawn uniformly from a unit-radius disk. The convex hull has <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>1/3</SUP>) expected size.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     Points drawn uniformly from the interior of a convex polygon with k sides, for any constant k. The convex hull has <IMG SRC="../IMAGES/bound.gif">(1g <I>n</I>) expected size.<P>
+<FONT FACE="Courier New" SIZE=2><IMG SRC="../IMAGES/dot12.gif"></FONT>     Points drawn according to a two-dimensional normal distribution. The convex hull has <img src="914_a.gif"> expected size.<P>
+<I><B>a.</I></B>     Given two convex polygons with <I>n</I><SUB>1</SUB> and <I>n</I><SUB>2</SUB> vertices respectively, show how to compute the convex hull of all <I>n</I><SUB>1</SUB> + <I>n</I><SUB>2</SUB> points in <I>O</I>(<I>n</I><SUB>1</SUB> + <I>n</I><SUB>2</SUB>) time. (The polygons may overlap.)<P>
+<I><B>b.</I></B>     Show that the convex hull of a set of <I>n</I> points drawn independently according to a sparse-hulled distribution can be computed in <I>O</I>(<I>n</I>) expected time. (<I>Hint:</I> Recursively find the convex hulls of the first <I>n</I>/2 points and the second <I>n/</I>2 points, and then combine the results.)<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+This chapter barely scratches the surface of computational-geometry algorithms and techniques. Books on computational geometry include those by Preparata and Shamos [160] and Edelsbrunner [60].<P>
+Although geometry has been studied since antiquity, the development of algorithms for geometric problems is relatively new. Preparata and Shamos note that the earliest notion of the complexity of a problem was given by E. Lemoine in 1902. He was studying euclidean constructions--those using a ruler and a straightedge--and devised a set of five primitives: placing one leg of the compass on a given point, placing one leg of the compass on a given line, drawing a circle, passing the ruler's edge through a given point, and drawing a line. Lemoine was interested in the number of primitives needed to effect a given construction; he called this amount the "simplicity" of the construction.<P>
+The algorithm of Section 35.2, which determines whether any segments intersect, is due to Shamos and Hoey [176].<P>
+The original version of Graham's scan is given by Graham [91]. The package-wrapping algorithm is due to Jarvis [112]. Using a decision-tree model of computation, Yao [205] proved a lower bound of <IMG SRC="../IMAGES/omega12.gif">(<I>n</I> lg <I>n</I>) for the running time of any convex-hull algorithm. When the number of vertices <I>h </I>of the convex hull is taken into account, the prune-and-search algorithm of Kirkpatrick and Seidel [120], which takes <I>O</I>(<I>n </I>lg<I> h</I>) time, is asymptotically optimal.<P>
+The <I>O</I>(<I>n </I>lg<I> n</I>)-time divide-and-conquer algorithm for finding the closest pair of points is by Shamos and appears in Preparata and Shamos [160]. Preparata and Shamos also show that the algorithm is asymptotically optimal in a decision-tree model.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap36.htm">Chapter 36</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

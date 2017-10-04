@@ -1,0 +1,24 @@
+#include <iostream>
+using namespace std;
+int main ( ) {
+    int n2[100001], k=0, c=0, i, j;
+    char n1[100001];
+    for (;;)
+        {
+        k++;
+        cin >> n1[k] >> n2[k];
+        if (n1[k]=='=') break;
+        }
+    c+=n2[k];
+    for (i=k-1;i>=1;i--)
+        {
+        switch (n1[i])
+            {
+            case '+': c-=n2[i];break;
+            case '-': c+=n2[i];break;
+            case '*': c/=n2[i];break;
+            }
+        }
+    cout << c << endl;
+    return 0;
+}

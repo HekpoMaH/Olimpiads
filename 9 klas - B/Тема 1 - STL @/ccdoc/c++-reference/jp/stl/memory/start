@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="jp"
+ lang="jp" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>jp:stl:memory:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-11-29T00:56:06-0800" />
+<meta name="keywords" content="jp,stl,memory,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/jp/stl/memory/start?do=index" title="Index" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=jp:stl:memory" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/jp/stl/memory/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/jp/stl/memory/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='jp:stl:memory';var JSINFO = {"id":"jp:stl:memory:start","namespace":"jp:stl:memory"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h2><a name="stl_メモリユーティリティ" id="stl_メモリユーティリティ">STL メモリユーティリティ</a></h2>
+<div class="level2">
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"><a href="auto_ptr" class="wikilink1" title="jp:stl:memory:auto_ptr">auto_ptr</a></td><td class="col1">自動的にオブジェクトを破棄するポインタを生成します</td>
+	</tr>
+</table>
+
+<p>
+
+より多くの情報は<a href="http://www.cplusplus.com/reference/misc/" class="urlextern" title="http://www.cplusplus.com/reference/misc/"  rel="nofollow">http://www.cplusplus.com/reference/misc/</a>にあります。
+</p>
+
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{
+TASK: MORSE
+LANG: PASCAL
+}
+var
+s:string;
+buk:array['A'..'Z'] of string;
+cif:array[0..9]of string;
+dr:array[1..6] of string;
+j,k,l,i,m,n,code:integer;
+procedure EDN;
+ begin
+ for i:=1 to length(s)do
+  if ord(s[i])>90 then
+   s[i]:=chr(ord(s[i])-32);
+ end;
+begin
+buk['A']:='.- ';
+buk['B']:='-... ';
+buk['C']:='-.-. ';
+buk['D']:='-.. ';
+buk['E']:='. ';
+buk['F']:='..-. ';
+buk['G']:='--. ';
+buk['H']:='.... ';
+buk['I']:='.. ';
+buk['J']:='.--- ';
+buk['K']:='-.- ';
+buk['L']:='.-.. ';
+buk['M']:='-- ';
+buk['N']:='-. ';
+buk['O']:='--- ';
+buk['P']:='.--. ';
+buk['Q']:='--.- ';
+buk['R']:='.-. ';
+buk['S']:='... ';
+buk['T']:='- ';
+buk['U']:='..- ';
+buk['V']:='...- ';
+buk['W']:='.-- ';
+buk['X']:='-..- ';
+buk['Y']:='-.-- ';
+buk['Z']:='--.. ';
+cif[1]:='.---- ';
+cif[2]:='..--- ';
+cif[3]:='...-- ';
+cif[4]:='....- ';
+cif[5]:='..... ';
+cif[6]:='- ';
+cif[7]:='-- ';
+cif[8]:='--- ';
+cif[9]:='---- ';
+cif[0]:='----- ';
+dr[1]:='.-.-.- ';
+dr[2]:='--..-- ';
+dr[3]:='-..-. ';
+dr[4]:='..--.. ';
+dr[5]:='.-.-. ';
+dr[6]:='...-.- ';
+readln(s);
+EDN;
+for i:=1 to length(s) do
+begin
+ if (ord(s[i])>64)and(ord(s[i])<91) then
+  write(buk[s[i]]);
+ val(s[i],n,code);
+ if (ord(s[i])>47)and(ord(s[i])<58)then
+  write(cif[n]);
+ if s[i]='.' then
+  write(dr[1]);
+ if s[i]=',' then
+  write(dr[2]);
+ if s[i]='-'then
+  write(dr[3]);
+ if s[i]='?' then
+  write(dr[4]);
+ if s[i]=' ' then
+  write(dr[5]);
+end;
+writeln(dr[6]);
+end.

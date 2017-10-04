@@ -1,0 +1,91 @@
+/*
+TASK:cars
+LANG:C
+*/
+#include<stdio.h>
+#define MAXN 510000
+#define MAXM 5001000
+#define MOD 987654321
+
+int d[MAXN];
+int g[MAXN]={0};
+int p[MAXN];
+int a[MAXN]={0};
+
+
+int start, end;
+
+int n;
+int m[MAXM][2]={0};
+int top=0;
+
+
+
+void input();
+void solve();
+
+
+
+int main()
+{
+input();
+solve();
+return 0;
+}
+
+
+void solve()
+{
+a[end]=1;
+
+printf("%d\n",dfs(start));
+}
+
+
+
+
+
+int dfs(int v)
+{
+int i;
+if(a[v]) return a[v];
+
+
+for(i=p[v];m[i][0]==v;i++)
+ a[v]= (a[v]+dfs(m[i][1]))%MOD;
+ 
+
+return a[v];
+}
+
+
+
+
+
+void input()
+{
+int i,j,x;
+
+scanf("%d",&n);
+
+
+
+for(i=1;i<=n;i++)
+ {
+ scanf("%d",&d[i]);
+ p[i]=top;
+ for(j=0;j<d[i];j++)
+  {
+  scanf("%d",&x);
+  m[top][0]=i;
+  m[top][1]=x;
+  g[x]++;
+  top++;
+  }
+ }
+
+for(i=1;i<=n;i++)
+ if(d[i]==0) end=i;
+ else if(g[i]==0) start=i;
+}
+

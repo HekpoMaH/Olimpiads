@@ -1,0 +1,169 @@
+/*
+TASK:FESTA
+LANG:C++
+*/
+#include<iostream>
+#include<math.h>
+
+using namespace std;
+
+struct grad
+{
+	int num;
+	int p;
+	grad *next;
+} a;
+int n=0;
+
+void add(int p,int q)
+{
+	if(n==0)
+	{
+		a.next=NULL;
+		a.num=p;
+		a.p=q;
+		n++;
+		return;
+	}
+	grad *i,*t;
+	int j=0;
+	if(a.num>p)
+	{
+		t=new grad;
+		t->next=&a;
+		t->num=p;
+		t->p=q;
+		a=*t;
+		n++;
+		return;
+	}
+	for(i=&a;j<n-1;i=i->next,j++)
+		if(i->next->num<p)
+			break;
+	if(j==n-1)
+	{
+		t=new grad;
+		t->next=NULL;
+		t->num=p;
+		t->p=q;
+		i->next=t;
+		n++;
+		return;
+	}
+	if(i->next->num==p)
+	{
+		i=i->next;
+		i->p+=q;
+		return;
+	}
+	t=new grad;
+	t->next=i->next;
+	t->num=p;
+	t->p=q;
+	i->next=t;
+	n++;
+	return;
+}
+
+void f(int s)
+{
+	int i,p=0,q=0,x,dx=0,sum,dq=0,min=100000;
+	grad *t=&a;
+	for(i=0;i<n;i++)
+	{
+		p+=t->num*t->p;
+		q+=t->p;
+		t=t->next;
+	}
+	p-=s;
+	x=p/q;
+	t=&a;
+	sum=p+s-x*q;
+	if(x<=t->num&&abs(s-sum)<min)
+	{
+		dx=x;
+		dq=q;
+		min=abs(s-sum);
+	}
+	x=x-1;
+	sum=p+s-x*q;
+	if(x<=t->num&&abs(s-sum)<min)
+	{
+		dx=x;
+		dq=q;
+		min=abs(s-sum);
+	}
+	x=t->num;
+	sum=p+s-x*q;
+	if(abs(s-sum)<min)
+	{
+		dx=x;
+		dq=q;
+		min=abs(s-sum);
+	}
+	for(i=0;i<n-1;i++)
+	{
+		q-=2*t->p;
+		x=p/q;
+		if(x>=t->num&&x<=t->next->num)
+		{
+		if(x>=t->num&&x<=t->next->num&&abs(s-sum)<min)
+		{
+			dx=x;
+			dq=q;
+			min=abs(s-sum);
+		}
+		x=x-1;
+		sum=p+s-x*q;
+		if(x>=t->num&&abs(s-sum)<min)
+		{
+			dx=x;
+			dq=q;
+			min=abs(s-sum);
+		}
+		}
+		else
+		{
+			x=t->next->num;
+			sum=p+s-x*q;
+			if(abs(s-sum)<min)
+			{
+				dx=x;
+				dq=q;
+				min=abs(s-sum);
+			}
+		}
+		t=t->next;
+	}
+	q-=2*t->p;
+	x=p/q;
+	if(x>=t->num)
+	{
+		dx=x;
+		dq=q;
+	}
+	sum=p+s-(dx*dq);
+	cout<<dx<<" "<<min<<endl;
+}
+
+int main()
+{
+	int p,q,r;
+	do
+	{
+		cin>>p;
+		if(p==1)
+		{
+			cin>>q>>r;
+			add(q,r);
+		}
+		if(p==2)
+		{
+			cin>>q;
+			f(q);
+		}
+                p=0;
+	}while(!cin.eof());
+	return 0;
+}
+

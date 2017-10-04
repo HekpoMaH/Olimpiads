@@ -1,0 +1,31 @@
+#include<iostream>
+#include<cmath>
+using namespace std;
+
+char s[1<<20], kod[1<<20];
+char a[1000][1000];
+int n, k, i, j, r;
+
+int main()
+{
+scanf("%s", &s);
+n = int ( sqrt ( strlen (s) ) );
+for(i=0; i<n; i++)
+for(j=0; j<n; j++)
+{
+a[i][j] = s[k++];
+if(s[k-1] >= '0' && s[k-1] <= '9')  { r += s[k-1] - '0'; r %= n; }
+}
+
+k=0; i = r; j = 0;
+while(1)
+{
+while(i<n && j<n) { if(!(a[i][j] >= 'A' && a[i][j] <= 'Z')) goto red; kod[k++] = a[i][j]; i++; j++; }
+if(i == n) { j--; i=0; }
+if(j == n) j=0;
+}
+red: printf("%s\n", kod);
+//system("pause");
+return 0;
+}
+// RNLAJDSRGT5EO8OTHIKOLWOEKIMF!MOIL2A!

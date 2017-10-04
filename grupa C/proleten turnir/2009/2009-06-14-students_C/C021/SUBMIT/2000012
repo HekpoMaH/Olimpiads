@@ -1,0 +1,29 @@
+#include <iostream>
+using namespace std;
+long long dp[256], n, p[128], r[128], q[128], f[128], l, ans = (1 << 30);
+void scan(){
+     cin >> n >> l;
+     for ( int i = 0; i < n; ++i )
+         cin >> p[i] >> r[i] >> q[i] >> f[i];
+}
+void solve(){
+     dp[0] = 1;
+     for ( int i = 0; i < n; ++i )
+         for ( int j = 1; j <= f[i]; ++j )
+             for ( int k = l; k >= 0; --k )
+                 if ( dp[k] > 0 )
+                    if ( j < r[i] )
+                       dp[k + j] = min((dp[k + j] == 0)?(1 << 30):dp[k + j], dp[k] + j * p[i]);
+                    else
+                        dp[k + j] = min((dp[k + j] == 0)?(1 << 30):dp[k + j], dp[k] + j * q[i]);
+
+     for ( int i = l; i <= 255; ++i )
+         if ( dp[i] != 0 ) ans = min(dp[i], ans);
+     if ( ans == (1 << 30) ) cout << -1 << endl;
+     else cout << ans - 1<< endl;
+}
+int main(){
+    scan();
+    solve();
+    return 0;
+}

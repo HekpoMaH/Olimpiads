@@ -1,0 +1,101 @@
+/*
+TASK: PHONE
+LANG: C
+*/
+
+#include <stdio.h>
+
+struct person {
+	char phone[12];
+	float price;
+	int b[10];
+} friends[105];
+int friends_num;
+
+typedef struct person person;
+
+void init_person (person *p) {
+	int i = 0;
+	while (i < 12) {
+		p->phone[i++] = 0;
+	}
+	p->price = 0;
+	i = 0;
+	while (i < 10) {
+		p->b[i++] = 0;
+	}
+}
+
+int can_dial (char phone[], int b[]) {
+	int i = 0;
+	while (phone[i] != '\0') {
+		if (!b[phone[i]-'0']) {
+			return 0;
+		}
+		i++;
+	}
+	return 1;
+}
+
+float price_so_far;
+
+int visited[102];
+
+float smallest_price;
+
+void DFS(int vertex) {
+	printf("Visiting: %i\n", vertex);
+	if (can_dial(friends[101].phone, friends[vertex].b)) {
+		price_so_far += friends[vertex].price;
+		if (price_so_far < smallest_price) {
+			smallest_price = price_so_far;
+			printf("Update\n");
+		}
+		price_so_far -= friends[vertex].price;
+	}
+	visited[vertex] = 1;
+	int i = 0;
+	while (i < friends_num) {
+		if (!visited[i] && can_dial(friends[i].phone, friends[vertex].b)) {
+			printf("Add/Sub: %f\n", friends[vertex].price);
+			price_so_far += friends[vertex].price;
+			DFS(i);
+			price_so_far -= friends[vertex].price;
+		}
+		i++;
+	}
+	printf("Exiting: %i\n", vertex);
+	visited[vertex] = 0;
+}
+
+int main() {
+	int z,i,k,l;
+	scanf("%i", &friends_num);
+	init_person(&friends[102]);
+	scanf("%s %f %i", &friends[102].phone, &friends[102].price, &z);
+	i = 0;
+	while (i < z) {
+		scanf("%i", &k);
+		friends[102].b[k] = 1;
+		i++;
+	}
+	i = 0;
+	while (i < friends_num) {
+		init_person(&friends[i]);
+		scanf("%s %f %i", &friends[i].phone, &friends[i].price, &z);
+		printf("Friend price: %f\n", friends[i].price);
+		l = 0;
+		while (l < z) {
+			scanf("%i", &k);
+			friends[i].b[k] = 1;
+			l++;
+		}
+		i++;
+	}
+	scanf("%s", &friends[101].phone);
+	price_so_far = 0;
+	smallest_price = 999999;
+	DFS(102);
+	printf("%f\n", smallest_price);
+	return 0;
+}

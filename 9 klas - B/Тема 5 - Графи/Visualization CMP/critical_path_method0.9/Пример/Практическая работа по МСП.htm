@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>Практическая работа по МСП</title>
+</head>
+<body>
+<h3>Название: Практическая работа по МСП</h3>
+<h3>Автор:  Автор</h3>
+<h3>Описание:  Строительство торгового павильона</h3>
+<h3>Сетевой график:</h3>
+<img src=graph.bmp border=1>
+<h3>Итоги проекта:</h3>
+<p>Tкр = 57 дн.</p>
+<p>S = 387,000 млн. р.</p>
+<p>Утек = 4 дн.</p>
+<h3>Критические пути:</h3>
+<table border=1>
+<tr><td>Номер</td><td>Путь событий</td><td>Путь работ</td></tr>
+<tr><td>1</td><td>1->3->4->5->6</td><td>C->A->E->B</td></tr>
+<tr><td>2</td><td>1->3->5->6</td><td>C->F->B</td></tr>
+</table>
+<h3>Работы:</h3>
+<table border=1>
+<tr><td>Метка</td><td>События</td><td>Предшествующие</td><td>Название</td><td>t</td><td>tтек</td><td>tу</td><td>Сн</td><td>Стек</td><td>Су</td><td>Трн</td><td>Тро</td><td>Тпн</td><td>Тпо</td><td>Rс</td><td>Rп</td><td>Уmax</td><td>Су уд</td></tr>
+<tr><td>A</td><td>3->4</td><td>C, G</td><td>&nbsp</td><td>10</td><td>10</td><td>9</td><td>26,000</td><td>26,000</td><td>2,000</td><td>27</td><td>37</td><td>27</td><td>37</td><td>0</td><td>0</td><td>1</td><td>2,000</td></tr>
+<tr><td>B</td><td>5->6</td><td>F, E</td><td>&nbsp</td><td>12</td><td>10</td><td>10</td><td>32,000</td><td>38,000</td><td>6,000</td><td>47</td><td>57</td><td>47</td><td>57</td><td>0</td><td>0</td><td>2</td><td>3,000</td></tr>
+<tr><td>C</td><td>1->3</td><td>&nbsp</td><td>&nbsp</td><td>29</td><td>27</td><td>27</td><td>40,000</td><td>48,000</td><td>8,000</td><td>0</td><td>27</td><td>0</td><td>27</td><td>0</td><td>0</td><td>2</td><td>4,000</td></tr>
+<tr><td>D</td><td>4->6</td><td>H, A</td><td>&nbsp</td><td>19</td><td>19</td><td>16</td><td>43,000</td><td>43,000</td><td>12,000</td><td>37</td><td>56</td><td>38</td><td>57</td><td>1</td><td>1</td><td>3</td><td>4,000</td></tr>
+<tr><td>E</td><td>4->5</td><td>H, A</td><td>&nbsp</td><td>10</td><td>10</td><td>9</td><td>26,000</td><td>26,000</td><td>2,000</td><td>37</td><td>47</td><td>37</td><td>47</td><td>0</td><td>0</td><td>1</td><td>2,000</td></tr>
+<tr><td>F</td><td>3->5</td><td>C, G</td><td>&nbsp</td><td>20</td><td>20</td><td>17</td><td>45,000</td><td>45,000</td><td>6,000</td><td>27</td><td>47</td><td>27</td><td>47</td><td>0</td><td>0</td><td>3</td><td>2,000</td></tr>
+<tr><td>G</td><td>2->3</td><td>L</td><td>&nbsp</td><td>10</td><td>10</td><td>9</td><td>26,000</td><td>26,000</td><td>3,000</td><td>10</td><td>20</td><td>17</td><td>27</td><td>7</td><td>7</td><td>1</td><td>3,000</td></tr>
+<tr><td>H</td><td>1->4</td><td>&nbsp</td><td>&nbsp</td><td>18</td><td>18</td><td>16</td><td>41,000</td><td>41,000</td><td>6,000</td><td>0</td><td>18</td><td>19</td><td>37</td><td>19</td><td>19</td><td>2</td><td>3,000</td></tr>
+<tr><td>K</td><td>2->6</td><td>L</td><td>&nbsp</td><td>37</td><td>37</td><td>33</td><td>68,000</td><td>68,000</td><td>12,000</td><td>10</td><td>47</td><td>20</td><td>57</td><td>10</td><td>10</td><td>4</td><td>3,000</td></tr>
+<tr><td>L</td><td>1->2</td><td>&nbsp</td><td>&nbsp</td><td>10</td><td>10</td><td>9</td><td>26,000</td><td>26,000</td><td>4,000</td><td>0</td><td>10</td><td>0</td><td>10</td><td>0</td><td>7</td><td>1</td><td>4,000</td></tr>
+</table>
+<h3>События:</h3>
+<table border=1>
+<tr><td>Номер</td><td>Название</td><td>Tр</td><td>Tп</td><td>R</td><td>Ранг</td><td>Ранг расстановки</td></tr>
+<tr><td>1</td><td>&nbsp</td><td>0</td><td>0</td><td>0</td><td>&nbsp</td><td>&nbsp</td></tr>
+<tr><td>2</td><td>&nbsp</td><td>10</td><td>17</td><td>7</td><td>&nbsp</td><td>&nbsp</td></tr>
+<tr><td>3</td><td>&nbsp</td><td>27</td><td>27</td><td>0</td><td>&nbsp</td><td>&nbsp</td></tr>
+<tr><td>4</td><td>&nbsp</td><td>37</td><td>37</td><td>0</td><td>&nbsp</td><td>&nbsp</td></tr>
+<tr><td>5</td><td>&nbsp</td><td>47</td><td>47</td><td>0</td><td>&nbsp</td><td>&nbsp</td></tr>
+<tr><td>6</td><td>&nbsp</td><td>57</td><td>57</td><td>0</td><td>&nbsp</td><td>&nbsp</td></tr>
+</table>
+<h3>Обозначения.</h3>
+<p>Итоги проекта:</p>
+<p>Ткр - длительность критического пути</p>
+<p>S - общая стоимость проекта</p>
+<p>Утек - текущее время ускорения проекта (для данного ускорения выполнены все расчёты)</p>
+<br><p>Работы:</p>
+<p>t - нормальный срок выполнения работы</p>
+<p>tтек - текущий срок выполнения работы (при текущем ускорении)</p>
+<p>tу - ускоренный срок выполнения работы</p>
+<p>Сн - нормальная стоимость работы</p>
+<p>Стек - текущая стоимость выполнения работы (при текущем ускорении)</p>
+<p>Су - плата за ускорение выполнения работы</p>
+<p>Трн - раннее время начала работы</p>
+<p>Тро - раннее время окончания работы</p>
+<p>Тпн - поздне время начала работы</p>
+<p>Тпо - позднее время окончания работы</p>
+<p>Rс - свободный резерв работы</p>
+<p>Rп - полный резерв работы</p>
+<p>Уmax - максимально возможное ускорение работы</p>
+<p>Су уд - удельная стоимость ускорения работы</p>
+<br><p>События:</p>
+<p>Тр - раннее время наступления события</p>
+<p>Тп - позднее время наступления события</p>
+<p>R - резерв времени события</p>
+</body>
+</html>

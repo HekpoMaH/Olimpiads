@@ -1,0 +1,97 @@
+//Kiro
+#include<cstdio>
+#define MAXN 100100
+using namespace std;
+struct data
+{
+    int pr,epr,m,q;
+};
+int best[128][128],bp[128];
+data a[128];
+int main()
+{
+    int n,x,i,j,k;
+    scanf("%d%d",&n,&x);
+    for(i=0;i<n;i++) scanf("%d%d%d%d",&a[i].pr,&a[i].m,&a[i].epr,&a[i].q);
+    int rab=0;
+    for(i=0;i<n;i++) rab+=a[i].q;
+    if(rab<x)
+    {
+        printf("-1\n");
+        return 0;
+    }
+    int m=MAXN,s=-1;
+    for(i=0;i<n;i++)
+    {
+        if(m>a[i].pr&&a[i].q>=1)
+        {
+            if(s!=-1) best[1][s]=0;
+            s=i;
+            best[1][i]=1;
+            m=a[i].pr;
+        }
+        if(m>a[i].epr*a[i].m&&a[i].q>=a[i].m)
+        {
+            if(s!=-1) best[1][s]=0;
+            s=i;
+            best[1][i]=a[i].m;
+            m=a[i].epr*a[i].m;
+        }
+    }
+    bp[1]=m;
+    for(i=2;i<=x;i++)
+    {
+        int tm=MAXN,bj=-1,ms=-1,mq=0;
+        for(j=0;j<i;j++)
+        {
+            m=MAXN;
+            s=-1;
+            int q=0;
+            int r=i-j;
+            for(k=0;k<n;k++)
+            {
+                if(a[k].q-best[j][k]>=r)
+                {
+                    if(r<a[k].m-best[j][k]&&a[k].m<=a[k].q-best[j][k])
+                    {
+                        if(m>a[k].epr*a[k].m)
+                        {
+                            s=k;
+                            q=a[k].m;
+                            m=a[k].epr*a[k].m;
+                        }
+                    }
+                    if(r<a[k].m-best[j][k]&&m>a[k].pr*r)
+                    {
+                        s=k;
+                        q=r;
+                        m=a[k].pr*r;
+                    }
+                    if(r>=a[k].m-best[j][k]&&m>a[k].epr*r)
+                    {
+                        s=k;
+                        q=r;
+                        m=a[k].epr*r;
+                    }
+                }
+            }
+            if(best[j][s]<a[s].m&&best[j][s]+q>=a[s].m) m=bp[j]-best[j][s]*a[s].pr+(best[j][s]+q)*a[s].epr;
+            else m=bp[j]+m;
+            if(tm>m)
+            {
+                tm=m;
+                bj=j;
+                ms=s;
+                mq=q;
+            }
+        }
+        bp[i]=tm;
+        for(j=0;j<n;j++) best[i][j]=best[bj][j];
+        best[i][ms]+=mq;
+    }
+    /*for(i=0;i<=x;i++)
+        printf("%d ",bp[i]);*/
+    printf("%d\n",bp[x]);
+    return 0;
+}
+            

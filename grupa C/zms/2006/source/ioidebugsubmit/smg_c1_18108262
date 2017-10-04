@@ -1,0 +1,67 @@
+/*
+TASK: morse
+LANG: C
+*/
+
+#include<stdio.h>
+#include<string.h>
+
+char s[260];
+int len;
+
+void solve(char a)
+{
+if (a == 'A' || a == 'a') printf(".- ");
+if (a == 'B' || a == 'b') printf("-... ");
+if (a == 'C' || a == 'c') printf("-.-. ");
+if (a == 'D' || a == 'd') printf("-.. ");
+if (a == 'E' || a == 'e') printf(". ");
+if (a == 'F' || a == 'f') printf("..-. ");
+if (a == 'G' || a == 'g') printf("--. ");
+if (a == 'H' || a == 'h') printf(".... ");
+if (a == 'I' || a == 'i') printf(".. ");
+if (a == 'J' || a == 'j') printf(".--- ");
+if (a == 'K' || a == 'k') printf("-.- ");
+if (a == 'L' || a == 'l') printf(".-.. ");
+if (a == 'M' || a == 'm') printf("-- ");
+if (a == 'N' || a == 'n') printf("-. ");
+if (a == 'O' || a == 'o') printf("--- ");
+if (a == 'P' || a == 'p') printf(".--. ");
+if (a == 'Q' || a == 'q') printf("--.- ");
+if (a == 'R' || a == 'r') printf(".-. ");
+if (a == 'S' || a == 's') printf("... ");
+if (a == 'T' || a == 't') printf("- ");
+if (a == 'U' || a == 'u') printf("..- ");
+if (a == 'V' || a == 'v') printf("...- ");
+if (a == 'W' || a == 'w') printf(".-- ");
+if (a == 'X' || a == 'x') printf("-..- ");
+if (a == 'Y' || a == 'y') printf("-.-- ");
+if (a == 'Z' || a == 'z') printf("--.. ");
+if (a == '1') printf(".---- ");
+if (a == '2') printf("..--- ");
+if (a == '3') printf("...-- ");
+if (a == '4') printf("....- ");
+if (a == '5') printf("..... ");
+if (a == '6') printf("-.... ");
+if (a == '7') printf("--... ");
+if (a == '8') printf("---.. ");
+if (a == '9') printf("----. ");
+if (a == '0') printf("----- ");
+if (a == '.') printf(".-.-.- ");
+if (a == ',') printf("--..-- ");
+if (a == '-') printf("-..-. ");
+if (a == '?') printf("..--.. ");
+if (a == ' ') printf(".-.-. ");
+}
+
+int main()
+{
+int i;
+gets(s);
+len = strlen(s);
+for (i=0;i<len;i++)
+    solve(s[i]);
+printf("...-.-\n");
+return 0;
+}
+

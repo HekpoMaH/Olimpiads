@@ -1,0 +1,35 @@
+#include <iostream>
+using namespace std;
+int main ()
+{
+int n, k, i, j, l;
+cin >> n;
+int a[n+1][n+1];
+for (i=1; i<=n; i++)
+    for (j=1; j<=n; j++)
+        cin >> a[i][j];
+cin >> k;
+long long z[k], x[k], br[k], y[k];
+for (i=1; i<=k; i++)
+    {
+        cin >> z[i];
+        br[i] = 0;
+        y[i] = 1000000;
+    }
+for (i=1; i<=n; i++)
+    for (j=1; j<=n; j++)
+        for (l=1; l<=k; l++)
+            {
+                if (a[i][j] == z[l])
+                {
+                    x[l] = (i-1) + (n-j);
+                    if (x[l] < y[l]) y[l] = x[l];
+                    br[l]++;
+                }
+            }
+for (i=1; i<=k; i++)
+{
+    if (br[i] != 0) cout << y[i] << endl;
+    else cout << "No Solution" << endl;
+}
+}

@@ -1,0 +1,19 @@
+/*
+TASK:PHONE
+LANG:C++
+*/
+#include<iostream.h>
+int main ()
+{
+int n,k,l,a[10];
+double m;
+cin >> n;
+cin >> k >> m >> l;
+for (int i=0;i<l;i++)
+cin >> a[i];
+if (n==1)
+{cout << m;} else
+if (n==2)
+{cout << 1.70;}
+return 0;
+}

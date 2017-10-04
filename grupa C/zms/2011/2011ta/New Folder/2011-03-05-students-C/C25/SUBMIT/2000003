@@ -1,0 +1,43 @@
+#include<iostream>
+using namespace std;
+int jn[52000],ivn[52000],wherej[52000],whereiv[52000],izv[50000],n;
+void read()
+{
+    int i;
+    cin>>n;
+    for(i=1;i<=n;i++) {cin>>jn[i];wherej[jn[i]]=i;}
+    for(i=1;i<=n;i++) {cin>>ivn[i];whereiv[ivn[i]]=i;}
+}
+void solve()
+{
+    int pos=0,i,j,rez=0,k,t=1;
+    for(i=1;i<n;i++)
+    {
+        for(j=wherej[i];j<n;j++) if(jn[j]<jn[j+1])izv[++pos]=jn[j+1];
+        for(j=whereiv[i];j<n;j++) if(ivn[j]<ivn[j+1])izv[++pos]=ivn[j+1];
+        if(pos>1) sort(izv,izv+pos-1);
+        for(j=1;j<pos;j++)
+        {
+            if(izv[j-1]==izv[j]) t++;
+            if(izv[j-1]!=izv[j])
+            {
+                if(t==1) rez++;
+                t=1;
+            }
+        }
+        pos=0;
+    }
+    cout<<rez-1<<endl;
+}
+
+
+
+
+int main()
+{
+    int i;
+    read();
+    solve();
+
+
+}

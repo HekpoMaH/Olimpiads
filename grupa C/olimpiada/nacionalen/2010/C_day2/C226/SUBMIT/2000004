@@ -1,0 +1,108 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+long long n,m,castle[128][128],used[128][128],i,j,xx,yy,elly_x,elly_y,exit_x,exit_y,prince_x,prince_y,ps,ans;
+queue<long long> q;
+char ch[128][128];
+void wave (long long x, long long y)
+{
+ q.push(x);
+ q.push(y);
+ castle[x][y]=0;
+ while(!q.empty())
+ {
+  xx=q.front();
+  q.pop();
+  yy=q.front();
+  q.pop();
+  used[xx][yy]=1;
+// left
+  if(yy!=1) 
+  {
+   castle[xx][yy-1]=min(castle[xx][yy-1],castle[xx][yy]+1);
+   if(castle[xx][yy-1]!=-1 && used[xx][yy-1]==0) {q.push(xx); q.push(yy-1);}
+  }
+  else
+  {
+   castle[xx][m]=min(castle[xx][m],castle[xx][yy]+1);
+   if(castle[xx][m]!=-1 && used[xx][m]==0) {q.push(xx); q.push(m);}
+  }   
+// up
+  if(xx!=1) 
+  {
+   castle[xx-1][yy]=min(castle[xx-1][yy],castle[xx][yy]+1);
+   if(castle[xx-1][yy]!=-1 && used[xx-1][yy]==0) {q.push(xx-1); q.push(yy);}
+  }
+  else
+  {
+   castle[n][yy]=min(castle[n][yy],castle[xx][yy]+1);
+   if(castle[n][yy]!=-1 && used[n][yy]==0) {q.push(n); q.push(yy);}
+  }   
+// right
+  if(yy!=m) 
+  {
+   castle[xx][yy+1]=min(castle[xx][yy+1],castle[xx][yy]+1);
+   if(castle[xx][yy+1]!=-1 && used[xx][yy+1]==0) {q.push(xx); q.push(yy+1);}
+  }
+  else
+  {
+   castle[xx][1]=min(castle[xx][1],castle[xx][yy]+1);
+   if(castle[xx][1]!=-1 && used[xx][1]==0) {q.push(xx); q.push(1);}
+  }   
+// down
+  if(xx!=n) 
+  {
+   castle[xx+1][yy]=min(castle[xx+1][yy],castle[xx][yy]+1);
+   if(castle[xx+1][yy]!=-1 && used[xx+1][yy]==0) {q.push(xx+1); q.push(yy);}
+  }
+  else
+  {
+   castle[1][yy]=min(castle[1][yy],castle[xx][yy]+1);
+   if(castle[1][yy]!=-1 && used[1][yy]==0) {q.push(1); q.push(yy);}
+  }   
+ }
+}
+int main()
+{
+ cin>>n>>m;
+ for(i=1;i<=n;i++)
+ {
+  for(j=1;j<=m;j++)
+  {
+   cin>>ch[i][j];
+   if(ch[i][j]=='E') {elly_x=i; elly_y=j;}
+   if(ch[i][j]=='X') {exit_x=i; exit_y=j;}
+   if(ch[i][j]=='P') {prince_x=i; prince_y=j; ps++;}
+   if(ch[i][j]=='#') {castle[i][j]=-1;}
+   if(ch[i][j]=='.' || ch[i][j]=='P' || ch[i][j]=='X') {castle[i][j]=INT_MAX;}
+  }
+ }
+ 
+ if(ps>1) cout<<-1<<endl;
+ else
+ {
+  wave(elly_x,elly_y);
+  ans+=castle[prince_x][prince_y];
+  if(ans==INT_MAX) cout<<-1<<endl;
+  else
+  {
+   for(i=1;i<=n;i++)
+    for(j=1;j<=m;j++)
+    {
+     used[i][j]=0;
+     if(ch[i][j]=='.' || ch[i][j]=='E' || ch[i][j]=='X') castle[i][j]=INT_MAX;
+    }
+   }
+   wave(prince_x,prince_y);
+   if(castle[exit_x][exit_y]==INT_MAX) cout<<-1<<endl;
+   else
+   {
+    ans+=castle[exit_x][exit_y];
+    cout<<ans<<endl;
+   }
+ } 
+  
+// system("pause");
+ return 0;
+}
+ 

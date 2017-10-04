@@ -1,0 +1,160 @@
+/*
+TASK : MORSE
+LANG : C++
+*/
+#include <iostream>
+
+using namespace std;
+
+int main()
+{
+    char a[255];
+    cin.getline(a,255);
+    for (int i=0;a[i] != '\0';i++)
+    {
+        if(((int)a[i] >=65)and((int)a[i] <= 90))
+        switch ((int)a[i])
+        {
+               case 65 : cout << ".- ";
+               break;
+               case 66 : cout << "-... ";
+               break;
+               case 67 : cout << "-.-. ";
+               break;
+               case 68 : cout << "-.. ";
+               break;
+               case 69 : cout << ". ";
+               break;
+               case 70 : cout << "..-. ";
+               break;
+               case 71 : cout << "--. ";
+               break;
+               case 72 : cout << ".... ";
+               break;
+               case 73 : cout << ".. ";
+               break;
+               case 74 : cout << ".--- ";
+               break;
+               case 75 : cout << "-.- ";
+               break;
+               case 76 : cout << ".-.. ";
+               break;
+               case 77 : cout << "-- ";
+               break;
+               case 78 : cout << "-. ";
+               break;
+               case 79 : cout << "--- ";
+               break;
+               case 80 : cout << ".--. ";
+               break;
+               case 81 : cout << "--.- ";
+               break;
+               case 82 : cout << ".-. ";
+               break;
+               case 83 : cout << "... ";
+               break;
+               case 84 : cout << "- ";
+               break;
+               case 85 : cout << "..- ";
+               break;
+               case 86 : cout << "...- ";
+               break;
+               case 87 : cout << ".-- ";
+               break;
+               case 88 : cout << "-..- ";
+               break;
+               case 89 : cout << "-.-- ";
+               break;
+               case 90 : cout << "--.. ";
+               break;
+        }
+        else if (((int)a[i] >= 97)and((int)a[i] <= 122))
+        switch ((int)a[i])
+        {
+               case 97 : cout << ".- ";
+               break;
+               case 98 : cout << "-... ";
+               break;
+               case 99 : cout << "-.-. ";
+               break;
+               case 100 : cout << "-.. ";
+               break;
+               case 101 : cout << ". ";
+               break;
+               case 102 : cout << "..-. ";
+               break;
+               case 103 : cout << "--. ";
+               break;
+               case 104 : cout << ".... ";
+               break;
+               case 105 : cout << ".. ";
+               break;
+               case 106 : cout << ".--- ";
+               break;
+               case 107 : cout << "-.- ";
+               break;
+               case 108 : cout << ".-.. ";
+               break;
+               case 109 : cout << "-- ";
+               break;
+               case 110 : cout << "-. ";
+               break;
+               case 111 : cout << "--- ";
+               break;
+               case 112 : cout << ".--. ";
+               break;
+               case 113 : cout << "--.- ";
+               break;
+               case 114 : cout << ".-. ";
+               break;
+               case 115 : cout << "... ";
+               break;
+               case 116 : cout << "- ";
+               break;
+               case 117 : cout << "..- ";
+               break;
+               case 118 : cout << "...- ";
+               break;
+               case 119 : cout << ".-- ";
+               break;
+               case 120 : cout << "-..- ";
+               break;
+               case 121 : cout << "-.-- ";
+               break;
+               case 122 : cout << "--.. ";
+               break;
+        }
+        else if (((int)a[i] >= 48)and((int)a[i] <= 57))
+        switch ((int)a[i])
+        {
+               case 48 : cout << "----- ";
+               break;
+               case 49 : cout << ".---- ";
+               break;
+               case 50 : cout << "..--- ";
+               break;
+               case 51 : cout << "...-- ";
+               break;
+               case 52 : cout << "....- ";
+               break;
+               case 53 : cout << "..... ";
+               break;
+               case 54 : cout << "-.... ";
+               break;
+               case 55 : cout << "--... ";
+               break;
+               case 56 : cout << "---.. ";
+               break;
+               case 57 : cout << "----. ";
+               break;
+        }
+        if (a[i] == '.') cout << ".-.-.- ";
+        if (a[i] == ',') cout << "--..-- ";
+        if (a[i] == '-') cout << "-..-. ";
+        if (a[i] == '?') cout << "..--.. ";
+        if (a[i] == ' ') cout << ".-.-. ";
+    }
+    cout << "...-.-";     
+    return 0;
+}
+

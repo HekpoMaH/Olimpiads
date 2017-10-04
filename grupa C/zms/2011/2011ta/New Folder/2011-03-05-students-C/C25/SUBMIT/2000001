@@ -1,0 +1,50 @@
+#include<iostream>
+#include<stack>
+using namespace std;
+stack<char> op;
+stack<long long> c;
+long long rez;
+void read()
+{
+    long long c1;
+    char op1;
+    while(1)
+    {
+        cin>>op1;
+        op.push(op1);
+        if(op1=='=') break;
+        else
+        {
+            cin>>c1;
+            c.push(c1);
+        }
+
+    }
+    op.pop();
+    cin>>rez;
+}
+void solve()
+{
+    long long c1;
+    char op1;
+    while(!op.empty())
+    {
+        c1=c.top();
+        op1=op.top();
+        if(op1=='*') rez=rez/c1;
+        else if(op1=='-') rez+=c1;
+        else if(op1=='+') rez-=c1;
+        c.pop();
+        op.pop();
+    }
+}
+int main()
+{
+    read();
+    solve();
+    cout<<rez<<endl;
+}
+
+
+
+

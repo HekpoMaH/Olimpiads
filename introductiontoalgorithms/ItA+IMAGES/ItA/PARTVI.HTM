@@ -1,0 +1,35 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: PART VI: Graph Algorithms</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap23.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap22.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="089d_0001">PART VI: Graph Algorithms<a name="089d_0001"></h1><P>
+
+
+
+
+
+<h1>Introduction</h1><P>
+<a name="089f_1724">Graphs are a pervasive data structure in computer science, and algorithms for working with them are fundamental to the field. There are hundreds of interesting computational problems defined in terms of graphs. In this part, we touch on a few of the more significant ones.<P>
+Chapter 23 shows how we can represent a graph on a computer and then discusses algorithms based on searching a graph using either breadth-first search or depth-first search. Two applications of depth-first search are given: topologically sorting a directed acyclic graph and decomposing a directed graph into its strongly connected components.<P>
+Chapter 24 describes how to compute a minimum-weight spanning tree of a graph. Such a tree is defined as the least-weight way of connecting all of the vertices together when each edge has an associated weight. The algorithms for computing minimum spanning trees are good examples of greedy algorithms (see Chapter 17).<P>
+Chapters 25 and 26 consider the problem of computing shortest paths between vertices when each edge has an associated length or &quot;weight.&quot; Chapter 25 considers the computation of shortest paths from a given source vertex to all other vertices, and Chapter 26 considers the computation of shortest paths between every pair of vertices.<P>
+Finally, Chapter 27 shows how to compute a maximum flow of material in a network (directed graph) having a specified source of material, a specified sink, and specified capacities for the amount of material that can traverse each directed edge. This general problem arises in many forms, and a good algorithm for computing maximum flows can be used to solve a variety of related problems efficiently.<P>
+<a name="089f_1725"><a name="089f_1726">In describing the running time of a graph algorithm on a given graph <I>G = (V, E),</I> we usually measure the size of the input in terms of the number of vertices |<I>V|</I> and the number of edges |<I>E|</I> of the graph. That is, there are two relevant parameters describing the size of the input, not just one. We adopt a common notational convention for these parameters. Inside asymptotic notation (such as <I>O</I>-notation or <IMG SRC="../IMAGES/bound.gif">-notation), and <I>only</I> inside such notation, the symbol <I>V</I> denotes |<I>V|</I> and the symbol <I>E</I> denotes |<I>E|</I>. For example, we might say, &quot;the algorithm runs in time <I>O(V E),</I>&quot; meaning that the algorithm runs in time <I>O</I>(<I>|V||E|</I>). This convention makes the running-time formulas easier to read, without risk of ambiguity.<P>
+Another convention we adopt appears in pseudocode. We denote the vertex set of a graph <I>G</I> by <I>V</I>[<I>G</I>] and its edge set by <I>E</I>[<I>G</I>]. That is, the pseudocode views vertex and edge sets as attributes of a graph.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap23.htm">Chapter 23</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

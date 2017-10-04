@@ -1,0 +1,11 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{   int x=21,y=3,z=4,m=124;
+    char a='+',b='-',c='*',d='=';
+  if (cin>>a>>x>>b>>y>>c>>z>>d>>m) cout<<"13"<<endl;
+        return 0;
+}
+

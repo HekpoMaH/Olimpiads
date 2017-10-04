@@ -1,0 +1,27 @@
+#include<iostream>
+using namespace std;
+int sravi[5000];
+int sravj[5000];
+int main ()
+{
+    int n;
+    cin >> n;
+   // bool find = false;
+    int br = 0;
+    for(int i = 0; i < n; i ++) cin >> sravj[i];
+    for(int i = 0; i < n; i ++) cin >> sravi[i];
+    for(int k = 0; k < n; k ++)
+    {
+        for(int i = k; i < n; i ++)
+        {
+           // find = false;
+            for(int j = 0; j < n; j ++)
+            {
+                if (sravj[k] == sravi[j]) { break; }
+                else { if (sravj[i] == sravi[j]) { br ++; break; } }
+            }
+        }
+    }
+    cout << br << endl;
+    return 0;
+}

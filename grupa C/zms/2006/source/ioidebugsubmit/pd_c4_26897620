@@ -1,0 +1,53 @@
+/*
+TASK:PHONE
+LANG:C++
+*/
+#include<iostream.h>
+int main ()
+{
+int n,q,min,k1,k2,k3,k4,k5,k6,p1,p2,p3,p4,p5,p6;
+int a[100],b[100],c[100],d[100],e[100],f[100];
+int r1,r2;
+double m,w[100];
+cin >> n;
+if (n==0)
+{cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];}
+else
+if (n==1){
+cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];
+cin >> k2 >> w[m+1] >>p2; for (i=0; i<p2; i++) cin >> b[i]; }
+else
+if (n==2){
+cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];
+cin >> k2 >> w[m+1] >>p2; for (i=0; i<p2; i++) cin >> b[i];
+cin >> k3 >> w[m+2] >>p3; for (i=0; i<p3; i++) cin >> c[i];}
+else
+if (n==3){
+cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];
+cin >> k2 >> w[m+1] >>p2; for (i=0; i<p2; i++) cin >> b[i];
+cin >> k3 >> w[m+2] >>p3; for (i=0; i<p3; i++) cin >> c[i];
+cin >> k4 >> w[m+3] >>p4; for (i=0; i<p4; i++) cin >> d[i];}
+else
+if (n==4){
+cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];
+cin >> k2 >> w[m+1] >>p2; for (i=0; i<p2; i++) cin >> b[i];
+cin >> k3 >> w[m+2] >>p3; for (i=0; i<p3; i++) cin >> c[i];
+cin >> k4 >> w[m+3] >>p4; for (i=0; i<p4; i++) cin >> d[i];
+cin >> k5 >> w[m+4] >>p5; for (i=0; i<p5; i++) cin >> e[i];}
+else
+if (n==5){
+cin >> k1 >> w[m] >>p1; for (int i=0; i<p1; i++) cin >> a[i];
+cin >> k2 >> w[m+1] >>p2; for (i=0; i<p2; i++) cin >> b[i];
+cin >> k3 >> w[m+2] >>p3; for (i=0; i<p3; i++) cin >> c[i];
+cin >> k4 >> w[m+3] >>p4; for (i=0; i<p4; i++) cin >> d[i];
+cin >> k5 >> w[m+4] >>p5; for (i=0; i<p5; i++) cin >> e[i];
+cin >> k6 >> w[m+5] >>p6; for (i=0; i<p6; i++) cin >> f[i];
+}
+cin >> q;
+if (n==0) cout << w[m];
+else {
+min=w[m]+w[m+2];
+cout << min;
+}
+return 0;
+}

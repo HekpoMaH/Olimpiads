@@ -1,0 +1,72 @@
+{
+TASK:NUMBER
+LANG:PASCAL
+}
+program NUMBER;
+var n,d1,d2,d3:integer;
+    k,i:longint;
+begin
+ k:=0;
+ read(n,d1,d2,d3);
+ if n=2 then
+  for i:=10 to 99 do
+   if (i mod d1=0)or(i mod d2=0)or(i mod d3=0)
+    then k:=k+1;
+ if n=3 then
+  for i:=100 to 999 do
+   if (({}(i div 10) mod d1=0{})or({}(i div 10) mod d2=0{})or({}(i div 10) mod d3=0{}))
+      and  (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+    then k:=k+1;
+ if n=4 then
+  for i:=1000 to 9999 do
+   if (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+      and (((i div 100)mod d1=0)or((i div 100)mod d2=0)or((i div 100)mod d3=0))
+      and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+    then k:=k+1;
+ if n=5 then
+  for i:=10000 to 99999 do
+   if (((i div 1000)mod d1=0)or((i div 1000)mod d2=0)or((i div 1000)mod d3=0))
+     and (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+     and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+     and ((((i div 100)mod 100)mod d1=0)or(((i div 100)mod 100)mod d2=0)or(((i div 100)mod 100)mod d3=0))
+    then k:=k+1;
+ if n=6 then
+  for i:=100000 to 999999 do
+   if (((i div 10000)mod d1=0)or((i div 10000)mod d2=0)or((i div 10000)mod d3=0))
+     and (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+     and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+     and ((((i div 100)mod 100)mod d1=0)or(((i div 100)mod 100)mod d2=0)or(((i div 100)mod 100)mod d3=0))
+     and ((((i div 1000)mod 100)mod d1=0)or(((i div 1000)mod 100)mod d2=0)or(((i div 1000)mod 100)mod d3=0))
+    then k:=k+1;
+ if n=7 then
+  for i:=1000000 to 9999999 do
+   if (((i div 100000)mod d1=0)or((i div 100000)mod d2=0)or((i div 100000)mod d3=0))
+     and (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+     and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+     and ((((i div 100)mod 100)mod d1=0)or(((i div 100)mod 100)mod d2=0)or(((i div 100)mod 100)mod d3=0))
+     and ((((i div 1000)mod 100)mod d1=0)or(((i div 1000)mod 100)mod d2=0)or(((i div 1000)mod 100)mod d3=0))
+     and ((((i div 10000)mod 100)mod d1=0)or(((i div 10000)mod 100)mod d2=0)or(((i div 10000)mod 100)mod d3=0))
+    then k:=k+1;
+ if n=8 then
+  for i:=10000000 to 99999999 do
+   if (((i div 1000000)mod d1=0)or((i div 1000000)mod d2=0)or((i div 1000000)mod d3=0))
+     and (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+     and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+     and ((((i div 100)mod 100)mod d1=0)or(((i div 100)mod 100)mod d2=0)or(((i div 100)mod 100)mod d3=0))
+     and ((((i div 1000)mod 100)mod d1=0)or(((i div 1000)mod 100)mod d2=0)or(((i div 1000)mod 100)mod d3=0))
+     and ((((i div 10000)mod 100)mod d1=0)or(((i div 10000)mod 100)mod d2=0)or(((i div 10000)mod 100)mod d3=0))
+     and ((((i div 100000)mod 100)mod d1=0)or(((i div 100000)mod 100)mod d2=0)or(((i div 100000)mod 100)mod d3=0))
+    then k:=k+1;
+ if n=9 then
+  for i:=100000000 to 999999999 do
+   if (((i div 10000000)mod d1=0)or((i div 10000000)mod d2=0)or((i div 10000000)mod d3=0))
+     and (((i mod 100)mod d1=0)or((i mod 100)mod d2=0)or((i mod 100)mod d3=0))
+     and ((((i div 10)mod 100)mod d1=0)or(((i div 10)mod 100)mod d2=0)or(((i div 10)mod 100)mod d3=0))
+     and ((((i div 100)mod 100)mod d1=0)or(((i div 100)mod 100)mod d2=0)or(((i div 100)mod 100)mod d3=0))
+     and ((((i div 1000)mod 100)mod d1=0)or(((i div 1000)mod 100)mod d2=0)or(((i div 1000)mod 100)mod d3=0))
+     and ((((i div 10000)mod 100)mod d1=0)or(((i div 10000)mod 100)mod d2=0)or(((i div 10000)mod 100)mod d3=0))
+     and ((((i div 100000)mod 100)mod d1=0)or(((i div 100000)mod 100)mod d2=0)or(((i div 100000)mod 100)mod d3=0))
+     and ((((i div 1000000)mod 100)mod d1=0)or(((i div 1000000)mod 100)mod d2=0)or(((i div 1000000)mod 100)mod d3=0))
+    then k:=k+1;
+ writeln(k);
+end.

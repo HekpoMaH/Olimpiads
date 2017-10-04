@@ -1,0 +1,69 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+int main()
+{
+    int a,b,c,d,e;
+    cin>>a>>b>>c>>d;
+    do
+    {
+        if(a==0)
+        {
+            if(b!=0)
+            {
+                if(d!=0)
+                {
+                    a=d/(b*b);
+                }
+            }
+        }
+        if(b==0)
+        {
+            if(a!=0)
+            {
+                if(c!=0)
+                {
+                    b=c/(a*a);
+                }
+            }
+        }
+        if(c==0)
+        {
+            if(a!=0)
+            {
+                if(b!=0)
+                {
+                    c=(a*a)*b;
+                }
+            }
+            else
+            {
+                if(b!=0)
+                {
+                    c=(a*a)*b;
+                }
+            }    
+        }
+        if(d==0)
+        {
+            if(a!=0)
+            {
+                if(b!=0)
+                {
+                    d=a*b*b;
+                }
+            }    
+            else
+            {
+                if(b==0)
+                {
+                    b=d-a;
+                    b=sqrt(b);
+                }
+            }
+        }
+    }
+    while(a==0&&b==0&&c==0&&d==0);
+    cout<<a<<" "<<b<<" "<<c<<" "<<d<<endl;
+    return 0;
+}

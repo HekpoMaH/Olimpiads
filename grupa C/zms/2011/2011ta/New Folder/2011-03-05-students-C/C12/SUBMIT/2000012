@@ -1,0 +1,62 @@
+/*
+TASK: runaway
+LANG: C++
+*/
+#include<iostream>
+using namespace std;
+int castle[1001][1001];
+int outs[10005];
+int nums[1000000];
+int minr=10000;
+int mem[10000];
+int main()
+{
+    int n;
+    cin>>n;
+    for(int i=1;i<=n;i++)
+    {
+        for(int j=n;j>=1;j--)
+        {
+            cin>>castle[i][j];
+            nums[castle[i][j]]=1;
+        }
+    }
+    int k;
+    cin>>k;
+    for(int i=1;i<=k;i++)
+    {
+        cin>>outs[i];
+        mem[i]=-1;
+    }
+    for(int i=1;i<=k;i++)
+    {
+        if(nums[outs[i]]==0)
+        {
+            cout<<"No Solution"<<endl;
+            continue;
+        }
+        if(mem[i]!=-1)
+        {
+            cout<<mem[i]<<endl;
+            continue;
+        }
+        else
+        {
+
+            minr=10000;
+            for(int j=1;j<=n;j++)
+            {
+                for(int f=1;f<=n;f++)
+                {
+                    if(castle[j][f]==outs[i]&&j+f-2<minr)
+                    {
+                        minr=j+f-2;
+                        break;
+                    }
+                }
+            }
+            cout<<minr<<endl;
+        }
+    }
+    return 0;
+}

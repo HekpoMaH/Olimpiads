@@ -1,0 +1,184 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="it"
+ lang="it" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>it:stl:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-09-29T07:49:22-0700" />
+<meta name="keywords" content="it,stl,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/it/stl/start?do=index" title="Indice" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=it:stl" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/it/stl/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/it/stl/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='it:stl';var JSINFO = {"id":"it:stl:start","namespace":"it:stl"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+<!-- TOC START -->
+<div class="toc">
+<div class="tocheader toctoggle" id="toc__header">Indice</div>
+<div id="toc__inside">
+
+<ul class="toc">
+<li class="clear">
+
+<ul class="toc">
+<li class="level2"><div class="li"><span class="li"><a href="start#c_standard_template_library" class="toc">C++ Standard Template Library</a></span></div>
+<ul class="toc">
+<li class="level3"><div class="li"><span class="li"><a href="start#strutture_dati" class="toc">Strutture Dati</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#algoritmi" class="toc">Algoritmi</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#iteratori" class="toc">Iteratori</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#function_objects" class="toc">Function Objects</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#memoria" class="toc">Memoria</a></span></div></li>
+<li class="level3"><div class="li"><span class="li"><a href="start#utility" class="toc">Utility</a></span></div></li></ul>
+</li></ul>
+</li></ul>
+</div>
+</div>
+<!-- TOC END -->
+
+
+
+<h2><a name="c_standard_template_library" id="c_standard_template_library">C++ Standard Template Library</a></h2>
+<div class="level2">
+
+<p>
+
+La <strong>Standard Template Library</strong> (STL) del C++ è una collezione di classi template
+e di algoritmi che permettono al programmatore di implementare facilmente strutture
+dati standard come code, liste e pile
+</p>
+
+</div>
+<!-- SECTION "C++ Standard Template Library" [1-248] -->
+<h3><a name="strutture_dati" id="strutture_dati">Strutture Dati</a></h3>
+<div class="level3">
+
+<p>
+
+La STL implementa i seguenti costrutti (raggruppati in tre categorie):
+
+</p>
+<ul>
+<li class="level1"><div class="li"> Sequenze</div>
+<ul>
+<li class="level2"><div class="li"> <a href="vector/start" class="wikilink1" title="it:stl:vector:start">Vettori</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/it/stl/list/start" class="wikilink2" title="it:stl:list:start" rel="nofollow">Liste</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="deque/start" class="wikilink1" title="it:stl:deque:start">Deque (code a due estremi)</a></div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> Adattatori di Contenitori</div>
+<ul>
+<li class="level2"><div class="li"> <a href="stack/start" class="wikilink1" title="it:stl:stack:start">Stack (Pile)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="queue/start" class="wikilink1" title="it:stl:queue:start">Queues (Code)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/it/stl/priority_queue/start" class="wikilink2" title="it:stl:priority_queue:start" rel="nofollow">Code con priorità</a></div>
+</li>
+</ul>
+</li>
+<li class="level1"><div class="li"> Contenitori Associativi</div>
+<ul>
+<li class="level2"><div class="li"> <a href="bitset/start" class="wikilink1" title="it:stl:bitset:start">Bitset</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="map/start" class="wikilink1" title="it:stl:map:start">Mappe</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/it/stl/multimap/start" class="wikilink2" title="it:stl:multimap:start" rel="nofollow">Multimaps</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/it/stl/set/start" class="wikilink2" title="it:stl:set:start" rel="nofollow">Set (insiemi)</a></div>
+</li>
+<li class="level2"><div class="li"> <a href="http://www.cppreference.com/wiki/it/stl/multiset/start" class="wikilink2" title="it:stl:multiset:start" rel="nofollow">Multisets</a></div>
+</li>
+</ul>
+</li>
+</ul>
+
+<p>
+
+L&#039;idea che sta alla base della STL del C++ è che il gran parte del lavoro necessario
+ad usare strutture dati complesse deve essere implementato nella libreria di template. 
+Se un programmatore vuole creare uno stack di interi tutto quello che deve fare è usare
+questa linea di codice:
+</p>
+<pre class="c code c++" style="font-family:monospace;">  stack<span class="sy0">&lt;</span>int<span class="sy0">&gt;</span> myStack<span class="sy0">;</span></pre>
+<p>
+Con sforzo minimo uno può aggiungere allo stack altri interi con i 
+comandi <a href="stack/push" class="wikilink1" title="it:stl:stack:push">push</a> e <a href="stack/pop" class="wikilink1" title="it:stl:stack:pop">pop</a>. Tuttavia le classi template permettono
+di creare stack con ogni tipo dati, non solo dati elementari come gli interi. 
+Lo Stack di STL ha le funzionalità generali di uno stack indipendentemente dal tipo di dati 
+contenuto in esso.
+</p>
+
+</div>
+<!-- SECTION "Strutture Dati" [249-1507] -->
+<h3><a name="algoritmi" id="algoritmi">Algoritmi</a></h3>
+<div class="level3">
+
+<p>
+
+La STL del C++ contiene anche una serie di utili <a href="http://www.cppreference.com/wiki/it/stl/algorithm/start" class="wikilink2" title="it:stl:algorithm:start" rel="nofollow">algoritmi</a> come
+<a href="http://www.cppreference.com/wiki/it/stl/algorithm/binary_search" class="wikilink2" title="it:stl:algorithm:binary_search" rel="nofollow">binary_search</a>, <a href="http://www.cppreference.com/wiki/it/stl/algorithm/sort" class="wikilink2" title="it:stl:algorithm:sort" rel="nofollow">sort</a>, and <a href="http://www.cppreference.com/wiki/it/stl/algorithm/for_each" class="wikilink2" title="it:stl:algorithm:for_each" rel="nofollow">for_each</a>.
+Gli algoritmi possono venire usati su contenitori o strutture dati.
+</p>
+
+</div>
+<!-- SECTION "Algoritmi" [1508-1779] -->
+<h3><a name="iteratori" id="iteratori">Iteratori</a></h3>
+<div class="level3">
+
+<p>
+
+Gli <a href="iterators" class="wikilink1" title="it:stl:iterators">iteratori</a> implementano metodi generali di iterazione sulle strutture dati della STL.
+</p>
+
+</div>
+<!-- SECTION "Iteratori" [1780-1909] -->
+<h3><a name="function_objects" id="function_objects">Function Objects</a></h3>
+<div class="level3">
+
+<p>
+
+L&#039;header <a href="http://www.cppreference.com/wiki/it/stl/functional/start" class="wikilink2" title="it:stl:functional:start" rel="nofollow">&lt;functional&gt;</a> definisce metodi collegati alla creazione di oggetti funzione.
+</p>
+
+</div>
+<!-- SECTION "Function Objects" [1910-2044] -->
+<h3><a name="memoria" id="memoria">Memoria</a></h3>
+<div class="level3">
+
+<p>
+
+L&#039;header <a href="http://www.cppreference.com/wiki/it/stl/memory/start" class="wikilink2" title="it:stl:memory:start" rel="nofollow">&lt;memory&gt;</a> contiene dichiarazioni relative a strutture e metodi di gestione della memoria come 
+<a href="http://www.cppreference.com/wiki/it/stl/memory/auto_ptr" class="wikilink2" title="it:stl:memory:auto_ptr" rel="nofollow">auto_ptr</a>.
+</p>
+
+</div>
+<!-- SECTION "Memoria" [2045-2212] -->
+<h3><a name="utility" id="utility">Utility</a></h3>
+<div class="level3">
+
+<p>
+
+Infine ci sono molti metodi di utilità generale come <a href="utility/make_pair" class="wikilink1" title="it:stl:utility:make_pair">make_pair</a> dichiarati nell&#039;<a href="utility/start" class="wikilink1" title="it:stl:utility:start">header &lt;utility&gt;</a>.
+</p>
+
+</div>
+<!-- SECTION "Utility" [2213-] --></div>
+</body>
+</html>

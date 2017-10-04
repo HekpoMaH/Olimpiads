@@ -1,0 +1,22 @@
+#include<iostream>
+using namespace std;
+int d,d1,i,sum;
+char c;
+int main()
+{
+while(cin>>c>>d)
+{
+    if((int)c==43) sum+=d;
+    if((int)c==45) sum+=-d;
+    if((int)c==42) {d1=d;}
+}
+d/=d1;
+cout<<d-sum<<endl;
+return 0;
+}
+/*
++ 21
+- 3
+* 4
+= 124
+*/

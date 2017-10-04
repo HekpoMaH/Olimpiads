@@ -1,0 +1,46 @@
+#include <cstdio>
+#include <cstring>
+char Input[1048576];
+char Table[1024][1024];
+int n, k, i, j, Y, X;
+int GetRoot(int n){
+    int Res=0, Add=512;
+    while(Add>0){
+        Res+=Add;
+        if(Res*Res>n) Res-=Add;
+        Add/=2;
+    }
+    return Res;
+}
+int main(){
+    scanf("%s", Input);
+    n=GetRoot(strlen(Input));
+    for(i=0;i<n;i++){
+        for(j=0;j<n;j++){
+            Table[i][j]=Input[i*n+j];
+            if(Table[i][j]>='0'&&Table[i][j]<='9') k+=Table[i][j]-'0';
+        }
+    }
+    k%=n;
+    while(k<n){
+        Y=k;
+        X=0;
+        while(Y<n&&Table[Y][X]>='A'&&Table[Y][X]<='Z'){
+            putchar(Table[Y][X]);
+            Y++;
+            X++;
+        }
+        if(Y<n) break;
+        X--;
+        Y=0;
+        while(X<n&&Table[Y][X]>='A'&&Table[Y][X]<='Z'){
+            putchar(Table[Y][X]);
+            Y++;
+            X++;
+        }
+        if(X<n) break;
+        k++;
+    }
+    putchar('\n');
+    return 0;
+}

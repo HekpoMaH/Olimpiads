@@ -1,0 +1,57 @@
+/*
+TASK: cars
+LANG: C
+*/
+#include<stdio.h>
+long a[500][500],n,p,p1,b[500];
+long use[500]={0},br,y;
+void re(long x)
+{
+ long i;
+ if(x==y)
+ {
+  br++;
+  return ;
+ }
+ for(i=0;i<n;i++)
+ {
+  if(use[i]==0&&a[x][i]==1)
+  {
+   use[i]=1;
+   re(i);
+   use[i]=0;
+  }
+ }
+}
+int main()
+{
+ long i,j,x;
+ scanf("%ld",&n);
+ for(i=0;i<n;i++)
+ {
+  scanf("%ld",&p);
+  if(p==0)
+  {
+   y=i;
+  }
+  for(j=0;j<p;j++)
+  {
+   scanf("%ld",&p1);
+   a[i][p1-1]=1;
+   b[p1-1]++;
+  }
+ }
+ for(i=0;i<n;i++)
+ {
+  if(b[i]==0)
+  {
+   x=i;
+   break;
+  }
+ }
+ use[i]=1;
+ re(i);
+ printf("%ld\n",br);
+ return 0;
+}
+

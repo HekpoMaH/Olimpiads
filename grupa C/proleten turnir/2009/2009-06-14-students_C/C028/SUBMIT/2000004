@@ -1,0 +1,66 @@
+#include <iostream>
+#include <algorithm>
+using namespace std;
+unsigned long long n, k, i, br, ok;
+char a[32];
+
+int main ()
+{
+    cin >> n >> k;
+    
+    if( n <= 15 ) {
+    link1: 
+    for( i=1; i<=n; i++ )
+    {
+         char p = i + 96;
+         a[i] = p;
+    }
+    br = 1;
+    while (next_permutation(a+1, a+n+1))
+    {
+          br ++;
+          if( br == k ) 
+          {
+              for( i=1; i<=n; i++ ) 
+                   cout << a[i];
+              cout << endl;
+              break;
+          }
+    } }
+    
+    if ( n > 15 ) {
+         if( ok == 0 && k <= 1000000 ) { ok = 1; goto link1; }
+         if( ok == 0 ) { 
+    int z = n;
+    for( i=1; i<=n; i++ )
+    {
+         char p = z + 96;
+         a[i] = p;
+         z --;
+    }
+    br = 1;
+    for( i=1; i<=n; i++ ) 
+    br *= i;
+    // cout << br << " " << k << endl;
+    if( br == k )
+    {
+        for( i=1; i<=n; i++ ) 
+                   cout << a[i];
+              cout << endl;
+    }
+    else
+    while (prev_permutation(a+1,a+n+1))
+    {
+          br --;
+          if( br == k )
+          {
+              for( i=1; i<=n; i++ ) 
+                   cout << a[i];
+              cout << endl;
+              break;
+          }
+    } } 
+    }
+    // system ("pause");
+    exit (0);
+}

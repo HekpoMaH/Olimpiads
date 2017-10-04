@@ -1,0 +1,247 @@
+{
+TASK rebus
+LANG PASCAL
+}
+
+var
+digits,d1:array[0..255]of integer;
+d:array[0..10] of integer;
+a,b:array[0..10] of string[105];
+a1,b1:array[1..20] of char;
+z1,z2,z3,z4,z5,z6,z7,z8,z9,z0,counta,countb,i,j:integer;
+c:char;
+
+function inttostr(di:integer):string;
+var s:string;
+begin
+str(di,s);
+inttostr:=S;
+end;
+
+function strTOINT(di:string):integer;
+var s,izmet:integer;
+begin
+izmet:=0;
+val(di,s,izmet);
+strtoint:=S;
+end;
+
+function add(s,s1:string):string;
+var i,n,ost:integer;
+rez,ss,ss1:string;
+begin
+if length(s)>length(s1) then n:=length(s)
+                        else n:=length(s1);
+ss1:=s1;
+ss:=s;
+for i:=1 to n-length(s) do ss:='0'+ss;
+for i:=1 to n-length(s1) do ss1:='0'+ss1;
+ost:=0;
+rez:='';
+for i:=n downto 1 do begin
+                     ost:=strtoint(ss[i])+strtoint(ss1[i])+ost;
+                     rez:=inttostr(ost mod 10)+rez;
+                     ost:=ost div 10;
+                     end;
+if ost>0 then rez:='1'+rez;
+add:=rez;
+end;
+
+
+function izv(s,s1:string):string;
+var i,j,a,b,n,ost:integer;
+rez,ss,ss1:string;
+begin
+if length(s)>length(s1) then n:=length(s)
+                        else n:=length(s1);
+ss1:=s1;
+ss:=s;
+for i:=1 to n-length(s) do ss:='0'+ss;
+for i:=1 to n-length(s1) do ss1:='0'+ss1;
+ost:=0;
+rez:='';
+for i:=n downto 1 do begin
+                     a:=strtoint(ss[i]);
+                     b:=strtoint(ss1[i]);
+                     if a<b then begin
+                                 for j:= i downto 1 do
+                                  if strtoint(ss[j])>0 then ss[j]:=inttostr(strtoint(ss[j])-1)[1]
+                                                       else ss[j]:='9';
+                                 a:=a+10;
+                                 end;
+                     ost:=a-b+ost;
+                     rez:=inttostr(abs(ost mod 10))+rez;
+                     ost:=ost div 10;
+                     end;
+repeat
+if (rez[1]='0')then delete(rez,1,1);
+until (rez[1]<>'0')or(length(rez)=0);
+if length(rez)=0 then rez:='0';
+izv:=rez;
+end;
+
+function convert(chislo:string):string;
+var i:integer;
+s:string;
+begin
+s:='';
+for i:=1 to length(chislo) do s:=s+inttostr(digits[(ord(chislo[i]))]);
+convert:=s;
+end;
+
+function digitcmp(s,s1:string):integer;
+begin
+digitcmp:=100;
+if length(s)>length(s1) then digitcmp:=1;
+if length(s)<length(s1) then digitcmp:=-1;
+if length(s)=length(s1) then begin
+                             if s=s1 then digitcmp:=0;
+                             if s>s1 then digitcmp:=1;
+                             if s<s1 then digitcmp:=-1;
+                             end;
+end;
+
+
+function check:boolean;
+var i,zn,zn1:integer;
+f,f1,s,s1:string;
+begin
+f:='';f1:='';s:='';s1:='';
+for i:=1 to counta do if a1[i]='+' then f:=add(f,convert(a[i]))
+                                   else f1:=add(f1,convert(a[i]));
+for i:=1 to counta do if b1[i]='+' then s:=add(s,convert(b[i]))
+                                   else s1:=add(s1,convert(b[i]));
+
+zn:=digitcmp(f,f1);
+zn1:=digitcmp(s,s1);
+if zn<0 then f:=izv(f1,f)
+        else f:=izv(f,f1);
+if zn1<0 then f1:=izv(s1,s)
+         else f1:=izv(s,s1);
+if (zn=0) then begin
+               if zn1=0 then check:=true;
+               if zn1<>0 then check:=false;
+               end;
+if zn<0 then begin
+             if zn1<0 then if f=f1 then check :=true
+                                   else check:=false
+                      else check:=false;
+             end;
+if zn>0 then begin
+             if zn1>0 then if f=f1 then check :=true
+                                   else check:=false
+                      else check:=false;
+             end;
+end;
+
+
+{function notused(k:integer):boolean;
+var i:integer;
+begin
+notused:=true;
+for i:=1 to d[0] do if digits[d[i]]=k then begin
+                                          notused:=false;
+                                          break;
+                                          end;
+end;
+
+
+procedure rec(z:integer);
+var
+i:integer;
+begin
+if z=d[0] then begin
+               writeln(z);
+               if check then begin
+                             for i:=1 to d[0] do writeln(chr(d[i]),'=',digits[d[i]]);
+                             halt(0);
+                             end;
+               end
+          else for i:=0 to 9 do begin
+                                writeln(notused(i),i,' ',z);
+                                if notused(i) and (d1[d[z]]<>1) then
+                                              begin
+                                              digits[d[Z]]:=i;
+                                              rec(Z+1);
+                                              digits[d[Z]]:=-1;
+                                              end;
+                                end;
+end;}
+
+
+
+begin
+counta:=1;
+countb:=1;
+a1[1]:='+';
+B1[1]:='+';
+repeat
+read(c);
+if c in ['A'..'Z'] then begin
+                        A[COUNTA]:=A[COUNTA]+c;
+                        digits[ord(c)]:=1;
+                        end;
+if (c='+') or (c='-')then begin
+                          a1[counta+1]:=c;
+                          inc(counta);
+                          end;
+until c='=';
+repeat
+read(c);
+if c in ['A'..'Z'] then begin
+                        b[COUNTb]:=b[COUNTb]+c;
+                        digits[ord(c)]:=1;
+                        end;
+if (c='+') or (c='-')then begin
+                          b1[countb+1]:=c;
+                          inc(countb);
+                          end;
+until c=#13;
+for i:=0 to 255 do
+ if digits[i]=1 then begin
+                     inc(d[0]);
+                     d[d[0]]:=ord(i);
+                     end;
+for i:=0 to 255 do digits[i]:=-1;
+{or i:=1 to d[0] do writeln(chr(d[i]),'=',digits[d[i]]);}
+for i:=1 to  counta do d1[ord(a[i][1])]:=1;
+for i:=1 to  countb do d1[ord(b[i][1])]:=1;
+{rec(1);}
+for z1:=0 to 9 do
+ for z2:=0 to 9 do
+  for z3:=0 to 9 do
+   for z4:=0 to 9 do
+    for z5:=0 to 9 do
+     for z6:=0 to 9 do
+      for z7:=0 to 9 do
+       for z8:=0 to 9 do
+        for z9:=0 to 9 do
+         for z0:=0 to 9 do
+ if (z1<>z2)and(z1<>z3)and(z1<>z4)and(z1<>z5)and(z1<>z6)and(z1<>z7)and(z1<>z8)and(z1<>z9)and(z1<>z0)and
+    (z2<>z3)and(z2<>z4)and(z2<>z5)and(z2<>z6)and(z2<>z7)and(z2<>z8)and(z2<>z9)and(z2<>z0)and
+    (z3<>z4)and(z3<>z5)and(z3<>z6)and(z3<>z7)and(z3<>z8)and(z3<>z9)and(z3<>z0)and
+    (z4<>z5)and(z4<>z6)and(z4<>z7)and(z4<>z8)and(z4<>z9)and(z4<>z0)and
+    (z5>>z6)and(z5<>z7)and(z5<>z8)and(z5<>z9)and(z5<>z0)and
+    (z6<>z7)and(z6<>z8)and(z6<>z9)and(z6<>z0)and
+    (z7<>z8)and(z7<>z9)and(z7<>z0)and
+    (z8<>z9)and(z8<>z0)and
+    (z9<>z0) then begin
+                  digits[d[1]]]:=z1;
+                  digits[d[2]]]:=z2;
+                  digits[d[3]]]:=z3;
+                  digits[d[4]]]:=z4;
+                  digits[d[5]]]:=z5;
+                  digits[d[6]]]:=z6;
+                  digits[d[7]]]:=z7;
+                  digits[d[8]]]:=z8;
+                  digits[d[9]]]:=z9;
+                  digits[d[10]]]:=z0;
+                  if check then begin
+                             for i:=1 to d[0] do writeln(chr(d[i]),'=',digits[d[i]]);
+                             halt(0);
+                             end;
+                  end;
+
+end.
+
+

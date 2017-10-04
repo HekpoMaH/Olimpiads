@@ -1,0 +1,36 @@
+#include<iostream>
+#include<math.h>
+using namespace std;
+long k,n,i,j,m,x,y;
+char a[101][101],c[100001];
+int main()
+ {
+ scanf("%s",&c);
+ n=strlen(c);
+ m=(long)sqrt(n);
+ for(i=0;i<m;i++)
+  for(j=0;j<m;j++)
+  {a[i][j]=c[j+i*m];
+   if(isdigit(a[i][j])) x+=a[i][j]-'0';
+  }
+ n=m;
+ x%=n;
+ cout<<a[x][y];
+ while(1==1)
+ {if(x==n-1) {x=0;if(a[x][y]<='Z'&&a[x][y]>='A') cout<<a[x][y];
+              else break;
+             }
+  else
+  if(y==n-1) {y=0;x++;if(a[x][y]<='Z'&&a[x][y]>='A') cout<<a[x][y];
+              else break;
+             }
+  else
+  {x++;y++;
+   if(a[x][y]<='Z'&&a[x][y]>='A') cout<<a[x][y];
+   else break;
+  }
+ }
+ cout<<endl;
+ //system("PAUSE");
+ return 0;
+ }

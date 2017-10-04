@@ -1,0 +1,23 @@
+#include<iostream>
+#include<cmath>
+#include<cctype>
+using namespace std;
+
+char a[1<<20], b[1<<20];
+
+int n,k, t[1<<10][1<<10], s, x,y, sz, sb;
+
+int main(){
+    
+    scanf("%s",a); sz=strlen(a); n=(int)sqrt(sz);
+    
+    for(int i=0;i<sz;i++) if(isdigit(a[i])) s+=a[i]-'0'; k=s%n; x=k; y=0;
+    
+    for(int i=0;i<n;i++) for(int j=0;j<n;j++) t[i][j]=a[i*n+j];
+    
+    while(isalpha((char)t[x][y])){ b[sb]=t[x][y]; sb++; x++; y++; if(x==n){x-=n; y--;} if(y==n) y-=n; }
+                                  
+    printf("%s\n",b);
+    
+    return 0;
+    }

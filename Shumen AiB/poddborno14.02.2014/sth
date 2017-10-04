@@ -1,0 +1,9 @@
+if(lam==1&&sum[mi2][mj2]-sum[mi2][mj-1]-sum[mi-1][mj2]+sum[mi-1][mj-1]==0&&(i1-i+1)*(j1-j+1)>mx)
+                    {
+                        cout<<"i="<<i<<" j="<<j<<" i1="<<i1<<" j1="<<j1<<" mi="<<mi<<" mj="<<mj<<" mi2="<<mi2<<" mj2="<<mj2<<endl;
+                        cout<<"their sum is "<<sum[mi2][mj2]<<"-"<<sum[mi2][mj]<<"-"<<sum[mi][mj2]<<"+"<<sum[mi][mj]<<"="<<sum[mi2][mj2]-sum[mi2][mj]-sum[mi][mj2]+sum[mi][mj]<<endl;
+                        mx=(i1-i+1)*(j1-j+1);
+                        mxio[1]=mi;mxio[2]=mj;mxio[3]=mi2;mxio[4]=mj2;
+                        mxi[1]=i;mxi[2]=j;mxi[3]=i1;mxi[4]=j1;
+                    }
+

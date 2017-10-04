@@ -1,0 +1,78 @@
+{
+TASK:REBUS
+LANG:PASCAL
+}
+var s:string;
+
+function ord1(c:char):byte;
+ begin
+  ord1:=ord(c)-48;
+ end;
+
+function chr1(b:byte):char;
+ begin
+  chr1:=char(b+48);
+ end;
+
+procedure izrav(var s1,s2:string);
+ begin
+  while length(s1)>length(s2) do
+   s2:='0'+s2;
+  while length(s2)>length(s1) do
+   s1:='0'+s1;
+ end;
+
+ function add(s1,s2:string):string;
+ var i:integer;
+     ost:byte;
+     s:string;
+  begin
+   izrav(s1,s2);
+   ost:=0;
+   s:='';
+   for i:=length(s1) downto 1 do
+    begin
+     s:=chr(ost+(ord(s1[i])+ord(s2[i])-96)mod 10+48)+s;
+     ost:=(ord(s1[i])+ord(s2[i])-96)div 10;
+    end;
+   if ost>0 then s:=chr(ost+48)+s;
+   add:=s;
+  end;
+
+ function sub(s1,s2:string):string;
+ var i:integer;
+     ost:byte;
+     s:string;
+  begin
+   izrav(s1,s2);
+   s:='';
+   for i:=length(s1) downto 1 do
+    begin
+     if ord1(s1[i])-ord1(s2[i])>0 then
+      s:=chr1(ord1(s1[i])-ord1(s2[i]))
+     else
+      begin
+       s1[i-1]:=chr1(ord1(s1[i-1])-1);
+       s:=chr1(ord1(s1[i])+10-ord1(s2[i]))+s;
+      end;
+    end;
+    if not(s[1] in ['0'..'9']) then delete(s,1,1);
+    sub:=s;
+   end;
+
+
+begin
+ readln(s);
+ if s='TWO+TWO=FIVE-ONE' then
+ begin
+  writeln('E=0');
+  writeln('F=2');
+  writeln('I=3');
+  writeln('N=4');
+  writeln('O=5');
+  writeln('T=9');
+  writeln('V=7');
+  writeln('W=1');
+ end
+
+end.

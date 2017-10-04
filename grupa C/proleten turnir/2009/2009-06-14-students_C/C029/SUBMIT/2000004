@@ -1,0 +1,128 @@
+/*
+TASK:cross
+LANG:C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <vector>
+#include <queue>
+
+using namespace std;
+
+struct path
+{
+       vector<int> way;
+       int used[256];
+};
+
+int n,m;
+vector<int> v[256];
+int a[256][256],b[256][256];
+vector<vector<int> > all1,all2;
+
+void solve1()
+{
+     int k1,k2;
+     scanf("%d %d",&k1,&k2);
+     queue<path> q;
+     
+     path tmp;
+     for(int i=0;i<n;i++) tmp.used[i]=0;
+     tmp.way.push_back(k1); tmp.used[k1]=1;
+     q.push(tmp);
+     
+     while(!q.empty())
+     {
+                      path p=q.front();
+                      q.pop();
+                      int sz=p.way.size();
+                      int last=p.way[sz-1];
+                      /*
+                      for(int i=0;i<p.way.size();i++) cout << p.way[i] << " ";
+                      cout << endl;
+                      for(int i=0;i<n;i++) cout << p.used[i] << " ";
+                      cout << last << endl;
+                      */
+                      if(last==k2) { all1.push_back(p.way); continue; }
+                      for(int i=0;i<v[last].size();i++)
+                       if(p.used[ v[last][i] ]==0)
+                       {
+                                  path ins;
+                                  ins.way=p.way;
+                                  for(int j=0;j<n;j++) ins.used[j]=p.used[j];
+                                  ins.way.push_back(v[last][i]); ins.used[v[last][i]]=1;
+                                  q.push(ins);
+                       }
+                      
+                      //cout << endl << endl;
+     }
+}
+
+void solve2()
+{
+     int k1,k2;
+     scanf("%d %d",&k1,&k2);
+     queue<path> q;
+     
+     path tmp;
+     for(int i=0;i<n;i++) tmp.used[i]=0;
+     tmp.way.push_back(k1); tmp.used[k1]=1;
+     q.push(tmp);
+     
+     while(!q.empty())
+     {
+                      path p=q.front();
+                      q.pop();
+                      int sz=p.way.size();
+                      int last=p.way[sz-1];
+                      /*
+                      for(int i=0;i<p.way.size();i++) cout << p.way[i] << " ";
+                      cout << endl;
+                      for(int i=0;i<n;i++) cout << p.used[i] << " ";
+                      cout << last << endl;
+                      */
+                      if(last==k2) { all2.push_back(p.way); continue; }
+                      for(int i=0;i<v[last].size();i++)
+                       if(p.used[ v[last][i] ]==0)
+                       {
+                                  path ins;
+                                  ins.way=p.way;
+                                  for(int j=0;j<n;j++) ins.used[j]=p.used[j];
+                                  ins.way.push_back(v[last][i]); ins.used[v[last][i]]=1;
+                                  q.push(ins);
+                       }
+                      
+                      //cout << endl << endl;
+     }
+}
+
+int main()
+{
+    scanf("%d %d",&n,&m);
+    for(int i=0;i<m;i++)
+    {
+            int x,y;
+            scanf("%d %d",&x,&y);
+            v[x].push_back(y);
+            v[y].push_back(x);
+    }
+    
+    solve1();
+    solve2();
+    
+    for(int i=0;i<all1.size();i++)
+     for(int j=0;j<all1[i].size();j++)
+      a[all1[i][j]][j]=1;
+    
+    for(int i=0;i<all2.size();i++)
+     for(int j=0;j<all2[i].size();j++)
+      b[all2[i][j]][j]=1;
+    
+    int sol=0;
+    for(int i=0;i<n;i++)
+     for(int j=1;j<=n;j++)
+      if(a[i][j] && b[i][j]) { sol++; break; }
+    cout << sol << endl;
+
+    return 0;
+}

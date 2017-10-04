@@ -1,0 +1,40 @@
+#include<iostream>
+#include<stack>
+#include<algorithm>
+#include<cmath>
+using namespace std;
+
+long long r,b,fl;
+char a;
+stack<long long> s;
+
+int main()
+{
+    while(1==1)
+    {
+        cin>>a>>b;
+        if(a=='+')s.push(1);
+        if(a=='-')s.push(2);
+        if(a=='*')s.push(3);
+        if(a=='/')s.push(4);
+        if(a=='=')fl=1;
+        s.push(b);
+        if(fl==1)break;
+    }
+    r=s.top();
+    s.pop();
+    while(1==1)
+    {
+        b=s.top();
+        s.pop();
+        a=s.top();
+        s.pop();
+        if(a==1)r=r-b;
+        if(a==2)r=r+b;
+        if(a==3)r=r/b;
+        if(a==4)r=r*b;
+        if(s.empty())break;
+    }
+    cout<<r<<endl;
+    return 0;
+}

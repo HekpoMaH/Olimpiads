@@ -1,0 +1,305 @@
+<html>
+
+<head>
+<title>DAY 1Problem 1</title>
+<meta name="GENERATOR" content="Microsoft FrontPage 3.0">
+</head>
+
+<body bgcolor="#FFFFFF" text="#000000" link="#0000FF" vlink="#FF0000" alink="#008000">
+
+<hr color="#0000FF" size="1">
+<div align="center"><center>
+
+<table border="0" cellpadding="5" cellspacing="5" width="90%">
+  <tr>
+    <td width="24%" bordercolor="#FFFFFF" bordercolorlight="#FFFFFF" bordercolordark="#FFFFFF"><p
+    align="center"><img src="Boi99-t.gif" width="120" height="117" align="center" border="0"></td>
+    <td width="76%" bordercolor="#FFFFFF" bordercolorlight="#FFFFFF" bordercolordark="#FFFFFF"><p
+    align="center"><font color="#000080"><big><big><big>7th Balkan Olympiad on Informatics</big></big></big></font></p>
+    <p align="center"><font color="#000080"><big><big>Ioannina - Greece</big></big></font></p>
+    <p align="center">&nbsp;</td>
+  </tr>
+</table>
+</center></div>
+
+<hr color="#0000FF" size="1">
+
+<p align="center"><font color="#AA2424"><strong><big><big>Problems</big></big></strong></font></p>
+
+<p><font color="#000080"><strong>DAY 1<br>
+Problem 1: Paving Roads (30 points)<br>
+</strong></font><br>
+In an isolated area of a poor country there exist N towns connected by roads. Every pair
+of towns is not necessarily connected by a direct road but there is a path connecting
+them. All these roads are unpaved. The government is interested in paving some of these
+roads, so that with these paved roads:<br>
+<br>
+* there is a paved path from any of these towns to any other town, and<br>
+* this does not hold if any of these (paved) roads is left unpaved<br>
+<br>
+In order to find the most preferable paving, the government wants to obtain the number of
+all the different possible pavings.<br>
+<br>
+<font color="#800080">INPUT<br>
+</font>Your program should read the input from the file INPUT.TXT, as follows: The first
+line contains the number of towns N (2 &lt;= N &lt;= 20) and the number of roads R (N-1
+&lt;= R &lt;= 190) as two positive integer numbers separated by a space character. The
+next R lines describe the town connections as pairs of integers K and L, denoting a road
+connecting the K-th and L-th town (0 &lt;= K, L &lt;= N-1).<br>
+<br>
+<font color="#800080">OUTPUT</font><br>
+Your program should produce its output into the file OUTPUT.TXT as follows:<br>
+There will be only one line of text, containing the number of different possible pavings.<br>
+<br>
+<font color="#800080">EXAMPLE
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</font></p>
+
+<p><font color="#800080">INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+4 4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3<br>
+0 2<br>
+0 1<br>
+0 3<br>
+1 3<br>
+<br>
+<font color="#800080">Time Limit per Test: 5 seconds</font></p>
+
+<p>&nbsp;</p>
+
+<p><font color="#000080"><strong>DAY 1<br>
+Problem 2: The Flip Game (40 points)<br>
+</strong></font><br>
+There is an ancient solitaire game named &quot;the flip game&quot;. It consists of an
+array of M rows and 9 columns of two-colored pegs, with a black and a white side. When a
+peg with its white side showing is flipped, it shows its black side, and the other way
+around.<br>
+<br>
+In each move of the game the player flips an entire row or an entire column.<br>
+<br>
+The objective of the game is to leave as few pegs on their black side on the board as
+possible, by doing any number of moves.<br>
+<br>
+<font color="#800080">INPUT</font><br>
+Your program should read the input from the file INPUT.TXT. The first line contains one
+positive integer number M (1 &lt;= M &lt;= 1000), denoting the number of rows in the game
+board. The next M consecutive lines contain exactly 9 characters, which are &quot;0&quot;s
+or &quot;1&quot;s, separated by one space character, where &quot;0&quot; means a peg
+showing its white side and &quot;1&quot; means a peg showing its black side.<br>
+<br>
+<font color="#800080">OUTPUT</font><br>
+Your program should produce its output into the file OUTPUT.TXT as follows:<br>
+There will be only one line of text, containing the minimum possible number of pegs
+showing their black side, which are left on the game board.<br>
+<br>
+<font color="#800080">EXAMPLE</font><br>
+<br>
+<font color="#800080">INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1<br>
+1 1 1 1 1 1 1 1 1<br>
+1 0 0 0 0 0 0 0 0<br>
+1 0 0 0 0 0 0 0 0<br>
+1 0 0 0 0 0 0 0 0<br>
+<br>
+<font color="#800080">Time Limit per test: 3 seconds</font><br>
+</p>
+
+<p>&nbsp;</p>
+
+<p><font color="#000080"><strong>DAY 1<br>
+Problem 3: Guarding a Gallery (30 points)<br>
+</strong></font><br>
+Gallery 'El Greco' consists of a single room whose walls have either a north-south
+direction or a west-east direction. Moreover its floor plan forms a single closed
+polygonal line and there are no objects of any kind inside the room. There are precious
+paintings on every wall and the gallery owner wants to hire a guard to guard them. So,
+he's interested in determining whether there is any point in the gallery from where the
+guard can see all the walls. Note that a wall is still visible even if the guard is
+located along the line of the wall.<br>
+<br>
+<font color="#800080">INPUT</font><br>
+Your program should read the input from the file INPUT.TXT, as follows: The first line
+contains the number N (4 &lt;= N &lt;= 1000) of the corners of the gallery. On the N
+following lines there are pairs of integers X and Y denoting the coordinates of the
+corners in a clock-wise order (0 &lt;= X, Y &lt;= 1000).<br>
+<br>
+<font color="#800080">OUTPUT</font><br>
+Your program should produce its output into the file OUTPUT.TXT as follows:<br>
+There will be only one line of text, containing the integer coordinates of a point in the
+gallery from where the guard can <br>
+see all the walls; the coordinates should be separated by one space character. There may
+be many possible such points, output only one. If no such point exists then your program
+should output &quot;NO POINT&quot;.<br>
+<br>
+<br>
+<font color="#800080">EXAMPLE<br>
+<br>
+INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+6
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+70 10<br>
+0 0<br>
+0 50<br>
+50 50<br>
+50 100<br>
+100 100 <br>
+100 0<br>
+<br>
+<font color="#800080">Time Limit per Test: 1 second</font></p>
+
+<p>&nbsp;</p>
+
+<p><font color="#000080"><strong>DAY 2<br>
+Problem 1: Crime Statistics (30 points)<br>
+</strong></font><br>
+A police officer has undertaken the duty to produce statistical data about the crime in a
+large city. His/her project is to find for a convex area in the city how many of the
+committed crimes took place there.<br>
+<br>
+<font color="#800080">INPUT</font><br>
+Your program should read the input from the file INPUT.TXT as follows. The first line
+contains an integer N (3 &lt;= N &lt;= 1000) which represents the number of corners of the
+convex area in question. The N following lines contain two integers X and Y each (ranging
+from -1000 to 1000) separated by a space character, which represent the coordinates of the
+corners in order around the area's border. The next line contains an integer M (1 &lt;= M
+&lt;= 10000) which is the number of committed crimes. The following M lines contain two
+integers X and Y each (ranging from -1000 to 1000) separated by a space character, which
+represent the coordinates of the location of a crime.<br>
+<br>
+<font color="#800080">OUTPUT</font><br>
+Your program should write its output to the file OUTPUT.TXT as follows. There is one line
+containing an integer, which is the number of crimes that took place inside or on the
+border of the specified area.<br>
+<br>
+<font color="#800080">EXAMPLE<br>
+<br>
+INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+4
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1<br>
+0 0<br>
+0 100<br>
+100 100<br>
+100 0<br>
+2<br>
+50 50<br>
+-30 50<br>
+<br>
+<font color="#800080">Time Limit per Test: 1 second</font></p>
+
+<p>&nbsp;</p>
+
+<p><font color="#000080"><strong>DAY 2<br>
+Problem 2: River Highwater (30 points)<br>
+</strong></font><br>
+Westmouth and Eastmouth are two towns located on the west and east banks of river
+Highwater respectively; Westmouth is to the south of Eastmouth. The river's banks, which
+are polygonal lines, are such that an east-west line intersects each one of them in
+exactly one point. Captain Hook sails frequently between the two towns. In order to
+minimize his fuel expenses, he would like to find the shortest route from Westmouth to
+Eastmouth.<br>
+<br>
+<font color="#800080">INPUT</font><br>
+Your program should read the input from the file INPUT.TXT as follows.<br>
+The first line contains two integers M and N (2 &lt;= M, N &lt;= 2000) which represent the
+number of corners of the west and east bank respectively. The M lines that follow contain
+two integers X and Y each (0 &lt;= X, Y &lt;= 3600), which represent the coordinates of
+the west bank's corners from Westmouth to a point at the same geographic latitude (that
+is, the same Y-coordinate) as Eastmouth. The N lines that follow contain two integers X
+and Y each (0 &lt;= X, Y &lt;= 3600), which represent the coordinates of the east bank's
+corners from a point at the same geographic latitude (that is, the same Y-coordinate) as
+Westmouth to Eastmouth.<br>
+<br>
+<font color="#800080">OUTPUT</font><br>
+Your program should write its output to the file OUTPUT.TXT as follows.<br>
+The lines contain two integers X and Y each, separated by a space character, which are the
+coordinates of the corners of the route from Westmouth to Eastmouth. (It is clear that the
+first line should have the coordinates of Westmouth and the last line the coordinates of
+Eastmouth).<br>
+<br>
+<font color="#800080">EXAMPLE<br>
+<br>
+INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+3 3
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+0 0<br>
+0 0
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+50 50<br>
+50 50
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+50 100<br>
+0 150
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+100 150<br>
+100 0<br>
+50 100<br>
+100 150<br>
+<br>
+<font color="#800080">Time Limit per Test: 1 second<br>
+</font></p>
+
+<p>&nbsp;</p>
+
+<p><font color="#000080"><strong>DAY 2<br>
+Problem 3: Knowing people (40 points)<br>
+</strong></font><br>
+A gathering is taking place in a large room. Each participant may know none, some, or all
+the other participants. We want to see whether there is a way to place all these people in
+a queue, so that for everyone in the queue, his/her acquaintances located behind him/her
+all know each other.<br>
+<br>
+<font color="#800080">INPUT</font><br>
+Your program should read an input file INPUT.TXT that has the following structure.<br>
+The first line contains the total number N of people (1 &lt;= N &lt;= 50). The second line
+contains the total number M of pairs of people that know each other (0 &lt;= M &lt;=
+1225). Each of the following M lines contains two integers I and J (1 &lt;= I, J &lt;= N)
+separated by a space character and indicates that persons I and J know each other.<br>
+. <br>
+<font color="#800080">OUTPUT</font><br>
+Your program should produce an output file OUTPUT.TXT that should be as follows.<br>
+The first line contains the string &quot;YES&quot; if there is a way to place all the
+people in a queue; otherwise, the string &quot;NO&quot; should appear in the output. If
+the answer is &quot;YES&quot;, the next line of the output file contains a proper sequence
+of the N people, separated by space character (from the front to the end).<br>
+<br>
+<font color="#800080">EXAMPLE<br>
+<br>
+INPUT.TXT
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+OUTPUT.TXT</font><br>
+5
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+YES<br>
+7
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+1 2 4 5 3<br>
+1 2<br>
+3 1<br>
+2 3<br>
+2 4<br>
+4 3<br>
+3 5<br>
+4 5<br>
+<br>
+<font color="#800080">Time Limit per Test: 1 second</font></p>
+
+<hr color="#0000FF" size="1">
+
+<p><a href="http://www.cs.uoi.gr/~stavros/boi99/boi99.htm"><font color="#FF0000">Back</font></a><br>
+</p>
+</body>
+</html>

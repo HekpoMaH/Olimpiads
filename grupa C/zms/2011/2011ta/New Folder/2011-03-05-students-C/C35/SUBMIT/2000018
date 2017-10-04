@@ -1,0 +1,21 @@
+#include<stdio.h>
+int main() {
+    int n,i,j,t;
+    long br=0;
+    int a[50000],b[50000];
+    scanf("%d",&n);
+    for(i=0;i<n;i++) {
+        scanf("%d",&t);
+        a[t]=i;
+    }
+    for(i=0;i<n;i++) {
+        scanf("%d",&t);
+        b[t]=i;
+    }
+    for(i=1;i<=n-1;i++)
+        for(j=i+1;j<=n;j++)
+            if(((a[i]-a[j])>0 && (b[i]-b[j])<0) || ((a[i]-a[j])<0 && (b[i]-b[j]>0)))
+                br++;
+    printf("%ld\n",br);
+    return 0;
+}

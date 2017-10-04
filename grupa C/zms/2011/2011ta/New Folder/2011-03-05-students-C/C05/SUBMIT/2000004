@@ -1,0 +1,50 @@
+
+#include<iostream>
+#include<cstring>
+using namespace std;
+
+long long n,a[100001];char ch[100001];
+int main()
+{
+    int x=0,i=0,j;
+    while (ch[i]!='=')
+    {
+        i++;
+        cin >> ch[i];
+        cin >> a[i-1];
+    }
+    if (ch[i-1] == '*')
+    x=a[i-1]/a[i-2];
+    if (ch[i-1] == '+')
+    x=a[i-1]-a[i-2];
+    if (ch[i-1] == '-')
+    x=a[i-1]+a[i-2];
+    for (j=i-2;j>0;j--)
+    {
+
+        if (ch[j] == '+')
+        x-=a[j-1];
+        if (ch[j] == '-')
+        x+=a[j-1];
+        if (ch[j] == '*')
+        x/=a[j-1];
+    }
+    cout << x << endl;
+    /*for (j=1;j<=i;j++)
+    cout<<a[j]<<' ';
+    cout<<endl;
+    for (j=1;j<=i;j++)
+    cout<<ch[j]<<' ';
+    cout<<endl;*/
+    return 0;
+}
+/*
++
+21
+-
+3
+*
+4
+=
+124
+*/

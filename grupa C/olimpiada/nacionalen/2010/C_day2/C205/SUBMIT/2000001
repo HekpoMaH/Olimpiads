@@ -1,0 +1,50 @@
+#include<cstdio>
+#include<cmath>
+#include<cstring>
+#include<iostream>
+using namespace std;
+
+int n;
+int k;
+char a[1 << 20];
+char b[1 << 10][1 << 10];
+
+int main() {
+	scanf ( "%s" , &a );
+	n = (int) sqrt ( strlen ( a ) );
+	int tek_i = 0 , tek_j = 0;
+	int tek_sbor = 0;
+	for ( int i = 0;i < n * n;++i ) {
+		if ( tek_j == n ) {
+			tek_j = 0;
+			++tek_i;
+		}
+		b[tek_i][tek_j] = a[i];
+		++tek_j;
+		if ( a[i] >= '0' && a[i] <= '9' ) tek_sbor += a[i] - '0';
+	}
+	k = tek_sbor % n;
+	tek_i = k;
+	tek_j = 0;
+	while ( b[tek_i][tek_j] >= 'A' && b[tek_i][tek_j] <= 'Z' ) {
+		printf ( "%c" , b[tek_i][tek_j] );
+/*		if ( tek_i == n - 1 && tek_j == n - 1 ) {
+			tek_i = 1;
+			tek_j = 0;
+			continue;
+		}
+*/		if ( tek_i == n - 1 ) {
+			tek_i = 0;
+			continue;
+		}
+		if ( tek_j == n - 1 ) {
+			++tek_i;
+			tek_j = 0;
+			continue;
+		}
+		++tek_i;
+		++tek_j;
+	}
+	puts ( "" );
+	return 0;
+}

@@ -1,0 +1,21 @@
+Memo1
+ab	1	1	1	0
+aba	2	2	2	1
+abb	3	3	3	2
+abc	3	3	3	3
+abd	3	3	3	3
+abe	3	3	3	3
+abefgh	4	3	3	3
+abefghpq	5	2	2	2
+bc	1	1	1	1
+bca	2	2	2	2
+bcb	3	3	3	3
+bcd	3	3	3	3
+bcde	4	4	4	3
+bcdeg	5	5	3	2
+bcdegfgh	6	6	2	1
+
+abefghpqr
+bcdegfgh
+abc
+

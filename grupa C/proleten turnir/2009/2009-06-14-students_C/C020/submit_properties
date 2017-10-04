@@ -1,0 +1,34 @@
+<hashtable>
+  <entry>
+    <string>kabel_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>string_submit_time</string>
+    <string>2009.06.13 10:25:26</string>
+  </entry>
+  <entry>
+    <string>kabel_submit_time</string>
+    <string>2009.06.13 12:22:49</string>
+  </entry>
+  <entry>
+    <string>kabel_filename</string>
+    <string>kabel.cpp</string>
+  </entry>
+  <entry>
+    <string>string_language</string>
+    <string>C++</string>
+  </entry>
+  <entry>
+    <string>string</string>
+    <string>2000002</string>
+  </entry>
+  <entry>
+    <string>kabel</string>
+    <string>2000004</string>
+  </entry>
+  <entry>
+    <string>string_filename</string>
+    <string>string.cpp</string>
+  </entry>
+</hashtable>

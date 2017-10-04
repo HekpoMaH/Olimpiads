@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ru"
+ lang="ru" dir="ltr">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>ru:string:start</title>
+<meta name="generator" content="DokuWiki Release 2009-12-25c &quot;Lemming&quot;" />
+<meta name="robots" content="index,follow" />
+<meta name="date" content="2009-10-25T04:06:59-0700" />
+<meta name="keywords" content="ru,string,start" />
+<link rel="search" type="application/opensearchdescription+xml" href="http://www.cppreference.com/wiki/lib/exe/opensearch.php" title="C++ Reference" />
+<link rel="start" href="../../index.html" />
+<link rel="contents" href="http://www.cppreference.com/wiki/ru/string/start?do=index" title="Все страницы" />
+<link rel="alternate" type="application/rss+xml" title="Recent Changes" href="http://www.cppreference.com/wiki/feed.php" />
+<link rel="alternate" type="application/rss+xml" title="Current Namespace" href="http://www.cppreference.com/wiki/feed.php?mode=list&amp;ns=ru:string" />
+<link rel="alternate" type="text/html" title="Plain HTML" href="http://www.cppreference.com/wiki/_export/xhtml/ru/string/start" />
+<link rel="alternate" type="text/plain" title="Wiki Markup" href="http://www.cppreference.com/wiki/_export/raw/ru/string/start" />
+<link rel="canonical" href="start" />
+<link rel="stylesheet" media="all" type="text/css" href="../../lib/exe/css.php@s=all&amp;t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="screen" type="text/css" href="../../lib/exe/css.php@t=custom1&amp;tseed=1265723194" />
+<link rel="stylesheet" media="print" type="text/css" href="../../lib/exe/css.php@s=print&amp;t=custom1&amp;tseed=1265723194" />
+<script type="text/javascript" charset="utf-8" ><!--//--><![CDATA[//><!--
+var NS='ru:string';var JSINFO = {"id":"ru:string:start","namespace":"ru:string"};
+//--><!]]></script>
+<script type="text/javascript" charset="utf-8" src="../../lib/exe/js.php@tseed=1265723194" ></script>
+</head>
+<body>
+<div class="dokuwiki export">
+
+
+
+<h1><a name="c_strings" id="c_strings">C++ Strings</a></h1>
+<div class="level1">
+
+<p>
+
+Класс <code>basic_string</code> удобен для хранения последовательности символов и манипулирования ей. Он определён как шаблон класса в пространстве имён <code>std</code> в заголовочном файле <code>&lt;string&gt;</code>.
+
+</p>
+<pre class="c code c++" style="font-family:monospace;"> template <span class="sy0">&lt;</span>typename Char<span class="sy0">,</span> typename Traits <span class="sy0">=</span> char_traits<span class="sy0">&lt;</span>Char<span class="sy0">&gt;,</span> typename Allocator <span class="sy0">=</span> allocator<span class="sy0">&lt;</span>Char<span class="sy0">&gt;</span> <span class="sy0">&gt;</span>
+ class basic_string<span class="sy0">;</span></pre>
+<p>
+
+В стандартной библиотеке C++ есть две специализации класса <code>basic_string</code>.
+
+</p>
+<pre class="c code c++" style="font-family:monospace;"> <span class="kw4">typedef</span> basic_string<span class="sy0">&lt;</span>char<span class="sy0">&gt;</span>    <span class="kw4">string</span><span class="sy0">;</span>
+ <span class="kw4">typedef</span> basic_string<span class="sy0">&lt;</span>wchar_t<span class="sy0">&gt;</span> wstring<span class="sy0">;</span></pre>
+<p>
+Далее <code>string</code> будет обозначать собой любую специализацию класса <code>basic_string</code>, а <code>Char</code> будет означать тип его символов.
+
+</p>
+<table class="inline">
+	<tr class="row0">
+		<td class="col0"><a href="string_constructors" class="wikilink1" title="ru:string:string_constructors">Конструкторы</a></td><td class="col1">создают строку из массива символов или другой строки</td>
+	</tr>
+	<tr class="row1">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/string_operators" class="wikilink2" title="ru:string:string_operators" rel="nofollow">Операторы</a></td><td class="col1">складывают строки, присваивают строкам значение, вводят/выводят строки, сравненивают строки</td>
+	</tr>
+	<tr class="row2">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/append" class="wikilink2" title="ru:string:append" rel="nofollow">append</a></td><td class="col1">добавляет строку или символы к строке</td>
+	</tr>
+	<tr class="row3">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/assign" class="wikilink2" title="ru:string:assign" rel="nofollow">assign</a></td><td class="col1">присваивает строке значение строк символов или других строк C++</td>
+	</tr>
+	<tr class="row4">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/at" class="wikilink2" title="ru:string:at" rel="nofollow">at</a></td><td class="col1">возвращает символ, стоящий в некоторой позиции</td>
+	</tr>
+	<tr class="row5">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/begin" class="wikilink2" title="ru:string:begin" rel="nofollow">begin</a></td><td class="col1">возвращает итератор на начало строки</td>
+	</tr>
+	<tr class="row6">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/c_str" class="wikilink2" title="ru:string:c_str" rel="nofollow">c_str</a></td><td class="col1">возвращает строку в виде немодифицируемого массива символов (как в C)</td>
+	</tr>
+	<tr class="row7">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/capacity" class="wikilink2" title="ru:string:capacity" rel="nofollow">capacity</a></td><td class="col1">возвращает количество символов, которые могут поместиться в строку</td>
+	</tr>
+	<tr class="row8">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/clear" class="wikilink2" title="ru:string:clear" rel="nofollow">clear</a></td><td class="col1">удаляет все символы из строки</td>
+	</tr>
+	<tr class="row9">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/compare" class="wikilink2" title="ru:string:compare" rel="nofollow">compare</a></td><td class="col1">сравнивает две строки</td>
+	</tr>
+	<tr class="row10">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/copy" class="wikilink2" title="ru:string:copy" rel="nofollow">copy</a></td><td class="col1">копирует символы из строки в массив</td>
+	</tr>
+	<tr class="row11">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/data" class="wikilink2" title="ru:string:data" rel="nofollow">data</a></td><td class="col1">возвращает указатель на первый символ строки</td>
+	</tr>
+	<tr class="row12">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/empty" class="wikilink2" title="ru:string:empty" rel="nofollow">empty</a></td><td class="col1">возвращает true если в строке нет символов</td>
+	</tr>
+	<tr class="row13">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/end" class="wikilink2" title="ru:string:end" rel="nofollow">end</a></td><td class="col1">returns an iterator just past the last character of a string</td>
+	</tr>
+	<tr class="row14">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/erase" class="wikilink2" title="ru:string:erase" rel="nofollow">erase</a></td><td class="col1">удаляет символы из строки</td>
+	</tr>
+	<tr class="row15">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/find" class="wikilink2" title="ru:string:find" rel="nofollow">find</a></td><td class="col1">ищет символы в строке</td>
+	</tr>
+	<tr class="row16">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/find_first_not_of" class="wikilink2" title="ru:string:find_first_not_of" rel="nofollow">find_first_not_of</a></td><td class="col1">находит первый символ, отличный от</td>
+	</tr>
+	<tr class="row17">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/find_first_of" class="wikilink2" title="ru:string:find_first_of" rel="nofollow">find_first_of</a></td><td class="col1">находит первый символ схожий с</td>
+	</tr>
+	<tr class="row18">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/find_last_not_of" class="wikilink2" title="ru:string:find_last_not_of" rel="nofollow">find_last_not_of</a></td><td class="col1">находит последний символ, отличный от</td>
+	</tr>
+	<tr class="row19">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/find_last_of" class="wikilink2" title="ru:string:find_last_of" rel="nofollow">find_last_of</a></td><td class="col1">находит последний символ, схожий с</td>
+	</tr>
+	<tr class="row20">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/getline" class="wikilink2" title="ru:string:getline" rel="nofollow">getline</a></td><td class="col1">читает из потока ввода в строку</td>
+	</tr>
+	<tr class="row21">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/insert" class="wikilink2" title="ru:string:insert" rel="nofollow">insert</a></td><td class="col1">вставляет символы в строку</td>
+	</tr>
+	<tr class="row22">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/length" class="wikilink2" title="ru:string:length" rel="nofollow">length</a></td><td class="col1">возвращает длину строки</td>
+	</tr>
+	<tr class="row23">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/max_size" class="wikilink2" title="ru:string:max_size" rel="nofollow">max_size</a></td><td class="col1">возвращает максимальное количество символов, которые могут содержаться в строке</td>
+	</tr>
+	<tr class="row24">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/npos" class="wikilink2" title="ru:string:npos" rel="nofollow">npos</a></td><td class="col1">специальное значение, означающее «не найдено» или «все доступные варианты»</td>
+	</tr>
+	<tr class="row25">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/push_back" class="wikilink2" title="ru:string:push_back" rel="nofollow">push_back</a></td><td class="col1">добавляет символ в конец строки</td>
+	</tr>
+	<tr class="row26">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/rbegin" class="wikilink2" title="ru:string:rbegin" rel="nofollow">rbegin</a></td><td class="col1">возвращает reverse_iterator на конец строки</td>
+	</tr>
+	<tr class="row27">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/rend" class="wikilink2" title="ru:string:rend" rel="nofollow">rend</a></td><td class="col1">возвращает reverse_iterator на начало строки</td>
+	</tr>
+	<tr class="row28">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/replace" class="wikilink2" title="ru:string:replace" rel="nofollow">replace</a></td><td class="col1">заменяет символы в строке</td>
+	</tr>
+	<tr class="row29">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/reserve" class="wikilink2" title="ru:string:reserve" rel="nofollow">reserve</a></td><td class="col1">устанавливает минимальную вместимость строки</td>
+	</tr>
+	<tr class="row30">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/resize" class="wikilink2" title="ru:string:resize" rel="nofollow">resize</a></td><td class="col1">меняет размер строки</td>
+	</tr>
+	<tr class="row31">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/rfind" class="wikilink2" title="ru:string:rfind" rel="nofollow">rfind</a></td><td class="col1">находит последнее вхождение подстроки</td>
+	</tr>
+	<tr class="row32">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/size" class="wikilink2" title="ru:string:size" rel="nofollow">size</a></td><td class="col1">returns the number of items in the string</td>
+	</tr>
+	<tr class="row33">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/substr" class="wikilink2" title="ru:string:substr" rel="nofollow">substr</a></td><td class="col1">возвращает определённую подстроку</td>
+	</tr>
+	<tr class="row34">
+		<td class="col0"><a href="http://www.cppreference.com/wiki/ru/string/swap" class="wikilink2" title="ru:string:swap" rel="nofollow">swap</a></td><td class="col1">меняет две строки содержимым</td>
+	</tr>
+</table>
+
+</div>
+</div>
+</body>
+</html>

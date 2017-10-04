@@ -1,0 +1,44 @@
+task : hlinks
+language : PASCAL
+compile time : 60
+data_num : 10
+input : data/hlinks.01.in, output :./tmp/result.execute, sol : data/hlinks.01.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.02.in, output :./tmp/result.execute, sol : data/hlinks.02.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.03.in, output :./tmp/result.execute, sol : data/hlinks.03.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.04.in, output :./tmp/result.execute, sol : data/hlinks.04.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.05.in, output :./tmp/result.execute, sol : data/hlinks.05.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.06.in, output :./tmp/result.execute, sol : data/hlinks.06.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.07.in, output :./tmp/result.execute, sol : data/hlinks.07.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 2
+input : data/hlinks.08.in, output :./tmp/result.execute, sol : data/hlinks.08.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.09.in, output :./tmp/result.execute, sol : data/hlinks.09.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0
+input : data/hlinks.10.in, output :./tmp/result.execute, sol : data/hlinks.10.sol
+signal : 0, exit_code : 0
+Execute return value : 0
+execution time : 0

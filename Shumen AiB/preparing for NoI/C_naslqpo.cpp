@@ -1,0 +1,71 @@
+#include<iostream>
+#include<string>
+using namespace std;
+string s;
+int used[60][60],a[60][60];
+void dfs(int x,int y,int c)
+{
+    used[x][y]=1;
+    if(used[x+1][y]==0&&a[x+1][y]==0&&x+1<=60)
+    {
+        cout<<"SOUTH"<<endl;
+        cin>>s;
+        if(s=="BLOCKED")
+        {
+            a[x+1][y]=1;
+        }
+        else
+        {
+            dfs(x+1,y,1);
+        }
+    }
+    if(used[x][y+1]==0&&a[x][y+1]==0&&y+1<=60)
+    {
+        cout<<"EAST"<<endl;
+        cin>>s;
+        if(s=="BLOCKED")
+        {
+            a[x][y+1]=1;
+        }
+        else
+        {
+            dfs(x,y+1,2);
+        }
+    }
+    if(used[x-1][y]==0&&a[x-1][y]==0&&x-1<=60)
+    {
+        cout<<"NORTH"<<endl;
+        cin>>s;
+        if(s=="BLOCKED")
+        {
+            a[x-1][y]=1;
+        }
+        else
+        {
+            dfs(x-1,y,3);
+        }
+    }
+    if(used[x][y-1]==0&&a[x][y-1]==0&&y-1<=60)
+    {
+        cout<<"WEST"<<endl;
+        cin>>s;
+        if(s=="BLOCKED")
+        {
+            a[x][y-1]=1;
+        }
+        else
+        {
+            dfs(x,y-1,4);
+        }
+    }
+    if(c==1)cout<<"NORTH"<<endl;
+    if(c==2)cout<<"WEST"<<endl;
+    if(c==3)cout<<"SOUTH"<<endl;
+    if(c==4)cout<<"EAST"<<endl;
+    if(c!=0)cin>>s;
+}
+int main()
+{
+    dfs(30,30,0);
+    cout<<"DONE"<<endl;
+}

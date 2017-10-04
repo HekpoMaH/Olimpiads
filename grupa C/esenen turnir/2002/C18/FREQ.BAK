@@ -1,0 +1,32 @@
+var
+ S                           : string;
+ N,i,j,br,br2                : longint;
+ ch,koq                      : char;
+ M                           : array[1..1000] of char;
+ Mas                         : array[1..1000] of longint;
+ Kraj                        : array[1..1000] of longint;
+begin
+ readln(N);
+ for ch:='a' to 'z' do
+  begin
+   M[ord(ch)]:=ch;        { 97..122}
+  end;
+ for i:=1 to N do
+  begin
+   readln(S);
+   for j:=97 to 122 do
+   Mas[j]:=0;
+   for j:=1 to length(s) do
+   if S[j]<>' ' then inc(Mas[ord(S[j])]);
+   for j:=97 to 122 do
+   if Mas[j]>Kraj[j] then Kraj[j]:=Mas[j];
+  end;
+  br:=0;
+  for j:=97 to 122 do
+  if Kraj[j]>br then
+   begin
+    br:=Kraj[j];
+    koq:=chr(j);
+   end;
+ write(koq,' ',br);
+end.

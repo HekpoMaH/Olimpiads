@@ -1,0 +1,31 @@
+
+
+.. power -- dp
+2001 croatia final
+
+.. tele - dp (tree)
+2002 croatia final
+
+.. nagibni - dp (tree)
+2005 croatia national day 2
+	-- vinagi ima re6enie - t.e prez 1 koren ne mogat
+	da minavat pove4e ot 2 pytq (za obedinenie)
+
+.. fruits -- dp (moneten)
+1998 Baltic
+	da se nameri set sys to4no opredelena suma (lesen variant)
+.. boc -- dp
+1997 Baltic
+	vsqka banka nex-ta i e razli4en
+	=> zaciklqneto stava ot sy6tata iteraciq (ne moje da se udari6 v ne6to, 
+	used-nato v prednata iteraciq)
+	=> namirame nai dulgiq cikul i vzimame stoinostta ot dinami4noto
+.. connect -- dp mask
+	CEOI
+
+.. nbg -- dp / game
+1996 Baltic
+	vadqt se 4isla ot n, no razli4ni (maska)
+	gubi tozi koito ne moje da napravi hod - kato prehod
+.. sticks -- sg game
+

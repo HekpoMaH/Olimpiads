@@ -1,0 +1,8 @@
+#include<iostream>
+#include<string>
+using namespace std;
+
+int main()
+{
+    cout<<"                  !!!!!WARNING!!!!!!!"<<endl<<"Tazli li4nost e prekaleno umna za da re6eava takiva ne6ta"<<endl;
+}

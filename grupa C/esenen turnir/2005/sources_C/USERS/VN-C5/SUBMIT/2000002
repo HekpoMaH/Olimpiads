@@ -1,0 +1,40 @@
+/*
+TASK: number
+LANG: C
+*/
+#include<stdio.h>
+   long long p=0,i,br=0;
+   int a,b,c;
+long long pow1(int o,int y){
+    int i;
+    long long g=1;
+    for(i=0;i<y;i++)g*=o;
+return g;
+}
+int f(long long k){
+   int brc=0,l,tmp;
+   while(k){
+    k/=10;
+    brc++;
+}
+   for(l=1;l<brc;l++){
+    tmp=0;
+    long long A=(i/pow1(10,brc-l-1));
+    tmp=((i/pow1(10,brc-l))%10)*10+A%10;
+    if((tmp%a>0 && tmp%b>0 && tmp%c>0) || tmp==0)return 0;
+}
+   return 1;
+}
+int main(){
+   int j,n;
+   scanf("%d%d%d%d",&n,&a,&b,&c);
+   for(j=1;j<=n;j++){
+    p+=pow1(10,n-j)*9;
+}
+   for(i=pow1(10,n-1);i<p;i++){
+    if(f(i))br++;
+}
+   printf("%lld\n",br);
+   return 0;
+}
+

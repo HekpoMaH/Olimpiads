@@ -1,0 +1,73 @@
+/*
+TASK:cars
+LANG:C
+*/
+#include <stdio.h>
+
+#define MAXN 524288
+#define MAXM 5024288
+
+#define IN "cars.in"
+#define OUT "cars.out"
+
+const long long MOD = 987654321;
+
+typedef struct node {
+    int next;
+    int v;
+    node() {next = v = 0;}
+};
+
+int start[MAXN] = {};
+int queue[MAXN] = {};
+int step[MAXN] = {};
+long long ans[MAXN] = {};
+node ar[MAXM];
+int Free=1;
+int N,S;
+
+int main () {
+//    freopen(IN,"r",stdin);
+//    freopen(OUT,"w",stdout);
+    int i,j,p,M,a,QueueE=1,CurrentV=0,v;
+    
+    scanf("%d",&N);
+
+    for (i=1; i<=N; i++) {
+        scanf("%d",&M);
+        step[i] = M;
+        if (M == 0) S = i;
+        for (j=1; j<=M; j++) {
+            scanf("%d",&a);
+            ar[Free].next = start[a];
+            ar[Free].v = i;
+            start[a] = Free;
+            Free++;
+        }
+    }
+    queue[0] = S;
+    while (CurrentV < QueueE) {
+        v = queue[CurrentV];
+        CurrentV++;
+        for (int i=start[v]; i!=0; i=ar[i].next) {
+            step[ar[i].v]--;
+            if (step[ar[i].v] == 0) {
+                queue[QueueE] = ar[i].v;
+                QueueE++;
+            }
+        }
+    }
+
+    ans[queue[QueueE-1]] = 1;
+    for (p=N-2; p>=0; p--) {
+        v = queue[p];
+        for (i=start[v]; i!=0; i=ar[i].next) {
+            ans[v] = (ans[v]+ans[ar[i].v])%MOD;
+        }
+    }
+
+    printf("%lld\n",ans[S]);
+    return 0;
+}
+
+

@@ -1,0 +1,28 @@
+#include<iostream>
+#include<stack>
+using namespace std;
+long long b,a;
+ stack<long long> s1;
+ stack<char> s2;
+ char c;
+int main()
+{
+    while(cin>>c>>a)
+    {
+       s1.push(a);
+       s2.push(c); 
+    }
+    while(!s1.empty())
+    {
+        a=s1.top();
+        c=s2.top();
+        s1.pop();
+        s2.pop();
+        if (c=='=') {b=a;}
+        if (c=='*') {b=b/a;}
+        if (c=='-') {b=b+a;}
+        if (c=='+') {b=b-a;}
+    }
+    cout<<b<<endl;
+return 0;
+}

@@ -1,0 +1,36 @@
+/*
+TASK:NUMBER
+LANG:C
+*/
+
+#include <stdio.h>
+
+int n, m, d1, d2, d3;
+long long a, b, c, d, e;
+int i, j, k;
+
+int main()
+{
+
+scanf ( "%d%d%d%d", &n, &d1, &d2, &d3 );
+
+a = 1;
+for ( i = 1; i < n; i++ ) a*= 10;
+
+b = d = pow10(n);
+for ( ; a <= b; a++ )
+    {
+    j = 0;
+    for ( c = 1; c <= d; c*=10 )
+        {
+        e = (a/c)%100;
+        if (e) if ( !(e%d1) || !(e%d2) || !(e%d3) ) j++;
+        }
+    if ( j == n - 1 ) m++;
+    }
+
+printf ( "%d\n", m );
+
+return 0;
+}
+

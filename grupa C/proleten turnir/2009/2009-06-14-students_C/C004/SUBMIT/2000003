@@ -1,0 +1,56 @@
+#include<iostream>
+using namespace std;
+unsigned long long n,k,i,j,x,br,p,m,a[32],used[32];
+char c;
+long br_perm(long n)
+{
+     long p=1;
+     for(j=2; j<=n; j++)
+     p*=j;
+     return p;
+}
+void decode_perm(long n, long k)
+{
+     i=1;
+     p=br_perm(n-1);
+     while(1)
+     {
+             br=k/p+1;
+             for(j=1; j<=br; j++)
+                      if(used[j]==1) br++;
+             used[br]=1;
+             a[i]=br;
+             k=k%p;
+             if(p==1) break;
+             p/=n-i;
+             i++;
+     }
+     for(i=n; i>=1; i--)
+     {
+              if(a[i]==0)
+              for(j=1; j<=n; j++)
+              {
+                       if(used[j]==0) {a[i]=j; used[j]=1; break;}
+              }
+              else break;
+     }
+     return ;
+}
+void print()
+{
+     for(i=1; i<=n; i++)
+     {
+              c=a[i]+'a'-1;
+              cout<<c;
+     }
+     return ;
+}
+int main()
+{
+    cin>>n>>k;
+    decode_perm(n,k-1);
+    print();
+    cout<<endl;
+    //system ("pause");
+    return 0;
+}

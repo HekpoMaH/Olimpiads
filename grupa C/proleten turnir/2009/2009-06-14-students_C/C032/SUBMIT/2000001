@@ -1,0 +1,49 @@
+/*
+TASK:string
+LANG:C++
+*/
+#include<cstdio>
+using namespace std;
+bool u[25];
+int main()
+{
+    char r[25];
+    long long pre[25];
+    int n;
+    long long k;
+    pre[1]=1;
+    pre[0]=1;
+    for(int i=0;i<24;i++)
+    r[i]=i+97;
+    for(int i=2;i<21;i++)
+    pre[i]=i*pre[i-1];
+    int a,b,c;
+    scanf("%d%lld",&n,&k);
+    --k;
+   // printf("%I64d %I64d %I64d %I64d %I64d\n",pre[1],pre[2],pre[3],pre[4],pre[5]);
+    for(int i=1;i<=n;i++)
+    {
+    //    printf("tuk zapo4va %d simvol\n",i);
+        a=k/pre[n-i];
+    //    printf("pri nego a = %d za6toto k= %d i pri[n-i]= %lld \n",a,k,pre[n-i]);
+        b=a;
+        for(int j=0;b>-1;j++)
+        {
+            if(u[j]) continue;
+            if(b==0) 
+            {
+                printf("%c",r[j]);
+                b--;
+                u[j]=1;
+            }else 
+            b--;
+        }
+        k-=a*pre[n-i];
+    }
+    for(int i=0;i<n;i++)
+    if(u[i]==0) 
+    {
+        printf("%c\n",r[i]);
+        return 0;
+    }
+}

@@ -1,0 +1,69 @@
+/*TASK: CARS
+LANG: C++
+*/
+#include <iostream.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+int n;long count=0;
+int a[500][500];
+bool way(int,int);
+bool labs(int,int);
+int main()
+{
+cin >>n;
+for (int i=0;i<=n-1;i++)
+for (int j=0;j<=n-1;j++)
+a[i][j]=0;
+int j;
+for (int i=0;i<=n-1;i++)
+{
+cin >>j;
+for (int k=0;k<=j-1;k++)
+{
+int l;
+cin >>l;
+a[i][l-1]=1;
+}
+}
+for (int i=0;i<=n-1;i++)
+{
+for (int j=0;j<=n-1;j++)
+cout <<a[i][j]<<" ";
+cout <<endl;
+}
+if (way(0,4)) cout <<"OK"; else cout <<"NO";
+labs(0,4);
+cout <<endl<<count<<endl;
+int c;
+cin >>c;
+return 0;
+}
+bool way(int i,int j)
+{
+if ((i<0)||(i>n-1)||(j<0)||(j>n-1)) return false;
+if (a[i][j]==1) {cout<<j<<".";return true;}
+int g=-1;bool b=false;
+do
+{
+g+=1;
+if (a[i][g]==1)
+{
+cout <<g<<",";
+a[i][g]=0;
+b=way(g,j);
+a[i][g]=1;
+}
+}
+while((!b)&&(g<=n-2));
+}
+bool labs(int i,int j)
+{
+if ((i<0)||(i>n-1)||(j<0)||(j>n-1)) return false;
+if (a[i][j]==1) {count+=1;return true;}
+labs(i-1,j);
+labs(i,j-1);
+labs(i,j+1);
+labs(i+1,j);
+}
+

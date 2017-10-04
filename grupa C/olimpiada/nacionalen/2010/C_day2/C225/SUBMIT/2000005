@@ -1,0 +1,48 @@
+#include<iostream>
+#include<string>
+using namespace std;
+long long x,y,z,k,a,b,c,d;
+string s;
+int main()
+{
+	cin>>k;
+	if (k<=9) {cout<<1<<endl;}
+	if (k>9 && k<=99)
+	{
+	   if (k%10==0) {cout<<3<<endl;}
+	   else
+	      if ((k%10)==(k/10)) {cout<<2<<endl;}
+	      else {cout<<4<<endl;}
+	}
+	if (k>99 && k<=999)
+	{
+	   z=k%10;
+	   y=(k/10)%10;
+	   x=k/100;
+	   if (x==y && y==z) {cout<<3<<endl;}
+	   else
+	      if ((x==y && z==0) || (x==z && y==0)) {cout<<6<<endl;}
+	      else
+	         if (y==z && z==0) {cout<<4<<endl;}
+	         else
+	             if ((x==y && z!=0) || (x==z && y!=0)) {cout<<9<<endl;}
+	             else
+	                if (x!=y && y!=z && x!=z && (y==0 || z==0)) {cout<<11<<endl;}
+	                else
+	                   if (x!=y && y!=z && x!=z && y!=0 && z!=0) {cout<<15<<endl;}
+	}
+	if (k>999)
+	{
+	   a=k/1000;
+	   b=(k/100)%10;
+	   c=(k/10)%10;
+	   d=k%10;
+	   if (a==b && b==c && c==d) {cout<<4<<endl;}
+	   else
+	      if ((a==b && b==c && d==0) || (a==b && b==d && c==0) || (a==c && c==d && b==0)) {cout<<10<<endl;}
+	      else
+	         if ((a==b && b==c && d!=0) || (a==b && b==d && c!=0) || (a==c && c==d && b!=0)) {cout<<14<<endl;}
+	}
+	//system("pause");
+	return 0;
+}

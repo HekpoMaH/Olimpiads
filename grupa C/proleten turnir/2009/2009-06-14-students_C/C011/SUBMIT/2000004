@@ -1,0 +1,35 @@
+#include<iostream>
+#include<vector>
+using namespace std;
+long long n,l,p,r,q,f,i,sumkabel,miny=1001,money;
+vector<pair<pair<long long, long long>, long long> > v; 
+int main()
+{
+ scanf("%d%d",&n,&l);
+ for(i=1;i<=n;i++)
+ { 
+  scanf("%d%d%d%d",&p,&r,&q,&f); 
+  sumkabel+=f;
+  miny=min(miny,p);
+  v.push_back(make_pair(make_pair(q,r),f));
+ }
+ if(sumkabel<l) printf("-1\n");       
+ else
+ {
+  sort(v.begin(),v.end());
+  for(i=0;i<=n-1;i++)
+   if(v[i].first.second<=l)
+   {
+    money+=min(l,v[i].second)*v[i].first.first; 
+    l-=min(l,v[i].second);
+   }
+  money+=l*miny;
+  printf("%d\n",money);
+ }
+ 
+// system("pause");
+ return 0;
+}
+
+ 
+ 

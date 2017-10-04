@@ -1,0 +1,88 @@
+/*
+TASK: PHONE
+LANG: C
+*/
+#include <stdio.h>
+int main ()
+{
+ int phone[105][15]={0,0},digit[105][15]={0,0};
+ int used[105]={0};
+ double pri[105]={0},l,a[105][105]={0,0},dist[105]={0};
+ int i,j,k,fl,n,p,x,y;
+ char d;
+ scanf ("%d",&n);
+ getchar ();
+ for (i=0;i<n+1;i++)
+     {
+      scanf ("%c",&d);
+      j=0;
+      while (d!=' ')
+            {
+             phone[i][j++]=d-'0';
+             scanf ("%c",&d);
+            }
+      phone[i][j]=-1;
+      scanf ("%lf",&pri[i]);
+
+      scanf ("%d",&k);
+      for (j=0;j<k;j++)
+          {
+           scanf ("%d",&p);
+           digit[i][p]=1;
+          }
+      getchar ();
+     }
+ scanf ("%c",&d);
+ j=0;
+ while (!feof (stdin))
+       {
+        if (feof (stdin) || d=='\n') break;
+        phone[i][j++]=d-'0';
+        scanf ("%c",&d);
+       }
+ phone[i][j]=-1;
+ for (i=0;i<=n+2;i++)
+     for (j=0;j<=n+2;j++)
+         a[i][j]=-1;
+ for (i=0;i<n+2;i++)
+      for (j=0;j<n+2;j++)
+          {
+           fl=0;
+           if (i==j) j++;
+           for (k=0;phone[j][k]!=-1;k++)
+                if (!digit[i][phone[j][k]])
+                   {
+                    fl=1;
+                    break;
+                   }
+           if (!fl)
+               a[i+1][j+1]=pri[i];
+          }
+ x=1;
+ y=n+2;
+ for (i=1;i<=n+2;i++)
+     {
+      if (a[x][i]>=0)
+          dist[i]=a[x][i];
+      else dist[i]=6;
+     }
+ used[x]=1;
+ while (1)
+       {
+        l=6;
+        for (i=1;i<=n+2;i++)
+            if (dist[i]<l && !used[i])
+               {
+                l=pri[i];
+                j=i;
+               }
+        if (l==6) break;
+        used[j]=1;
+        for (i=1;i<=n+2;i++)
+             if (a[j][i]>=0)
+                if (dist[j]+a[j][i]<dist[i] && !used[i])
+                   dist [i]=dist[j]+a[j][i];
+       }
+ printf ("%.2lf\n",dist[y]);
+return 0;
+}

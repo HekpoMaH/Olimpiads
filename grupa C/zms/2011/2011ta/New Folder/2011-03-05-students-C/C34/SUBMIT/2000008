@@ -1,0 +1,76 @@
+#include<cstdio>
+using namespace std;
+int room[1024][1024],sb[16384];
+int main()
+{
+    int i,j,t,n,k,minizhod=10000;
+    scanf("%d",&n);
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            scanf("%d",&room[i][j]);
+        }
+    }
+    scanf("%d",&k);
+    for(i=0;i<k;i++){scanf("%d",&sb[i]);}
+    for(i=0;i<k;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            for(t=0;t<n;t++)
+            {
+                if((sb[i]==room[j][t])&&((n-t+j)<minizhod)){minizhod=n-t+j;}
+            }
+        }
+        if(minizhod==10000){printf("No Solution\n");}
+        else{printf("%d\n",minizhod-1);}
+        minizhod=10000;
+    }
+    return 0;
+}
+
+/*
+neuspe6en opit za palno re6avane
+#include<iostream>
+#include<cstdio>
+#include<vector>
+#include<algorithm>
+using namespace std;
+int room[1024][1024],izhod[2][1048576],sb[16384];
+int main()
+{
+    int n,k,i,j,x=0,range;
+    scanf("%d",&n);
+    for(i=0;i<n;i++)
+    {
+        for(j=0;j<n;j++)
+        {
+            scanf("%d",&room[i][j]);
+            range=(n-i)+j;
+            izhod[0][x]=room[i][j];
+            izhod[1][x]=range;
+            x++;
+        }
+    }
+    scanf("%d",&k);
+    for(i=0;i<n;i++){scanf("%d",&sb[i]);}
+    sort(izhod[0],izhod[0]+n);
+    for(i=0;i<n*n;i++){cout<<izhod[0][i]<<"   "<<izhod[1][i]<<endl;}
+    for(i=0;i<k;i++)
+    {
+        cout<<binary_search(izhod[0],izhod[0]+n,sb[i]);
+
+    }
+//cout<<endl;
+    return 0;
+}
+/*
+4
+1 2 3 4
+2 3 4 5
+4 5 6 7
+7 8 9 9
+5
+3 4 10 8 7
+*/

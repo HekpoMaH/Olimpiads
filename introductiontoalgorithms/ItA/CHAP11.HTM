@@ -1,0 +1,460 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 11: ELEMENTARY DATA STRUCTURES</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap12.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="partiii.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="07a8_13ca">CHAPTER 11: ELEMENTARY DATA STRUCTURES<a name="07a8_13ca"></h1><P>
+<a name="07a8_13c9">In this chapter, we examine the representation of dynamic sets by simple data structures that use pointers. Although many complex data structures can be fashioned using pointers, we present only the rudimentary ones: stacks, queues, linked lists, and rooted trees. We also discuss a method by which objects and pointers can be synthesized from arrays.<P>
+
+
+
+
+
+<h1><a name="07aa_13d2">11.1 Stacks and queues<a name="07aa_13d2"></h1><P>
+<a name="07aa_13ca"><a name="07aa_13cb"><a name="07aa_13cc"><a name="07aa_13cd"><a name="07aa_13ce"><a name="07aa_13cf"><a name="07aa_13d0"><a name="07aa_13d1">Stacks and queues are dynamic sets in which the element removed from the set by the <FONT FACE="Courier New" SIZE=2>DELETE</FONT> operation is prespecified. In a <I><B>stack</I></B>, the element deleted from the set is the one most recently inserted: the stack implements a <I><B>last-in, first-out</I></B>, or <I><B>LIFO</I></B>, policy. Similarly, in a <I><B>queue</I></B> , the element deleted is always the one that has been in the set for the longest time: the queue implements a <I><B>first-in, first-out</I></B>, or <I><B>FIFO</I></B>, policy. There are several efficient ways to implement stacks and queues on a computer. In this section we show how to use a simple array to implement each.<P>
+
+
+
+
+
+<h2>Stacks</h2><P>
+<a name="07ab_13d2"><a name="07ab_13d3"><a name="07ab_13d4">The <FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation on a stack is often called <FONT FACE="Courier New" SIZE=2>PUSH</FONT>, and the <FONT FACE="Courier New" SIZE=2>DELETE</FONT> operation, which does not take an element argument, is often called <FONT FACE="Courier New" SIZE=2>POP</FONT>. These names are allusions to physical stacks, such as the spring-loaded stacks of plates used in cafeterias. The order in which plates are popped from the stack is the reverse of the order in which they were pushed onto the stack, since only the top plate is accessible.<P>
+<a name="07ab_13d5">As shown in Figure 11.1, we can implement a stack of at most <I>n</I> elements with an array <I>S</I> [1..<I>n</I>]. The array has an attribute <I>top</I>[<I>S</I>] that indexes the most recently inserted element. The stack consists of elements <I>S</I>[1..<I>top</I>[<I>S</I>]], where <I>S</I>[1] is the element at the bottom of the stack and <I>S</I>[<I>top</I>[<I>S</I>]] is the element at the top.<P>
+<a name="07ab_13d6"><a name="07ab_13d7"><a name="07ab_13d8">When <I>top</I> [<I>S</I>] = 0, the stack contains no elements and is <I><B>empty</I></B>. The stack can be tested for emptiness by the query operation <FONT FACE="Courier New" SIZE=2>STACK</FONT>-<FONT FACE="Courier New" SIZE=2>EMPTY</FONT>. If an empty stack is popped, we say the stack <I><B>underflows</I>,</B> which is normally an error. If <I>top</I>[<I>S</I>] exceeds <I>n</I>, the stack <I><B>overflows</I></B>. (In our pseudocode implementation, we don't worry about stack overflow.)<P>
+<img src="201_a.gif"><P>
+<h4><a name="07ab_13dc">Figure 11.1 An array implementation of a stack S. Stack elements appear only in the lightly shaded positions. (a) Stack S has 4 elements. The top element is 9. (b) Stack S after the calls <FONT FACE="Courier New" SIZE=2>PUSH<FONT FACE="Times New Roman" SIZE=2>(S, 17) and <FONT FACE="Courier New" SIZE=2>PUSH<FONT FACE="Times New Roman" SIZE=2>(S, 3). (c) Stack S after the call <FONT FACE="Courier New" SIZE=2>POP<FONT FACE="Times New Roman" SIZE=2>(S) has returned the element 3, which is the one most recently pushed. Although element 3 still appears in the array, it is no longer in the stack; the top is element 17.<a name="07ab_13dc"></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+The stack operations can each be implemented with a few lines of code.<P>
+<pre><a name="07ab_13d9">STACK-EMPTY(<I>S</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>top</I> [<I>S</I>] = 0</sub></sup></pre><P>
+<pre>2      <B>then return</B> TRUE</sub></sup></pre><P>
+<pre>3      <B>else return</B> FALSE</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07ab_13da">PUSH(<I>S, x</I>)</sub></sup></pre><P>
+<pre>1  <I>top</I>[<I>S</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>top</I> [<I>S</I>] + 1</sub></sup></pre><P>
+<pre>2  <I>S</I> [<I>top</I>[<I>S</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07ab_13db">POP(<I>S</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> STACK-EMPTY(<I>S</I>)</sub></sup></pre><P>
+<pre>2     <B>then error</B> "underflow"</sub></sup></pre><P>
+<pre>3     <B>else</B> <I>top</I> [<I>S</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>top</I> [<I>S</I>] - 1</sub></sup></pre><P>
+<pre>4          <B>return</B> <I>S</I> [<I>top</I> [<I>S</I>] + 1]</sub></sup></pre><P>
+Figure 11.1 shows the effects of the modifying operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT>. Each of the three stack operations takes <I>O</I> (1) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Queues</h2><P>
+<a name="07ac_13dc"><a name="07ac_13dd"><a name="07ac_13de"><a name="07ac_13df"><a name="07ac_13e0">We call the <FONT FACE="Courier New" SIZE=2>INSERT</FONT> operation on a queue <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT>, and we call the D<FONT FACE="Courier New" SIZE=2>ELETE </FONT>operation <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT>; like the stack operation <FONT FACE="Courier New" SIZE=2>POP</FONT>, <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT> takes no element argument. The FIFO property of a queue causes it to operate like a line of people in the registrar's office. The queue has a <I><B>head</I></B> and a <I><B>tail</I></B>. When an element is enqueued, it takes its place at the tail of the queue, 1ike a newly arriving student takes a place at the end of the line. The element dequeued is always the one at the head of the queue, like the student at the head of the line who has waited the longest. (Fortunately, we don't have to worry about computational elements cutting into line.)<P>
+<img src="202_a.gif"><P>
+<h4><a name="07ac_13e4">Figure 11.2 A queue implemented using an array Q[1 . . 12]. Queue elements appear only in the lightly shaded positions. (a) The queue has 5 elements, in locations Q [7..11]. (b) The configuration of the queue after the calls <FONT FACE="Courier New" SIZE=2>ENQUEUE<FONT FACE="Times New Roman" SIZE=2>(Q, 17), <FONT FACE="Courier New" SIZE=2>ENQUEUE<FONT FACE="Times New Roman" SIZE=2>(Q, 3), and <FONT FACE="Courier New" SIZE=2>ENQUEUE<FONT FACE="Times New Roman" SIZE=2>(Q, 5). (c) The configuration of the queue after the call <FONT FACE="Courier New" SIZE=2>DEQUEUE<FONT FACE="Times New Roman" SIZE=2>(Q) returns the key value 15 formerly at the head of the queue. The new head has key 6.<a name="07ac_13e4"></FONT></FONT></FONT></FONT></FONT></FONT></FONT></FONT></sub></sup></h4><P>
+Figure 11.2 shows one way to implement a queue of at most <I>n</I> - 1 elements using an array <I>Q</I> [1..<I>n</I>]. The queue has an attribute <I>head</I> [<I>Q</I>] that indexes, or points to, its head. The attribute <I>tail</I> [<I>Q</I>] indexes the next location at which a newly arriving element will be inserted into the queue. The elements in the queue are in locations <I>head</I>[<I>Q</I>], <I>head</I> [<I>Q</I>] + 1, . . . , <I>tail</I> [<I>Q</I>] - 1, where we "wrap around" in the sense that location 1 immediately follows location <I>n</I> in a circular order. When <I>head</I> [<I>Q</I>] = <I>tail</I> [<I>Q</I>], the queue is empty. Initially, we have <I>head</I> [<I>Q</I>] = <I>tail</I> [<I>Q</I>] = 1. When the queue is empty, an attempt to dequeue an element causes the queue to underflow. When <I>head</I> [<I>Q</I>] = <I>tail</I> [<I>Q</I>] + 1, the queue is full, and an attempt to enqueue an element causes the queue to overflow.<P>
+<a name="07ac_13e1">In our procedures <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT> and <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT>, the error checking for underflow and overflow has been omitted. (Exercise 11.1-4 asks you to supply code that checks for these two error conditions.)<P>
+<pre><a name="07ac_13e2">ENQUEUE(<I>Q, x</I>)</sub></sup></pre><P>
+<pre>1  <I>Q</I> [<I>tail</I> [<I>Q</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>2  <B>if</B> <I>tail</I> [<I>Q</I>] = <I>length</I> [<I>Q</I>]</sub></sup></pre><P>
+<pre>3      <B>then</B> <I>tail</I> [<I>Q</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>4      <B>else</B> <I>tail</I> [<I>Q</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>tail</I> [<I>Q</I>] + 1</sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07ac_13e3">DEQUEUE(<I>Q</I>)</sub></sup></pre><P>
+<pre>1  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>Q</I> [<I>head</I> [<I>Q</I>]]</sub></sup></pre><P>
+<pre>2  <B>if</B> <I>head</I> [<I>Q</I>] = <I>length</I> [<I>Q</I>]</sub></sup></pre><P>
+<pre>3      <B>then</B> <I>head</I> [<I>Q</I>] <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>4      <B>else</B> <I>head</I> [<I>Q</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>head</I> [<I>Q</I>] + 1</sub></sup></pre><P>
+<pre>5  <B>return</B> <I>x</I></sub></sup></pre><P>
+Figure 11.2 shows the effects of the <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT> and <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT> operations. Each operation takes <I>O</I>(1) time.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07ad_13e9">Exercises<a name="07ad_13e9"></h2><P>
+<a name="07ad_13ea">11.1-1<a name="07ad_13ea"><P>
+Using Figure 11.1 as a model, illustrate the result of each of the operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT>(<I>S</I>, 4), <FONT FACE="Courier New" SIZE=2>PUSH</FONT>(<I>S</I>, 1), <FONT FACE="Courier New" SIZE=2>PUSH</FONT>(<I>S</I>, 3), <FONT FACE="Courier New" SIZE=2>POP</FONT>(<I>S</I>), <FONT FACE="Courier New" SIZE=2>PUSH</FONT>(<I>S</I>, 8), and <FONT FACE="Courier New" SIZE=2>POP</FONT>(<I>S</I>) on an initially empty stack <I>S</I> stored in array <I>S</I> [1 . . 6].<P>
+<a name="07ad_13eb">11.1-2<a name="07ad_13eb"><P>
+Explain how to implement two stacks in one array <I>A</I> [1 . . <I>n</I>] in such a way that neither stack overflows unless the total number of elements in both stacks together is <I>n</I>. The <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT> operations should run in <I>O</I>(1) time.<P>
+<a name="07ad_13ec">11.1-3<a name="07ad_13ec"><P>
+Using Figure 11.2 as a model, illustrate the result of each of the operations <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT>(<I>Q</I>, 4), <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT>(<I>Q</I>, 1), <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT>(<I>Q</I>, 3), <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT>(<I>Q</I>), <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT>(<I>Q</I>, 8), and <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT>(<I>Q</I>) on an initially empty queue <I>Q</I> stored in array <I>Q</I> [1 . . 6].<P>
+<a name="07ad_13ed">11.1-4<a name="07ad_13ed"><P>
+<a name="07ad_13e4"><a name="07ad_13e5">Rewrite <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT> and <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT> to detect underflow and overflow of a queue.<P>
+<a name="07ad_13ee">11.1-5<a name="07ad_13ee"><P>
+<a name="07ad_13e6"><a name="07ad_13e7"><a name="07ad_13e8">Whereas a stack allows insertion and deletion of elements at only one end, and a queue allows insertion at one end and deletion at the other end, a <I><B>deque</I></B> (double-ended queue) allows insertion and deletion at both ends. Write four <I>O</I>(1)-time procedures to insert elements into and delete elements from both ends of a deque constructed from an array.<P>
+<a name="07ad_13ef">11.1-6<a name="07ad_13ef"><P>
+Show how to implement a queue using two stacks. Analyze the running time of the queue operations.<P>
+<a name="07ad_13f0">11.1-7<a name="07ad_13f0"><P>
+Show how to implement a stack using two queues. Analyze the running time of the stack operations.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07ae_13f5">11.2 Linked lists<a name="07ae_13f5"></h1><P>
+<a name="07ae_13e9"><a name="07ae_13ea"><a name="07ae_13eb">A <I><B>linked list</I></B> is a data structure in which the objects are arranged in a linear order. Unlike an array, though, in which the linear order is determined by the array indices, the order in a linked list is determined by a pointer in each object. Linked lists provide a simple, flexible representation for dynamic sets, supporting (though not necessarily efficiently) all the operations listed on page 198.<P>
+<a name="07ae_13ec"><a name="07ae_13ed"><a name="07ae_13ee"><a name="07ae_13ef"><a name="07ae_13f0">As shown in Figure 11.3, each element of a <I><B>doubly linked list</I> </B><I><B><FONT FACE="Courier New" SIZE=2>L</I></B></FONT> is an object with a <I>key</I> field and two other pointer fields: <I>next</I> and <I>prev</I>. The object may also contain other satellite data. Given an element <I>x</I> in the list, <I>next</I> [<I>x</I>] points to its successor in the linked list, and <I>prev</I> [<I>x</I>] points to its predecessor. If <I>prev</I> [<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, the element <I>x</I> has no predecessor and is therefore the first element, or <I><B>head</I></B>, of the list. If <I>next</I> [<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, the element <I>x</I> has no successor and is therefore the last element, or <I><B>tail</I></B>, of the list. An attribute <I>head</I> [<I>L</I>] points to the first element of the list. If <I>head</I> [<I>L</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, the list is empty.<P>
+<a name="07ae_13f1"><a name="07ae_13f2"><a name="07ae_13f3"><a name="07ae_13f4">A list may have one of several forms. It may be either singly linked or doubly linked, it may be sorted or not, and it may be circular or not. If a list is <I><B>singly linked</I></B>, we omit the <I>prev</I> pointer in each element. If a list is <I><B>sorted</I></B>, the linear order of the list corresponds to the linear order of keys stored in elements of the list; the minimum element is the head of the list, and the maximum element is the tail. If the list is <I><B>unsorted</I></B>, the elements can appear in any order. In a <I><B>circular list</I></B>, the <I>prev</I> pointer of the head of the list points to the tail, and the <I>next</I> pointer of the tail of the list points to the head. The list may thus be viewed as a ring of elements. In the remainder of this section, we assume that the lists with which we are working are unsorted and doubly linked.<P>
+
+
+
+
+
+<h2>Searching a linked list</h2><P>
+<a name="07af_13f5"><a name="07af_13f6">The procedure <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>L, k</I>) finds the first element with key <I>k</I> in list <I>L</I> by a simple linear search, returning a pointer to this element. If no object with key <I>k</I> appears in the list, then <FONT FACE="Courier New" SIZE=2>NIL</FONT> is returned. For the linked list in Figure 11.3(a), the call <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>L</I>, 4) returns a pointer to the third element, and the call <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>(<I>L</I>, 7) returns <FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+<img src="205_a.gif"><P>
+<h4><a name="07af_13f8">Figure 11.3 (a) A doubly linked list L representing the dynamic set {1, 4, 9, 16}. Each element in the list is an object with fields for the key and pointers (shown by arrows) to the next and previous objects. The next field of the tail and the prev field of the head are <FONT FACE="Courier New" SIZE=2>NIL</FONT>, indicated by a diagonal slash. The attribute head[L] points to the head. (b) Following the execution of <FONT FACE="Courier New" SIZE=2>LIST<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT></FONT></FONT>(L, x), where key[x] = 25, the linked list has a new object with key 25 as the new head. This new object points to the old head with key 9. (c) The result of the subsequent call <FONT FACE="Courier New" SIZE=2>LIST<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT></FONT></FONT>(L, x), where x points to the object with key 4.<a name="07af_13f8"></sub></sup></h4><P>
+<pre><a name="07af_13f7">LIST-SEARCH(<I>L</I>, <I>k</I>)</sub></sup></pre><P>
+<pre>1  <I>x </I><IMG SRC="../IMAGES/arrlt12.gif"> head<I>[</I>L<I>]</I></sub></sup></pre><P>
+<pre>2  <B>while</B> <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> NIL and <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>k</I></sub></sup></pre><P>
+<pre>3      <B>do</B> <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>4  <B>return</B> <I>x</I></sub></sup></pre><P>
+To search a list of <I>n</I> objects, the <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> procedure takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time in the worst case, since it may have to search the entire list.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Inserting into a linked list</h2><P>
+<a name="07b0_13f8"><a name="07b0_13f9">Given an element <I>x</I> whose <I>key</I> field has already been set, the <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> procedure "splices" <I>x</I> onto the front of the linked list, as shown in Figure 11.3(b).<P>
+<pre><a name="07b0_13fa">LIST-INSERT(<I>L, x</I>)</sub></sup></pre><P>
+<pre>1  <I>next</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>head</I>[<I>L</I>]</sub></sup></pre><P>
+<pre>2<B>  if</B> <I>head</I>[<I>L</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>3      <B>then</B> <I>prev</I>[<I>head</I>[<I>L</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>4  <I>head</I>[<I>L</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>5  <I>prev</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> NIL</sub></sup></pre><P>
+The running time for <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT> on a list of <I>n</I> elements is <I>O</I>(1).<P>
+<P>
+
+
+
+
+
+
+
+<h2>Deleting from a linked list</h2><P>
+<a name="07b1_13fb"><a name="07b1_13fc">The procedure <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> removes an element <I>x</I> from a linked list <I>L</I>. It must be given a pointer to <I>x</I>, and it then "splices" <I>x</I> out of the list by updating pointers. If we wish to delete an element with a given key, we must first call <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> to retrieve a pointer to the element.<P>
+<pre><a name="07b1_13fd">LIST-DELETE(<I>L</I>, <I>x</I>)</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>prev</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>2     <B>then</B> <I>next</I>[<I>prev</I>[<I>x</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>3     <B>else</B> <I>head</I>[<I>L</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>4  <B>if</B> <I>next</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> NIL</sub></sup></pre><P>
+<pre>5     <B>then</B> <I>prev</I>[<I>next</I>[<I>x</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>prev</I>[<I>x</I>]</sub></sup></pre><P>
+Figure 11.3(c) shows how an element is deleted from a linked list. <FONT FACE="Courier New" SIZE=2>LIST-DELETE</FONT> runs in <I>O</I>(1) time, but if we wish to delete an element with a given key, <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time is required in the worst case because we must first call <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Sentinels</h2><P>
+The code for <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT> would be simpler if we could ignore the boundary conditions at the head and tail of the list.<P>
+<pre><a name="07b2_13fe">LIST-DELETE'(<I>L</I>, <I>x</I>)</sub></sup></pre><P>
+<pre>1  <I>next</I>[<I>prev</I>[<I>x</I>]]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"><I> next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>2  <I>prev</I>[<I>next</I>[<I>x</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>prev</I>[<I>x</I>]</sub></sup></pre><P>
+<a name="07b2_13ff">A <I><B>sentinel</I></B> is a dummy object that allows us to simplify boundary conditions. For example, suppose that we provide with list <I>L</I> an object <I>nil</I>[<I>L</I>] that represents <FONT FACE="Courier New" SIZE=2>NIL</FONT> but has all the fields of the other list elements. Wherever we have a reference to <FONT FACE="Courier New" SIZE=2>NIL</FONT> in list code, we replace it by a reference to the sentinel <I>nil</I>[<I>L</I>]. As shown in Figure 11.4, this turns a regular doubly linked list into a circular list, with the sentinel <I>nil</I>[<I>L</I>] placed between the head and tail; the field <I>next</I>[<I>nil</I>[<I>L</I>]] points to the head of the list, and <I>prev</I>[<I>nil</I>[<I>L</I>]] points to the tail. Similarly, both the <I>next</I> field of the tail and the <I>prev</I> field of the head point to <I>nil</I>[<I>L</I>]. Since <I>next</I>[<I>nil</I>[<I>L</I>]] points to the head, we can eliminate the attribute <I>head</I>[<I>L</I>] altogether, replacing references to it by references to <I>next</I>[<I>nil</I>[<I>L</I>]]. An empty list consists of just the sentinel, since both <I>next</I>[<I>nil</I>[<I>L</I>]] and <I>prev</I>[<I>nil</I>[<I>L</I>]] can be set to <I>nil</I>[<I>L</I>].<P>
+The code for <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> remains the same as before, but with the references to <FONT FACE="Courier New" SIZE=2>NIL</FONT> and <I>head</I>[<I>L</I>] changed as specified above.<P>
+<img src="207_a.gif"><P>
+<h4><a name="07b2_1402">Figure 11.4 A linked list L that uses a sentinel nil[L] (heavily shaded) is the regular doubly linked list turned into a circular list with nil[L] appearing between the head and tail. The attribute head[L] is no longer needed, since we can access the head of the list by next[nil[L]]. (a) An empty list. (b) The linked list from Figure 11.3(<FONT FACE="Courier New" SIZE=2>a</FONT>), with key 9 at the head and key 1 at the tail. (c) The list after executing <FONT FACE="Courier New" SIZE=2>LIST<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT></FONT></FONT><FONT FACE="Times New Roman" SIZE=2>(L, x),</FONT> where, key[x] = 25. The new object becomes the head of the list. (d) The list after deleting the object with key 1. The new tail is the object with key 4.<a name="07b2_1402"></sub></sup></h4><P>
+<pre><a name="07b2_1400">LIST-SEARCH'(<I>L</I>, <I>k</I>)</sub></sup></pre><P>
+<pre>1  <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>nil</I>[<I>L</I>]]</sub></sup></pre><P>
+<pre>2  <B>while</B> <I>x</I> <IMG SRC="../IMAGES/noteq.gif"> <I>nil</I>[<I>L</I>] and <I>key</I>[<I>x</I>] <IMG SRC="../IMAGES/noteq.gif"> <I>k</I></sub></sup></pre><P>
+<pre>3      <B>do</B> <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>4  <B>return</B> <I>x</I></sub></sup></pre><P>
+We use the two-line procedure <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE'</FONT> to delete an element from the list. We use the following procedure to insert an element into the list.<P>
+<pre><a name="07b2_1401">LIST-INSERT'(<I>L</I>, <I>x</I>)</sub></sup></pre><P>
+<pre>1  <I>next</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>nil</I>[<I>L</I>]]</sub></sup></pre><P>
+<pre>2  <I>prev</I>[<I>next</I>[<I>nil</I>[<I>L</I>]]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>3  <I>next</I>[<I>nil</I>[<I>L</I>]] <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+<pre>4  <I>prev</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>nil</I>[<I>L</I>]</sub></sup></pre><P>
+Figure 11.4 shows the effects of <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT'</FONT> and <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE'</FONT> on a sample list.<P>
+Sentinels rarely reduce the asymptotic time bounds of data structure operations, but they can reduce constant factors. The gain from using sentinels within loops is usually a matter of clarity of code rather than speed; the linked list code, for example, is simplified by the use of sentinels, but we save only <I>O</I>(1) time in the <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>INSERT'</FONT> and <FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>DELETE'</FONT> procedures. In other situations, however, the use of sentinels helps to tighten the code in a loop, thus reducing the coefficient of, say, <I>n</I> or <I>n</I><SUP>2</SUP> in the running time.<P>
+Sentinels should not be used indiscriminately. If there are many small lists, the extra storage used by their sentinels can represent significant wasted memory. In this book, we only use sentinels when they truly simplify the code.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07b3_1407">Exercises<a name="07b3_1407"></h2><P>
+<a name="07b3_1408">11.2-1<a name="07b3_1408"><P>
+<a name="07b3_1402">Can the dynamic-set operation <FONT FACE="Courier New" SIZE=2>INSERT</FONT> be implemented on a singly linked list in <I>O</I>(1) time? How about <FONT FACE="Courier New" SIZE=2>DELETE</FONT>?<P>
+<a name="07b3_1409">11.2-2<a name="07b3_1409"><P>
+<a name="07b3_1403">Implement a stack using a singly linked list <I>L</I>. The operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT> should still take <I>O</I>(1) time.<P>
+<a name="07b3_140a">11.2-3<a name="07b3_140a"><P>
+<a name="07b3_1404">Implement a queue by a singly linked list <I>L</I>. The operations <FONT FACE="Courier New" SIZE=2>ENQUEUE</FONT> and <FONT FACE="Courier New" SIZE=2>DEQUEUE</FONT> should still take <I>O</I>(1) time.<P>
+<a name="07b3_140b">11.2-4<a name="07b3_140b"><P>
+Implement the dictionary operations <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>DELETE</FONT>, and <FONT FACE="Courier New" SIZE=2>SEARCH</FONT> using singly linked, circular lists. What are the running times of your procedures?<P>
+<a name="07b3_140c">11.2-5<a name="07b3_140c"><P>
+The dynamic-set operation <FONT FACE="Courier New" SIZE=2>UNION</FONT> takes two disjoint sets <I>S</I><SUB>l</SUB> and <I>S</I><SUB>2</SUB> as input, and it returns a set <I>S</I> = <I>S</I><SUB>1</SUB> <IMG SRC="../IMAGES/wideu.gif"> <I>S<SUB>2</SUB> </I>consisting of all the elements of<I> S</I><SUB>1</SUB> and <I>S</I><SUB>2</SUB>. The sets <I>S</I><SUB>1</SUB> and <I>S</I><SUB>2</SUB> are usually destroyed by the operation. Show how to support <FONT FACE="Courier New" SIZE=2>UNION</FONT> in <I>O</I>(1) time using a suitable list data structure.<P>
+<a name="07b3_140d">11.2-6<a name="07b3_140d"><P>
+<a name="07b3_1405"><a name="07b3_1406">Write a procedure that merges two singly linked, sorted lists into one singly linked, sorted list without using sentinels. Then, write a similar procedure using a sentinel with key <IMG SRC="../IMAGES/infin.gif"> to mark the end of each list. Compare the simplicity of code for the two procedures.<P>
+<a name="07b3_140e">11.2-7<a name="07b3_140e"><P>
+Give a <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)-time nonrecursive procedure that reverses a singly linked list of <I>n</I> elements. The procedure should use no more than constant storage beyond that needed for the list itself.<P>
+<a name="07b3_140f">11.2-8<a name="07b3_140f"><P>
+Explain how to implement doubly linked lists using only one pointer value <I>np</I>[<I>x</I>] per item instead of the usual two (<I>next</I> and <I>prev</I>). Assume that all index values can be interpreted as <I>k</I>-bit integers, and define <I>np</I>[<I>x</I>] to be <I>np</I>[<I>x</I>] = <I>next</I>[<I>x</I>] XOR <I>prev</I>[<I>x</I>], the <I>k</I>-bit "exclusive-or" of <I>next</I>[<I>x</I>] and <I>prev</I>[<I>x</I>]. (The value <FONT FACE="Courier New" SIZE=2>NIL</FONT> is represented by 0.) Be sure to describe what information is needed to access the head of the list. Show how to implement the <FONT FACE="Courier New" SIZE=2>SEARCH</FONT>, <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, and <FONT FACE="Courier New" SIZE=2>DELETE</FONT> operations on such a list. Also show how to reverse such a list in <I>O</I>(1) time.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07b4_1409">11.3 Implementing pointers and objects<a name="07b4_1409"></h1><P>
+<a name="07b4_1407"><a name="07b4_1408">How do we implement pointers and objects in languages, such as Fortran, that do not provide them? In this section, we shall see two ways of implementing linked data structures without an explicit pointer data type. We shall synthesize objects and pointers from arrays and array indices.<P>
+
+
+
+
+
+<h2>A multiple-array representation of objects</h2><P>
+We can represent a collection of objects that have the same fields by using an array for each field. As an example, Figure 11.5 shows how we can implement the linked list of Figure 11.3(a) with three arrays. The array <I>key</I> holds the values of the keys currently in the dynamic set, and the pointers are stored in the arrays <I>next</I> and <I>prev</I>. For a given array index <I>x</I>, <I>key</I>[<I>x</I>], <I>next</I>[<I>x</I>], and <I>prev</I>[<I>x</I>] represent an object in the linked list. Under this interpretation, a pointer <I>x</I> is simply a common index into the <I>key</I>, <I>next</I>, and <I>prev</I> arrays.<P>
+In Figure 11.3(a), the object with key 4 follows the object with key 16 in the linked list. In Figure 11.5, key 4 appears in <I>key</I>[2], and key 16 appears in <I>key</I>[5], so we have <I>next</I>[5] = 2 and <I>prev</I>[2] = 5. Although the constant <FONT FACE="Courier New" SIZE=2>NIL</FONT> appears in the <I>next</I> field of the tail and the <I>prev</I> field of the head, we usually use an integer (such as 0 or -1) that cannot possibly represent an actual index into the arrays. A variable <I>L</I> holds the index of the head of the list.<P>
+In our pseudocode, we have been using square brackets to denote both the indexing of an array and the selection of a field (attribute) of an object. Either way, the meanings of <I>key</I>[<I>x</I>], <I>next</I>[<I>x</I>], and <I>prev</I>[<I>x</I>] are consistent with implementation practice.<P>
+<img src="209_a.gif"><P>
+<h4><a name="07b5_0001">Figure 11.5 The linked list of Figure 11.3(a) represented by the arrays key, next, and prev. Each vertical slice of the arrays represents a single object. Stored pointers correspond to the array indices shown at the top; the arrows show how to interpret them. Lightly shaded object positions contain list elements. The variable L keeps the index of the head.<a name="07b5_0001"></sub></sup></h4><P>
+<img src="210_a.gif"><P>
+<h4><a name="07b5_0002">Figure 11.6 The linked list of Figures 11.3(a) and 11.5 represented in a single array A. Each list element is an object that occupies a contiguous subarray of length 3 within the array. The three fields key, next, and prev correspond to the offsets 0, 1, and 2, respectively. A pointer to an object is an index of the first element of the object. Objects containing list elements are lightly shaded, and arrows show the list ordering.<a name="07b5_0002"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>A single-array representation of objects</h2><P>
+The words in a computer memory are typically addressed by integers from 0 to <I>M</I> - 1, where <I>M</I> is a suitably large integer. In many programming languages, an object occupies a contiguous set of locations in the computer memory. A pointer is simply the address of the first memory location of the object, and other memory locations within the object can be indexed by adding an offset to the pointer.<P>
+We can use the same strategy for implementing objects in programming environments that do not provide explicit pointer data types. For example, Figure 11.6 shows how a single array <I>A</I> can be used to store the linked list from Figures 11.3(a) and 11.5. An object occupies a contiguous subarray <I>A</I>[<I>j </I>. . <I>k</I>]. Each field of the object corresponds to an offset in the range from 0 to <I>k</I> - <I>j</I>, and a pointer to the object is the index <I>j</I>. In Figure 11.6, the offsets corresponding to <I>key,</I> <I>next</I>, and <I>prev</I> are 0, 1, and 2, respectively. To read the value of <I>prev</I>[<I>i</I>], given a pointer <I>i</I>, we add the value <I>i </I>of the pointer to the offset 2, thus reading <I>A</I>[<I>i</I> + 2].<P>
+The single-array representation is flexible in that it permits objects of different lengths to be stored in the same array. The problem of managing such a heterogeneous collection of objects is more difficult than the problem of managing a homogeneous collection, where all objects have the same fields. Since most of the data structures we shall consider are composed of homogeneous elements, it will be sufficient for our purposes to use the multiple-array representation of objects.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Allocating and freeing objects</h2><P>
+<a name="07b7_1409"><a name="07b7_140a"><a name="07b7_140b"><a name="07b7_140c"><a name="07b7_140d"><a name="07b7_140e">To insert a key into a dynamic set represented by a doubly linked list, we must allocate a pointer to a currently unused object in the linked-list representation. Thus, it is useful to manage the storage of objects not currently used in the linked-list representation so that one can be allocated. In some systems, a <I><B>garbage collector</I></B> is responsible for determining which objects are unused. Many applications, however, are simple enough that they can bear responsibility for returning an unused object to a storage manager. We shall now explore the problem of allocating and freeing (or deallocating) homogeneous objects using the example of a doubly linked list represented by multiple arrays.<P>
+<img src="211_a.gif"><P>
+<h4><a name="07b7_1412">Figure 11.7 The effect of the <FONT FACE="Courier New" SIZE=2>ALLOCATE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT></FONT> and <FONT FACE="Courier New" SIZE=2>FREE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT></FONT></FONT></FONT> procedures. (a) The list of Figure 11.5 (lightly shaded) and a free list (heavily shaded). Arrows show the free-list structure. (b) The result of calling <FONT FACE="Courier New" SIZE=2>ALLOCATE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT></FONT></FONT>() (which returns index 4), setting key[4] to 25, and calling <FONT FACE="Courier New" SIZE=2>LIST<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>INSERT</FONT></FONT></FONT>(L, 4). The new free-list head is object 8, which had been next[4] on the free list. (c) After executing <FONT FACE="Courier New" SIZE=2>LIST<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>DELETE</FONT></FONT></FONT>(L, 5), we call <FONT FACE="Courier New" SIZE=2>FREE<FONT FACE="Times New Roman" SIZE=2>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT></FONT></FONT>(5). Object 5 becomes the new free-list head, with object 8 following it on the free list.<a name="07b7_1412"></sub></sup></h4><P>
+Suppose that the arrays in the multiple-array representation have length <I>m</I> and that at some moment the dynamic set contains <I>n</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>m</I> elements. Then <I>n</I> objects represent elements currently in the dynamic set, and the remaining <I>m</I> - <I>n</I> objects are <I><B>free</I></B>; the free objects can be used to represent elements inserted into the dynamic set in the future.<P>
+<a name="07b7_140f">We keep the free objects in a singly linked list, which we call the <I><B>free list</I></B>. The free list uses only the <I>next</I> array, which stores the <I>next</I> pointers within the list. The head of the free list is held in the global variable <I>free</I>. When the dynamic set represented by linked list <I>L</I> is nonempty, the free list may be intertwined with list <I>L</I>, as shown in Figure 11.7. Note that each object in the representation is either in list <I>L</I> or in the free list, but not in both.<P>
+The free list is a stack: the next object allocated is the last one freed. We can use a list implementation of the stack operations <FONT FACE="Courier New" SIZE=2>PUSH</FONT> and <FONT FACE="Courier New" SIZE=2>POP</FONT> to implement the procedures for allocating and freeing objects, respectively.<P>
+<img src="212_a.gif"><P>
+<h4><a name="07b7_1413">Figure 11.8 Two linked lists, L<SUB>1</SUB> (lightly shaded) and L<SUB>2</SUB> (heavily shaded), and a free list (darkened) intertwined.<a name="07b7_1413"></sub></sup></h4><P>
+We assume that the global variable <I>free</I> used in the following procedures points to the first element of the free list.<P>
+<pre><a name="07b7_1410">ALLOCATE-OBJECT( )</sub></sup></pre><P>
+<pre>1  <B>if</B> <I>free</I> = NIL</sub></sup></pre><P>
+<pre>2      <B>then error</B> "out of space"</sub></sup></pre><P>
+<pre>3      <B>else</B> <I>x</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>free</I></sub></sup></pre><P>
+<pre>4           <I>free</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>x</I>]</sub></sup></pre><P>
+<pre>5           <B>return</B> <I>x</I></sub></sup></pre><P>
+<pre></sub></sup></pre><P>
+<pre><a name="07b7_1411">FREE-OBJECT(<I>x</I>)</sub></sup></pre><P>
+<pre>1  <I>next</I>[<I>x</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>free</I></sub></sup></pre><P>
+<pre>2  <I>free</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>x</I></sub></sup></pre><P>
+The free list initially contains all <I>n</I> unallocated objects. When the free list has been exhausted, the <FONT FACE="Courier New" SIZE=2>ALLOCATE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> procedure signals an error. It is common to use a single free list to service several linked lists. Figure 11.8 shows three linked lists and a free list intertwined through <I>key</I>, <I>next</I>, and <I>prev</I> arrays.<P>
+The two procedures run in <I>O</I>(1) time, which makes them quite practical. They can be modified to work for any homogeneous collection of objects by letting any one of the fields in the object act like a <I>next</I> field in the free list.<P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07b8_1415">Exercises<a name="07b8_1415"></h2><P>
+<a name="07b8_1416">11.3-1<a name="07b8_1416"><P>
+Draw a picture of the sequence <IMG SRC="../IMAGES/lftwdchv.gif">13, 4, 8, 19, 5, 11<IMG SRC="../IMAGES/wdrtchv.gif"> stored as a doubly linked list using the multiple-array representation. Do the same for the single-array representation.<P>
+<a name="07b8_1417">11.3-2<a name="07b8_1417"><P>
+Write the procedures <FONT FACE="Courier New" SIZE=2>ALLOCATE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> and <FONT FACE="Courier New" SIZE=2>FREE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> for a homogeneous collection of objects implemented by the single-array representation.<P>
+<a name="07b8_1418">11.3-3<a name="07b8_1418"><P>
+Why don't we need to set or reset the <I>prev</I> fields of objects in the implementation of the <FONT FACE="Courier New" SIZE=2>ALLOCATE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> and <FONT FACE="Courier New" SIZE=2>FREE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> procedures?<P>
+<a name="07b8_1419">11.3-4<a name="07b8_1419"><P>
+<a name="07b8_1412"><a name="07b8_1413">It is often desirable to keep all elements of a doubly linked list compact in storage, using, for example, the first <I>m</I> index locations in the multiple-array representation. (This is the case in a paged, virtual-memory computing environment.) Explain how the procedures <FONT FACE="Courier New" SIZE=2>ALLOCATE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> and <FONT FACE="Courier New" SIZE=2>FREE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> can be implemented so that the representation is compact. Assume that there are no pointers to elements of the linked list outside the list itself. (<I>Hint</I>: Use the array implementation of a stack.)<P>
+<a name="07b8_141a">11.3-5<a name="07b8_141a"><P>
+<a name="07b8_1414">Let <I>L</I> be a doubly linked list of length <I>m</I> stored in arrays <I>key, prev</I>, and <I>next</I> of length <I>n</I>. Suppose that these arrays are managed by <FONT FACE="Courier New" SIZE=2>ALLOCATE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> and <FONT FACE="Courier New" SIZE=2>FREE</FONT>-<FONT FACE="Courier New" SIZE=2>OBJECT</FONT> procedures that keep a doubly linked free list <I>F</I>. Suppose further that of the <I>n</I> items, exactly <I>m</I> are on list <I>L</I> and <I>n - m</I> are on the free list. Write a procedure <FONT FACE="Courier New" SIZE=2>COMPACTIFY</FONT>-<FONT FACE="Courier New" SIZE=2>LIST</FONT> (<I>L, F</I>) that, given the list <I>L</I> and the free list <I>F</I>, moves the items in <I>L</I> so that they occupy array positions 1, 2, . . . , <I>m</I> and adjusts the free list <I>F</I> so that it remains correct, occupying array positions <I>m +</I> 1,<I> m + </I>2,<I> . . . , n</I>. The running time of your procedure should be <IMG SRC="../IMAGES/bound.gif">(<I>m</I>), and it should use only a constant amount of extra space. Give a careful argument for the correctness of your procedure.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07b9_141a">11.4 Representing rooted trees<a name="07b9_141a"></h1><P>
+<a name="07b9_1415"><a name="07b9_1416"><a name="07b9_1417"><a name="07b9_1418"><a name="07b9_1419">The methods for representing lists given in the previous section extend to any homogeneous data structure. In this section, we look specifically at the problem of representing rooted trees by linked data structures. We first look at binary trees, and then we present a method for rooted trees in which nodes can have an arbitrary number of children.<P>
+We represent each node of a tree by an object. As with linked lists, we assume that each node contains a <I>key</I> field. The remaining fields of interest are pointers to other nodes, and they vary according to the type of tree.<P>
+
+
+
+
+
+<h2>Binary trees</h2><P>
+As shown in Figure 11.9, we use the fields <I>p</I>, <I>left</I>, and <I>right</I> to store pointers to the parent, left child, and right child of each node in a binary tree <I>T</I>. If <I>p</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, then <I>x</I> is the root. If node <I>x</I> has no left child, then <I>left</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, and similarly for the right child. The root of the entire tree <I>T</I> is pointed to by the attribute <I>root</I>[<I>T</I>]. If <I>root </I>[<I>T</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, then the tree is empty.<P>
+<img src="214_a.gif"><P>
+<h4><a name="07ba_0001">Figure 11.9 The representation of a binary tree T. Each node x has the fields p[x] (top), left[x] (lower left), and right[x] (lower right). The key fields are not shown.<a name="07ba_0001"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2>Rooted trees with unbounded branching</h2><P>
+The scheme for representing a binary tree can be extended to any class of trees in which the number of children of each node is at most some constant <I>k</I>: we replace the <I>left</I> and <I>right</I> fields by <I>child</I><SUB>1</SUB>, <I>child</I><SUB>2</SUB>, . . . , <I>child<SUB>k</I></SUB>. This scheme no longer works when the number of children of a node is unbounded, since we do not know how many fields (arrays in the multiple-array representation) to allocate in advance. Moreover, even if the number of children <I>k</I> is bounded by a large constant but most nodes have a small number of children, we may waste a lot of memory.<P>
+<a name="07bb_141a">Fortunately, there is a clever scheme for using binary trees to represent trees with arbitrary numbers of children. It has the advantage of using only <I>O</I>(<I>n</I>) space for any <I>n</I>-node rooted tree. The <I><B>left-child, right-sibling representation</I></B> is shown in Figure 11.10. As before, each node contains a parent pointer <I>p</I>, and <I>root</I>[<I>T</I>] points to the root of tree <I>T</I>. Instead of having a pointer to each of its children, however, each node <I>x</I> has only two pointers:<P>
+1.     <I>left-child</I>[<I>x</I>] points to the leftmost child of node <I>x</I>, and<P>
+2.     <I>right-sibling</I>[<I>x</I>] points to the sibling of <I>x</I> immediately to the right.<P>
+If node <I>x</I> has no children, then <I>left-child</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>, and if node <I>x</I> is the rightmost child of its parent, then <I>right-sibling</I>[<I>x</I>] = <FONT FACE="Courier New" SIZE=2>NIL</FONT>.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Other tree representations</h2><P>
+We sometimes represent rooted trees in other ways. In Chapter 7, for example, we represented a heap, which is based on a complete binary tree, by a single array plus an index. The trees that appear in Chapter 22 are only traversed toward the root, so only the parent pointers are present; there are no pointers to children. Many other schemes are possible. Which scheme is best depends on the application.<P>
+<img src="215_a.gif"><P>
+<h4><a name="07bc_0001">Figure 11.10 The left-child, right-sibling representation of a tree T. Each node x has fields p[x] (top), left-child[x] (lower left), and right-sibling[x] (lower right). Keys are not shown.<a name="07bc_0001"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="07bd_141f">Exercises<a name="07bd_141f"></h2><P>
+<a name="07bd_1420">11.4-1<a name="07bd_1420"><P>
+<a name="07bd_141b"><a name="07bd_141c"><a name="07bd_141d">Draw the binary tree rooted at index 6 that is represented by the following fields.<P>
+<pre><I>index  key  left  right</I></sub></sup></pre><P>
+<pre>----------------------</sub></sup></pre><P>
+<pre>   1    12   7     3</sub></sup></pre><P>
+<pre>   2    15   8    NIL</sub></sup></pre><P>
+<pre>   3     4  10    NIL</sub></sup></pre><P>
+<pre>   4    10   5     9</sub></sup></pre><P>
+<pre>   5     2  NIL   NIL</sub></sup></pre><P>
+<pre>   6    18   1    4</sub></sup></pre><P>
+<pre>   7     7  NIL   NIL</sub></sup></pre><P>
+<pre>   8    14   6    2</sub></sup></pre><P>
+<pre>   9    21  NIL   NIL</sub></sup></pre><P>
+<pre>  10     5  NIL   NIL</sub></sup></pre><P>
+<a name="07bd_1421">11.4-2<a name="07bd_1421"><P>
+Write an <I>O</I>(<I>n</I>)-time recursive procedure that, given an <I>n</I>-node binary tree, prints out the key of each node in the tree.<P>
+<a name="07bd_1422">11.4-3<a name="07bd_1422"><P>
+Write an <I>O</I>(<I>n</I>)-time nonrecursive procedure that, given an <I>n</I>-node binary tree, prints out the key of each node in the tree. Use a stack as an auxiliary data structure.<P>
+<a name="07bd_1423">11.4-4<a name="07bd_1423"><P>
+Write an <I>O</I>(<I>n</I>)-time procedure that prints all the keys of an arbitrary rooted tree with <I>n</I> nodes, where the tree is stored using the left-child, right-sibling representation.<P>
+<a name="07bd_1424">11.4-5<a name="07bd_1424"><P>
+Write an <I>O</I>(<I>n</I>)-time nonrecursive procedure that, given an <I>n</I>-node binary tree, prints out the key of each node. Use no more than constant extra space outside of the tree itself and do not modify the tree, even temporarily, during the procedure.<P>
+<a name="07bd_1425">11.4-6<a name="07bd_1425"><P>
+<a name="07bd_141e">The left-child, right-sibling representation of an arbitrary rooted tree uses three pointers in each node: <I>left-child, right-sibling</I>, and <I>parent</I>. From any node, the parent and all the children of the node can be reached and identified. Show how to achieve the same effect using only two pointers and one boolean value in each node.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="07be_1426">Problems<a name="07be_1426"></h1><P>
+<a name="07be_1427">11-1     Comparisons among lists<a name="07be_1427"><P>
+For each of the four types of lists in the following table, what is the asymptotic worst-case running time for each dynamic-set operation listed?<P>
+<pre>                   unsorted,  sorted,  unsorted,  sorted,</sub></sup></pre><P>
+<pre>                    singly    singly    doubly    doubly</sub></sup></pre><P>
+<pre>                    linked    linked    linked    linked</sub></sup></pre><P>
+<pre>---------------------------------------------------------</sub></sup></pre><P>
+<pre>SEARCH(<I>L</I>,<I>k</I>)</sub></sup></pre><P>
+<pre>INSERT(<I>L</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>DELETE(<I>L,x</I>)</sub></sup></pre><P>
+<pre>SUCCESSOR(<I>L</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>PREDECESSOR(<I>L</I>,<I>x</I>)</sub></sup></pre><P>
+<pre>MINIMUM(<I>L</I>)</sub></sup></pre><P>
+<pre>MAXIMUM(<I>L</I>)</sub></sup></pre><P>
+<a name="07be_1428">11-2     Mergeable heaps using linked lists<a name="07be_1428"><P>
+<a name="07be_141f">A <I><B>mergeable heap</I></B> supports the following operations: <FONT FACE="Courier New" SIZE=2>MAKE</FONT>-<FONT FACE="Courier New" SIZE=2>HEAP</FONT> (which creates an empty mergeable heap), <FONT FACE="Courier New" SIZE=2>INSERT</FONT>, <FONT FACE="Courier New" SIZE=2>MINIMUM</FONT>, <FONT FACE="Courier New" SIZE=2>EXTRACT</FONT>-<FONT FACE="Courier New" SIZE=2>MIN</FONT>, and <FONT FACE="Courier New" SIZE=2>UNION</FONT>. Show how to implement mergeable heaps using linked lists in each of the following cases. Try to make each operation as efficient as possible. Analyze the running time of each operation in terms of the size of the dynamic set(s) being operated on.<P>
+<I><B>a.     </I></B>Lists are sorted.<P>
+<I><B>b.     </I></B>Lists are unsorted.<P>
+<I><B>c.     </I></B>Lists are unsorted, and dynamic sets to be merged are disjoint.<P>
+<a name="07be_1429">11-3     Searching a sorted compact list<a name="07be_1429"><P>
+<a name="07be_1420"><a name="07be_1421"><a name="07be_1422"><a name="07be_1423"><a name="07be_1424"><a name="07be_1425">Exercise 11.3-4 asked how we might maintain an <I>n</I>-element list compactly in the first <I>n</I> positions of an array. We shall assume that all keys are distinct and that the compact list is also sorted, that is, <I>key</I>[<I>i</I>]<I> &lt; key</I>[<I>next</I>[<I>i</I>]] for all <I>i</I> = 1, 2, . . . , <I>n</I> such that <I>next</I>[<I>i</I>] <IMG SRC="../IMAGES/noteq.gif"> <FONT FACE="Courier New" SIZE=2>NIL</FONT>. Under these assumptions, we expect that the following randomized algorithm can be used to search the list much faster than linear time.<P>
+<pre>COMPACT-LIST-SEARCH(<I>L</I>, <I>k</I>)</sub></sup></pre><P>
+<pre>1  <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>head</I>[<I>L</I>]</sub></sup></pre><P>
+<pre>2  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>L</I>]</sub></sup></pre><P>
+<pre>3  <B>while</B> <I>i</I> <IMG SRC="../IMAGES/noteq.gif"> NIL and <I>key</I>[<I>i</I>] &lt; <I>k</I></sub></sup></pre><P>
+<pre>4      <B>do</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> RANDOM(l, <I>n</I>)</sub></sup></pre><P>
+<pre>5<B>         if</B> <I>key</I>[<I>i</I>] &lt; <I>key</I>[<I>j</I>] and <I>key</I>[<I>j</I>] &lt; <I>k</I></sub></sup></pre><P>
+<pre>6<B>            then</B> <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I></sub></sup></pre><P>
+<pre>7         <I>i</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>next</I>[<I>i</I>]</sub></sup></pre><P>
+<pre>8<B>         if</B> <I>key</I>[<I>i</I>] = <I>k</I></sub></sup></pre><P>
+<pre>9<B>            then return</B> <I>i</I></sub></sup></pre><P>
+<pre>10  <B>return</B> NIL</sub></sup></pre><P>
+If we ignore lines 4-6 of the procedure, we have the usual algorithm for searching a sorted linked list, in which index <I>i</I> points to each position of the list in turn. Lines 4-6 attempt to skip ahead to a randomly chosen position <I>j</I>. Such a skip is beneficial if <I>key</I>[<I>j</I>] is larger than <I>key</I>[<I>i</I>] and smaller than <I>k</I>; in such a case, <I>j</I> marks a position in the list that <I>i</I> would have to pass by during an ordinary list search. Because the list is compact, we know that any choice of <I>j</I> between 1 and <I>n</I> indexes some object in the list rather than a slot on the free list.<P>
+<I><B>a.</I></B>     Why do we assume that all keys are distinct in <FONT FACE="Courier New" SIZE=2>COMPACT</FONT>-<FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT>? Argue that random skips do not necessarily help asymptotically when the list contains repeated key values.<P>
+We can analyze the performance of <FONT FACE="Courier New" SIZE=2>COMPACT</FONT>-<FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> by breaking its execution into two phases. During the first phase, we discount any progress toward finding <I>k</I> that is accomplished by lines 7-9. That is, phase 1 consists of moving ahead in the list by random skips only. Likewise, phase 2 discounts progress accomplished by lines 4-6, and thus it operates like ordinary linear search.<P>
+Let <I>X<SUB>t</I> </SUB>be the random variable that describes the distance in the linked list (that is, through the chain of <I>next</I> pointers) from position <I>i</I> to the desired key <I>k</I> after <I>t</I> iterations of phase l.<P>
+<I><B>b.</I></B>     Argue that the expected running time of <FONT FACE="Courier New" SIZE=2>COMPACT</FONT>-<FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> is <I>O</I>(<I>t+</I>E<I> </I>[<I>X<SUB>t</I></SUB>]) for all <I>t </I><IMG SRC="../IMAGES/gteq.gif"> 0.<P>
+<I><B>c.</I></B>     Show that <img src="218_a.gif">. (<I>Hint</I>. Use equation (6.28).)<P>
+<I><B>d.</I></B>     Show that <img src="218_b.gif"><P>
+<I><B>e.</I></B>     Prove that E[<I>X<SUB>t</I></SUB>] <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I>/(<I>t + </I>1), and explain why this formula makes intuitive sense.<P>
+<I><B>f.</I></B>     Show that <FONT FACE="Courier New" SIZE=2>COMPACT</FONT>-<FONT FACE="Courier New" SIZE=2>LIST</FONT>-<FONT FACE="Courier New" SIZE=2>SEARCH</FONT> runs in <img src="218_c.gif"> expected time.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Aho, Hopcroft, and Ullman [5] and Knuth [121] are excellent references for elementary data structures. Gonnet [90] provides experimental data on the performance of many data structure operations.<P>
+The origin of stacks and queues as data structures in computer science is unclear, since corresponding notions already existed in mathematics and paper-based business practices before the introduction of digital computers. Knuth [121] cites A. M. Turing for the development of stacks for subroutine linkage in 1947.<P>
+Pointer-based data structures also seem to be a folk invention. According to Knuth, pointers were apparently used in early computers with drum memories. The A-l language developed by G. M. Hopper in 1951 represented algebraic formulas as binary trees. Knuth credits the IPL-II language, developed in 1956 by A. Newell, J. C. Shaw, and H. A. Simon, for recognizing the importance and promoting the use of pointers. Their IPL-III language, developed in 1957, included explicit stack operations.<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap12.htm">Chapter 12</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

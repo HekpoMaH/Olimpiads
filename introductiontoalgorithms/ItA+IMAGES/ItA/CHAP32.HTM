@@ -1,0 +1,497 @@
+<HTML><HEAD>
+
+<TITLE>Intro to Algorithms: CHAPTER 32: POLYNOMIALS AND THE FFT</TITLE></HEAD><BODY BGCOLOR="#FFFFFF">
+
+
+<a href="chap33.htm"><img align=right src="../../images/next.gif" alt="Next Chapter" border=0></A>
+<a href="toc.htm"><img align=right src="../../images/toc.gif" alt="Return to Table of Contents" border=0></A>
+<a href="chap31.htm"><img align=right src="../../images/prev.gif" alt="Previous Chapter" border=0></A>
+
+
+<h1><a name="098a_1afd">CHAPTER 32: POLYNOMIALS AND THE FFT<a name="098a_1afd"></h1><P>
+The straightforward method of adding two polynomials of degree <I>n </I>takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time, but the straightforward method of multiplying them takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time. In this chapter, we shall show how the Fast Fourier Transform, or FFT, can reduce the time to multiply polynomials to <IMG SRC="../IMAGES/bound.gif">(<I>n</I>l<I> n</I>).<P>
+Polynomials<P>
+<a name="098a_1af3">A <I><B>polynomial</I></B> in the variable <I>x</I> over an algebraic field <I>F </I>is a function <I>A</I>(<I>x</I>) that can be represented as follows:<P>
+<img src="776_a.gif"><P>
+<a name="098a_1af4"><a name="098a_1af5"><a name="098a_1af6">We call <I>n </I>the <I><B>degree-bound</I></B> of the polynomial, and we call the values <I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . ., <I>a<SUB>n</I> - 1 </SUB>the <I><B>coefficients</I></B> of the polynomial. The coefficients are drawn from the field <I>F</I>, typically the set <B>C</B> of complex numbers. A polynomial <I>A</I>(<I>x</I>) is said to have <I><B>degree</I></B> <I>k </I>if its highest nonzero coefficient is <I>a<SUB>k</I></SUB>. The degree of a polynomial of degree-bound <I>n</I> can be any integer between 0 and <I>n</I> - 1, inclusive. Conversely, a polynomial of degree <I>k</I> is a polynomial of degree-bound <I>n </I>for any <I>n</I> &gt; <I>k</I>.<P>
+<a name="098a_1af7"><a name="098a_1af8"><a name="098a_1af9">There are a variety of operations we might wish to define for polynomials. For <I><B>polynomial addition</I></B>, if <I>A</I> (<I>x</I>) and <I>B</I> (<I>x</I>) are polynomials of degree-bound <I>n</I>, we say that their <I><B>sum</I></B> is a polynomial <I>C</I> (<I>x</I>), also of degree-bound <I>n</I>, such that <I>C</I> (<I>x</I>)<I> = A</I> (<I>x</I>)<I> + B</I> (<I>x</I>) for all <I>x</I> in the underlying field. That is, if<P>
+<img src="776_b.gif"><P>
+and<P>
+<img src="776_c.gif"><P>
+then<P>
+<img src="777_a.gif"><P>
+where <I>c<SUB>j</I></SUB> = <I>a<SUB>j</SUB> </I>+ <I>b<SUB>j</SUB> </I>for <I>j </I>= 0,1, . . .,<I>n </I>- 1. For example, if <I>A</I>(<I>x</I>) = 6<I>x</I><SUP>3 </SUP>+ 7x<SUP>2 </SUP>- 10<I>x </I>+ 9 and <I>B</I>(<I>x</I>) = -2<I>x</I><SUP>3</SUP>+ 4<I>x </I>- 5, then <I>C</I>(<I>x</I>) = 4<I>x</I><SUP>3 </SUP>+ 7<I>x</I><SUP>2 </SUP>- 6<I>x </I>+ 4.<P>
+<a name="098a_1afa"><a name="098a_1afb"><a name="098a_1afc">For <I><B>polynomial multiplication</I></B>, if <I>A</I>(<I>x</I>) and <I>B</I>(<I>x</I>) are polynomials of degree-bound <I>n</I>, we say that their <I><B>product</I></B> <I>C</I>(<I>x</I>) is a polynomial of degree-bound 2<I>n </I>- 1 such that <I>C</I>(<I>x</I>) = <I>A</I>(<I>x</I>)<I>B</I>(<I>x</I>) for all <I>x </I>in the underlying field. You have probably multiplied polynomials before, by multiplying each term in <I>A</I>(<I>x</I>) by each term in <I>B</I>(<I>x</I>) and combining terms with equal powers. For example, we can multiply <I>A</I>(<I>x</I>) = 6<I>x</I><SUP>3 </SUP>+ 7<I>x</I><SUP>2 </SUP>- 10<I>x </I>+ 9 and <I>B</I>(<I>x</I>) = -2<I>x</I><SUP>3 </SUP>+ 4<I>x </I>- 5 as follows:<P>
+<pre>                        6<I>x</I><SUP>3 </SUP>+ 7<I>x</I><SUP>2 </SUP>- 10<I>x</I>  +  9</sub></sup></pre><P>
+<pre>                     -  2<I>x</I><SUP>3</SUP>       +  4<I>x</I>  -  5</sub></sup></pre><P>
+<pre>                    -------------------------</sub></sup></pre><P>
+<pre>                     - 30<I>x</I><SUP>3 </SUP>- 35<I>x</I><SUP>2 </SUP>+ 50<I>x</I> - 45</sub></sup></pre><P>
+<pre>                24<I>x</I><SUP>4 </SUP>+ 28<I>x</I><SUP>3 </SUP>- 40<I>x</I><SUP>2 </SUP>+ 36<I>x</I></sub></sup></pre><P>
+<pre>- 12<I>x</I><SUP>6 </SUP>- 14<I>x</I><SUP>5 </SUP>+ 20<I>x</I><SUP>4</SUP> - 18<I>x</I><SUP>3</sub></sup></pre><P>
+<pre>---------------------------------------------</sub></sup></pre><P>
+<pre>- 12<I>x</I><SUP>6 </SUP>- 14<I>x</I><SUP>5 </SUP>+ 44<I>x</I><SUP>4 </SUP>- 20<I>x</I><SUP>3 </SUP>- 75<I>x</I><SUP>2 </SUP>+  86<I>x</I> - 45</sub></sup></pre><P>
+Another way to express the product <I>C</I>(<I>x</I>) is<P>
+<img src="777_b.gif"><P>
+<h4><a name="098a_1afe">(32.1)<a name="098a_1afe"></sub></sup></h4><P>
+where<P>
+<img src="777_c.gif"><P>
+<h4><a name="098a_1aff">(32.2)<a name="098a_1aff"></sub></sup></h4><P>
+<pre>Note that degree(<I>C</I>) = degree(<I>A</I>) + degree(<I>B</I>), implying</sub></sup></pre><P>
+<pre>degree-bound(<I>C</I>) = degree-bound(<I>A</I>) + degree-bound(<I>B</I>) - 1</sub></sup></pre><P>
+<pre><IMG SRC="../IMAGES/lteq12.gif"> degree-bound(<I>A</I>) + degree-bound(<I>B</I>).</sub></sup></pre><P>
+We shall nevertheless speak of the degree-bound of <I>C</I> as being the sum of the degree-bounds of <I>A</I> and <I>B</I>, since if a polynomial has degree-bound <I>k</I> it also has degree-bound <I>k</I> + 1.<P>
+Chapter outline<P>
+Section 32.1 presents two ways to represent polynomials: the coefficient representation and the point-value representation. The straightforward methods for multiplying polynomials--equations (32.1) and (32.2)--take <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time when the polynomials are represented in coefficient form, but only <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time when they are represented in point-value form. We can, however, multiply polynomials using the coefficient representation in only <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) time by converting between the two representations. To see why this works, we must first study complex roots of unity, which we do in Section 32.2. Then, we use the FFT and its inverse, also described in Section 32.2, to perform the conversions. Section 32.3 shows how to implement the FFT quickly in both serial and parallel models.<P>
+This chapter uses complex numbers extensively, and the symbol <I>i</I> will be used exclusively to denote <img src="778_a.gif">.<P>
+
+
+
+
+
+<h1><a name="098c_0001">32.1 Representation of polynomials<a name="098c_0001"></h1><P>
+The coefficient and point-value representations of polynomials are in a sense equivalent; that is, a polynomial in point-value form has a unique counterpart in coefficient form. In this section, we introduce the two representations and show how they can be combined to allow multiplication of two degree-bound <I>n</I> polynomials in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time.<P>
+
+
+
+
+
+<h2>Coefficient representation</h2><P>
+<a name="098d_1afd"><a name="098d_1afe">A <I><B>coefficient representation</I></B> of a polynomial <img src="778_b.gif"> of degree-bound <I>n</I> is a vector of coefficients <I>a</I> = (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . ., <I>a<SUB>n</I></SUB>-<SUB>1</SUB>). In matrix equations in this chapter, we shall generally treat vectors as column vectors.<P>
+<a name="098d_1aff"><a name="098d_1b00"><a name="098d_1b01">The coefficient representation is convenient for certain operations on polynomials. For example, the operation of <I><B>evaluating</I></B> the polynomial <I>A</I>(<I>x</I>) at a given point <I>x</I><SUB>0</SUB> consists of computing the value of <I>A</I>(<I>x</I><SUB>0</SUB>). Evaluation takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) using <I><B>Horner's rule:</I></B><P>
+<pre><I>A</I>(<I>x</I><SUB>0</SUB>) = <I>a</I><SUB>0</SUB> + <I>x</I><SUB>0</SUB>(<I>a</I><SUB>1</SUB>+<I>x</I><SUB>0</SUB>(<I>a</I><SUB>2</SUB>+ <SUP>...</SUP> +<I>x</I><SUB>0</SUB>(<I>a<SUB>n</I>-2</SUB>+<I>x</I><SUB>0</SUB>(<I>a<SUB>n</I>-1</SUB>))<SUP>...</SUP>)).</sub></sup></pre><P>
+Similarly, adding two polynomials represented by the coefficient vectors <I>a</I> = (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . ., <I>a<SUB>n</I></SUB>-<SUB>1</SUB>) and <I>b</I> = (<I>b</I><SUB>0</SUB>, <I>b</I><SUB>1</SUB>, . . ., <I>b<SUB>n</I></SUB>-<SUB>1</SUB>) takes <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time: we just output the coefficient vector <I>c</I> = (<I>c</I><SUB>0</SUB>, <I>c</I><SUB>1</SUB>, . . ., <I>c<SUB>n</I></SUB>-<SUB>1</SUB>), where <I>c<SUB>j</I></SUB> = <I>a<SUB>j</I></SUB> + <I>b<SUB>j</I></SUB> for <I>j </I>= 0,1, . . . ,<I>n </I>- 1.<P>
+<a name="098d_1b02"><a name="098d_1b03"><a name="098d_1b04">Now, consider the multiplication of two degree-bound <I>n</I> polynomials <I>A</I>(<I>x</I>) and <I>B</I>(<I>x</I>) represented in coefficient form. If we use the method described by equations (32.1) and (32.2), polynomial multiplication takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>), since each coefficient in the vector<I> a </I>must be multiplied by each coefficient in the vector <I>b</I>. The operation of multiplying polynomials in coefficient form seems to be considerably more difficult than that of evaluating a polynomial or adding two polynomials. The resulting coefficient vector <I>c</I>, given by equation (32.2), is also called the <I><B>convolution</I></B> of the input vectors <I>a</I> and <I>b</I>, denoted <I>c</I> = <I>a </I><IMG SRC="../IMAGES/circx.gif"><I> b</I>. Since multiplying polynomials and computing convolutions are fundamental computational problems of considerable practical importance, this chapter concentrates on efficient algorithms for them.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Point-value representation</h2><P>
+<a name="098e_1b05"><a name="098e_1b06">A<I> <B>point-value representation</I></B><I> </I>of a polynomial <I>A</I>(<I>x</I>) of degree-bound <I>n</I> is a set of <I>n</I> <I><B>point-value pairs</I></B><P>
+<pre>{(<I>x</I><SUB>0</SUB>, <I>y</I><SUB>0</SUB>), (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>), . . ., (<I>x<SUB>n</I>-1</SUB>, <I>y<SUB>n</I>-1</SUB>)}</sub></sup></pre><P>
+such that all of the <I>x<SUB>k</I></SUB> are distinct and<P>
+<pre><I>y<SUB>k</I></SUB> = <I>A</I>(<I>x<SUB>k</I></SUB>)</sub></sup></pre><P>
+<h4><a name="098e_1b0a">(32.3)<a name="098e_1b0a"></sub></sup></h4><P>
+for <I>k</I> = 0, 1, . . ., <I>n</I> - 1. A polynomial has many different point-value representations, since any set of <I>n</I> distinct points <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . ., <I>x<SUB>n</I>-1</SUB> can be used as a basis for the representation.<P>
+Computing a point-value representation for a polynomial given in coefficient form is in principle straightforward, since all we have to do is select <I>n</I> distinct points <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . ., <I>x<SUB>n</I>-1</SUB> and then evaluate <I>A</I>(<I>x<SUB>k</I></SUB>) for <I>k</I> = 0, 1, . . ., <I>n</I> - 1. With Horner<I><B></I></B>'s method, this <I>n</I>-point evaluation takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). We shall see later that if we choose the <I>x<SUB>k</I></SUB> cleverly, this computation can be accelerated to run in time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>).<P>
+<a name="098e_1b07"><a name="098e_1b08">The inverse of evaluation--determining the coefficient form of a polynomial from a point-value representation--is called <I><B>interpolation</I></B>. The following theorem shows that interpolation is well defined, assuming that the degree-bound of the interpolating polynomial equals the number of given point-value pairs.<P>
+<a name="098e_1b0b">Theorem 32.1<a name="098e_1b0b"><P>
+For any set {(<I>x</I><SUB>0</SUB>, <I>y</I><SUB>0</SUB>), (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>), . . ., (<I>x<SUB>n</I></SUB>-<SUB>1</SUB>, <I>y<SUB>n</I></SUB>-<SUB>1</SUB>)} of <I>n</I> point-value pairs, there is a unique polynomial <I>A</I>(<I>x</I>) of degree-bound <I>n</I> such that <I>y<SUB>k</I></SUB> = <I>A</I>(<I>x<SUB>k</I></SUB>) for <I>k </I>= 0, 1, . . ., <I>n</I> - 1.<P>
+<I><B>Proof</I></B>     The proof is based on the existence of the inverse of a certain matrix. Equation (32.3) is equivalent to the matrix equation<P>
+<img src="779_a.gif"><P>
+<h4><a name="098e_1b0c">(32.4)<a name="098e_1b0c"></sub></sup></h4><P>
+The matrix on the left is denoted <I>V</I>(<I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . ., <I>x<SUB>n</I></SUB>-<SUB>1</SUB>) and is known as a Vandermonde matrix. By Exercise 31.1-10, this matrix has determinant<P>
+<img src="779_b.gif"><P>
+and therefore, by Theorem 31.5, it is invertible (that is, nonsingular) if the <I>x<SUB>k</I></SUB> are distinct. Thus, the coefficients <I>a<SUB>j</SUB> </I>can be solved for uniquely given the point-value representation:<P>
+<pre>a = V(x<SUB>0</SUB>, x<SUB>1</SUB>, . . ., x<SUB>n-1</SUB>)<SUP>-1</SUP>y.      </sub></sup></pre><P>
+The proof of Theorem 32.1 describes an algorithm for interpolation based on solving the set (32.4) of linear equations. Using the LU decomposition algorithms of Chapter 31, we can solve these equations in time <I>O</I>(<I>n</I><SUP>3</SUP>).<P>
+<a name="098e_1b09">A faster algorithm for <I>n</I>-point interpolation is based on <I><B>Lagrange's formula:</I></B><P>
+<img src="780_a.gif"><P>
+<h4><a name="098e_1b0d">(32.5)<a name="098e_1b0d"></sub></sup></h4><P>
+You may wish to verify that the right-hand side of equation (32.5) is a polynomial of degree-bound <I>n</I> that satisfies <I>A</I>(<I>x<SUB>k</I></SUB>) = <I>y<SUB>k</I></SUB> for all <I>k</I>. Exercise 32.1-4 asks you how to compute the coefficients of <I>A</I> using Lagrange<I><B></I></B>'s formula in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).<P>
+Thus, <I>n</I>-point evaluation and interpolation are well-defined inverse operations that transform between the coefficient representation of a polynomial and a point-value representation.<SUP>1</SUP> The algorithms described above for these problems take time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>).<P>
+<SUP>1</SUP>Interpolation is a notoriously tricky problem from the point of view of numerical stability. Although the approaches described here are mathematically correct, small differences in the inputs or round-off errors during computation can cause large differences in the result.<P>
+The point-value representation is quite convenient for many operations on polynomials. For addition, if <I>C</I>(<I>x</I>) = <I>A</I>(<I>x</I>) + <I>B</I>(<I>x</I>), then <I>C</I>(<I>x<SUB>k</I></SUB>) = <I>A</I>(<I>x<SUB>k</I></SUB>) + <I>B</I>(<I>x<SUB>k</I></SUB>) for any point <I>x<SUB>k</I></SUB>. More precisely, if we have a point-value representation for <I>A</I>,<P>
+<pre>{(<I>x</I><SUB>0</SUB>, <I>y</I><SUB>0</SUB>), (<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>), . . ., (<I>x<SUB>n</I>-1</SUB>, <I>y<SUB>n</I>-1</SUB>)} ,</sub></sup></pre><P>
+and for <I>B</I>,<P>
+<pre>{(x<SUB>0</SUB>, y'<SUB>0</SUB>), (x<SUB>1</SUB>, y'<SUB>1</SUB>), . . ., (x<I><SUB>n</I>-1</SUB>, y'<I><SUB>n</I>-1</SUB>)}</sub></sup></pre><P>
+(note that <I>A</I> and <I>B</I> are evaluated at the <I>same n</I> points), then a point-value representation for <I>C</I> is<P>
+<pre>{(x<SUB>0</SUB>, y<SUB>0 </SUB>+ y'<SUB>0</SUB>), (x<SUB>1</SUB>, y<SUB>1</SUB>+y'<SUB>1</SUB>), . . ., (x<SUB>n-1</SUB>, y<SUB>n-1</SUB>+y'<SUB>n-1</SUB>)}.</sub></sup></pre><P>
+The time to add two polynomials of degree-bound <I>n</I> in point-value form is thus <IMG SRC="../IMAGES/bound.gif">(<I>n</I>).<P>
+Similarly, the point-value representation is convenient for multiplying polynomials. If <I>C</I>(<I>x</I>)<I> = A</I>(<I>x</I>)<I>B</I>(<I>x</I>)<I>, </I>then<I> C</I>(<I>x<SUB>k</I></SUB>)<I> = A</I>(<I>x<SUB>k</I></SUB>)<I>B</I>(<I>x<SUB>k</I></SUB>) for any<SUB> </SUB>point <I>x<SUB>k</I></SUB>, and we can pointwise multiply a point-value representation for <I>A </I>by a point-value representation for <I>B</I> to obtain a point-value representation for <I>C</I>. We must face the problem, however, that the degree-bound of <I>C</I> is the sum of the degree-bounds for <I>A</I> and <I>B</I>. A standard point-value representation for <I>A</I> and <I>B</I> consists of <I>n</I> point-value pairs for each polynomial. Multiplying these together gives us <I>n</I> point-value pairs for <I>C</I>, but since the degree-bound of <I>C</I> is 2<I>n</I>, Theorem 32.1 implies that we need 2<I>n</I> point-value pairs for a point-value representation of <I>C</I>. We must therefore begin with "extended" point-value representations for <I>A</I> and for <I>B</I> consisting of 2<I>n</I> point-value pairs each. Given an extended point-value representation for <I>A</I>,<P>
+<pre>{(<I>x</I><SUB>0</SUB>,<I>y</I><SUB>0</SUB>),(<I>x</I><SUB>1</SUB>, <I>y</I><SUB>1</SUB>),...,(<I>x</I><SUB>2<I>n</I>-1</SUB>,<I>y</I><SUB>2<I>n</I>-1</SUB>)},</sub></sup></pre><P>
+and a corresponding extended point-value representation for <I>B</I>,<P>
+<pre>{(<I>x</I><SUB>0</SUB>,<I>y</I>'<SUB>0</SUB>),(<I>x</I><SUB>1</SUB>,<I>y</I>'<SUB>1</SUB>),...,(<I>x</I><SUB>2<I>n</I>-1</SUB>,<I>y</I>'<SUB>2<I>n</I>-1</SUB>)},</sub></sup></pre><P>
+then a point-value representation for C is<P>
+<pre>{(<I>x</I><SUB>0</SUB>,<I>y</I><SUB>0</SUB><I>y</I>'<SUB>0</SUB>),(<I>x</I><SUB>1</SUB>,<I>y</I><SUB>1</SUB><I>y</I>'<SUB>1</SUB>),...,(<I>x</I><SUB>2<I>n</I>-1</SUB>,<I>y</I><SUB>2<I>n</I>-1</SUB><I>y</I>'<SUB>2<I>n</I>-1</SUB>)}.</sub></sup></pre><P>
+Given two input polynomials in extended point-value form, we see that the time to multiply them to obtain the point-value form of the result is <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), much less than the time required to multiply polynomials in coefficient form.<P>
+Finally, we consider how to evaluate a polynomial given in point-value form at a new point. For this problem, there is apparently no approach that is simpler than converting the polynomial to coefficient form first, and then evaluating it at the new point.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Fast multiplication of polynomials in coefficient form</h2><P>
+<a name="098f_1b0a"><a name="098f_1b0b">Can we use the linear-time multiplication method for polynomials in point-value form to expedite polynomial multiplication in coefficient form? The answer hinges on our ability to convert a polynomial quickly from coefficient form to point-value form (evaluate) and vice-versa (interpolate).<P>
+We can use any points we want as evaluation points, but by choosing the evaluation points carefully, we can convert between representations in only <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time. As we shall see in Section 32.2, if we choose <FONT FACE="CG Times (W1)" SIZE=2>"</FONT>complex roots of unity" as the evaluation points, we can produce a point-value representation by taking the Discrete Fourier Transform (or DFT) of a coefficient vector. The inverse operation, interpolation, can be performed by taking the "inverse DFT<FONT FACE="CG Times (W1)" SIZE=2>"</FONT> of point-value pairs, yielding a coefficient vector. Section 32.2 will show how the FFT performs the DFT and inverse DFT operations in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time.<P>
+Figure 32.1 shows this strategy graphically. One minor detail concerns degree-bounds. The product of two polynomials of degree-bound <I>n </I>is a polynomial of degree-bound 2<I>n</I>. Before evaluating the input polynomials <I>A</I> and <I>B</I>, therefore, we first double their degree-bounds to 2<I>n</I> by adding <I>n </I>high-order coefficients of 0. Because the vectors have 2<I>n</I> elements, we use &quot;complex (2<I>n</I>)th roots of unity,&quot; which are denoted by the <I>w</I><SUB>2<I>n</I></SUB> terms in Figure 32.1.<P>
+Given the FFT, we have the following <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>)-time procedure for multiplying two polynomials <I>A</I>(<I>x</I>) and <I>B</I>(<I>x</I>) of degree-bound <I>n</I>, where the input and output representations are in coefficient form. We assume that <I>n</I> is a power of 2; this requirement can always be met by adding high-order zero coefficients.<P>
+<img src="782_a.gif"><P>
+<h4><a name="098f_1b0c">Figure 32.1 A graphical outline of an efficient polynomial-multiplication process. Representations on the top are in coefficient form, while those on the bottom are in point-value form. The arrows from left to right correspond to the multiplication operation. The w<SUB>2n</SUB> terms are complex (2n)th roots of unity.<a name="098f_1b0c"></sub></sup></h4><P>
+1.     <I>Double degree-bound:</I> Create coefficient representations of <I>A</I>(<I>x</I>) and <I>B</I>(<I>x</I>) as degree-bound 2<I>n</I> polynomials by adding <I>n</I> high-order zero coefficients to each.<P>
+2.     <I>Evaluate:</I> Compute point-value representations of <I>A</I>(<I>x</I>) and <I>B</I>(<I>x</I>) of length 2<I>n</I> through two applications of the FFT of order 2<I>n</I>. These representations contain the values of the two polynomials at the (2<I>n</I>)th roots of unity.<P>
+3.     <I>Pointwise multiply:</I> Compute a point-value representation for the polynomial <I>C</I>(<I>x</I>) = <I>A</I>(<I>x)B</I>(<I>x</I>) by multiplying these values together pointwise. This representation contains the value of <I>C</I>(<I>x</I>) at each (2<I>n</I>)th root of unity.<P>
+4.     <I>Interpolate:</I> Create the coefficient representation of the polynomial <I>C</I>(<I>x</I>) through a single application of an FFT on 2<I>n</I> point-value pairs to compute the inverse DFT.<P>
+Steps (1) and (3) take time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), and steps (2) and (4) take time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>). Thus, once we show how to use the FFT, we will have proven the following.<P>
+<a name="098f_1b0d">Theorem 32.2<a name="098f_1b0d"><P>
+The product of two polynomials of degree-bound <I>n</I> can be computed in time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>), with both the input and output representations in coefficient form.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0990_1b10">Exercises<a name="0990_1b10"></h2><P>
+<a name="0990_1b11">32.1-1<a name="0990_1b11"><P>
+Multiply the polynomials <I>A</I>(<I>x</I>) = 7<I>x</I><SUP>3</SUP> - <I>x</I><SUP>2</SUP> + <I>x</I> - 10 and <I>B</I>(<I>x</I>) = 8<I>x</I><SUP>3</SUP> - 6<I>x</I> + 3 using equations (32.1) and (32.2).<P>
+<a name="0990_1b12">32.1-2<a name="0990_1b12"><P>
+<a name="0990_1b0c"><a name="0990_1b0d">Evaluating a polynomial <I>A</I>(<I>x</I>) of degree-bound <I>n</I> at a given point <I>x</I><SUB>0</SUB> can also be done by dividing <I>A</I>(<I>x</I>) by the polynomial (<I>x</I> - <I>x</I><SUB>0</SUB><I>) </I>to obtain a quotient polynomial <I>q</I>(<I>x</I>) of degree-bound <I>n</I> - 1 and a remainder <I>r</I>, such that<P>
+<pre><I>A</I>(<I>x</I>) = <I>q</I>(<I>x</I>)(<I>x</I> - <I>x</I><SUB>0</SUB>) + <I>r </I>.</sub></sup></pre><P>
+Clearly, <I>A</I>(<I>x</I><SUB>0</SUB>) = <I>r</I>. Show how to compute the remainder <I>r</I> and the coefficients of <I>q</I>(<I>x</I>) in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) from <I>x</I><SUB>0</SUB> and the coefficients of <I>A</I>.<P>
+<a name="0990_1b13">32.1-3<a name="0990_1b13"><P>
+Derive a point-value representation for <img src="783_a.gif"> from a point-value representation for <img src="783_b.gif">, assuming that none of the points is 0.<P>
+<a name="0990_1b14">32.1-4<a name="0990_1b14"><P>
+Show how to use equation (32.5) to interpolate in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>). (<I>Hint</I>: First compute <IMG SRC="../IMAGES/piuc.gif"><I><SUB>j</I></SUB>(<I>x</I> - <I>x<SUB>k</I></SUB>) and <IMG SRC="../IMAGES/piuc.gif"><I><SUB>j</I></SUB>(<I>x<SUB>j</I></SUB> - <I>x<SUB>k</I></SUB>) and then divide by (<I>x</I> - <I>x<SUB>k</I></SUB>) and (<I>x<SUB>j</I></SUB> - <I>x<SUB>k</I></SUB>) as necessary for each term. See Exercise 32.1-2.)<P>
+<a name="0990_1b15">32.1-5<a name="0990_1b15"><P>
+Explain what is wrong with the "obvious" approach to polynomial division using a point-value representation. Discuss separately the case in which the division comes out exactly and the case in which it doesn't.<P>
+<a name="0990_1b16">32.1-6<a name="0990_1b16"><P>
+<a name="0990_1b0e"><a name="0990_1b0f">Consider two sets <I>A</I> and <I>B</I>, each having <I>n</I> integers in the range from 0 to 10<I>n</I>. We wish to compute the <I><B>Cartesian sum</I></B> of <I>A</I> and <I>B</I>, defined by<P>
+<pre><I>C</I> = {<I>x</I> + <I>y</I>: <I>x</I> <IMG SRC="../IMAGES/memof12.gif"> <I>A</I> and <I>y</I> <IMG SRC="../IMAGES/memof12.gif"> <I>B</I>}.</sub></sup></pre><P>
+Note that the integers in <I>C</I> are in the range from 0 to 20<I>n</I>. We want to find the elements of <I>C</I> and the number of times each element of <I>C</I> is realized as a sum of elements in <I>A</I> and <I>B</I>. Show that the problem can be solved in <I>O</I>(<I>n </I>lg <I>n</I>) time. (<I>Hint:</I> Represent <I>A</I> and <I>B</I> as polynomials of degree 10<I>n</I>.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0991_0001">32.2 The DFT and FFT<a name="0991_0001"></h1><P>
+In Section 32.1, we claimed that if we use complex roots of unity, we can evaluate and interpolate in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time. In this section, we define complex roots of unity and study their properties, define the DFT, and then show how the FFT computes the DFT and its inverse in just <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time.<P>
+<img src="784_a.gif"><P>
+<h4><a name="0991_0002">Figure 32.2 The values of <img src="784_b.gif"> in the complex plane, where w<SUB>8</SUB><FONT FACE="Times New Roman" SIZE=2> = e<SUP>2</SUP><IMG SRC="../IMAGES/piuc.gif">i/8 <SUP><FONT FACE="Times New Roman" SIZE=2>is the principal 8th root of unity.<a name="0991_0002"></FONT></FONT></sub></sup></h4><P>
+
+
+
+
+
+<h2>Complex roots of unity</h2><P>
+<a name="0992_1b10"><a name="0992_1b11">A <I><B>complex nth root of unity</I></B> is a complex number <I>w</I> such that<P>
+<pre><I>w<SUP>n</I></SUP> = 1 .</sub></sup></pre><P>
+There are exactly <I>n</I> complex <I>n</I>th roots of unity; these are <I>e</I><SUP>2</SUP><IMG SRC="../IMAGES/piuc.gif"><I>ik/n</I> for <I>k</I> = 0, 1, . . . , <I>n</I> - 1. To interpret this formula, we use the definition of the exponential of a complex number:<P>
+<pre><I>e<SUP>iu</I></SUP> = cos(<I>u</I>) + <I>i</I> sin(<I>u</I>).</sub></sup></pre><P>
+<a name="0992_1b12">Figure 32.2 shows that the <I>n </I>complex roots of unity are equally spaced around the circle of unit radius centered at the origin of the complex plane. The value<P>
+<pre><I>w<SUB>n</I></SUB> = <I>e</I><SUP>2</SUP><IMG SRC="../IMAGES/piuc.gif"><I>i</I>/<I>n</I></sub></sup></pre><P>
+<h4><a name="0992_1b16">(32.6)<a name="0992_1b16"></sub></sup></h4><P>
+is called <I><B>the principal nth root of unity</I></B>; all of the other complex <I>n</I>th roots of unity are powers of <I>w<SUB>n</SUB>.</I><P>
+The <I>n</I> complex <I>n</I>th roots of unity,<P>
+<img src="784_c.gif"><P>
+form a group under multiplication (see Section 33.3). This group has the same structure as the additive group (<B>Z</B><I><SUB>n</SUB>,</I> +) modulo <I>n</I>, since <img src="784_d.gif"> implies that <img src="784_e.gif">. Similarly, <img src="784_f.gif">. Essential properties of the complex <I>n</I>th roots of unity are given in the following lemmas.<P>
+<a name="0992_1b17">Lemma 32.3<a name="0992_1b17"><P>
+<a name="0992_1b13">For any integers <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 0, <I>k</I> <IMG SRC="../IMAGES/gteq.gif"> 0, and <I>d</I> &gt; 0,<P>
+<img src="785_a.gif"><P>
+<h4><a name="0992_1b18">(32.7)<a name="0992_1b18"></sub></sup></h4><P>
+<I><B>Proof</I></B>     The lemma follows directly from equation (32.6), since<P>
+<img src="785_b.gif"><P>
+<a name="0992_1b19">Corollary 32.4<a name="0992_1b19"><P>
+For any even integer <I>n</I> &gt; 0,<P>
+<img src="785_c.gif"><P>
+<I><B>Proof</I></B>     The proof is left as Exercise 32.2-1.      <P>
+<a name="0992_1b1a"><a name="0992_1b14">Lemma 32.5<a name="0992_1b1a"><P>
+If <I>n</I> &gt; 0 is even, then the squares of the <I>n</I> complex <I>n</I>th roots of unity are the <I>n</I>/2 complex (<I>n</I>/2)th roots of unity.<P>
+<I><B>Proof</I></B>     By the cancellation lemma, we have <img src="785_d.gif">, for any non-negative integer <I>k</I>. Note that if we square all of the complex <I>n</I>th roots of unity, then each (<I>n</I>/2)th root of unity is obtained exactly twice, since<P>
+<img src="785_e.gif"><P>
+Thus, <img src="785_f.gif"> have the same square. This property can also be proved using Corollary 32.4, since <img src="785_g.gif"> implies<I><SUP> </I></SUP><img src="785_h.gif">, and thus <img src="785_i.gif">.      <P>
+As we shall see, the halving lemma is essential to our divide-and-conquer approach for converting between coefficient and point-value representations of polynomials, since it guarantees that the recursive subproblems are only half as large.<P>
+<a name="0992_1b1b">Lemma 32.6<a name="0992_1b1b"><P>
+<a name="0992_1b15">For any integer <I>n</I> <IMG SRC="../IMAGES/gteq.gif"> 1 and nonnegative integer <I>k</I> not divisible by <I>n</I>,<P>
+<img src="786_a.gif"><P>
+<I><B>Proof</I></B>     Because equation (3.3) applies to complex values,<P>
+<img src="786_b.gif"><P>
+Requiring that <I>k</I> not be divisible by <I>n</I> ensures that the denominator is not 0, since <img src="786_c.gif"> only when <I>k</I> is divisible by <I>n</I>.      <P>
+<P>
+
+
+
+
+
+
+
+<h2>The DFT</h2><P>
+Recall that we wish to evaluate a polynomial<P>
+<img src="786_d.gif"><P>
+of degree-bound <I>n</I> at <img src="786_e.gif"> (that is, at the <I>n</I> complex <I>n</I>th roots of unity).<SUP>2</SUP> Without loss of generality, we assume that <I>n</I> is a power of 2, since a given degree-bound can always be raised--we can always add new high-order zero coefficients as necessary. We assume that <I>A</I> is given in coefficient form: <I>a </I>= (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n-</I>1</SUB>). Let us define the results <I>y<SUB>k</I></SUB>, for <I>k</I> = 0, 1, . . . , <I>n</I> - 1, by<P>
+<img src="786_f.gif"><P>
+<h4><a name="0993_1b18">(32.8)<a name="0993_1b18"></sub></sup></h4><P>
+<a name="0993_1b16"><a name="0993_1b17">The vector <I>y</I> = (<I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y<SUB>n</I>-1</SUB>) is the <I><B>Discrete Fourier Transform (DFT) </I></B>of the coefficient vector <I>a</I> = (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n</I>-1</SUB>). We also write <I>y</I> = DFT<I><SUB>n</I></SUB>(<I>a</I>).<P>
+<SUP>2</SUP>The length <I>n</I> is actually what we referred to as 2<I>n </I>in Section 32.1, since we double the degree-bound of the given polynomials prior to evaluation. In the context of polynomial multiplication, therefore, we are actually working with complex (2<I>n</I>)th roots of unity.+<P>
+<P>
+
+
+
+
+
+
+
+<h2>The FFT</h2><P>
+<a name="0994_1b18"><a name="0994_1b19">By using a method known as the <I><B>Fast Fourier Transform (FFT),</I></B> which takes advantage of the special properties of the complex roots of unity, we can compute<I> </I>DFT<I><SUB>n</I></SUB>(<I>a</I>)<SUB> </SUB>in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>), as opposed to the <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>2</SUP>) time of the straightforward method.<P>
+The FFT method employs a divide-and-conquer strategy, using the even-index and odd-index coefficients of <I>A</I>(<I>x</I>) separately to define the two new degree-bound <I>n</I>/2 polynomials <I>A</I><SUP>[0]</SUP>(<I>x</I>) and <I>A</I><SUP>[1]</SUP>(<I>x</I>):<P>
+<pre><I>A</I><SUP>[0]</SUP>(<I>x</I>)  =  <I>a</I><SUB>0</SUB> + <I>a</I><SUB>2</SUB><I>x</I> + <I>a</I><SUB>4</SUB><I>x</I><SUP>2</SUP> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>a<SUB>n</I>-2</SUB><I>x<SUP>n</I>/2-1</SUP>,</sub></sup></pre><P>
+<pre><I>A</I><SUP>[1]</SUP>(<I>x</I>)  =  <I>a</I><SUB>1</SUB> + <I>a</I><SUB>3</SUB><I>x</I> + <I>a</I><SUB>5</SUB><I>x</I><SUP>2</SUP> + <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> <IMG SRC="../IMAGES/dot10.gif"> + <I>a<SUB>n</I>-1</SUB><I>x<SUP>n</I>/2-1</SUP>.</sub></sup></pre><P>
+Note that <I>A</I><SUP>[0]</SUP> contains all the even-index coefficients of <I>A</I> (the binary representation of the index ends in 0) and <I>A</I><SUP>[1]</SUP> contains all the odd-index coefficients (the binary representation of the index ends in 1). It follows that<P>
+<pre><I>A</I>(<I>x</I>) = <I>A</I><SUP>[0]</SUP>(<I>x</I><SUP>2</SUP>) + <I>xA</I><SUP>[1]</SUP>(<I>x</I><SUP>2</SUP>),</sub></sup></pre><P>
+<h4><a name="0994_1b1b">(32.9)<a name="0994_1b1b"></sub></sup></h4><P>
+so that the problem of evaluating <I>A</I>(<I>x</I>) at <img src="787_a.gif"> reduces to<P>
+1.     evaluating the degree-bound <I>n</I>/2 polynomials <I>A</I><SUP>[0]</SUP>(<I>x</I>) and <I>A</I><SUP>[1]</SUP>(<I>x</I>) at the points<P>
+<img src="787_b.gif"><P>
+<h4><a name="0994_1b1c">(32.10)<a name="0994_1b1c"></sub></sup></h4><P>
+and then<P>
+2.     combining the results according to equation (32.9).<P>
+<a name="0994_1b1a">By the halving lemma, the list of values (32.10) consists not of <I>n</I> distinct values but only of the <I>n</I>/2 complex (<I>n</I>/2)th roots of unity, with each root occurring exactly twice. Therefore, the polynomials <I>A</I><SUP>[0]</SUP> and <I>A</I><SUP>[1]</SUP> of degree-bound <I>n</I>/2 are recursively evaluated at the <I>n</I>/2 complex (<I>n</I>/2)th roots of unity. These subproblems have exactly the same form as the original problem, but are half the size. We have now successfully divided an <I>n</I>-element DFT<I><SUB>n</I></SUB> computation into two <I>n</I>/2-element DFT<I><SUB>n</I>/2</SUB> computations. This decomposition is the basis for the following recursive FFT algorithm, which computes the DFT of an <I>n</I>-element vector <I>a</I> = (<I>a</I><SUB>0</SUB><I>, a</I><SUB>1</SUB>, . . . , <I>a<SUB>n - </I>1</SUB>), where <I>n</I> is a power of 2.<P>
+<img src="788_a.gif"><P>
+The <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT procedure works as follows. Lines 2-3 represent the basis of the recursion; the DFT of one element is the element itself, since in this case<P>
+<img src="788_b.gif"><P>
+Lines 6-7 define the coefficient vectors for the polynomials <I>A</I><SUP>[0]</SUP> and <I>A</I><SUP>[1]</SUP>. Lines 4, 5, and 13 guarantee that <I>w</I> is updated properly so that whenever lines 11-12 are executed, <img src="788_c.gif">. (Keeping a running value of <I>w</I> from iteration to iteration saves time over computing <img src="788_d.gif"> from scratch each time through the <B>for</B> loop.) Lines 8-9 perform the recursive DFT<I><SUB>n</I>/2</SUB> computations, setting, for <I>k</I> = 0, 1, . . . , <I>n</I>/2 - 1,<P>
+<img src="788_e.gif"><P>
+or, since <img src="788_f.gif"> by the cancellation lemma,<P>
+<img src="788_g.gif"><P>
+Lines 11-12 combine the results of the recursive DFT<I><SUB>n</I>/2</SUB> calculations. For <I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y<SUB>n</I>/2 - 1</SUB>, line 11 yields<P>
+<img src="788_h.gif"><P>
+where the last line of this argument follows from equation (32.9). For <I>y<SUB>n</I>/2</SUB>,<I>y<SUB>n</I>/2+1</SUB>, . . . , <I>y<SUB>n </I>- 1</SUB>, letting <I>k</I> = 0, 1, . . . , <I>n</I>/2 - 1, line 12 yields<P>
+<img src="789_a.gif"><P>
+The second line follows from the first since <img src="789_b.gif">. The fourth line follows from the third because <img src="789_c.gif"> implies <img src="789_d.gif">. The last line follows from equation (32.9). Thus, the vector <I>y</I> returned by <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT is indeed the DFT of the input vector <I>a</I>.<P>
+To determine the running time of procedure <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT, we note that exclusive of the recursive calls, each invocation takes time <IMG SRC="../IMAGES/bound.gif">(<I>n</I>), where <I>n</I> is the length of the input vector. The recurrence for the running time is therefore<P>
+<pre><I>T</I>(<I>n</I>) = 2<I>T</I>(<I>n</I>/2) + <IMG SRC="../IMAGES/bound.gif">(<I>n</I>)</sub></sup></pre><P>
+<pre>= <IMG SRC="../IMAGES/bound.gif">(<I>n</I> lg <I>n</I>) .</sub></sup></pre><P>
+Thus, we can evaluate a polynomial of degree-bound <I>n</I> at the complex <I>n</I>th roots of unity in time <IMG SRC="../IMAGES/bound.gif"><I></I>(<I>n</I> lg <I>n</I>) using the Fast Fourier Transform.<P>
+<P>
+
+
+
+
+
+
+
+<h2>Interpolation at the complex roots of unity</h2><P>
+<a name="0995_1b1b"><a name="0995_1b1c">We now complete the polynomial multiplication scheme by showing how to interpolate the complex roots of unity by a polynomial, which enables us to convert from point-value form back to coefficient form. We interpolate by writing the DFT as a matrix equation and then looking at the form of the matrix inverse.<P>
+From equation (32.4), we can write the DFT as the matrix product <I>y</I> = <I>V<SUB>n</SUB>a</I>, where <I>V<SUB>n</I></SUB> is a Vandermonde matrix containing the appropriate powers of <I>w<SUB>n</I></SUB>:<P>
+<img src="789_e.gif"><P>
+The (<I>k, j</I>) entry of <img src="789_f.gif">, for <I>j,k</I> = 0, 1, . . . , <I>n</I> - 1, and the exponents of the entries of <I>V<SUB>n</I></SUB> form a multiplication table.<P>
+For the inverse operation, which we write as <img src="789_g.gif">, we proceed by multiplying <I>y</I> by the matrix <img src="789_h.gif">, the inverse of <I>V<SUB>n</I></SUB>.<P>
+<a name="0995_1b1e">Theorem 32.7<a name="0995_1b1e"><P>
+For <I>j, k</I> = 0, 1, . . . , <I>n</I> - 1, the (<I>j, k</I>) entry of <img src="790_a.gif">.<P>
+<I><B>Proof     </I></B>We show that <img src="790_b.gif">, the <I>n</I> X <I>n</I> identity matrix. Consider the (<I>j, j'</I>) entry of <img src="790_c.gif">:<P>
+<img src="790_d.gif"><P>
+This summation equals 1 if <I>j</I>' = <I>j</I>, and it is 0 otherwise by the summation lemma (Lemma 32.6). Note that we rely on -(<I>n</I> - 1) &lt; <I>j</I>' - <I>j</I> &lt; <I>n</I> - l, so that <I>j</I>' - <I>j</I> is not divisible by <I>n</I>, in order for the summation lemma to apply.      <P>
+Given the inverse matrix <img src="790_e.gif">, we have that <img src="790_f.gif"> is given by<P>
+<img src="790_g.gif"><P>
+<h4><a name="0995_1b1f">(32.11)<a name="0995_1b1f"></sub></sup></h4><P>
+for <I>j</I> = 0,1, . . . , <I>n</I> - 1. By comparing equations (32.8) and (32.11), we see that by modifying the FFT algorithm to switch the roles of <I>a</I> and <I>y</I>, replace <I>w<SUB>n</I></SUB> by <img src="790_h.gif">, and divide each element of the result by <I>n</I>, we compute the inverse DFT (see Exercise 32.2-4). Thus, <img src="790_i.gif"> can be computed in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time as well.<P>
+Thus, by using the FFT and the inverse FFT, we can transform a polynomial of degree-bound <I>n</I> back and forth between its coefficient representation and a point-value representation in time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>). In the context of polynomial multiplication, we have shown the following.<P>
+<a name="0995_1b20">Theorem 32.8<a name="0995_1b20"><P>
+<a name="0995_1b1d">For any two vectors <I>a</I> and <I>b</I> of length <I>n</I>, where <I>n</I> is a power of 2,<P>
+<img src="790_j.gif"><P>
+where the vectors <I>a</I> and <I>b</I> are padded with 0's to length 2<I>n</I> and <IMG SRC="../IMAGES/dot10.gif"> denotes the componentwise product of two 2<I>n</I>-element vectors.      <P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="0996_1b1f">Exercises<a name="0996_1b1f"></h2><P>
+<a name="0996_1b20">32.2-1<a name="0996_1b20"><P>
+Prove Corollary 32.4.<P>
+<a name="0996_1b21">32.2-2<a name="0996_1b21"><P>
+Compute the DFT of the vector (0, 1, 2, 3).<P>
+<a name="0996_1b22">32.2-3<a name="0996_1b22"><P>
+Do Exercise 32.1-1 by using the <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>)-time scheme.<P>
+<a name="0996_1b23">32.2-4<a name="0996_1b23"><P>
+Write pseudocode to compute <img src="791_a.gif"> in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time.<P>
+<a name="0996_1b24">32.2-5<a name="0996_1b24"><P>
+Describe the generalization of the FFT procedure to the case in which <I>n</I> is a power of 3. Give a recurrence for the running time, and solve the recurrence.<P>
+<a name="0996_1b25">32.2-6<a name="0996_1b25"><P>
+Suppose that instead of performing an <I>n</I>-element FFT over the field of complex numbers (where <I>n</I> is even), we use the ring Z<I><SUB>m</I></SUB> of integers modulo <I>m</I>, where <I>m</I> = 2<I><SUP>tn</I>/2</SUP> + 1 and <I>t</I> is an arbitrary positive integer. Use <I>w</I> = 2<I><SUP>t</I></SUP> instead of <I>w<SUB>n</I></SUB> as a principal <I>n</I>th root of unity, modulo <I>m</I>. Prove that the DFT and the inverse DFT are well defined in this system.<P>
+<a name="0996_1b26">32.2-7<a name="0996_1b26"><P>
+Given a list of values <I>z</I><SUB>0</SUB>, <I>z</I><SUB>1</SUB>, . . . , <I>z<SUB>n-</I>1</SUB> (possibly with repetitions), show how to find the coefficients of the polynomial <I>P</I>(<I>x</I>) of degree-bound <I>n</I> that has zeros only at <I>z</I><SUB>0</SUB>, <I>z</I><SUB>1</SUB>, . . . , <I>z<SUB>n </I>- 1</SUB> (possibly with repetitions). Your procedure should run in time <I>O</I>(<I>n</I> lg<SUP>2</SUP> <I>n</I>). (<I>Hint:</I> The polynomial <I>P</I>(<I>x</I>) has a zero at <I>z<SUB>j</I></SUB> if and only if <I>P</I>(<I>x</I>) is a multiple of (<I>x</I> - <I>z<SUB>j</I></SUB>).)<P>
+<a name="0996_1b27">32.2-8<a name="0996_1b27"><P>
+<a name="0996_1b1e">The <I><B>chirp transform</I></B> of a vector <I>a</I> = (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n - </I>1</SUB>) is the vector <I>y</I> = (<I>y</I><SUB>0</SUB>, <I>y</I><SUB>1</SUB>, . . . , <I>y<SUB>n - </I>1</SUB>), where <img src="791_b.gif"> and <I>z</I> is any complex number. The DFT is therefore a special case of the chirp transform, obtained by taking <I>z</I> = <I>w<SUB>n</I></SUB>. Prove that the chirp transform can be evaluated in time <I>O</I>(<I>n</I> lg <I>n</I>) for any complex number <I>z</I>. (<I>Hint:</I> Use the equation<P>
+<img src="791_c.gif"><P>
+to view the chirp transform as a convolution.)<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="0997_0001">32.3 Efficient FFT implementations<a name="0997_0001"></h1><P>
+Since the practical applications of the DFT, such as signal processing, demand the utmost speed, this section examines two efficient FFT implementations. First, we shall examine an iterative version of the FFT algorithm that runs in <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>) time but has a lower constant hidden in the <IMG SRC="../IMAGES/bound.gif">-notation than the recursive implementation in Section 32.2. Then, we shall use the insights that led us to the iterative implementation to design an efficient parallel FFT circuit.<P>
+<img src="792_a.gif"><P>
+<h4><a name="0997_0002">Figure 32.3 A butterfly operation. The two input values enter from the left, <img src="792_b.gif"> is multiplied by <img src="792_c.gif">, and the sum and difference are output on the right. The figure can be interpreted as a combinational circuit.<a name="0997_0002"></sub></sup></h4><P>
+<img src="792_d.gif"><P>
+<h4><a name="0997_0003">Figure 32.4 The tree of input vectors to the recursive calls of the <FONT FACE="Courier New" SIZE=2>RECURSIVE<FONT FACE="Times New Roman" SIZE=2>-FFT procedure. The initial invocation is for n = 8.<a name="0997_0003"></FONT></FONT></sub></sup></h4><P>
+
+
+
+
+
+<h2>An iterative FFT implementation</h2><P>
+<a name="0998_1b1f">We first note that the <B>for</B> loop of lines 10-13 of <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT involves computing the value <img src="792_e.gif"> twice. In compiler terminology, this value is known as a <I><B>common subexpression</I></B>. We can change the loop to compute it only once, storing it in a temporary variable <I>t</I>.<P>
+<img src="792_f.gif"><P>
+<a name="0998_1b20">The operation in this loop, multiplying <I>w</I> (which is equal to <img src="792_g.gif">, storing the product into <I>t</I>, and adding and subtracting <I>t</I> from <img src="792_h.gif">, is known as a <I><B>butterfly</I></B> <I><B>operation</I></B> and is shown schematically in Figure 32.3.<P>
+We now show how to make the FFT algorithm iterative rather than recursive in structure. In Figure 32.4, we have arranged the input vectors to the recursive calls in an invocation of <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT in a tree structure, where the initial call is for <I>n</I> = 8. The tree has one node for each call of the procedure, labeled by the corresponding input vector. Each <FONT FACE="Courier New" SIZE=2>RECURSIVE</FONT>-FFT invocation makes two recursive calls, unless it has received a 1-element vector. We make the first call the left child and the second call the right child.<P>
+Looking at the tree, we observe that if we could arrange the elements of the initial vector <I>a</I> into the order in which they appear in the leaves, we could mimic the execution of the R<FONT FACE="Courier New" SIZE=2>ECURSIVE-</FONT>FFT procedure as follows. First, we take the elements in pairs, compute the DFT of each pair using one butterfly operation, and replace the pair with its DFT. The vector then holds <I>n</I>/2 2-element DFT's. Next, we take these <I>n</I>/2 DFT's in pairs and compute the DFT of the four vector elements they come from by executing two butterfly operations, replacing two 2-element DFT's with one 4-element DFT. The vector then holds <I>n</I>/4 4-element DFT's. We<I> </I>continue in this manner until the vector holds two (<I>n</I>/2)-element DFT's, which we can combine using <I>n</I>/2 butterfly operations into the final <I>n-</I>element DFT.<P>
+To turn this observation into code, we use an array <I>A</I>[0 <I>. . n</I> - 1] that initially holds the elements of the input vector <I>a</I> in the order in which they appear in the leaves of the tree of Figure 32.4. (We shall show later how to determine this order.) Because the combining has to be done on each level of the tree, we introduce a variable <I>s</I> to count the levels, ranging from 1 (at the bottom, when we are combining pairs to form 2-element DFT's) to lg <I>n</I> (at the top, when we are combining two (<I>n</I>/2)-element DFT's to produce the final result). The algorithm therefore has the following structure:<P>
+<pre>1<B>  for</B> <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> lg <I>n</I></sub></sup></pre><P>
+<pre>2<B>       do for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> - 1 <B>by</B> 2<I><SUP>s</I></sub></sup></pre><P>
+<pre>3<B>              do</B> combine the two 2<I><SUP>s</I>-1</SUP> -element DFT's in</sub></sup></pre><P>
+<pre><I>A</I>[<I>k . . k</I> + 2<I><SUP>s</I>-1</SUP> - 1] and <I>A</I>[<I>k + 2<SUP>s</I>-1</SUP> <I>. . k + </I>2<I><SUP>s</SUP> </I>- 1]</sub></sup></pre><P>
+<pre>into one 2<I><SUP>s</I></SUP>-element DFT in <I>A</I>[<I>k . . k + </I>2<I><SUP>s</I></SUP> - 1]</sub></sup></pre><P>
+We can express the body of the loop (line 3) as more precise pseudocode. We copy the <B>for</B> loop from the R<FONT FACE="Courier New" SIZE=2>ECURSIVE-</FONT>FFT procedure, identifying <I>y</I><SUP>[0]</SUP> with <I>A</I>[<I>k . . k + 2<SUP>s-</I>1 <FONT FACE="Times New Roman" SIZE=1>_ </FONT></SUP>1] and <I>y</I><SUP>[1]</SUP> with <I>A</I>[<I>k + 2<SUP>s</I>-1</SUP>. . <I>k</I> + 2<I><SUP>s</I></SUP> <SUP><FONT FACE="Times New Roman" SIZE=1>_</FONT></SUP> 1]. The value of <I>w</I> used in each butterfly operation depends on the value of <I>s;</I> we use <I>w<SUB>m</I></SUB>, where <I>m = 2<SUP>s</I></SUP>. (We introduce the variable <I>m</I> solely for the sake of readability.) We introduce another temporary variable <I>u</I> that allows us to perform the butterfly operation in place. When we replace line 3 of the overall structure by the loop body, we get the following pseudocode, which forms the basis of our final iterative FFT algorithm as well as the parallel implementation we shall present later.<P>
+<pre><a name="0998_1b21">FFT-BASE(<I>a</I>)</sub></sup></pre><P>
+<pre>1<I>  n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>a</I>]  <img src="794_a.gif"> <I>n</I> is a power of 2.</sub></sup></pre><P>
+<pre>2<B>  for</B> <I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> lg <I>n</I></sub></sup></pre><P>
+<pre>3     <B>  do </B><I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2<I><SUP>s</I></sub></sup></pre><P>
+<pre>4<B>          </B><I>w<SUB>m</I></SUB> <IMG SRC="../IMAGES/arrlt12.gif"> <I>e</I><SUP>2</SUP><IMG SRC="../IMAGES/piuc.gif"><I>i</I>/<I>m</I></sub></sup></pre><P>
+<pre>5          <B>for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> - 1 <B>by</B> <I>m</I></sub></sup></pre><P>
+<pre>6<B>              do</B> <I>w</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>7<B>                 for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>m</I>/2 - 1</sub></sup></pre><P>
+<pre>8<B>                     do</B> <I>t</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I> <I>A</I>[<I>k + j + m</I>/2]</sub></sup></pre><P>
+<pre>9                        <I>u</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[ <I>k + j</I>]</sub></sup></pre><P>
+<pre>10<I>                        A</I>[<I>k + j</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"> u + t</sub></sup></pre><P>
+<pre>11<I>                        A</I>[<I>k + j + m /2</I>]<I> </I><IMG SRC="../IMAGES/arrlt12.gif"> u - t</sub></sup></pre><P>
+<pre>12                        <I>w</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>ww<SUB>m</I></sub></sup></pre><P>
+We now present the final version of our iterative FFT code, which inverts the two inner loops to eliminate some index computation and uses the auxiliary procedure B<FONT FACE="Courier New" SIZE=2>IT-</FONT>R<FONT FACE="Courier New" SIZE=2>EVERSE-</FONT><FONT FACE="Courier New" SIZE=2>COPY</FONT>(<I>a, A</I>) to copy vector <I>a</I> into array <I>A</I> in the initial order in which we need the values.<P>
+<pre><a name="0998_1b22">ITERATIVE-FFT(<I>a</I>)</sub></sup></pre><P>
+<pre>1  BIT-REVERSE-COPY (<I>a, A</I>)</sub></sup></pre><P>
+<pre>2<I>  n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>a</I>]      <img src="794_b.gif"><I> n</I> is a power of 2.</sub></sup></pre><P>
+<pre>3<B>  for </B><I>s</I> <IMG SRC="../IMAGES/arrlt12.gif"> 1 <B>to</B> lg <I>n</I></sub></sup></pre><P>
+<pre>4<B>        do </B><I>m</I> <IMG SRC="../IMAGES/arrlt12.gif"> 2<SUP>s</sub></sup></pre><P>
+<pre>5           <I>w<SUB>m </I></SUB><IMG SRC="../IMAGES/arrlt12.gif"> e<SUP>2</SUP><IMG SRC="../IMAGES/piuc.gif"><SUP><I>i</I>/<I>m</I></sub></sup></pre><P>
+<pre>6           <I>w </I><IMG SRC="../IMAGES/arrlt12.gif"> 1</sub></sup></pre><P>
+<pre>7<B>           for</B> <I>j</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>m</I>/2 - 1</sub></sup></pre><P>
+<pre>8<B>               do for</B> <I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>j</I> <B>to</B> <I>n</I> - 1 <B>by</B> <I>m</I></sub></sup></pre><P>
+<pre>9<B>                      do</B> <I>t</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>w</I> <I>A</I>[<I>k</I> + <I>m</I>/2]</sub></sup></pre><P>
+<pre>10                         <I>u</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>A</I>[<I>k</I>]</sub></sup></pre><P>
+<pre>11                         <I>A</I>[<I>k</I>] <IMG SRC="../IMAGES/arrlt12.gif"> <I>u</I> + <I>t</I></sub></sup></pre><P>
+<pre>12                         <I>A</I>[<I>k</I> + <I>m</I>/2] <IMG SRC="../IMAGES/arrlt12.gif"> <I>u</I> - <I>t</I></sub></sup></pre><P>
+<pre>13                  <I>w </I><IMG SRC="../IMAGES/arrlt12.gif"> <I>ww<SUB>m</I></sub></sup></pre><P>
+<pre>14<B>  return</B> <I>A</I></sub></sup></pre><P>
+How does B<FONT FACE="Courier New" SIZE=2>IT-</FONT>R<FONT FACE="Courier New" SIZE=2>EVERSE-</FONT><FONT FACE="Courier New" SIZE=2>COPY</FONT> get the elements of the input vector <I>a</I> into the desired order in the array <I>A</I>? The order in which the leaves appear in Figure 32.4 is "bit-reverse binary." That is, if we let rev(<I>k</I>) be the lg <I>n</I>-bit integer formed by reversing the bits of the binary representation of <I>k</I>, then we want to place vector element <I>a<SUB>k</I></SUB> in array position <I>A</I>[rev(<I>k</I>)]. In Figure 32.4, for example, the leaves appear in the order 0, 4, 2, 6, 1, 5, 3, 7; this sequence in binary is 000, 100, 010, 110, 001, 101, 011, 111, and in bit- reverse binary we get the sequence 000, 001, 010, 011, 100, 101, 110, 111. To see that we want bit-reverse binary order in general, we note that at the top level of the tree, indices whose low-order bit is 0 are placed in the left subtree and indices whose low-order bit is 1 are placed in the right subtree. Stripping off the low-order bit at each level, we continue this process down the tree, until we get the bit-reverse binary order at the leaves.<P>
+Since the function rev (<I>k</I>) is easily computed, the B<FONT FACE="Courier New" SIZE=2>IT-</FONT>R<FONT FACE="Courier New" SIZE=2>EVERSE-</FONT>C<FONT FACE="Courier New" SIZE=2>OPY </FONT>procedure can be written as follows.<P>
+<pre><a name="0998_1b23">BIT-REVERSE-COPY(<I>a, A</I>)</sub></sup></pre><P>
+<pre>1  <I>n</I> <IMG SRC="../IMAGES/arrlt12.gif"> <I>length</I>[<I>a</I>]</sub></sup></pre><P>
+<pre>2<B>  for </B><I>k</I> <IMG SRC="../IMAGES/arrlt12.gif"> 0 <B>to</B> <I>n</I> - 1</sub></sup></pre><P>
+<pre>3<B>       do </B><I>A</I>[rev(<I>k</I>)] <IMG SRC="../IMAGES/arrlt12.gif"> <I>a<SUB>k</I></sub></sup></pre><P>
+The iterative FFT implementation runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n). </I>The call to B<FONT FACE="Courier New" SIZE=2>IT-</FONT>R<FONT FACE="Courier New" SIZE=2>EVERSE-</FONT><FONT FACE="Courier New" SIZE=2>COPY</FONT>(<I>a,A</I>) certainly runs in <I>O(n </I>lg <I>n</I>) time, since we iterate <I>n</I> times and can reverse an integer between 0 and <I>n</I> - 1, with lg <I>n</I> bits, in <I>O(</I>lg <I>n</I>) time. (In practice, we usually know the initial value of <I>n</I> in advance, so we would probably code a table mapping <I>k</I> to rev(<I>k</I>), making B<FONT FACE="Courier New" SIZE=2>IT-</FONT>R<FONT FACE="Courier New" SIZE=2>EVERSE-</FONT><FONT FACE="Courier New" SIZE=2>COPY</FONT> run in <IMG SRC="../IMAGES/bound.gif">(<I>n</I>) time with a low hidden constant. Alternatively, we could use the clever amortized reverse binary counter scheme described in Problem 18-1.) To complete the proof that I<FONT FACE="Courier New" SIZE=2>TERATIVE-</FONT>FFT runs in time <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>), we show that <I><FONT FACE="Courier New" SIZE=2>L(n</I></FONT>), the number of times the body of the innermost loop (lines 9-12) is executed, is <IMG SRC="../IMAGES/bound.gif">(<I>n </I>lg <I>n</I>). We have<P>
+<img src="795_a.gif"><P>
+<P>
+
+
+
+
+
+
+
+<h2>A parallel FFT circuit</h2><P>
+<a name="0999_1b24"><a name="0999_1b25">We can exploit many of the properties that allowed us to implement an efficient iterative FFT algorithm to produce an efficient parallel algorithm for the FFT. (See Chapter 29 for a description of the combinational-circuit model.) The combinational circuit P<FONT FACE="Courier New" SIZE=2>ARALLEL-</FONT>FFT that computes the FFT on <I>n</I> inputs is shown in Figure 32.5 for <I>n</I> = 8. The circuit begins with a bi-reverse permutation of the inputs, followed by lg <I>n</I> stages, each stage consisting of <I>n</I>/2 butterflies executed in parallel. The depth of the circuit is therefore <IMG SRC="../IMAGES/bound.gif">(lg <I>n</I>).<P>
+The leftmost part of the circuit P<FONT FACE="Courier New" SIZE=2>ARALLEL-</FONT>FFT performs the bit-reverse permutation, and the remainder mimics the iterative FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT> procedure. We take advantage of the fact that each iteration of the outermost <B>for</B> loop performs <I>n</I>/2 independent butterfly operations that can be performed in parallel. The value of s in each iteration within FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT> corresponds to a stage of butterflies shown in Figure 32.5. Within stage s, for <I>s</I> = 1, 2, . . . , lg <I>n</I>, there are <I>n</I>/2<I><SUP>s</I></SUP> groups of butterflies (corresponding to each value of <I>k</I> in FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT>), with 2<I><SUP>s</I>-1</SUP> butterflies per group (corresponding to each value of <I>j</I> in FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT>). The butterflies shown in Figure 32.5 correspond to the butterfly operations of the innermost loop (lines 8-11 of FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT>). Note also that the values of <I>w</I> used in the butterflies correspond to those used in FFT-<FONT FACE="Courier New" SIZE=2>BASE</FONT>: in stage <I>s</I>, we use <img src="796_b.gif">, where <I>m = 2<SUP>s</SUP>.</I><P>
+<img src="796_a.gif"><P>
+<h4><a name="0999_1b26">Figure 32.5 A combinational circuit <FONT FACE="Courier New" SIZE=2>PARALLEL-FFT</FONT> that computes the FFT, here shown on n = 8 inputs. The stages of butterflies are labeled to correspond to iterations of the outermost loop of the FFT-BASE procedure. An FFT on n inputs can be computed in <IMG SRC="../IMAGES/bound.gif">(1g n) depth with <IMG SRC="../IMAGES/bound.gif">(n lg n) combinational elements.<a name="0999_1b26"></sub></sup></h4><P>
+<P>
+
+
+
+
+
+
+
+<h2><a name="099a_0001">Exercises<a name="099a_0001"></h2><P>
+<a name="099a_0002">32.3-1<a name="099a_0002"><P>
+Show how I<FONT FACE="Courier New" SIZE=2>TERATIVE-</FONT>FFT computes the DFT of the input vector (0, 2, 3, -1, 4, 5, 7, 9).<P>
+<a name="099a_0003">32.3-2<a name="099a_0003"><P>
+Show how to implement an FFT algorithm with the bit-reversal permutation occurring at the end, rather than at the beginning, of the computation. (<I>Hint</I>: Consider the inverse DFT.)<P>
+<a name="099a_0004">32.3-3<a name="099a_0004"><P>
+To compute DFT<I><SUB>n</I></SUB>, how many addition, subtraction, and multiplication elements, and how many wires, are needed in the <FONT FACE="Courier New" SIZE=2>PARALLEL</FONT>-FFT circuit described in this section? (Assume that only one wire is needed to carry a number from one place to another.)<P>
+<a name="099a_0005">32.3-4<a name="099a_0005"><P>
+Suppose that the adders in the FFT circuit sometimes fail in such a manner that they always produce a zero output, independent of their inputs. Suppose that exactly one adder has failed, but that you don't know which one. Describe how you can identify the failed adder by supplying inputs to the overall FFT circuit and observing the outputs. Try to make your proeedure efficient.<P>
+<P>
+
+
+<P>
+
+
+
+
+
+
+
+<h1><a name="099b_1b2f">Problems<a name="099b_1b2f"></h1><P>
+<a name="099b_1b30">32-1     Divide-and-conquer multiplication<a name="099b_1b30"><P>
+<a name="099b_1b26"><a name="099b_1b27"><a name="099b_1b28"><I><B>a.</I></B>     Show how to multiply two linear polynomials <I>ax</I> + <I>b</I> and <I>cx</I> + <I>d</I> using only three multiplications. (<I>Hint</I>: One of the multiplications is (<I>a</I> + <I>b</I>) <IMG SRC="../IMAGES/dot10.gif"> (<I>c</I> + <I>d</I>).)<P>
+<I><B>b.</I></B>     Give two divide-and-conquer algorithms for multiplying two polynomials of degree-bound <I>n</I> that run in time <IMG SRC="../IMAGES/bound.gif">(<I>n</I><SUP>1<I>g</I> 3</SUP>). The first algorithm should divide the input polynomial coefficients into a high half and a low half, and the second algorithm should divide them according to whether their index is odd or even.<P>
+<I><B>c.</I></B>     Show that two <I>n</I>-bit integers can be multiplied in <I>O</I>(<I>n</I><SUP>1<I>g</I> 3</SUP>) steps, where each step operates on at most a constant number of 1-bit values.<P>
+<a name="099b_1b31">32-2     Toeplitz matrices<a name="099b_1b31"><P>
+<a name="099b_1b29"><a name="099b_1b2a">A <I><B>Toeplitz matrix</I></B> is an <I>n</I> X <I>n</I> matrix <I>A</I> = (<I>a<SUB>ij</I></SUB>) such that <I>a<SUB>ij</I></SUB> = <I>a<SUB>i</I>-1, <I>j</I>-1</SUB> for <I>i</I> = 2, 3, . . . , <I>n</I> and <I>j</I> = 2, 3, . . . , <I>n</I>.<P>
+<I><B>a.     </I></B>Is the sum of two Toeplitz matrices necessarily Toeplitz? What about the product?<P>
+<I><B>b.</I></B>     Describe how to represent a Toeplitz matrix so that two <I>n</I> X <I>n</I> Toeplitz matrices ean be added in <I>O</I>(<I>n</I>) time<I>.</I><P>
+<I><B>c.     </I></B>Give an<I> O</I>(<I>n </I>lg <I>n</I>)-time algorithm for multiplying an <I>n</I> X <I>n</I> Toeplitz matrix by a vector of length <I>n.</I> Use your representation from part (b).<P>
+<I><B>d.</I></B>     Give an efficient algorithm for multiplying two <I>n</I> X <I>n</I> Toeplitz matrices. Analyze its running time.<P>
+<a name="099b_1b32">32-3     Evaluating all derivatives of a polynomial at a point<a name="099b_1b32"><P>
+<a name="099b_1b2b">Given a polynomial <I>A</I>(<I>x</I>) of degree-bound <I>n</I>, its <I>t</I>th derivative is defined by<P>
+<img src="798_a.gif"><P>
+From the coefficient representation (<I>a</I><SUB>0</SUB>, <I>a</I><SUB>1</SUB>, . . . , <I>a<SUB>n</I>-1</SUB>) of <I>A</I>(<I>x</I>) and a given point <I>x</I><SUB>0</SUB>, we wish to determine <I>A</I><SUP>(<I>t</I>)</SUP> (<I>x</I><SUB>0</SUB>) for <I>t</I> = 0, 1, . . . , <I>n - </I>1<I>.</I><P>
+<I><B>a.</I></B>     Given coefficients <I>b</I><SUB>0</SUB>, <I>b</I><SUB>1</SUB>, . . . , <I>b<SUB>n</I>-1</SUB> such that<P>
+<img src="798_b.gif"><P>
+show how to compute <I>A</I><SUP>(<I>t</I>) </SUP>(<I>x</I><SUB>0</SUB>), for <I>t</I> = 0, 1, . . . , <I>n</I> - 1, in <I>O</I>(<I>n</I>) time.<P>
+<I><B>b.     </I></B>Explain how to find <I>b</I><SUB>0</SUB>, <I>b</I><SUB>1</SUB>, . . . , <I>b<SUB>n</I>-1</SUB> in <I>O</I>(<I>n </I>lg <I>n</I>) time, given <img src="798_c.gif"> for <I>k</I> = 0, 1, . . . , <I>n</I> - 1.<P>
+<I><B>c.</I></B>     Prove that<P>
+<img src="798_d.gif"><P>
+where <I>f</I>(<I>j</I>) = <I>a<SUB>j</I></SUB> <IMG SRC="../IMAGES/dot10.gif"> <I>j</I>! and<P>
+<img src="798_e.gif"><P>
+<I><B>d.</I></B>     Explain how to evaluate <img src="798_f.gif"> for <I>k</I> = 0, 1, . . . , <I>n</I> - 1 in <I>O</I>(<I>n</I> lg <I>n</I>) time. Conclude that all nontrivial derivatives of <I>A</I>(<I>x</I>) can be evaluated at <I>x</I><SUB>0</SUB> in <I>O</I>(<I>n</I> lg <I>n</I>) time.<P>
+<a name="099b_1b33">32-4     Polynomial evaluation at multiple points<a name="099b_1b33"><P>
+<a name="099b_1b2c"><a name="099b_1b2d">We have observed that the problem of evaluating a polynomial of degree-bound <I>n</I> - 1 at a single point can be solved in <I>O</I>(<I>n</I>) time using Horner's rule. We have also discovered that such a polynomial can be evaluated at all <I>n</I> complex roots of unity in <I>O</I>(<I>n</I> lg <I>n</I>) time using the FFT. We shall now show how to evaluate a polynomial of degree-bound <I>n</I> at <I>n</I> arbitrary points in <I>O</I>(<I>n</I> lg<SUP>2</SUP> <I>n</I>) time.<P>
+To do so, we shall use the fact that we can compute the polynomial remainder when one such polynomial is divided by another in <I>O</I>(<I>n </I>lg <I>n</I>) time, a result that we assume without proof. For example, the remainder of 3<I>x</I><SUP>3</SUP> + <I>x</I><SUP>2</SUP> - 3<I>x</I> + 1 when divided by <I>x</I><SUP>2</SUP> + <I>x</I> + 2 is<P>
+<pre>(3<I>x</I><SUP>3</SUP> + <I>x</I><SUP>2</SUP> - 3<I>x</I> + 1) mod (<I>x</I><SUP>2</SUP> + <I>x</I> + 2) = 5<I>x</I> - 3.</sub></sup></pre><P>
+Given the coefficient representation of a polynomial <img src="799_a.gif"> and <I>n</I> points <I>x</I><SUB>0</SUB>, <I>x</I><SUB>1</SUB>, . . . , <I>x</I><SUB>n-1</SUB>, we wish to compute the <I>n</I> values <I>A</I>(<I>x</I><SUB>0</SUB>), <I>A</I>(<I>x</I><SUB>1</SUB>), <I>. . . , A</I>(<I>x<SUB>n-</I>1</SUB>). For 0 <IMG SRC="../IMAGES/lteq12.gif"> <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>n</I> - 1, define the polynomials <img src="799_b.gif"> and <I>Q<SUB>ij</I></SUB>(<I>x</I>) = <I>A</I>(<I>x</I>) mod <I>p<SUB>ij</I></SUB>(<I>x</I>). Note that <I>Q<SUB>ij</I></SUB>(<I>x</I>) has degree-bound at most <I>j - i</I>.<P>
+<I><B>a.</I></B>     Prove that <I>A</I>(<I>x</I>) mod (<I>x - z</I>) = <I>A</I>(<I>z</I>) for any point <I>z</I>.<P>
+<I><B>b.</I></B>     Prove that <I>Q<SUB>kk</I></SUB>(<I>x</I>) = <I>A</I>(<I>x<SUB>k</I></SUB>) and that <I>Q</I><SUB>0<I>,n</I>-1</SUB>(<I>x</I>) = <I>A</I>(<I>x</I>).<P>
+<I><B>c.</I></B>     Prove that for <I>i</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>k</I> <IMG SRC="../IMAGES/lteq12.gif"> <I>j</I>, we have <I>Q<SUB>ik</I></SUB>(<I>x</I>) = <I>Q<SUB>ij</I></SUB>(<I>x</I>) mod <I>P<SUB>ik</I></SUB>(<I>x</I>) and <I>Q<SUB>kj</I></SUB>(<I>x</I>) = <I>Q<SUB>ij</I>(<I>x</I>) mod <I>Pkj</I></SUB> (<I>x</I>).<P>
+<I><B>d.</I></B>     Give an <I>O</I>(<I>n</I> lg<SUP>2</SUP> <I>n</I>)-time algorithm to evaluate <I>A</I>(<I>x<SUB>0</I></SUB>), <I>A</I>(<I>x</I><SUB>1</SUB>), . . . , <I>A</I>(<I>x<SUB>n-</I>1</SUB>).<P>
+<a name="099b_1b34">32-5     FFT using modular arithmetic<a name="099b_1b34"><P>
+<a name="099b_1b2e">As defined, the Discrete Fourier Transform requires the use of complex numbers, which can result in a loss of precision due to round-off errors. For some problems, the answer is known to contain only integers, and it is desirable to utilize a variant of the FFT based on modular arithmetic in order to guarantee that the answer is calculated exactly. An example of such a problem is that of multiplying two polynomials with integer coefficients. Exercise 32.2-6 gives one approach, using a modulus of length <IMG SRC="../IMAGES/omega12.gif">(<I>n</I>) bits to handle a DFT on <I>n</I> points. This problem gives another approach that uses a modulus of the more reasonable length <I>O</I>(lg <I>n</I>); it requires that you understand the material of Chapter 33. Let <I>n</I> be a power of 2.<P>
+<I><B>a.     </I></B>Suppose that we search for the smallest <I>k</I> such that <I>p = kn</I> + 1 is prime. Give a simple heuristic argument why we might expect <I>k</I> to be approximately lg <I>n</I>. (The value of <I>k</I> might be much larger or smaller, but we can reasonably expect to examine <I>O</I>(lg <I>n</I>) candidate values of <I>k</I> on average.) How does the expected length of <I>p</I> compare to the length of <I>n</I>?<P>
+Let <I>g</I> be a generator of <img src="799_c.gif">, and let <I>w</I> = <I>g<SUP>k</I></SUP> mod <I>p.</I><P>
+<I><B>b.</I></B>      Argue that the DFT and the inverse DFT are well-defined inverse operations modulo <I>p</I>, where <I>w</I> is used as a principal <I>n</I>th root of unity.<P>
+<I><B>c.</I></B>     Argue that the FFT and its inverse can be made to work modulo <I>p </I>in time <I>O</I>(<I>n</I> lg <I>n</I>), where operations on words of <I>O</I>(lg <I>n</I>) bits take unit time. Assume that the algorithm is given <I>p</I> and <I>w</I>.<P>
+<I><B>d.</I></B>     Compute the DFT modulo p = 17 of the vector (0, 5, 3, 7, 7, 2, 1, 6). Note that <I>g</I> = 3 is a generator of <img src="799_d.gif">.<P>
+<P>
+
+
+
+
+
+
+
+<h1>Chapter notes</h1><P>
+Press, Flannery, Teukolsky, and Vetterling[161, 162] have a good description of the Fast Fourier Transform and its applications. For an excellent introduction to signal processing, a popular FFT application area, see the text by Oppenheim and Willsky [153].<P>
+Cooley and Tukey [51] are widely credited with devising the FFT in the 1960's. The FFT had in fact been discovered many times previously, but its importance was not fully realized before the advent of modern digital computers. Press, Flannery, Teukolsky, and Vetterling attribute the origins of the method to Runge and K&ouml;nig ( 1924).<P>
+<P>
+
+
+<P>
+<P>
+<center>Go to <a href="chap33.htm">Chapter 33</A>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Back to <a href="toc.htm">Table of Contents</A>
+</P>
+</center>
+
+
+</BODY></HTML>

@@ -1,0 +1,61 @@
+#include<iostream>
+#include<string>
+#include<cctype>
+#include<math.h>
+using namespace std;
+string s;
+long long n,m,i,sum,k,x,y,br,p;
+int main()
+{
+	cin>>s;
+	n=s.size();
+	m=(long long)sqrt(n);
+	for(i=0;i<=n-1;i++)
+	{
+	   if (isdigit(s[i])) {sum=sum+s[i]-48;}
+	}	
+	k=sum%m;
+	x=k;
+	y=0;
+	//br=1;
+	k=k*m;
+	//a[br]=s[k];
+	cout<<s[k];
+	while(1)
+	{
+	   //br++;
+	   if (x==m-1) 
+	   {
+	      p=n-1-k;
+		  k=m-p-1;
+		  x=0;
+		  if (!isalpha(s[k])) {break;}
+		  //a[br]=s[k];
+		  cout<<s[k];
+	   }
+	   else
+	      if (y==m-1) 
+		  {
+		     x++;
+			 y=0;
+			 k++;
+			 if (!isalpha(s[k])) {break;}
+			 //a[br]=s[k];
+		     cout<<s[k];
+		  }
+	      else
+	      {
+			 if (!isalpha(s[k+m+1])) {break;}
+		     //a[br]=s[k+m+1];
+			 cout<<s[k+m+1];
+			 k=k+m+1;
+		     x++;
+		     y++;
+		   }
+	}
+	cout<<endl;
+	//system("pause");
+	return 0;
+}
+
+// RNLAJDSRGT5EO8OTHIKOLWOEKIMF!MOIL2A!

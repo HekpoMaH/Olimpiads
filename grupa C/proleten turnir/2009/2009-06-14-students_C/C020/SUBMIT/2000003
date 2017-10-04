@@ -1,0 +1,41 @@
+#include <cstdio>
+#include <algorithm>
+using namespace std;
+
+struct magazin{
+  int p,r,q,f,cena;
+};
+magazin mag[100];
+
+int n,l,obshtacena=999999,tempcena,a[101][101];
+long long F;
+
+int slove (int g,int l2)
+{
+  if (l2==0) { if (tempcena<obshtacena) obshtacena=tempcena; return 0; }
+  if (g==n) return 0;
+  for (int i=0;i<=l2&&i<=mag[g].f;i++) {
+    tempcena+=a[i][g];
+    slove(g+1,l2-i);
+    tempcena-=a[i][g];
+  }
+  return 0;
+}
+
+int main()
+{
+  scanf("%d %d", &n, &l);
+ for (int i=0;i<n;i++) {
+   scanf("%d%d%d%d", &mag[i].p, &mag[i].r, &mag[i].q, &mag[i].f);
+   F+=mag[i].f;
+   for (int j=0;j<=l;j++) {
+     if (j<mag[i].r) { a[j][i]=j*mag[i].p; }
+     else a[j][i]=j*mag[i].q;
+   }
+ }
+ if (F<l) { printf("-1\n"); return 0; }
+ if (l==0) { printf("0\n"); return 0; }
+ slove(0,l);
+ printf("%d\n", obshtacena);
+ return 0;
+}

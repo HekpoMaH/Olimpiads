@@ -1,0 +1,58 @@
+#include <iostream>
+#include <cmath>
+using namespace std;
+int c[16];
+long long res[128];
+int df;
+int main()
+{
+    long long M=1800000007;
+    string a;
+    cin >> a;
+    int n=a.size();
+    for(int i=0; i<n; i++)
+    {
+            if(!c[a[i]-'0']) df++;
+            c[a[i]-'0']++;
+    }
+    res[1]=df;
+    for(int i=2; i<=n; i++)
+    {
+            res[i]=res[i-1];
+            for(int j=0; j<=9; j++)
+            {
+                    if(c[j] && j!=0)
+                    {
+                            res[i]=(res[i]+i)%M;
+                            //cout << res[i] << ' ';
+                            for(int k=1; k<i; k++){
+                                    res[i]=(res[i]-min(c[j]-1,k)*(min(c[j]-1,k)+1))%M;
+                                    res[i]=(res[i]+1)%M;
+                                    if(min(c[j]-1,k)==0) res[i]--;
+                                    }
+                            //cout << res[i] << endl;
+                    }
+                    else if(c[j] && j==0)
+                    {
+                         res[i]=(res[i]+i-1)%M;
+                            for(int k=1; k<i; k++){
+                                    res[i]=(res[i]-min(c[j]-1,k-1)*(min(c[j]-1,k-1)+1))%M;
+                                    res[i]=(res[i]+1)%M;
+                                    }
+                    }
+                    //cout << "final: " << res[i] << endl; 
+            }
+           // cout << i  << ' ' << res[i] << endl;
+            for(int j=0; j<=9; j++)
+            {
+                    if(c[j] && c[j]<i)
+                    {
+                            res[i]=(res[i]-(i-c[j]));
+                            }
+            }
+    }
+    /*for(int i=1; i<=n; i++) cout << res[i] << ' ';
+    cout <<endl;*/
+    cout << res[n] << endl;
+    return 0;
+}

@@ -1,0 +1,46 @@
+/*
+TASK: num
+LANG: C++
+*/
+#include <stdio.h>
+#include <iostream>
+#include <algorithm>
+#include <string>
+#include <set>
+
+using namespace std;
+
+string s;
+int b[16];
+set<long long> all;
+
+void rec(long long num)
+{
+    for(int i=0;i<10;i++)
+     if(b[i])
+     {
+            b[i]--;
+            all.insert(num*10+i);
+            rec(num*10+i);
+            b[i]++;
+     }
+}
+
+int main()
+{
+    cin >> s;
+    for(int i=0;i<s.size();i++) b[s[i]-'0']++;
+    if(b[0]) all.insert(0);
+    for(int i=1;i<=9;i++)
+     if(b[i])
+     {
+            all.insert(i);
+            b[i]--;
+            rec(i);
+            b[i]++;
+     }
+    
+    cout << all.size() << endl;
+
+    return 0;
+}

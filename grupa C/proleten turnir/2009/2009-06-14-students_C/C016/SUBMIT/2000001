@@ -1,0 +1,14 @@
+#include<algorithm>
+#include<iostream.h>
+int n;
+long long k,i;
+char s[]="abcdefghijklmnopqrstuvwxyz";
+int main()
+{
+    cin>>n>>k;
+    s[n]=0;
+    for(i=1;i<k;++i)
+        std::next_permutation(s,s+n);
+    puts(s);
+    return 0;
+}

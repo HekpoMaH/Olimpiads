@@ -1,0 +1,47 @@
+#include<iostream>
+using namespace std;
+typedef long long lli;
+int k;
+lli n;
+
+lli ans=0;
+lli gcd(lli a,lli b){
+   return b==0 ? a : gcd(b,a%b);
+}
+lli a[99];
+lli c[99][99];
+void makecomb(){
+   for(int i=1;i<=40;i++){
+      for(int j=0;j<=i;j++){
+         if(j==0||j==i){
+            c[i][j]=1;
+         }
+         else c[i][j]=c[i-1][j-1]+c[i-1][j];
+      }
+   }
+}
+void cnt(lli mask){
+   lli br=0,pr=1,nod=-1,nok;
+   for(int i=1;i<=k;i++){
+      if((mask&(1<<(i-1)))){
+         br++;
+           if(nod==-1)nod=nok=a[i];
+         else{
+            lli aa=a[i],bb=nok;
+            nod=gcd(aa,bb);
+            nok=(lli)*(aa*bb)/nod;
+         }
+      }
+   }
+   if(br%2==1)ans+=(lli)n/(lli)(nok)*(lli)(1<<(br-1));
+   else ans-=(lli)n/(lli)nok*(lli)(1<<(br-1));
+}
+int main(){
+   cin>>n>>k;
+   for(int i=1;i<=k;i++)
+    cin>>a[i];
+   for(lli mask=1;mask<(1<<k);mask++){
+      cnt(mask);
+   }
+   cout<<ans<<"\n";
+}

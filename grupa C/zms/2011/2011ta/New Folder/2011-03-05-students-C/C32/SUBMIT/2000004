@@ -1,0 +1,24 @@
+#include <iostream>
+#include <cstdio>
+using namespace std;
+
+int n, i, j, ans;
+int pos1[50000], pos2[50000];
+
+int main()
+{
+scanf("%d", &n);
+for(i=0; i<n; i++) scanf("%d", &j), pos1[j] = i;
+for(i=0; i<n; i++) scanf("%d", &j), pos2[j] = i;
+
+for(i=1; i<n; i++)
+for(j=i+1; j<=n; j++)
+if(
+  (pos1[i] < pos1[j] && pos2[i] > pos2[j])
+  ||
+  (pos1[i] > pos1[j] && pos2[i] < pos2[j])
+  )
+ans++;
+printf("%d\n", ans);
+return 0;
+}

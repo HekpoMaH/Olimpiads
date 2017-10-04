@@ -1,0 +1,45 @@
+#include<cstdio>
+#include<stack>
+#include<string>
+using namespace std;
+int main ()
+{
+    stack<char> c;
+    stack<long long> s;
+    char a;
+    int aa;
+    long long b,m,bb;
+    do
+    {
+            scanf("%c", &a);
+            scanf("%ld", &b);
+            s.push(b);
+            c.push(a);
+            if(a=='=') break;
+            }
+            while(1);
+    m=s.top();
+   // printf("\n%ld\n", m);
+    s.pop();
+
+    while(!c.empty() && !s.empty())
+    /*{
+                     printf("%c %d\n", c.top(), s.top());
+                     s.pop();
+           c.pop();
+*/
+         {
+                     a=c.top();
+           bb=s.top();
+     //      printf("%d %ld\n", c.top(), s.top());
+           s.pop();
+           c.pop();
+
+           if(aa=='+') m=m-bb;
+           if(aa=='-') m=m+bb;
+           if(aa=='*') m=m/bb;
+           }
+     printf("%ld", m);
+     //system("pause");
+    return 0;
+}

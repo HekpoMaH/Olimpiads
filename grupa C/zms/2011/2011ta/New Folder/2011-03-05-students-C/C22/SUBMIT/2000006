@@ -1,0 +1,35 @@
+/*
+TASK: trick
+LANG: C++
+*/
+#include<iostream>
+#include<string>
+#include<iomanip>
+#include<cmath>
+#include<queue>
+#include<stack>
+using namespace std;
+int a[200005];
+char b[200005];
+int main()
+{
+   long long int chisl;
+   long long int br=0,no=0,s,ch;
+   while(a[s]!='='){cin>>a[s]>>b[ch];cout<<a[s]<<" "<<b[ch];br++;}
+   for(int i=1;i<br/2;i++)
+   {
+       if(a[i]!='+'||a[i]!='-'){no++;}
+   }
+   if(no==0)
+   {
+       for(int i=1;i<=br/2;i++)
+       {
+           if(a[i]=='+'){b[br]-=b[i];}
+           else {if(a[i]=='-'){b[br]+=b[i];}
+
+       }
+   }chisl=b[br];
+   }
+cout<<chisl<<endl;
+return 0;
+}

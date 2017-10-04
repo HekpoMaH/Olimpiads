@@ -1,0 +1,34 @@
+#include<iostream>
+#include<algorithm>
+using namespace std;
+long long a[50070],b[50070],ivp[50070],jp[50070],n,br,s1,s2;
+int main()
+{
+    ios::sync_with_stdio(false);
+    cin>>n;
+    for(long long i=0;i<n;i++)
+    {
+        cin>>a[i];
+        ivp[a[i]]=i+1;
+    }
+    for(long long i=0;i<n;i++)
+    {
+        cin>>b[i];
+        jp[b[i]]=i+1;
+    }
+    sort(a,a+n);
+    sort(b,b+n);
+    for(long long i=0;i<n;i++)
+    {
+        for(long long j=i+1;j<n;j++)
+        {
+             if(ivp[a[i]]-ivp[a[j]]>0)s1=1;
+             else s1=0;
+             if(jp[b[i]]-jp[b[j]]>0)s2=1;
+             else s2=0;
+             if(s1!=s2){br++;}
+        }
+    }
+    cout<<br<<"\n";
+    return 0;
+}

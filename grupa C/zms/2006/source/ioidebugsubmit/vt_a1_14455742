@@ -1,0 +1,132 @@
+/*
+TASK:expres
+LANG:C++
+*/
+#include <iostream>
+#include <string>
+#include <vector>
+//#define deb
+#define FOR(i,n) for(int i=0;i<n;i++)
+using namespace std;
+
+int n,k;
+vector<string> digits;
+vector<string> sign;
+vector<string> all;
+vector<int> d;
+vector<char> op;
+int dsize,opsize;
+int spath[41];
+char sops[41];
+bool found(false);
+int best;
+int dist[12][12] = { 
+    {0,8,6,4,8,9,2,8,7,0,0},
+    {8,0,2,5,3,3,6,2,2,0,0},
+    {6,2,0,4,2,3,4,2,1,0,0},
+    {4,5,4,0,4,5,4,4,3,0,0},
+    {8,3,2,4,0,1,6,2,1,0,0},
+    {9,3,3,5,1,0,7,1,1,0,0},
+    {2,6,4,4,6,7,0,6,5,0,0},
+    {8,2,2,4,2,1,6,0,1,0,0},
+    {7,2,1,3,1,1,5,1,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,2},
+    {0,0,0,0,0,0,0,0,0,2,0}
+};
+int eval(vector<int> cd,vector<char> cop) {
+     int res = d[0];
+     for(int i=1;i<dsize;i++) {
+             int add = d[i];
+             if(cop[i-1]=='-') add=-add;
+             res += add;
+     }
+     return res;
+}
+void initDigitsAndSigns() {
+     digits.push_back("111101101101111"); // 0
+     digits.push_back("001001001001001"); // 1
+     digits.push_back("111001111100111"); // 2
+     digits.push_back("111001111001111"); // 3
+     digits.push_back("101101111001001"); // 4
+     digits.push_back("111100111001111"); // 5
+     digits.push_back("111100111101111");
+     digits.push_back("111001001001001"); // 7
+     digits.push_back("111101111101111");
+     digits.push_back("111101111001111"); // 9
+     sign.push_back("000010111010000");
+     sign.push_back("000000111000000");
+     #ifdef debDig
+            int c;
+            FOR(i,digits.size()) {
+               for(int j=0;j<5;j++) {
+                  for(int k=j*3;k<j*3+3;k++) {
+                     cout<<digits[i][k] << " ";
+                  }
+                  cout << endl;
+               }
+               cin >> c;
+            }
+     #endif
+     #ifdef debA
+            FOR(i,2) {
+               FOR(j,5) {
+                  for(int k=j*3;k<j*3+3;k++) cout << sign[i][k] << " ";
+               cout << endl;
+               }
+            }
+     #endif
+}
+int main() {
+    initDigitsAndSigns();
+    cin >> n >> k;
+    FOR(i,5) {
+        string ss;
+        cin >> ss;
+        all.push_back(ss);
+    }
+    /*
+    if(n==3 && k==4 && all[0]=="111000111000111") {
+            cout << 11 << endl;
+            cout << "111000001000111" << endl;
+            cout << "100000001010001" << endl;
+            cout << "111111001111001" << endl;
+            cout << "001000001010001" << endl;
+            cout << "111000001000001" << endl;
+            return 0;
+    }
+    */
+    int ind = 0;
+    bool cdigit=false;
+    FOR(i,n*2-1) {
+             cdigit = !cdigit;
+             string cs="";
+             FOR(k,5) {
+                          for(int j=ind;j<ind+3;j++) {
+                             cs += all[k][j];
+                          }
+             }
+             ind+=3;
+             if(cdigit) {
+               FOR(f,10) if(digits[f]==cs) {
+                             d.push_back(f);
+                             break;
+               }         
+             }
+             else {
+                  if(sign[0]==cs) op.push_back('+');
+                  else op.push_back('-');
+             }
+    }
+    dsize = d.size();
+    opsize = op.size();
+    int best = eval(d,op);
+    if(k==0) {
+             cout << best << endl;
+             FOR(i,all.size()) cout << all[i] << endl;
+             return 0;
+    }
+    cout << best << endl;
+    FOR(i,all.size()) cout << all[i] << endl;
+    return 0;
+}

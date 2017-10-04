@@ -1,0 +1,56 @@
+#include<cstdio>
+#include<queue>
+#define ADJUST banica.x=(banica.x+n)%n;banica.y=(banica.y+m)%m;\
+if(castle[banica.x][banica.y])if(nahod[banica.x][banica.y][banica.with]==0){\
+save=banica.with;if(banica.x==ppos.x)if(banica.y==ppos.y)banica.with=true;\
+q.push(banica);nahod[banica.x][banica.y][banica.with]=old+1;banica.with=save;}
+int n,m,old,princ,nahod[1<<6][1<<6][2];
+bool save;
+bool castle[1<<6][1<<6];
+struct coord{
+    int x,y;bool with;
+}beg,gold,ppos;
+std::queue<coord> q;
+char ways[]="012345";
+int bfs()
+{
+    q.push(beg);
+    while(q.size())
+    {
+        coord banica=q.front();q.pop();
+        if(banica.x==gold.x)
+        if(banica.y==gold.y)
+        if(banica.with)
+        return nahod[gold.x][gold.y][1];
+        old=nahod[banica.x][banica.y][banica.with];
+        ++banica.x;ADJUST;
+        banica.x-=2;ADJUST;
+        ++banica.x;++banica.y;ADJUST;
+        banica.y-=2;ADJUST;
+    }
+    return -1;
+}
+int main()
+{
+    scanf("%d%d",&n,&m);
+    for(int i=0;i<n;++i)
+    {
+        getchar();
+        for(int j=0;j<m;++j)
+        {
+            char inchar=getchar();
+            switch(inchar)
+            {
+                case 'E': beg.x=i;beg.y=j;beg.with=false;castle[i][j]=true;break;
+                case '.': castle[i][j]=true;break;
+                case '#': castle[i][j]=false;break;
+                case 'X': gold.x=i;gold.y=j;castle[i][j]=true;break;
+                case 'P': ppos.x=i;ppos.y=j;princ++;castle[i][j]=true;break;
+            }
+        }
+    }
+    if(princ==1)
+        printf("%d\n",bfs());
+    else puts("-1");
+    return 0;
+}

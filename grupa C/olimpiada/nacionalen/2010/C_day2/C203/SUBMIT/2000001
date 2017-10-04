@@ -1,0 +1,82 @@
+#include<iostream>
+#include<queue>
+using namespace std;
+int n,m,a[8], b[8], t[64][64], p[64][64], brp, p2p[8][8], perm[8]={2,3,4,5,6}, ans=0, t1;
+char v;
+queue<int > ua, ub;
+
+void wave(int x, int y, int num){
+     
+     ua.push(x); ub.push(y); p[x][y]=1;
+     
+     while(ua.size()){
+                      int ka=ua.front(), kb=ub.front();
+                      ua.pop(); ub.pop();
+                      
+                      if(!p[(ka+n+1)%n][(kb+m)%m] && t[(ka+n+1)%n][(kb+m)%m]!=4){
+                                               p[(ka+n+1)%n][(kb+m)%m]=p[ka][kb]+1; ua.push((ka+1)%n); ub.push(kb);
+                                               }
+                      if(!p[(ka+n-1)%n][(kb+m)%m] && t[(ka+n-1)%n][(kb+m)%m]!=4){
+                                               p[(ka+n-1)%n][(kb+m)%m]=p[ka][kb]+1; ua.push((ka-1+n)%n); ub.push(kb);
+                                               }
+                      if(!p[(ka+n)%n][(kb+m+1)%m] && t[(ka+n)%n][(kb+m+1)%m]!=4){
+                                               p[(ka+n)%n][(kb+m+1)%m]=p[ka][kb]+1; ua.push(ka); ub.push((kb+1+m)%m);
+                                               }
+                      if(!p[(ka+n)%n][(kb+m-1)%m] && t[(ka+n)%n][(kb+m-1)%m]!=4){
+                                               p[(ka+n)%n][(kb+m-1)%m]=p[ka][kb]+1; ua.push(ka); ub.push((kb-1+m)%m);
+                                               }
+                      }
+                      
+     for(int i=0;i<brp+2;i++) p2p[num][i]=p2p[i][num]=p[a[i]][b[i]]-1;     
+     
+     }
+
+
+
+int main(){
+    cin>>n>>m;
+    for(int i=0;i<n;i++) for(int j=0;j<m;j++){
+            
+            cin>>v;
+            if(v=='.') t[i][j]=0;
+            else if(v=='E'){t[i][j]=1; a[0]=i; b[0]=j;}
+            else if(v=='X'){t[i][j]=3; a[1]=i; b[1]=j;}
+            else if(v=='P'){t[i][j]=2; a[2+brp]=i; b[2+brp]=j; brp++;}
+            else t[i][j]=4;}
+    
+    wave(a[0], b[0], 0);
+    
+    for(int i=0;i<n;i++) for(int j=0;j<m;j++) p[i][j]=0; //imashe edna shashma tuka s memset...
+    
+    for(int k=0;k<brp;k++){
+            
+            wave(a[k+2], b[k+2], k+2);
+    
+            for(int i=0;i<n;i++) for(int j=0;j<m;j++) p[i][j]=0;
+            
+            }
+    
+    //permutacii
+    
+    do{
+                int suma=p2p[0][perm[0]];
+                
+                for(int i=1;i<brp;i++) suma+=p2p[perm[i-1]][perm[i]];
+                
+                suma+=p2p[1][perm[brp-1]];
+                
+                if(!ans || suma<ans) ans=suma;
+                
+                next_permutation(perm, perm+brp);
+                
+                t1=0;
+             
+                for(int i=0;i<brp;i++) if(perm[i]!=i+2) t1=1;
+             
+                }while(t1);
+                
+                
+    cout<<ans<<endl;
+    
+    return 0;
+    }

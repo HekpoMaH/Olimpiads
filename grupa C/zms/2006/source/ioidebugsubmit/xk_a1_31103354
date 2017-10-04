@@ -1,0 +1,98 @@
+{
+TASK: CARSA
+LANG PASCAL
+}
+program Cras;
+type
+vr=^Vrah;
+rb=^Rebro;
+Vrah=record
+inf:integer;
+link:vr;
+prev:rb;
+nasl:rb;
+end;
+Rebro=record
+link1:vr;
+link2:rb;
+rod:vr;
+end;
+var g:vr;n:longint;
+procedure AddVr(var g:vr; x:integer);
+var q:vr;
+begin
+if g=nil then begin
+  new(q);
+  q^.inf:=x;
+  q^.nasl:=nil;
+  q^.link:=nil;
+  q^.prev:=nil;
+  g:=q;
+  end
+else AddVr(g^.link,x);
+end;
+procedure AddRb(var g:vr; a,b:integer);
+var p,q:vr;r,s:rb;
+begin
+p:=g;
+while p^.inf<>a do p:=p^.link;
+q:=g;
+while q^.inf<>b do q:=q^.link;
+new(s);
+s^.link1:=q;
+s^.link2:=nil;
+s^.rod:=p;
+if p^.nasl=nil then p^.nasl:=s
+else begin
+  r:=p^.nasl;
+  while r^.link2<>nil do r:=r^.link2;
+  r^.link2:=s;
+  end;
+end;
+procedure Create(var g:vr;var n:longint);
+var i,k,j,b:longint;s:string;code:integer;
+begin
+readln(n);
+for i:=1 to n do AddVr(g,i);
+for i:=1 to n do
+if i=n then readln(s)
+else begin
+readln(s);
+val(copy(s,1,pos(' ',s)-1),k,code);
+delete(s,1,pos(' ',s));
+for j:=1 to k do begin
+if j=k then val(s,b,code)
+else val(copy(s,1,pos(' ',s)-1),b,code);
+  delete(s,1,pos(' ',s));
+  AddRb(g,i,b);
+end;
+end;
+end;
+procedure Paths(g:vr;n:longint);
+var br:integer;q:vr;r:rb;
+begin
+q:=g;
+r:=q^.nasl;
+br:=0;
+while r<>nil do begin
+while q^.inf<>n do begin
+q:=r^.link1;
+q^.prev:=r;
+r:=q^.nasl;
+end;
+inc(br);
+while(r^.link2=nil)or(r=nil)do
+if(r^.link2=nil)and(q=g) then break
+else begin
+  r:=q^.prev;
+  q:=r^.rod;
+  end;
+r:=r^.link2;
+end;
+write (br);
+end;
+begin
+Create(g,n);
+Paths(g,n);
+readln;
+end.

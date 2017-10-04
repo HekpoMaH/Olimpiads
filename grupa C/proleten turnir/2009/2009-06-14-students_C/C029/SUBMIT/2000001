@@ -1,0 +1,38 @@
+/*
+TASK:string
+LANG:C++
+*/
+#include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
+int n;
+unsigned long long k,fact[32];
+char ch[32];
+bool used[32];
+
+int main()
+{
+    cin >> n >> k;
+    for(int i=0;i<n;i++) ch[i]=i+'a';
+    
+    fact[0]=1;
+    for(int i=1;i<=n;i++) fact[i]=fact[i-1]*i;
+    
+    k--;
+    for(int i=0;i<n;i++)
+    {
+            int tmp=k/fact[n-1-i];
+            k%=fact[n-1-i];
+            for(int j=0;j<n;j++)
+            {
+                    if(used[j]==1) continue;
+                    if(tmp==0) { used[j]=1; printf("%c",ch[j]); break; }
+                    tmp--;
+            }
+    }
+    printf("\n");
+
+    return 0;
+}

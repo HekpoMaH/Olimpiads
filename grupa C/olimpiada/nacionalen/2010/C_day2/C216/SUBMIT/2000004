@@ -1,0 +1,17 @@
+#include<iostream>
+using namespace std;
+long long i,br,m;
+string n;
+int main()
+{
+    cin>>n;
+    m=n.size();
+    br=m;
+    for(i=1; i<=m-1; i++)
+    {
+             br+=m*(m-1);
+    }
+    cout<<br<<endl;
+//    system ("pause");
+    return 0;
+}

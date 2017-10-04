@@ -1,0 +1,66 @@
+/*
+TASK:cars
+LANG:C++
+*/
+#include <stdio.h>
+#include <vector>
+#include <set>
+#include <time.h>
+#define FOR(i,n) for(int i=0;i<n;i++)
+
+std::vector<std::vector<int> > v;
+std::set<int> s;
+std::vector<bool> used;
+int n;
+clock_t start;
+void init() {
+     scanf("%d",&n);
+     int sz;
+     v.resize(n);
+     used.resize(n,0);
+     FOR(i,n) {
+              scanf("%d",&sz);
+              FOR(j,sz) {
+                        int x;
+                        scanf("%d",&x);
+                        v[i].push_back(x-1);
+              }
+     }
+}
+void dfs(int vert,int to,int way) {
+     clock_t end = clock();
+     if( (double)(end-start)/CLOCKS_PER_SEC > 3.5 ) return;
+     
+     if(vert==to) {
+                  s.insert(way);
+                  return;
+     }
+     FOR(i,v[vert].size()) 
+        if(!used[ v[vert][i] ]) {
+                  used[v[vert][i]] = 1;
+                  dfs(v[vert][i],to,way+1);
+                  used[v[vert][i]] = 0;
+        }
+}
+int main() {
+    start = clock();
+    init();
+    int maxx = 0;
+    FOR(i,n) {
+             FOR(j,n) used[j] = 0;
+             FOR(j,n) if(i!=j) {
+                      clock_t end = clock();
+                      if((double)(end-start)/CLOCKS_PER_SEC>3.5) break;
+                      dfs(i,j,0);
+                      int ck=0;
+                      for(int k=1;;k++) 
+                      if(s.find(k)==s.end()) {
+                         ck = k-1;
+                         break;
+                      }                      
+                      if(maxx<ck) maxx = ck;
+             }
+    }
+    printf("%d\n",maxx);
+}
+              

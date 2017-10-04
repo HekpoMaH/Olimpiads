@@ -1,0 +1,66 @@
+#include <cstdio>
+#include <cstring>
+const int MOD = 1800000007;
+int arr[16];
+//char str[128];
+int len;
+unsigned long long ans;
+
+unsigned long long get() {
+	unsigned long long res = 1;
+	for (int i = 0; i < 10; ++i) {
+		if (arr[i] > 0) {
+			arr[i]--;
+			res += get() % MOD;
+			res %= MOD;
+			arr[i]++;
+		}
+	}
+	return res == 0 ? 1 : res;
+}
+
+unsigned long long rec() {
+	unsigned long long sum = 1;
+	for (int i = 0;i < 10; ++i) {
+		if (arr[i] > 0) {
+			arr[i]--;
+			sum += get();
+			rec();
+			sum %= MOD;
+			arr[i]++;
+		}
+	}
+	return sum == 0 ? 1 : sum;
+}
+
+int main() {
+	//scanf("%s", str);
+	//len = strlen(str);
+	//for (int i = 0;i < len; ++i) {
+	//	++arr[str[i] - '0'];
+	//}
+	unsigned long long in;
+	scanf("%llu", &in);
+	while (in > 0) {
+		arr[in % 10]++;
+		//for (int i = 1;i <= 9; ++i) {
+		//	if (arr[i] > 0) {
+		//		arr[i]--;
+		//		ans += rec() % MOD;
+		//		ans %= MOD;
+		//		arr[i]++;
+		//	}
+		//}
+		//ans %= MOD;
+		in /= 10;
+	}
+	for (int i = 1;i < 10; ++i) {
+		if (arr[i] > 0) {
+			arr[i]--;
+			ans += rec();
+			arr[i]++;
+		}
+	}
+	printf("%llu\n", ans % MOD);
+	return 0;
+}

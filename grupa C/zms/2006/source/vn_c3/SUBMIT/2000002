@@ -1,0 +1,65 @@
+/*
+TASK: morse
+LANG: C
+*/
+#include<stdio.h>
+#include<string.h>
+     char s2[256];
+     int n;
+int main(){
+     int i,j,q;
+     gets(s2);
+     n=strlen(s2);
+     for(i=0;i<n;i++){
+      if(s2[i]=='A' || s2[i]=='a')printf(".-");
+      if(s2[i]=='B' || s2[i]=='b')printf("-...");
+      if(s2[i]=='C' || s2[i]=='c')printf("-.-.");
+      if(s2[i]=='D' || s2[i]=='d')printf("-..");
+      if(s2[i]=='E' || s2[i]=='e')printf(".");
+      if(s2[i]=='F' || s2[i]=='f')printf("..-.");
+      if(s2[i]=='G' || s2[i]=='g')printf("--.");
+      if(s2[i]=='H' || s2[i]=='h')printf("....");
+      if(s2[i]=='I' || s2[i]=='i')printf("..");
+      if(s2[i]=='G' || s2[i]=='j')printf(".---");
+      if(s2[i]=='K' || s2[i]=='k')printf("-.-");
+      if(s2[i]=='L' || s2[i]=='l')printf(".-..");
+      if(s2[i]=='M' || s2[i]=='m')printf("--");
+      if(s2[i]=='N' || s2[i]=='n')printf("-.");
+      if(s2[i]=='O' || s2[i]=='o')printf("---");
+      if(s2[i]=='P' || s2[i]=='p')printf(".--.");
+      if(s2[i]=='Q' || s2[i]=='q')printf("--.-");
+      if(s2[i]=='R' || s2[i]=='r')printf(".-.");
+      if(s2[i]=='S' || s2[i]=='s')printf("...");
+      if(s2[i]=='T' || s2[i]=='t')printf("-");
+      if(s2[i]=='U' || s2[i]=='u')printf("..-");
+      if(s2[i]=='V' || s2[i]=='v')printf("...-");
+      if(s2[i]=='W' || s2[i]=='w')printf(".--");
+      if(s2[i]=='X' || s2[i]=='x')printf("-..-");
+      if(s2[i]=='Y' || s2[i]=='y')printf("-.--");
+      if(s2[i]=='Z' || s2[i]=='z')printf("--..");
+      if(s2[i]=='1')printf(".----");
+      if(s2[i]=='2')printf("..---");
+      if(s2[i]=='3')printf("...--");
+      if(s2[i]=='4')printf("....-");
+      if(s2[i]=='5')printf(".....");
+      if(s2[i]=='6')printf("-....");
+      if(s2[i]=='7')printf("--...");
+      if(s2[i]=='8')printf("---..");
+      if(s2[i]=='9')printf("----.");
+      if(s2[i]=='0')printf("-----");
+      if(s2[i]=='.')printf(".-.-.-");
+      if(s2[i]==',')printf("--..--");
+      if(s2[i]=='-')printf("-..-.");
+      if(s2[i]=='?')printf("..--..");
+      if(s2[i]==' '){
+       printf(".-.-.");
+       while(s2[i]==' '){
+	i++;
+}
+      if(s2[i]!=' ')i--;
+}
+      printf(" ");
+}
+    printf("...-.-\n");
+return 0;
+}

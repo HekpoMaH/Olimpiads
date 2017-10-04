@@ -1,0 +1,22 @@
+#include<stdio.h>
+int main() {
+    char s[100000];
+    long a[100000];
+    long long res;
+    int i=-1,j;
+    while(scanf("%c",&s[++i])>0) {
+        scanf("%ld",&a[i]);
+        scanf("\n");
+    }
+    res=a[i-1];
+    for(j=i-2;j>=0;j--) {
+        if(s[j]=='-')
+            res+=a[j];
+        else if(s[j]=='+')
+            res-=a[j];
+        else if(s[j]=='*')
+            res/=a[j];
+    }
+    printf("%lld\n",res);
+    return 0;
+}

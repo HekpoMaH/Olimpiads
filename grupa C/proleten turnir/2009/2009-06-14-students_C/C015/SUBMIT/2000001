@@ -1,0 +1,53 @@
+#include<iostream>
+#include<cstring>
+#include<algorithm>
+using namespace std;
+
+char b[] = "abcdefghijklmnopqrst";
+bool vzeti[20] = {};
+int a[20];
+char a1[20];
+long long n , k;
+
+char next ( int j ) {
+	int kolko_ne_vzeti_dosega = 0;
+	int index = 0;
+	l:;	
+	for ( ;kolko_ne_vzeti_dosega < j;++index ) {
+		if ( !vzeti[index] ) ++kolko_ne_vzeti_dosega;
+	}
+	if ( vzeti[index] ) { 
+		++index;
+		goto l;
+	}
+	vzeti[index] = 1;
+	return b[index];
+}
+
+char kakuv ( int i ) {
+	long long tek_fact = 1;
+	for ( int j = 2;j < n - i;++j ) {
+		tek_fact *= j;
+	}
+	char ans;
+	for ( int j = 1;1;++j ) {
+		if ( k <= tek_fact * j && k > tek_fact * ( j - 1 ) ) {
+			ans = next ( j - 1 );
+			k -= tek_fact * ( j - 1 );
+			break;
+		}
+	}
+	return ans;
+}
+
+int main() {
+	cin >> n >> k;
+	for ( int i = 0;i < n;++i ) {
+		a1[i] = kakuv ( i );
+	}
+	for ( int i = 0;i < n;++i ) {
+		cout << a1[i];
+	}
+	cout << endl;
+	return 0;
+}

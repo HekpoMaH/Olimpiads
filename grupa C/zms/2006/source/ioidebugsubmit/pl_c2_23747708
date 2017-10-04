@@ -1,0 +1,101 @@
+{
+TASK: PHONE
+LANG: PASCAL
+}
+var
+tel:array[1..100] of string[10];
+sum:array[1..100] of real;
+key:array[1..100] of string;
+used:array[1..100] of integer;
+a:array[1..10,1..10]of integer;
+s,s2:string;
+j,k,l,i,n,m,p,code:integer;
+min,min1:real;
+procedure ent(x:integer);
+var
+ dl:integer;
+begin
+       dl:=pos(' ',s);
+       tel[x]:=copy(s,1,dl-1);
+       delete(s,1,pos(' ',s));
+       s2:=copy(s,1,pos(' ',s)-1);
+       val(s2,sum[x],code);
+       delete(s,1,pos(' ',s));
+       key[x]:=s;
+end;
+procedure dfs(k:integer);
+begin
+ for i:=1 to n do
+  begin
+   if a[k,9]=1 then
+   begin
+    min1:=min1+sum[k];
+    if min>min1 then
+    min:=min1;
+   end;
+  if (a[k,i]=1)and(used[i]=0) then
+    begin
+     used[i]:=1;
+     min1:=min1+sum[i];
+     dfs(i);
+     min:=min-sum[i];
+    end;
+  end;
+end;
+function valid(x,y:integer):boolean;
+var
+ s1,key2:string;
+ fl:boolean;
+ i1,j1:integer;
+begin
+ fl:=false;
+ valid:=false;
+ s1:=tel[x];
+ key2:=key[y];
+ for i1:=1 to length(s1) do
+  begin
+  for j1:=1 to length(key2) do
+   begin
+    if s1[i1]=key2[j1] then
+      begin
+       fl:=true;
+       if i1=length(s1) then
+        begin
+          valid:=true;
+         exit;
+        end;
+       break;
+
+      end;
+    if (i=10)and(fl=false) then
+       begin
+        valid:=false;
+        exit;
+       end;
+        end;
+   fl:=false;
+  end;
+end;
+
+begin
+readln (n);
+for i:=1 to n+2 do
+ begin
+  readln(s);
+  ent(i);
+ end;
+ for i:=1 to n do
+  for j:=1 to n do
+   if i<>j then
+    if valid(i,j) then
+      begin
+       a[i,j]:=1;
+        a[j,i]:=1;
+
+      end;
+min:=sum[1];
+min1:=sum[1];
+used[1]:=1;
+dfs(1);
+writeln(min:2:2);
+end.

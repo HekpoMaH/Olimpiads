@@ -1,0 +1,130 @@
+#include<iostream>
+#include<algorithm>
+#include<string>
+using namespace std;
+string a;
+int dp[10],ms[10],l;
+int main()
+{
+    cin>>a;
+    dp[0]=0;
+    for(int i=1;i<=7;i++)
+    {
+        //cout<<"a="<<a<<endl;
+        l=0;
+        if(i>=2&&a[i-1]==a[i-2]&&dp[i]<dp[i-2]+2)
+        {
+            dp[i]=dp[i-2]+2;l=1;
+            ms[i]=2;
+        }//aba
+        if(i>=3&&a[i-1]==a[i-3]&&a[i-1]!=a[i-2]&&dp[i]<dp[i-3]+2)
+        {
+            dp[i]=dp[i-3]+2;
+            ms[i]=3;l=1;
+        }//abb
+        if(i>=3&&a[i-1]==a[i-2]&&a[i-1]!=a[i-3]&&dp[i]<dp[i-3]+2)
+        {
+            dp[i]=dp[i-3]+2;l=1;
+            ms[i]=3;
+        }
+        //aab
+        if(i>=3&&a[i-3]==a[i-2]&&a[i-1]!=a[i-3]&&dp[i]<dp[i-3]+2)
+        {
+            dp[i]=dp[i-3]+2;l=1;
+            ms[i]=3;
+        }
+        //aaa
+        if(i>=3&&a[i-1]==a[i-2]&&a[i-2]==a[i-3]&&dp[i]<dp[i-3]+3)
+        {
+            //cout<<"a"<<endl;
+            dp[i]=dp[i-3]+3;l=1;
+            ms[i]=3;
+        }
+        //abac
+        if(i>=4&&a[i-4]==a[i-2]&&a[i-2]!=a[i-3]&&a[i-2]!=a[i-1]&&a[i-3]!=a[i-1]&&dp[i]<dp[i-4]+2)
+        {
+            dp[i]=dp[i-4]+2;
+            ms[i]=4;l=1;
+        }
+        //baca
+        if(i>=4&&a[i-3]==a[i-1]&&a[i-1]!=a[i-2]&&a[i-1]!=a[i-4]&&a[i-2]!=a[i-4]&&dp[i]<dp[i-4]+2)
+        {
+            dp[i]=dp[i-4]+2;
+            ms[i]=4;l=1;
+        }
+        //abab
+        if(i>=4&&a[i-4]==a[i-2]&&a[i-1]==a[i-3]&&a[i-2]!=a[i-1]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //aabb
+        if(i>=4&&a[i-4]==a[i-3]&&a[i-1]==a[i-2]&&a[i-2]!=a[i-3]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //abba
+        if(i>=4&&a[i-4]==a[i-1]&&a[i-2]==a[i-3]&&a[i-2]!=a[i-1]&&dp[i]<dp[i-4]+4)
+        {
+            dp[i]=dp[i-4]+4;
+            ms[i]=4;l=1;
+        }
+        //baaa
+        if(i>=4&&a[i-3]==a[i-2]&&a[i-1]==a[i-2]&&a[i-4]!=a[i-1]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //abaa
+        if(i>=4&&a[i-1]==a[i-2]&&a[i-1]==a[i-3]&&a[i-4]!=a[i-3]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //aaba
+        if(i>=4&&a[i-3]==a[i-1]&&a[i-1]==a[i-4]&&a[i-4]!=a[i-2]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //aaab
+        if(i>=4&&a[i-3]==a[i-2]&&a[i-3]==a[i-4]&&a[i-4]!=a[i-1]&&dp[i]<dp[i-4]+3)
+        {
+            dp[i]=dp[i-4]+3;
+            ms[i]=4;l=1;
+        }
+        //aaaa
+        if(i>=4&&a[i-1]==a[i-2]&&a[i-2]==a[i-3]&&a[i-3]==a[i-4]&&dp[i]<dp[i-4]+5)
+        {
+            dp[i]=dp[i-4]+5;
+            ms[i]=4;l=1;
+        }
+        if(!l){dp[i]=dp[i-1];}
+    }
+    //for(int i=1;i<=7;i++)cout<<dp[i]<<" ";
+    //cout<<endl;
+    string ans="";
+    int v=7,vv;l=0;
+    while(v>=1)
+    {
+        if(ms[v]==0){ans+=a[v-1];v--;l=1;}
+        if(ms[v]!=0)
+        {
+            if(v>1&&l)ans+='-';
+            vv=v;
+            for(int i=1;i<=ms[vv];i++)
+            {
+                ans+=a[v-1];
+                v--;
+            }
+            if(v>1)ans+='-';
+            l=0;
+        }
+    }
+    a.erase(7,1);
+    reverse(ans.begin(),ans.end());
+    cout<<ans<<endl;
+    cout<<dp[7]<<endl;
+    return 0;
+}

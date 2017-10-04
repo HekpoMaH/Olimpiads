@@ -1,0 +1,50 @@
+/*
+TASK:number
+LANG:C++
+*/
+#include<iostream.h>
+int n,d1,d2,d3; long M=0;int v[100]; int b[100];  int l=0; int c=0;
+void read()
+{
+cin>>n>>d1>>d2>>d3;
+}
+int delenie(int delimo)
+{if(delimo%d1==0)return 1;
+if(delimo%d2==0)return 1;
+if(delimo%d3==0)return 1;
+ return 0;
+ }
+int stepenuvane(int osnova,int stepen)
+{ int p=1;
+for(int i=0;i<stepen;i++)p=p*osnova;
+return p;
+}
+
+void razbivane(int i)
+{int p=i;
+for(int j=1;j<=n;j++)
+{ v[j]=p/stepenuvane(10,n-j);
+  p=p%stepenuvane(10,n-j);
+}
+}
+void obrazuv(int a[100])
+{ for(int i=1;i<n;i++)if(a[i]){b[i]=a[i]*10+a[i+1];l=l+1;} }
+void solve()
+{
+for(long  i=stepenuvane(10,n-1);i<stepenuvane(10,n);i++)
+{razbivane(i);
+ obrazuv(v);
+for(int j=1;j<=l;j++)
+{if(delenie(b[j])==1)c=1;
+if(delenie(b[j])==0){c=0;break;};}
+if(c==1)M++;
+for(int k=0;k<=n;k++){b[k]=0;v[k]=0;}
+l=0;
+}
+}
+int  main()
+{read();
+solve();
+cout<<M<<endl;
+return 0;
+}

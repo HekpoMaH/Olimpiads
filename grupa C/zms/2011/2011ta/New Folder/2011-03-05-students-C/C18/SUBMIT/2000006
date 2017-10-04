@@ -1,0 +1,13 @@
+#include <iostream>
+
+using namespace std;
+
+int main()
+{ int n[1100],k[11000],j,i;
+  for(int i=1;i<=1000;i++)
+   cin>>n[i];
+  for(int j=1;j<=10000;j++)
+   cin>>k[j];
+
+    return 0;
+}

@@ -1,0 +1,68 @@
+/*
+TASK:kabel
+LANG:C++
+*/
+#include <stdio.h>
+#include <iostream>
+
+using namespace std;
+
+int n,l;
+int p[128],r[128],q[128],f[128];
+int dp[128][16384];
+int s;
+
+int main()
+{
+    scanf("%d %d",&n,&l);
+    for(int i=0;i<n;i++) { scanf("%d %d %d %d",&p[i],&r[i],&q[i],&f[i]); s+=f[i]; }
+    
+    if(s<l) { printf("-1\n"); return 0; }
+    
+    for(int j=0;j<=f[0];j++)
+    {
+            int tmp;
+            if(j>=r[0]) tmp=j*min(q[0],p[0]);
+            else tmp=j*p[0];
+            dp[0][j]=tmp;
+    }
+    
+    for(int i=1;i<n;i++)
+     for(int j=1;j<=f[i];j++)
+     {
+             int tmp;
+             if(j>=r[i]) tmp=j*min(q[i],p[i]);
+             else tmp=j*p[i];
+             
+             if(dp[i-1][j]==0) dp[i][j]=tmp;
+             else dp[i][j]=min(tmp,dp[i-1][j]);
+             
+             for(int k=j+1;k<=s;k++)
+             {
+              if(dp[i-1][k-j]==0 && dp[i-1][k]==0) continue;
+              if(dp[i-1][k] && dp[i-1][k-j]==0)
+              {
+                            if(dp[i][k]) dp[i][k]=min(dp[i][k],dp[i-1][k]);
+                            else dp[i][k]=dp[i-1][k];
+              }
+              if(dp[i-1][k]==0 && dp[i-1][k-j])
+              {
+                               if(dp[i][k]) dp[i][k]=min(dp[i][k],dp[i-1][k-j]+tmp);
+                               else dp[i][k]=dp[i-1][k-j]+tmp;
+              }
+              if(dp[i-1][k] && dp[i-1][k-j])
+              {
+                            if(dp[i][k]) dp[i][k]=min(dp[i][k],dp[i-1][k]);
+                            else dp[i][k]=dp[i-1][k];
+                            dp[i][k]=min(dp[i][k],dp[i-1][k-j]+tmp);
+              }
+             }
+     }
+    
+    int sol=100*100*1000;
+    for(int i=l;i<=s;i++) if(dp[n-1][i]) sol=min(sol,dp[n-1][i]);
+    
+    cout << sol << endl;
+    
+    return 0;
+}

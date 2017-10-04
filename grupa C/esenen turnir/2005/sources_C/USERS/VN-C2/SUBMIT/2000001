@@ -1,0 +1,43 @@
+/*
+TASK:SCHOOL
+LANG:C
+*/
+
+#include <stdio.h>
+#define MAX 500
+
+int a[MAX + 2][MAX + 2];
+int used[MAX + 2];
+int n, m;
+int c;
+
+void cc (int i) {
+	int j;
+	used[i] = 1;
+	for (j = 1; j <= n; j ++) {
+		if (a[i][j]) {
+			a[i][j] = a[j][i] = 0;
+			cc (j);
+		}
+	}
+	return ;
+}
+
+int main () {
+	int p, q;
+	int i;
+	scanf ("%d%d", &n, &m);
+	for (i = 0; i < m; i ++) {
+		scanf ("%d%d", &p, &q);
+		a[p][q] = a[q][p] = 1;
+	}
+	for (i = 1; i <= n; i ++) {
+		if (!used[i]) {
+  			cc (i);
+  			c ++;
+		}
+	}
+	printf ("%d\n", c);
+    return 0;
+}
+
